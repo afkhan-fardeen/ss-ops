@@ -1,0 +1,2084 @@
+Published using Google Docs
+Report abuseLearn more
+Logistechs Partner API Doc
+Updated automatically every 5 minutes
+
+
+
+
+Partner API Documentation
+
+
+Document Version
+
+1
+
+21-10-2018
+
+Initial
+
+1.1
+
+15-02-2019
+
+Add “Paid” field in create shipment endpoint.
+
+1.2
+
+03-03-2019
+
+Update AWB endpoint
+
+1.3
+
+10-03-2019
+
+Add Multi tracking endpoint
+
+1.4
+
+03-04-2019
+
+Add city field in the Create Shipment Endpoint
+
+1.5
+
+10-02-2020
+
+Add New Address / Add New subclient
+
+1.6
+
+10-02-2020
+
+Add Rates / Update Areas Meta
+
+1.7
+
+18-02-2020
+
+Add bank field to Create new sub-client Endpoint
+
+1.8
+
+15-03-2020
+
+Add get shipment rate endpoint
+
+1.9
+
+16-06-2020
+
+Add Shipment Pickup Endpoint
+
+1.10
+
+26-06-2021
+
+Add shipment pickup_date parameter to create shipment
+
+1.11
+
+17-06-2021
+
+Add Inventory
+
+
+Base API
+
+Live
+
+https://ubex-clients.apis.delivery
+
+
+Token
+
+Option (1)
+
+Recommended
+
+HTTP Header (Bearer Token)
+
+Authorization: Bearer $TOKEN 
+
+Option (2)
+Used in this document
+
+HTTP Query Parameter
+
+?token=$TOKEN
+
+Token TTL
+
+One Year
+
+Refresh Token
+
+After 3 days from expiry
+
+Refresh Token Endpoint
+
+/account/token/refresh?token={{token}}
+
+
+Account
+Get Account Info
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/account/info?token={{token}}
+
+
+Return account information
+
+Request Body
+
+-
+
+Sample Response
+
+{
+ "data": {
+   "first_name": "firstname",
+   "last_name": "lastname",
+   "fullname": "firstname lastname",
+   "mobile": "97336000000",
+   "country_code": "973",
+   "email": "email@example.com",
+   "rating": 5,
+   "addresses": [
+     {
+       "uuid": "cd6d2d81-7ea6-4421-9d0f-8c422a88c39b",
+       "title": "Home 2",
+       "formatted": "House 1480z , Road 1625 Muharraq - 216",
+       "unit": "-",
+       "floor": "-",
+       "building": "-",
+       "road": "-",
+       "country": {
+         "uuid": "ef23ab24-0ff9-45a1-ae44-7c7c215d3fc0",
+         "title": "Bahrain"
+       },
+       "region": {
+         "uuid": "1ac6c842-94fa-4360-b92d-67dc5c92e4fb",
+         "title": "Bahrain"
+       },
+       "city": {
+         "uuid": "1234ef7c-a90f-45c3-b177-71a6672e868f",
+         "title": "Bahrain"
+       },
+       "area": {
+         "uuid": "e6099344-fd38-43b5-ab20-ca8085839563",
+         "title": "Muharraq - 216"
+       },
+       "extra_dir": "-",
+       "is_default": false,
+       "is_verified": false,
+       "location": ""
+     }
+   ]
+ },
+ "status": 200,
+ "msg": "OK"
+}
+
+
+
+Address
+Create new address
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/address/new?token={{token}}
+
+
+Create new address (Required Permission : Please contact the customer service)
+
+Request Body
+
+{
+
+    "title" :"Branch 1",
+
+    "area" :"33b3dc33-d58f-4d55-8dc6-f8600b91bca2",
+
+    "building" :"",
+
+    "floor" :"1",
+
+    "unit" : "1",
+
+    "extra_dir":"1",
+
+    "road" :"",
+
+    "phone" :"97317000001",
+
+    "country_code" :"BH"
+
+}
+
+Sample Response
+
+{
+
+    "data": {
+
+        "uuid": "4bd47740-e563-444d-8bb0-9f91cc5d0716",
+
+        "title": "Main",
+
+        "formatted": "Main => Building: 1147, Floor:1145, Unit: 1123, Road: 1888 BH - Unknown - 0",
+
+        "unit": "1123",
+
+        "floor": "1145",
+
+        "building": "1147",
+
+        "road": "1888",
+
+        "address_line_1": "-",
+
+        "address_line_2": "-",
+
+        "country": {
+
+            "uuid": "8c6115bd-0276-4bf4-aed3-221bd0ca68a7",
+
+            "title": "Bahrain"
+
+        },
+
+        "region": {
+
+            "uuid": "e360167d-8446-4e53-91f0-99ef27c4c8bc",
+
+            "title": "Bahrain"
+
+        },
+
+        "city": {
+
+            "uuid": "7121f480-d89b-4508-baa4-53fccecc50b4",
+
+            "title": "Bahrain"
+
+        },
+
+        "area": {
+
+            "uuid": "df2dab77-8e9c-491c-82f8-00880f84bb2e",
+
+            "title": "BH - Unknown - 0"
+
+        },
+
+        "extra_dir": "test",
+
+        "is_default": false,
+
+        "is_verified": false,
+
+        "location": ""
+
+    },
+
+    "status": 200,
+
+    "msg": "OK"
+
+}
+
+
+Client
+Create new sub-client
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/clients/new?token={{token}}
+
+
+Creates new sub-client (Required Permission : Please contact the customer service)
+
+Request Body
+
+{
+
+    "first_name": "firstname",
+
+    "last_name": "lastname surname",
+
+    "mobile": "97336251452",
+
+    "mobile2": "",
+
+    "email": "firstname@example.com",
+
+    "id": "123456789",
+
+    "cr": "1234-5",
+
+    "address": [
+
+        {
+
+            "country_code": "BH",
+
+            "title": "Address 1",
+
+            "area": "ac7535c5-9208-4421-921f-5a1f68e6b111",
+
+            "city": "7121f480-d89b-4508-baa4-53fccecc50b4",
+
+            "address_line_1": "Building 511 flat 22",
+
+            "address_line_2": "Road 81117",
+
+            "extra_dir": ""
+
+        },
+
+        {
+
+            "country_code": "BH",
+
+            "title": "Address 2",
+
+            "area": "0f9aa4fc-5e64-4a00-9644-b079f6cdf64a",
+
+            "city": "7121f480-d89b-4508-baa4-53fccecc50b4",
+
+            "building": "2506",
+
+            "road": "371",
+
+            "floor": "2",
+
+            "flat": "12",
+
+            "address_line_1": "",
+
+            "address_line_2": "",
+
+            "extra_dir": ""
+
+        }
+
+    ],
+
+    "public_name": "Business Name",
+
+    "id_attachment": "File BASE64 String" ,
+
+    "passport_attachment": "File BASE64 String",
+
+     "cr_attachment": "File BASE64 String",
+
+     “bank_attachment”: “File BASE64 String”
+
+}
+
+
+Sample Response
+
+{
+
+    "status": "200",
+
+    "msg": "OK",
+
+    "token": ".....",
+
+    "address": [
+
+        {
+
+            "Address 1": "1d18f761-578a-4b9c-a4f3-b8f378bc5667"
+
+        },
+
+        {
+
+            "Address 2": "4f43df23-b162-4e7c-ba0a-cd22de259718"
+
+        },
+
+        {
+
+            "Address 3": "d7e6973d-bea7-4a08-8447-80f74d3addc4"
+
+        }
+
+    ]
+
+}
+
+
+
+Shipments
+List Shipments
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/shipments/list?token={{token}}&page={{page_number}}
+
+
+Return 3 sets of data (upcoming shipment , onhold shipments ,history shipments) each category contains 5 shipments in a page
+
+Request Body
+
+-
+
+Sample Response
+
+{
+ "status": 200,
+ "msg": "OK",
+ "data": {
+   "upcoming": {
+     "data": [],
+     "count": 0
+   },
+   "onhold": {
+     "data": [
+       {
+         "tracking": "UB8545085844",
+         "status": "Data Received",
+         "last_update": "2018-10-25T12:10:07+03:00",
+         "service": "Domestic Parcel",
+         "weight": "2 KG",
+         "amount": "BD 10.000",
+         "address": "test Muharraq - 202",
+         "dropoff_location": "",
+         "live_enabled": false,
+         "live_now": false,
+         "log": [],
+         "can_reschedule": false,
+         "reschedule_window": "2018-10-28T13:31:30+03:00",
+         "reschedule_to": "",
+         "can_hold": false,
+         "hold_window": "2018-10-28T13:31:30+03:00",
+         "hold_to": "",
+         "can_rate": false
+       },
+
+      ],
+     "count": 5
+   },
+   "history": {
+     "data": [],
+     "count": 0
+   }
+ }
+}
+
+
+
+
+Shipment Details
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/shipments/details/{{SHIPMENT_TRACKING}}?token={{token}}
+
+
+Details of selected shipment
+
+Request Body
+
+-
+
+Sample Response
+
+{
+   "data": {
+       "tracking": "UB5804845349",
+       "status": "Scheduled for Pickup",
+       "last_update": "2018-10-24T11:23:46+03:00",
+       "service": "Domestic Parcel",
+       "weight": 1,
+       "parcel_value": "0.000",
+       "parcel_currency": "BHD",
+       "declared_value": "10.000",
+       "declared_currency": "BHD",
+       "address": "House 1480z , Road 1625 Muharraq - 216",
+       "dropoff_location": "",
+       "live_enabled": false,
+       "live_now": false,
+       "can_reschedule": false,
+       "reschedule_window": "2018-10-28T14:23:45+03:00",
+       "reschedule_to": "",
+       "can_hold": false,
+       "hold_window": "2018-10-28T14:23:45+03:00",
+       "hold_to": "",
+       "can_rate": false
+   },
+   "status": 200,
+   "msg": "OK"
+}
+
+
+Create Shipment
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/v2/shipments/create?token={{token}}
+
+
+Create new shipments
+
+Request Body
+
+{
+
+             "test":"1",
+
+             “is_product”: true,
+        "address_from" : "cd6d2d81-7ea6-4421-9d0f-8c422a88c39b",        
+        "mobile" :"97336251452",
+        "first_name" :"firstname",
+        "last_name" :"lastname surname",
+        "email" :"firstname@example.com",
+        "area" :"33b3dc33-d58f-4d55-8dc6-f8600b91bca2",
+        "building" :"",
+        "road" :"",
+        "address_line_1" :"Building 511 flat 22",
+        "address_line_2" :"Road 81117",
+        "country" :"BH",
+        "base_product" :"838abc9b-9f6a-4567-afa9-77bf85ca3534",
+        "other_products": [  "11620655-83e4-4eb2-b1c5-256b77045c1c"  ],
+        "type" : "dox",
+        "bill_to": "receiver",
+        "bill_duties_to" : "receiver",
+        "content": [{
+
+                 "id": "1cb9b4c1-32b5-49c7-b55e-4aa19eaeea1e",
+
+                 “qty”: 2
+
+              }],
+        "parcel_value" :"10",
+        "parcel_currency": "BHD",
+        "declared_value" :"10",
+        "declared_currency": "BHD",
+        "shipment_reference":"awb123456",
+
+             “paid” : 0,
+
+             “pickup_date”: “2021-10-05”,
+        "pieces" : [
+                        {
+                                "weight":"1",
+                                "length":"10",
+                                "width":"5",
+                                "height" :"30",
+                                "qty":"1",
+                                "value":"1",
+                                "content" :"shirt"
+                        }
+                ]
+}
+
+Request Body with Inventory
+
+{
+
+    "address_from": "... .",
+
+    "mobile": "97336251452",
+
+    "mobile2": "",
+
+    "company_name": "",
+
+    "department": "",
+
+    "first_name": "test2",
+
+    "last_name": "test2",
+
+    "area": "... .",
+
+    "building": "",
+
+    "road": "",
+
+    "floor": "",
+
+    "unit": "",
+
+    "extra_dir": null,
+
+    "country": "BH",
+
+    "base_product": "... .",
+
+    "other_products": [
+
+        "... ."
+
+    ],
+
+    "type": "non-dox",
+
+    "bill_to": "receiver",
+
+    "bill_duties_to": "receiver",
+
+    "is_product": true,
+
+    "content": [
+
+        {
+
+            "id": "... .",
+
+            "qty": 5
+
+        }
+
+    ],
+
+    "parcel_value": "5.000",
+
+    "declared_value": "5.000",
+
+    "parcel_currency": "BHD",
+
+    "declared_currency": "BHD",
+
+    "paid": 0,
+
+    "pieces": [
+
+        {
+
+            "weight": "1",
+
+            "length": "1",
+
+            "width": "1",
+
+            "height": "1",
+
+            "qty": 1,
+
+            "value": "1",
+
+            "content": "shirt"
+
+        }
+
+    ],
+
+    "is_gift": false,
+
+    "fragile": false,
+
+    "temperature": false
+
+}
+
+Sample Response
+
+{
+ "data": {
+   "tracking": "UB2917284897",
+   "status": "Data Received",
+   "last_update": "2018-10-25T13:39:08+03:00",
+   "service": "Domestic Parcel",
+   "weight": 2,
+   "parcel_value": "10.000",
+   "parcel_currency": "BHD",
+   "declared_value": "10.000",
+   "declared_currency": "BHD",
+   "address": "Building 511 flat 22 Road 81117 Muharraq - 202",
+   "dropoff_location": "",
+   "live_enabled": false,
+   "live_now": false,
+   "log": [],
+   "can_reschedule": false,
+   "reschedule_window": "2018-10-28T13:39:09+03:00",
+   "reschedule_to": "",
+   "can_hold": false,
+   "hold_window": "2018-10-28T13:39:09+03:00",
+   "hold_to": "",
+   "can_rate": false
+ },
+ "status": 200,
+ "msg": "OK"
+}
+
+
+
+
+
+
+
+Attribute
+
+Sample
+
+Required?
+
+Note
+
+Shipment
+
+test
+
+1
+
+no
+
+Mark shipment as a test shipment
+
+base_product
+
+c25fc5c2-b0a1-47b9-a52d-8e359b6f1698
+
+Yes (one per request only)
+
+
+other_products
+
+[“c25fc5c2-b0a1-47b9-a52d-8e359b6f1698”,”c25fc5c2-b0a1-47b9-a52d-8e359b6f1698”]
+
+No
+
+e.g. COD, comma-separated values
+
+weight
+
+5.5
+
+Yes
+
+In KG
+
+length
+
+13
+
+Yes
+
+In CM
+
+width
+
+6
+
+Yes
+
+In CM
+
+height
+
+10
+
+Yes
+
+In CM
+
+parcel_value
+
+5.200
+
+Yes
+
+COD Amount,
+
+COD product must be added to the “other products fields”
+
+declared_value
+
+5.200
+
+Yes
+
+For customs purposes
+
+parcel_currency
+
+BHD
+
+No
+
+ISO 4217 (if empty, will assume destination currency)
+
+declared_currency
+
+BHD
+
+No
+
+ISO 4217 (if empty, will assume USD)
+
+content
+
+Fashion - Swim Wear
+
+Yes
+
+In English
+
+bill_to
+
+shipper
+
+Yes
+
+[shipper, receiver]
+
+Who will pay the shipping charges
+
+bill_duties_to
+
+receiver
+
+Yes
+
+shipper, receiver
+
+Who will pay the duties charges
+
+paid
+
+0 or 1
+
+No
+
+Default 0,
+
+1 if prepaid
+
+type
+
+dox
+
+Yes
+
+Dox : document ,
+
+Non-dox : non document
+
+shipment_reference
+
+TR1221323123213BH
+
+NO
+
+Shipper awb
+
+pickup_date
+
+2020-01-01  (Date yyyy-mm-dd)
+
+No
+
+Schedule shipment for pickup on this date
+
+Receiver
+
+mobile
+
+97339993999
+
+Yes
+
+Country code without ‘+’, no spaces
+
+mobile2
+
+97339993998
+
+No
+
+Country code without ‘+’, no spaces
+
+email
+
+one@example.com
+
+No
+
+
+building
+
+420
+
+Yes
+
+Or address_line_1
+
+road
+
+2020
+
+Yes
+
+Or address_line_1
+
+address_line_1
+
+Home 23
+
+
+
+address_line_2
+
+Street Name
+
+
+
+city
+
+a4f3fe9f-7dc6-46df-938a-0e4e6218a1dd
+
+Yes if area not there
+
+UUId found in the Cities endpoint
+
+area
+
+5e062d68-1c91-4159-9397-0e7107cbaead
+
+Yes for BH or if city not there
+
+Must match a serviceable area as per the agreement
+
+country
+
+BH
+
+Yes
+
+ISO 3166-1 alpha-2
+
+
+
+
+
+
+Shipment Rate
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/shipments/shipment-rate?token={{token}}
+
+
+To get shipment charges
+
+Request Body
+
+( same as create shipment request body)
+
+{
+
+    "area": "051435ca-870d-480e-94dc-96714c09ef83",
+
+    "country": "BH",
+
+    "base_product": "41b51155-fb90-41f0-bb14-d61065b77696",
+
+    "parcel_value": "239",
+
+    "parcel_currency": "BHD",
+
+    "declared_value": "633.35",
+
+    "declared_currency": "USD",
+
+    "pieces": [
+
+        {
+
+            "weight": "5",
+
+            "length": "1",
+
+            "width": "1",
+
+            "height": "1",
+
+            "qty": "1",
+
+            "value": "239"
+
+        }
+
+    ]
+
+}
+
+Sample Response
+
+{
+
+    "status": 200,
+
+    "charges": 1.475,
+
+    "currency": "BHD"
+
+}
+
+
+
+Change Status
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/shipments/status/{{SHIPMENT_TRACKING}}?token={{token}}
+
+
+To change the shipment status
+
+Request Body
+
+{
+        "status":"1"
+}
+
+
+Sample Response
+
+{
+   "tracking": "UB8193096775",
+   "status": 200,
+   "msg": "Status changed"
+}
+
+
+
+
+
+Attribute
+
+Sample
+
+Required?
+
+Note
+
+status
+
+1
+
+Yes
+
+Status code can be get using the meta/statuses endpoint
+
+
+If the user in different hub he must send “596” arrived in country before post other tracking statuses
+
+Tracking History
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/shipments/history/{{SHIPMENT_TRACKING}}?token={{token}}
+
+
+Return the shipment history
+
+Request Body
+
+-
+
+Sample Response
+
+{
+   "data": [
+       {
+           "status": "Data Received",
+           "icon": "https://i.imgur.com/eQAvwKv.png",
+           "last_update": "2018-10-24T11:23:47+03:00",
+           "station": "Bahrain",
+           "hub": "Bahrain"
+       },
+       {
+           "status": "Scheduled for Pickup",
+           "icon": "https://i.imgur.com/eQAvwKv.png",
+           "last_update": "2018-10-24T11:23:47+03:00",
+           "station": "Bahrain",
+           "hub": "Bahrain"
+       }
+   ],
+   "count": 2
+}
+
+
+
+Tracking History Multi
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/shipments/multi-history?token={{token}}
+
+
+Return the shipments history
+
+Request Body
+
+{
+
+        "trackings" : [
+
+                "{{tracking1}}","{{tracking1}}"
+
+                ]
+
+}
+
+
+Sample Response
+
+{
+   "tracking1": [
+       {
+           "status": "Data Received",
+           "icon": "https://i.imgur.com/eQAvwKv.png",
+           "last_update": "2018-10-24T11:23:47+03:00",
+           "station": "Bahrain",
+           "hub": "Bahrain"
+       },
+       {
+           "status": "Scheduled for Pickup",
+           "icon": "https://i.imgur.com/eQAvwKv.png",
+           "last_update": "2018-10-24T11:23:47+03:00",
+           "station": "Bahrain",
+           "hub": "Bahrain"
+       }
+   ],
+   "tracking2": [
+       {
+           "status": "Data Received",
+           "icon": "https://i.imgur.com/eQAvwKv.png",
+           "last_update": "2018-10-24T11:23:47+03:00",
+           "station": "Bahrain",
+           "hub": "Bahrain"
+       },    
+   ],
+}
+
+
+Air way bill
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/shipments/awb/{{SHIPMENT_TRACKING}}?token={{token}}&paper={{paper}}&orientation={{orientation}}
+
+
+Return an AWB sticker as a PDF file (base64 encoded)
+
+Request Body
+
+-
+
+Sample Response
+
+base64
+
+
+
+Attribute
+
+Sample
+
+Required?
+
+Note
+
+paper
+
+AWB Paper size (A4,A5,A6..etc.)
+
+No
+
+Default A6
+
+orientation
+
+Paper orientation [ l (landscape),p (portrait)]
+
+No
+
+Default Landscape
+
+
+Attach Document
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/shipments/document/{{SHIPMENT_TRACKING}}?token={{token}}
+
+
+To attach a document to the shipment
+
+Request Body
+
+ {          
+           "title": "{{DOCUMENT_TITLE}}",
+           "document": "File BASE64 String"          
+ },
+
+
+Sample Response
+
+{
+   "tracking": "UB8193096775",
+   "status": 200,
+   "msg": "Status changed"
+}
+
+
+
+Attribute
+
+Sample
+
+Required?
+
+Note
+
+tracking
+
+UB1234123412
+
+Yes
+
+Shipment reference
+
+title
+
+File Title
+
+Yes
+
+Document title
+
+document
+
+File encoded in BASE 64 string
+
+Yes
+
+Base64 string
+
+Rates
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/shipments/rates?token={{token}}
+
+
+Return list of rates
+
+Request Body
+
+-
+
+Sample Response
+
+{
+
+    "status": "200",
+
+    "msg": "OK",
+
+    "rates": [
+
+        {
+
+            "Domestic Parcel": {
+
+                "unit": 30,
+
+                "rate": "1.5"
+
+            }
+
+        },
+
+        {
+
+            "Domestic Express Plus": {
+
+                "unit": 30,
+
+                "rate": "2"
+
+            }
+
+        },
+
+        {
+
+            "Cash on Delivery": {
+
+                "unit": 0,
+
+                "rate": "0"
+
+            }
+
+        }
+
+    ]
+
+}
+
+
+
+Pickup
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/shipments/pickup/{{SHIPMENT_TRACKING}}?token={{token}}
+
+
+Change shipment to pickup status
+
+Request Body
+
+ {          
+           "date": "{{Date}}",
+ },
+
+Sample Response
+
+{
+
+    "tracking": "UB9455903712",
+
+    "status": 200,
+
+    "msg": "Status changed"
+
+}
+
+
+
+
+Return
+
+Request Type
+
+POST
+
+Endpoint
+
+/api/v2/shipments/return?token={{token}}
+
+
+Create RTO request, (only for delivered shipment) otherwise use new shipment to schedule a pickup
+
+Request Body
+
+ {          
+           "tracking": "{{Shipment-tracking}}",
+
+            "pickup_date": "{{date_to_pickup}}",
+
+            "address_to": "{{address_uuid_to_return}}",
+
+            "bill_to": "{{how_will_pay_shipping_charges}}",
+ },
+
+Sample Response
+
+{
+
+    "tracking": "UB9455903712",      //new shipment tracking
+
+    "status": 200,
+
+}
+
+
+
+Inventories
+List Inventories
+
+Request Type
+
+GET
+
+Endpoint
+
+api/v2/inventory?token={{token}}
+
+
+Return a paginated list of available inventories with 10 items per page
+
+Request Body
+
+-
+
+Sample Response
+
+{
+   "data": [
+      {
+
+           "id": "1cb9b4c1-32b5-49c7-b55e-4aa19eaeea1e",
+
+           "category": "Health and Household",
+
+           "name": "coffee mug",
+
+           "desc": "Easy To Clean: The coffee mugs won’t stain, rust or get scratched up. They are easy to wipe or can be easily hand washed. Dishwasher safe and cleans well. Each set comes with 6 mugs with a fun multicolor design: yellow, blue, orange, red, purple, and green.",
+
+           "image": "https://usts-files.s3.me-south-1.amazonaws.com/inventory/54/dd324f99befccaa8e3f7b78d105acc32-11.jpg",
+
+           "size": "Medium [M]",
+
+           "color": "yellow",
+
+           "weight": "10",
+
+           "stock": "20",
+
+           "sku": "244135",
+
+           "barcode": "",
+
+           "track_qty": true,
+
+           "sell_out_of_stock": false,
+
+           "currency": "BHD",
+
+           "price": 1.7,
+
+           "cost_per_item": 1.2,
+
+           "tags": [],
+
+           "published_on": "2021-01-06T12:49:06.000000Z"
+
+       }
+   ],
+   "count": 1,
+   "status": 200,
+   "msg": "OK"
+}
+
+
+
+Attribute
+
+Sample
+
+Required?
+
+Note
+
+page
+
+Page number (1, 2 .. )
+
+No
+
+Default 1
+
+search
+
+Search item (example: coffee)
+
+No
+
+
+filter
+
+in_stock → returns only in stock items,
+
+out_of_stock → returns only out of stock items
+
+No
+
+Default returns all items
+
+
+Inventory Stock
+
+Request Type
+
+GET
+
+Endpoint
+
+api/v2/inventory/get-stock?token={{token}}
+
+
+Get the current stock of the products/inventories
+
+Request Body
+
+{
+
+     “Ids”: [ “id1” , “id2”]
+
+}
+
+Sample Response
+
+{
+   "data": [
+      {
+
+           "id": "1cb9b4c1-32b5-49c7-b55e-4aa19eaeea1e",  
+
+           "stock": "20",        
+
+       }
+   ],
+   "status": 200,
+   "msg": "OK"
+}
+
+
+
+Get in stock inventories
+
+Request Type
+
+GET
+
+Endpoint
+
+api/v2/inventory/in-stock?token={{token}}
+
+
+Get the in stock inventories
+
+Request Body
+
+{
+
+     “Ids”: [ “id1” , “id2”]
+
+}
+
+Sample Response
+
+{
+   "data": [
+      {
+
+           "id": "1cb9b4c1-32b5-49c7-b55e-4aa19eaeea1e",  
+
+           "stock": "20",        
+
+       }
+   ],
+   "status": 200,
+   "msg": "OK"
+}
+
+
+Get Inventory Categories
+
+Request Type
+
+GET
+
+Endpoint
+
+api/v2/inventory/categories?token={{token}}
+
+
+Get the categories list
+
+Request Body
+
+
+Sample Response
+
+{
+
+    "status": 200,
+
+    "msg": "OK",
+
+    "data": [
+
+        {
+
+            "name": "Automotive",
+
+            "uuid": "af7b45fc-37d2-47bd-a3c2-98c8335d5f6d"
+
+        },
+
+    ]
+
+}
+
+
+
+Create Inventory
+
+Request Type
+
+POST
+
+Endpoint
+
+api/v2/inventory/create?token={{token}}
+
+
+Create new inventory
+
+Request Body
+
+{
+
+    "category_id": "4595da76-1620-441f-b818-b180b9ac5404",
+
+    "name": "PRoduct name 1",
+
+    "description": "desc",
+
+    "image": "base 64 image",
+
+    "size": "size",
+
+    "color": "color",
+
+    "weight": 0.5,
+
+    "stock": 3,
+
+    "sku": "123456",
+
+    "barcode": "123456",
+
+    "track_qty": 1,
+
+    "sell_out_of_stock": 0,
+
+    "currency": "BHD",
+
+    "price": 12,
+
+    "cost_per_item": 0,
+
+    "cost_currency": "BHD",
+
+    "tags": [
+
+        "tag1"
+
+    ],
+
+    "published_on": "2021-02-09T10:10:44.000000Z",
+
+    "reference": "reference from client"
+
+}
+
+
+Sample Response
+
+{
+   "data": [
+      {
+
+           "id": "1cb9b4c1-32b5-49c7-b55e-4aa19eaeea1e",  
+
+           "stock": "20",        
+
+       }
+   ],
+   "status": 200,
+   "msg": "OK"
+}
+
+
+
+                                                   
+                        
+Update Inventory/Product
+
+
+Request Type
+
+POST
+
+Endpoint
+
+api/v2/inventory/edit/{id}?token={{token}}
+
+
+Update Inventory
+
+Request Body
+
+{
+
+    "category_id": "4595da76-1620-441f-b818-b180b9ac5404",
+
+    "name": "PRoduct name 1",
+
+    "description": "desc",
+
+    "image": "base 64 image",
+
+    "size": "size",
+
+    "color": "color",
+
+    "weight": 0.5,
+
+    "stock": 3,
+
+    "sku": "123456",
+
+    "barcode": "123456",
+
+    "track_qty": 1,
+
+    "sell_out_of_stock": 0,
+
+    "currency": "BHD",
+
+    "price": 12,
+
+    "cost_per_item": 0,
+
+    "cost_currency": "BHD",
+
+    "tags": [
+
+        "tag1"
+
+    ],
+
+    "reference": "reference from client"
+
+}
+
+
+Sample Response
+
+{
+   "status": 200,
+   "msg": "OK"
+}
+
+
+Get Inventory/Product details
+
+Request Type
+
+GET
+
+Endpoint
+
+api/v2/inventory/show/{id}?token={{token}}
+
+
+Get Inventory Details
+
+Request Body
+
+
+Sample Response
+
+{
+
+   “data”: {
+
+    "id": "... .",
+
+    "category": "Beauty and personal care",
+
+    "name": "Name",
+
+    "desc": "description",
+
+    "image": "https://image/url",
+
+    "size": "size",
+
+    "color": "color",
+
+    "weight": "0.100",
+
+    "length": "1.000",
+
+    "width": "1.000",
+
+    "height": "1.000",
+
+    "stock": 1,
+
+    "sku": "123456",
+
+    "barcode": "123456",
+
+    "track_qty": 1,
+
+    "sell_out_of_stock": 0,
+
+    "currency": "BHD",
+
+    "price": 1.5,
+
+    "cost_per_item": 0,
+
+    "cost_currency": "BHD",
+
+    "tags": [
+
+        "tag1"
+
+    ],
+
+    "reference": "client reference"
+
+   }
+
+}
+
+
+Meta Data
+Countries
+
+Request Type
+
+GET
+
+Endpoint
+
+api/meta/countries?token={{token}}
+
+
+Return list of available countries to the client
+
+Request Body
+
+-
+
+Sample Response
+
+{
+   "data": [
+       {
+           "uuid": "ef23ab24-0ff9-45a1-ae44-7c7c215d3fc0",
+           "name": "Bahrain",
+           "has_regions": false
+       }
+   ],
+   "count": 1,
+   "status": 200,
+   "msg": "OK"
+}
+
+
+
+Regions
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/meta/regions/{{COUNTRY_UUID}}?token={{token}}
+
+
+List of available regions in the selected country
+
+Request Body
+
+-
+
+Sample Response
+
+{
+   "data": [
+       {
+           "uuid": "1ac6c842-94fa-4360-b92d-67dc5c92e4fb",
+           "name": "Bahrain",
+           "has_cities": null
+       }
+   ],
+   "count": 1,
+   "status": 200,
+
+}
+
+
+
+Cities
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/meta/cities/{{REGION_UUID}}?token={{token}}
+
+
+List of cities in the selected region
+
+Request Body
+
+-
+
+Sample Response
+
+{
+   "data": [
+       {
+           "uuid": "1234ef7c-a90f-45c3-b177-71a6672e868f",
+           "name": "Bahrain"
+       }
+   ],
+   "count": 1,
+   "status": 200,
+   "msg": "OK"
+
+}
+
+
+
+Areas
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/meta/areas/{{CITY_UUID}}?token={{token}}
+
+
+List of areas in the selected city
+
+Request Body
+
+-
+
+Sample Response
+
+{
+   "data": [
+       {
+           "uuid": "22f45d4c-2a8c-46ce-a225-87344f7183da",
+           "name": "Hidd - 101",
+           "city": "Hidd",
+           "block": "101",
+       },
+       {
+           "uuid": "78051a74-f543-4464-b0d1-4093072c11b3",
+           "name": "Hidd - 102",
+
+            "city": "Hidd",
+           "block": "101",
+       },
+
+    ]
+
+}
+
+
+
+
+Statuses
+
+Request Type
+
+GET
+
+Endpoint
+
+/api/meta/statuses?token={{token}}
+
+
+List of statuses
+
+Request Body
+
+-
+
+Sample Response
+
+{
+   "data": [
+       {
+           "code": "1",
+           "title": "Data received"
+       },
+       {
+           "code": "2",
+           "title": "pickup"
+       },
+
+    ]
+
+}
+
+
+
+logistechs.co/ubex.co

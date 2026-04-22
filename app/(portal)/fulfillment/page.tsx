@@ -1,0 +1,96 @@
+import { AlertTriangle } from "lucide-react";
+import { FulfillmentView } from "@/components/fulfillment/FulfillmentView";
+import { fetchOrders } from "@/lib/orders/fetch-orders";
+import { buildOrderRows } from "@/lib/orders/build-order-rows";
+import { buildUbexLookup, shopifyLast4Set, type UbexLookup } from "@/lib/ubex/build-lookup";
+import { getUbexToken } from "@/lib/ubex/client";
+import { getFulfillmentWindow } from "@/lib/datetime/fulfillment-window";
+import { getLastLogsForOrders } from "@/lib/fulfillment/log";
+import type { InitialLogEntry } from "@/components/cod-list/CODListView";
+
+export const revalidate = 60;
+
+export default async function FulfillmentPage() {
+  let error: string | null = null;
+  let windowLabel = "";
+  let ordersScannedInWindow = 0;
+  let rows: ReturnType<typeof buildOrderRows> = [];
+  let ubexLookup: UbexLookup | undefined;
+  let initialLogs: InitialLogEntry[] = [];
+  const ubexTokenConfigured = Boolean(getUbexToken());
+
+  try {
+    const win = getFulfillmentWindow();
+    windowLabel = `${win.label} · ${new Date(win.createdAtMinIso).toUTCString()} → ${new Date(win.createdAtMaxIso).toUTCString()}`;
+
+    const { orders, ordersScannedInWindow: scanned } = await fetchOrders({
+      createdAtMinIso: win.createdAtMinIso,
+      createdAtMaxIso: win.createdAtMaxIso,
+      fulfillmentStatus: "unfulfilled",
+    });
+    ordersScannedInWindow = scanned;
+
+    const needed = shopifyLast4Set(orders);
+    ubexLookup = await buildUbexLookup({ needed }).catch((e) => {
+      console.warn("[ubex] lookup failed:", e);
+      return undefined as UbexLookup | undefined;
+    });
+
+    rows = buildOrderRows(orders, ubexLookup);
+
+    const logs = await getLastLogsForOrders(orders.map((o) => o.id)).catch(() => new Map());
+    initialLogs = rows
+      .map((r): InitialLogEntry | null => {
+        const log = logs.get(r.orderId);
+        if (!log) return null;
+        return {
+          orderName: r.orderName,
+          status: log.status === "success" ? "success" : "error",
+          message: log.error ?? undefined,
+          fulfillmentId: log.shopify_fulfillment_id ?? undefined,
+        };
+      })
+      .filter((x): x is InitialLogEntry => Boolean(x));
+  } catch (e) {
+    error = e instanceof Error ? e.message : "Failed to load fulfillment queue";
+  }
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-2xl rounded-card border border-portal-red/25 bg-portal-redSoft p-6 text-portal-text">
+        <div className="flex items-center gap-2 text-portal-red">
+          <AlertTriangle size={18} />
+          <h2 className="text-base font-semibold">Could not load fulfillment queue</h2>
+        </div>
+        <p className="mt-2 text-[13px] text-portal-text">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-5">
+      <section className="animate-fade-up rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-portal-text3">
+              Fulfillment window
+            </h2>
+            <p className="mt-1 text-[14px] font-medium text-portal-text">{windowLabel}</p>
+          </div>
+          <p className="font-mono text-[11px] text-portal-text3">
+            {ordersScannedInWindow} order{ordersScannedInWindow === 1 ? "" : "s"} scanned · {rows.length} unfulfilled
+          </p>
+        </div>
+      </section>
+      <FulfillmentView
+        rows={rows}
+        ubexTokenConfigured={ubexTokenConfigured}
+        ubexTotalShipments={ubexLookup?.totalShipments}
+        ubexConflictsCount={ubexLookup?.last4Conflicts.size}
+        ubexApiMessage={ubexLookup?.apiMessage}
+        ubexError={ubexLookup?.error}
+        initialLogs={initialLogs}
+      />
+    </div>
+  );
+}
