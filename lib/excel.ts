@@ -3,14 +3,14 @@ import type { CodRow } from "@/lib/cod/build-rows";
 
 // ─── column definitions (no Tracking URL) ────────────────────────────────────
 const COLUMNS: { header: string; key: keyof CodRow | "orderDateFormatted"; width: number }[] = [
-  { header: "Order",              key: "orderName",        width: 16 },
-  { header: "Order Date",         key: "orderDateFormatted", width: 14 },
-  { header: "UBEX ID",            key: "ubexId",           width: 16 },
-  { header: "Outstanding (GBP)",  key: "outstandingGbp",   width: 18 },
-  { header: "To Collect",         key: "toCollect",        width: 16 },
-  { header: "Customer",           key: "customerName",     width: 24 },
-  { header: "Shipping Address",   key: "shippingAddress",  width: 46 },
-  { header: "Country",            key: "shippingCountry",  width: 10 },
+  { header: "Order",              key: "orderName",          width: 20  },
+  { header: "Order Date",         key: "orderDateFormatted", width: 18  },
+  { header: "UBEX ID",            key: "ubexId",             width: 20  },
+  { header: "Outstanding (GBP)",  key: "outstandingGbp",     width: 22  },
+  { header: "To Collect",         key: "toCollect",          width: 20  },
+  { header: "Customer",           key: "customerName",       width: 28  },
+  { header: "Shipping Address",   key: "shippingAddress",    width: 62  },
+  { header: "Country",            key: "shippingCountry",    width: 14  },
 ];
 
 // Brand colours
@@ -70,7 +70,7 @@ export async function buildCodWorkbook(rows: CodRow[]): Promise<ExcelJS.Workbook
 
   // ── header row ─────────────────────────────────────────────────────────────
   const headerRow = ws.getRow(1);
-  headerRow.height = 22;
+  headerRow.height = 28;
   COLUMNS.forEach((_, colIdx) => {
     const cell = headerRow.getCell(colIdx + 1);
     cell.font  = { bold: true, name: "Calibri", size: 11, color: { argb: HEADER_FG } };
@@ -98,7 +98,7 @@ export async function buildCodWorkbook(rows: CodRow[]): Promise<ExcelJS.Workbook
       r.shippingCountry,
     ];
     const dataRow = ws.addRow(rowData);
-    dataRow.height = 18;
+    dataRow.height = 36;
 
     const isAlt = i % 2 === 1;
     dataRow.eachCell({ includeEmpty: true }, (cell, colNum) => {
