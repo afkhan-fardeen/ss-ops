@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Check, ChevronDown, ChevronRight, Copy, ExternalLink, Inbox } from "lucide-react";
+import { AlertCircle, Bot, Check, ChevronDown, ChevronRight, Copy, ExternalLink, Inbox, User } from "lucide-react";
 import { Fragment, useMemo, useState } from "react";
 import { StatusPill } from "@/components/portal/StatusPill";
 
@@ -62,10 +62,11 @@ function CopyButton({ value }: { value: string }) {
 
 export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [filter, setFilter] = useState<"all" | "success" | "error">("all");
+  const [filter, setFilter] = useState<"all" | "success" | "error" | "cron">("all");
 
   const filtered = useMemo(() => {
     if (filter === "all") return rows;
+    if (filter === "cron") return rows.filter((r) => r.userEmail === null && r.status === "success");
     return rows.filter((r) => r.status === filter);
   }, [rows, filter]);
 
@@ -87,6 +88,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
       <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="History filter">
         {([
           { key: "all", label: "All", count: rows.length },
+          { key: "cron", label: "Auto-Sync", count: rows.filter((r) => r.userEmail === null && r.status === "success").length },
           { key: "success", label: "Success", count: rows.filter((r) => r.status === "success").length },
           { key: "error", label: "Error", count: rows.filter((r) => r.status === "error").length },
         ] as const).map((f) => {
@@ -187,7 +189,17 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                         </StatusPill>
                       </td>
                       <td className="px-4 py-3 text-[12px] text-portal-text2">
-                        {row.userEmail ?? <span className="text-portal-text3">—</span>}
+                        {row.userEmail ? (
+                          <span className="inline-flex items-center gap-1">
+                            <User size={11} className="text-portal-text3" />
+                            {row.userEmail}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-portal-accentSoft px-2 py-0.5 text-[11px] font-medium text-portal-accent">
+                            <Bot size={11} />
+                            Auto-Sync
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {row.error ? (
