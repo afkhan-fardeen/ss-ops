@@ -131,39 +131,38 @@ export default async function AccountPage() {
         </div>
       </section>
 
-      {/* Admin: webhooks + cron status */}
-      {session.mode === "supabase" && isAdmin ? (
-        <>
-          <section className="animate-fade-up rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <h2 className="flex items-center gap-2 text-sm font-semibold text-portal-text">
-                  <Shield size={14} className="text-portal-accent" /> Shopify webhooks
-                </h2>
-                <p className="mt-1 text-[12.5px] text-portal-text2">
-                  Register order and fulfillment webhooks so the portal stays live.
-                </p>
-                <p className="mt-2 text-[11.5px] font-mono text-portal-text3">
-                  SHOPIFY_WEBHOOK_SECRET:{" "}
-                  <span className={webhookSecretConfigured ? "text-portal-green" : "text-portal-red"}>
-                    {webhookSecretConfigured ? "configured" : "missing"}
-                  </span>
-                </p>
-              </div>
-              <RegisterWebhooksButton disabled={!webhookSecretConfigured} />
-            </div>
-          </section>
+      {/* Auto-Sync Status — visible to all roles */}
+      <section className="animate-fade-up">
+        <div className="mb-2">
+          <h2 className="text-sm font-semibold text-portal-text">Auto-Sync Status</h2>
+          <p className="mt-0.5 text-[12.5px] text-portal-text2">
+            Monitors Ubex delivery status and auto-fulfils Shopify orders. Runs every 15 minutes.
+          </p>
+        </div>
+        <CronStatus />
+      </section>
 
-          <section className="animate-fade-up">
-            <div className="mb-2">
-              <h2 className="text-sm font-semibold text-portal-text">Auto-Sync Status</h2>
-              <p className="mt-0.5 text-[12.5px] text-portal-text2">
-                Monitors Ubex delivery status and auto-fulfils Shopify orders. Runs every 15 minutes.
+      {/* Admin only: Shopify webhooks */}
+      {session.mode === "supabase" && isAdmin ? (
+        <section className="animate-fade-up rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-portal-text">
+                <Shield size={14} className="text-portal-accent" /> Shopify webhooks
+              </h2>
+              <p className="mt-1 text-[12.5px] text-portal-text2">
+                Register order and fulfillment webhooks so the portal stays live.
+              </p>
+              <p className="mt-2 text-[11.5px] font-mono text-portal-text3">
+                SHOPIFY_WEBHOOK_SECRET:{" "}
+                <span className={webhookSecretConfigured ? "text-portal-green" : "text-portal-red"}>
+                  {webhookSecretConfigured ? "configured" : "missing"}
+                </span>
               </p>
             </div>
-            <CronStatus />
-          </section>
-        </>
+            <RegisterWebhooksButton disabled={!webhookSecretConfigured} />
+          </div>
+        </section>
       ) : null}
     </div>
   );
