@@ -8,14 +8,15 @@ import { useRowPushQueue } from "@/hooks/useRowPushQueue";
 import { FulfillmentTable } from "./FulfillmentTable";
 import { FulfillmentFooter } from "./FulfillmentFooter";
 
-type FilterKey = "all" | "cod" | "paid" | "unfulfilled" | "matched";
+type FilterKey = "all" | "cod" | "paid" | "unfulfilled" | "fulfilled" | "matched";
 
 const FILTER_LABELS: { key: FilterKey; label: string }[] = [
   { key: "unfulfilled", label: "Unfulfilled" },
-  { key: "matched", label: "Ready to push" },
-  { key: "all", label: "All" },
-  { key: "cod", label: "COD" },
-  { key: "paid", label: "Paid" },
+  { key: "fulfilled",   label: "Fulfilled" },
+  { key: "matched",     label: "Ready to push" },
+  { key: "all",         label: "All" },
+  { key: "cod",         label: "COD" },
+  { key: "paid",        label: "Paid" },
 ];
 
 function applyFilter(rows: OrderRow[], filter: FilterKey, stateMap: RowStateMap): OrderRow[] {
@@ -27,7 +28,9 @@ function applyFilter(rows: OrderRow[], filter: FilterKey, stateMap: RowStateMap)
     case "paid":
       return rows.filter((r) => !r.isCod);
     case "unfulfilled":
-      return rows.filter((r) => !r.alreadyFulfilled);
+      return rows.filter((r) => stateMap[r.orderName]?.status !== "fulfilled");
+    case "fulfilled":
+      return rows.filter((r) => stateMap[r.orderName]?.status === "fulfilled");
     case "matched":
       return rows.filter((r) => r.ubexId && stateMap[r.orderName]?.status !== "fulfilled");
   }
@@ -73,11 +76,12 @@ export function FulfillmentView({
   ).length;
 
   const filterCounts: Record<FilterKey, number> = {
-    all: rows.length,
-    cod: rows.filter((r) => r.isCod).length,
-    paid: rows.filter((r) => !r.isCod).length,
-    unfulfilled: rows.filter((r) => !r.alreadyFulfilled).length,
-    matched: rows.filter((r) => r.ubexId && stateMap[r.orderName]?.status !== "fulfilled").length,
+    all:         rows.length,
+    cod:         rows.filter((r) => r.isCod).length,
+    paid:        rows.filter((r) => !r.isCod).length,
+    unfulfilled: rows.filter((r) => stateMap[r.orderName]?.status !== "fulfilled").length,
+    fulfilled:   rows.filter((r) => stateMap[r.orderName]?.status === "fulfilled").length,
+    matched:     rows.filter((r) => r.ubexId && stateMap[r.orderName]?.status !== "fulfilled").length,
   };
 
   return (

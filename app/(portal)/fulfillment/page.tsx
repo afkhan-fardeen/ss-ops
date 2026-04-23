@@ -56,7 +56,7 @@ async function FulfillmentContent() {
       fetchOrders({
         createdAtMinIso: win.createdAtMinIso,
         createdAtMaxIso: win.createdAtMaxIso,
-        fulfillmentStatus: "unfulfilled",
+        fulfillmentStatus: "any",
       }),
       buildUbexLookup().catch((e) => {
         console.warn("[ubex] lookup failed:", e);
@@ -114,7 +114,9 @@ async function FulfillmentContent() {
             <p className="mt-1 text-[14px] font-medium text-portal-text">{windowLabel}</p>
           </div>
           <p className="font-mono text-[11px] text-portal-text3">
-            {ordersScannedInWindow} order{ordersScannedInWindow === 1 ? "" : "s"} scanned · {rows.length} unfulfilled
+            {ordersScannedInWindow} order{ordersScannedInWindow === 1 ? "" : "s"} scanned ·{" "}
+            {rows.filter((r) => !r.alreadyFulfilled).length} unfulfilled ·{" "}
+            {rows.filter((r) => r.alreadyFulfilled).length} fulfilled
           </p>
         </div>
       </section>

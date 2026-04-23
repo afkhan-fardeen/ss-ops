@@ -84,6 +84,8 @@ export default async function HistoryPage() {
   }
 
   const successCount = rows.filter((r) => r.status === "success").length;
+  const cronCount = rows.filter((r) => r.userEmail === null && r.status === "success").length;
+  const manualCount = rows.filter((r) => r.userEmail !== null && r.status === "success").length;
   const errorCount = rows.length - successCount;
 
   return (
@@ -99,7 +101,7 @@ export default async function HistoryPage() {
             </p>
           </div>
           <p className="font-mono text-[11px] text-portal-text3">
-            {successCount} success · {errorCount} error
+            {successCount} fulfilled · {manualCount} manual · {cronCount} auto-sync · {errorCount} error
           </p>
         </div>
       </section>

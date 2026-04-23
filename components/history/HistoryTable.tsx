@@ -62,11 +62,12 @@ function CopyButton({ value }: { value: string }) {
 
 export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const [filter, setFilter] = useState<"all" | "success" | "error" | "cron">("all");
+  const [filter, setFilter] = useState<"all" | "success" | "error" | "cron" | "manual">("all");
 
   const filtered = useMemo(() => {
     if (filter === "all") return rows;
     if (filter === "cron") return rows.filter((r) => r.userEmail === null && r.status === "success");
+    if (filter === "manual") return rows.filter((r) => r.userEmail !== null && r.status === "success");
     return rows.filter((r) => r.status === filter);
   }, [rows, filter]);
 
@@ -87,10 +88,11 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="History filter">
         {([
-          { key: "all", label: "All", count: rows.length },
-          { key: "cron", label: "Auto-Sync", count: rows.filter((r) => r.userEmail === null && r.status === "success").length },
-          { key: "success", label: "Success", count: rows.filter((r) => r.status === "success").length },
-          { key: "error", label: "Error", count: rows.filter((r) => r.status === "error").length },
+          { key: "all",     label: "All",         count: rows.length },
+          { key: "manual",  label: "Manual",       count: rows.filter((r) => r.userEmail !== null && r.status === "success").length },
+          { key: "cron",    label: "Auto-Sync",    count: rows.filter((r) => r.userEmail === null && r.status === "success").length },
+          { key: "success", label: "Success",      count: rows.filter((r) => r.status === "success").length },
+          { key: "error",   label: "Errors",       count: rows.filter((r) => r.status === "error").length },
         ] as const).map((f) => {
           const active = filter === f.key;
           return (
