@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CODListView, type InitialLogEntry } from "@/components/cod-list/CODListView";
 import { getCollectionWindow } from "@/lib/datetime/collection-window";
 import { fetchCodOrders } from "@/lib/shopify/fetch-cod-orders";
@@ -8,10 +9,38 @@ import { buildUbexLookup, shopifyLast4Set, type UbexLookup } from "@/lib/ubex/bu
 import { getUbexToken } from "@/lib/ubex/client";
 import { getLastLogsForOrders } from "@/lib/fulfillment/log";
 import { AlertTriangle } from "lucide-react";
+import { StripSkeleton, TableSkeleton } from "@/components/ui/TableSkeleton";
+import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 
-export const revalidate = 60;
+/** Shell renders instantly — Suspense streams the data in when ready. */
+export default function CodListPage() {
+  return (
+    <div className="mx-auto max-w-7xl space-y-5">
+      <Suspense fallback={<CodListSkeleton />}>
+        <CodListContent />
+      </Suspense>
+    </div>
+  );
+}
 
-export default async function CodListPage() {
+function CodListSkeleton() {
+  return (
+    <>
+      <div className="rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-2">
+            <div className="h-2.5 w-32 animate-pulse rounded bg-portal-border/60" />
+            <div className="h-4 w-64 animate-pulse rounded bg-portal-border/50" />
+          </div>
+          <div className="h-3 w-40 animate-pulse rounded bg-portal-border/40" />
+        </div>
+      </div>
+      <TableSkeleton rows={8} columns={8} />
+    </>
+  );
+}
+
+async function CodListContent() {
   let error: string | null = null;
   let windowLabel = "";
   let ratesView:
@@ -33,7 +62,6 @@ export default async function CodListPage() {
     });
     ordersScannedInWindow = scanned;
 
-    // Shopify → (FX, Ubex) in parallel. Ubex early-exits once every COD last-4 is matched.
     const currencies = codOrders
       .map((o) => getCurrencyForCountry(o.shipping_address?.country_code).currency)
       .filter((c): c is string => Boolean(c));
@@ -56,7 +84,12 @@ export default async function CodListPage() {
     ubexLookup = ubexResult;
     rows = buildCodRows(codOrders, ratesResult.rates, ubexLookup);
 
-    // Hydrate initial row states from Supabase fulfillment_log (if configured).
+    // Save matched order→tracking links to Supabase for the auto-sync cron.
+    const matches = rows
+      .filter((r) => r.ubexId && !r.alreadyFulfilled)
+      .map((r) => ({ shopifyOrderId: r.orderId, shopifyOrderName: r.orderName, ubexTracking: r.ubexId }));
+    void upsertOrderUbexLinks(matches).catch(() => {});
+
     const logs = await getLastLogsForOrders(codOrders.map((o) => o.id)).catch(() => new Map());
     initialLogs = rows
       .map((r): InitialLogEntry | null => {
@@ -76,7 +109,7 @@ export default async function CodListPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl rounded-card border border-portal-red/25 bg-portal-redSoft p-6 text-portal-text">
+      <div className="rounded-card border border-portal-red/25 bg-portal-redSoft p-6 text-portal-text">
         <div className="flex items-center gap-2 text-portal-red">
           <AlertTriangle size={18} />
           <h2 className="text-base font-semibold">Could not load COD list</h2>
@@ -91,7 +124,7 @@ export default async function CodListPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <>
       <section className="animate-fade-up rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -116,6 +149,6 @@ export default async function CodListPage() {
         ubexError={ubexLookup?.error}
         initialLogs={initialLogs}
       />
-    </div>
+    </>
   );
 }

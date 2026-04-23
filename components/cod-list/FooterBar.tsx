@@ -2,7 +2,6 @@
 
 import { Download, Loader2, Send, Mail } from "lucide-react";
 import { useState, useTransition } from "react";
-import { sendCodListEmailAction } from "@/app/(portal)/cod-list/actions";
 
 type FulfilResult = { success: number; failed: number; total: number };
 
@@ -21,9 +20,14 @@ export function FooterBar({
   function sendEmail() {
     setEmailMsg(null);
     startEmailTransition(async () => {
-      const res = await sendCodListEmailAction();
-      if (res.ok) setEmailMsg("Email sent");
-      else setEmailMsg(res.error ?? "Send failed");
+      try {
+        const resp = await fetch("/api/cod-list/email", { method: "POST" });
+        const data = (await resp.json()) as { ok: boolean; error?: string };
+        if (data.ok) setEmailMsg("Email sent");
+        else setEmailMsg(data.error ?? "Send failed");
+      } catch {
+        setEmailMsg("Network error");
+      }
     });
   }
 

@@ -1,16 +1,45 @@
+import { Suspense } from "react";
 import { AlertTriangle } from "lucide-react";
 import { FulfillmentView } from "@/components/fulfillment/FulfillmentView";
 import { fetchOrders } from "@/lib/orders/fetch-orders";
 import { buildOrderRows } from "@/lib/orders/build-order-rows";
-import { buildUbexLookup, shopifyLast4Set, type UbexLookup } from "@/lib/ubex/build-lookup";
+import { buildUbexLookup, type UbexLookup } from "@/lib/ubex/build-lookup";
 import { getUbexToken } from "@/lib/ubex/client";
 import { getFulfillmentWindow } from "@/lib/datetime/fulfillment-window";
 import { getLastLogsForOrders } from "@/lib/fulfillment/log";
 import type { InitialLogEntry } from "@/components/cod-list/CODListView";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
+import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 
-export const revalidate = 60;
+/** Shell renders instantly — Suspense streams the data in when ready. */
+export default function FulfillmentPage() {
+  return (
+    <div className="mx-auto max-w-7xl space-y-5">
+      <Suspense fallback={<FulfillmentSkeleton />}>
+        <FulfillmentContent />
+      </Suspense>
+    </div>
+  );
+}
 
-export default async function FulfillmentPage() {
+function FulfillmentSkeleton() {
+  return (
+    <>
+      <div className="rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="space-y-2">
+            <div className="h-2.5 w-32 animate-pulse rounded bg-portal-border/60" />
+            <div className="h-4 w-48 animate-pulse rounded bg-portal-border/50" />
+          </div>
+          <div className="h-3 w-40 animate-pulse rounded bg-portal-border/40" />
+        </div>
+      </div>
+      <TableSkeleton rows={8} columns={7} />
+    </>
+  );
+}
+
+async function FulfillmentContent() {
   let error: string | null = null;
   let windowLabel = "";
   let ordersScannedInWindow = 0;
@@ -23,20 +52,27 @@ export default async function FulfillmentPage() {
     const win = getFulfillmentWindow();
     windowLabel = `${win.label} · ${new Date(win.createdAtMinIso).toUTCString()} → ${new Date(win.createdAtMaxIso).toUTCString()}`;
 
-    const { orders, ordersScannedInWindow: scanned } = await fetchOrders({
-      createdAtMinIso: win.createdAtMinIso,
-      createdAtMaxIso: win.createdAtMaxIso,
-      fulfillmentStatus: "unfulfilled",
-    });
+    const [{ orders, ordersScannedInWindow: scanned }, ubexResult] = await Promise.all([
+      fetchOrders({
+        createdAtMinIso: win.createdAtMinIso,
+        createdAtMaxIso: win.createdAtMaxIso,
+        fulfillmentStatus: "unfulfilled",
+      }),
+      buildUbexLookup().catch((e) => {
+        console.warn("[ubex] lookup failed:", e);
+        return undefined as UbexLookup | undefined;
+      }),
+    ]);
+
     ordersScannedInWindow = scanned;
-
-    const needed = shopifyLast4Set(orders);
-    ubexLookup = await buildUbexLookup({ needed }).catch((e) => {
-      console.warn("[ubex] lookup failed:", e);
-      return undefined as UbexLookup | undefined;
-    });
-
+    ubexLookup = ubexResult;
     rows = buildOrderRows(orders, ubexLookup);
+
+    // Save matched order→tracking links to Supabase for the auto-sync cron.
+    const matches = rows
+      .filter((r) => r.ubexId && !r.alreadyFulfilled)
+      .map((r) => ({ shopifyOrderId: r.orderId, shopifyOrderName: r.orderName, ubexTracking: r.ubexId }));
+    void upsertOrderUbexLinks(matches).catch(() => {});
 
     const logs = await getLastLogsForOrders(orders.map((o) => o.id)).catch(() => new Map());
     initialLogs = rows
@@ -57,7 +93,7 @@ export default async function FulfillmentPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl rounded-card border border-portal-red/25 bg-portal-redSoft p-6 text-portal-text">
+      <div className="rounded-card border border-portal-red/25 bg-portal-redSoft p-6 text-portal-text">
         <div className="flex items-center gap-2 text-portal-red">
           <AlertTriangle size={18} />
           <h2 className="text-base font-semibold">Could not load fulfillment queue</h2>
@@ -68,7 +104,7 @@ export default async function FulfillmentPage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <>
       <section className="animate-fade-up rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -91,6 +127,6 @@ export default async function FulfillmentPage() {
         ubexError={ubexLookup?.error}
         initialLogs={initialLogs}
       />
-    </div>
+    </>
   );
 }

@@ -1,3 +1,4 @@
+import { Toaster } from "sonner";
 import { Sidebar } from "@/components/portal/Sidebar";
 import { Topbar } from "@/components/portal/Topbar";
 
@@ -23,6 +24,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
         <Topbar />
         <main className="px-4 pb-28 pt-6 md:px-8">{children}</main>
       </div>
+      <Toaster position="top-right" richColors closeButton />
     </div>
   );
 }

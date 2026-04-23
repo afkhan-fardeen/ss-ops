@@ -44,6 +44,30 @@ export type PushIdempotencyRow = {
   created_at: string;
 };
 
+export type CronRunLogRow = {
+  id: number;
+  endpoint: string;
+  dry_run: boolean;
+  status: "running" | "success" | "error";
+  checked: number | null;
+  fulfilled: number | null;
+  skipped: number | null;
+  errors: number | null;
+  error_detail: string | null;
+  started_at: string;
+  completed_at: string | null;
+};
+
+export type OrderUbexLinksRow = {
+  shopify_order_id: number;
+  shopify_order_name: string;
+  ubex_tracking: string;
+  last_ubex_status: string | null;
+  auto_fulfilled_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ShopifyOrderCacheRow = {
   id: number;
   name: string;
@@ -88,6 +112,19 @@ export type Database = {
         Row: PushIdempotencyRow;
         Insert: Omit<PushIdempotencyRow, "created_at"> & { created_at?: string };
         Update: Partial<PushIdempotencyRow>;
+      };
+      cron_run_log: {
+        Row: CronRunLogRow;
+        Insert: Omit<CronRunLogRow, "id" | "started_at"> & { started_at?: string };
+        Update: Partial<CronRunLogRow>;
+      };
+      order_ubex_links: {
+        Row: OrderUbexLinksRow;
+        Insert: Omit<OrderUbexLinksRow, "created_at" | "updated_at"> & {
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: Partial<OrderUbexLinksRow>;
       };
       shopify_orders_cache: {
         Row: ShopifyOrderCacheRow;

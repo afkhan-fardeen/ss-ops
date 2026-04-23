@@ -128,19 +128,15 @@ export function Sidebar() {
         ].join(" ")}
       >
         <div className={collapsed ? "px-1" : "px-2"}>
-          <div className={["flex items-center gap-2", collapsed ? "justify-center" : ""].join(" ")}>
-            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-card bg-portal-accent text-portal-accentContrast">
-              <span className="font-display text-sm font-semibold leading-none">S</span>
+          {collapsed ? (
+            <div className="grid h-8 w-full place-items-center">
+              <span className="h-1.5 w-1.5 rounded-full bg-portal-accent" aria-hidden />
             </div>
-            {collapsed ? null : (
-              <div className="leading-tight">
-                <div className="font-display text-[15px] font-semibold tracking-tight text-portal-text">
-                  Seissense
-                </div>
-                <div className="text-[11px] font-medium text-portal-text3">Ops Portal</div>
-              </div>
-            )}
-          </div>
+          ) : (
+            <div className="font-display text-[15px] font-semibold tracking-tight text-portal-text">
+              Ops Portal
+            </div>
+          )}
         </div>
 
         <div className="mt-6 space-y-5 overflow-y-auto">

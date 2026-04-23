@@ -189,7 +189,7 @@ export function CODTable({
                         href={r.trackingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="focus-ring inline-flex items-center gap-1 rounded text-[12px] font-medium text-portal-accent hover:underline"
+                        className="focus-ring inline-flex items-center gap-1 rounded-card text-[12px] font-medium text-portal-accent hover:underline"
                       >
                         Open
                         <ExternalLink size={11} />

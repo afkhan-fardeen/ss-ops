@@ -10,6 +10,7 @@ const PUBLIC_PREFIXES = [
   "/api/auth/logout",
   "/api/auth/callback",
   "/api/webhooks",
+  "/api/sync",   // cron endpoints — auth handled inside the route via CRON_SECRET
 ];
 
 function isPublic(pathname: string) {
