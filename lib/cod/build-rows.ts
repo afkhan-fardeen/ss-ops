@@ -8,6 +8,7 @@ import { resolveTrackingUrl } from "@/lib/ubex/tracking-url";
 export type CodRow = {
   orderId: number;
   orderName: string;
+  orderDate: string | null;
   ubexId: string;
   trackingUrl: string;
   paymentMethod: string;
@@ -61,6 +62,7 @@ export function buildCodRows(
     return {
       orderId: o.id,
       orderName: o.name,
+      orderDate: o.created_at ?? null,
       ubexId,
       trackingUrl,
       paymentMethod: "Cash on Delivery (COD)",

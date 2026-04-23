@@ -24,6 +24,7 @@ export type ShopifyOrder = {
   gateway?: string | null;
   payment_gateway_names?: string[];
   fulfillment_status?: string | null;
+  created_at?: string | null;
   customer?: ShopifyCustomer | null;
   shipping_address?: ShopifyAddress | null;
 };
