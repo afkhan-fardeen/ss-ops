@@ -2,27 +2,29 @@ import { Toaster } from "sonner";
 import { Sidebar } from "@/components/portal/Sidebar";
 import { Topbar } from "@/components/portal/Topbar";
 
+// On desktop: restore sidebar width from localStorage.
+// On mobile: always 0 (sidebar is hidden, bottom tab bar is used instead).
 const BOOT_SCRIPT = `
 (function(){try{
-  var c = localStorage.getItem('portal.sidebar.collapsed')==='1';
-  var w = window.matchMedia && window.matchMedia('(min-width: 768px)').matches
-    ? (c ? '68px' : '240px')
-    : '0px';
+  var isMd = window.matchMedia && window.matchMedia('(min-width: 768px)').matches;
+  var w = isMd ? (localStorage.getItem('portal.sidebar.collapsed')==='1' ? '64px' : '240px') : '0px';
   document.documentElement.style.setProperty('--sb-w', w);
-}catch(e){document.documentElement.style.setProperty('--sb-w','240px');}})();
+}catch(e){document.documentElement.style.setProperty('--sb-w','0px');}})();
 `;
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-white text-[#111111]">
-      <script
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }}
-      />
+      <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
       <Sidebar />
-      <div style={{ marginLeft: "var(--sb-w, 240px)" }} className="transition-[margin] duration-200">
+      {/* On mobile margin-left is 0; on md+ it follows --sb-w */}
+      <div
+        style={{ marginLeft: "var(--sb-w, 0px)" }}
+        className="flex min-h-screen flex-col transition-[margin] duration-200"
+      >
         <Topbar />
-        <main className="px-4 pb-24 pt-6 md:px-8 md:pb-10">{children}</main>
+        {/* pb-20 on mobile to clear the fixed bottom tab bar */}
+        <main className="flex-1 px-4 pb-20 pt-4 md:px-8 md:pb-8 md:pt-6">{children}</main>
       </div>
       <Toaster position="top-right" richColors closeButton />
     </div>

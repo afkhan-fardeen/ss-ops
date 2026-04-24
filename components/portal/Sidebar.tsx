@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { LogOut, PanelLeftClose, PanelLeftOpen, Menu, X } from "lucide-react";
+import { LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { settingsNav, toolsNav, type NavItem } from "@/config/navigation";
 
 const STORAGE_KEY = "portal.sidebar.collapsed";
@@ -22,18 +22,15 @@ function NavLink({
   item,
   active,
   collapsed,
-  onClick,
 }: {
   item: NavItem;
   active: boolean;
   collapsed: boolean;
-  onClick?: () => void;
 }) {
   const Icon = item.icon;
   return (
     <Link
       href={item.href}
-      onClick={onClick}
       title={collapsed ? item.label : undefined}
       className={[
         "group relative flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium transition-colors",
@@ -44,10 +41,7 @@ function NavLink({
       ].join(" ")}
     >
       {active && (
-        <span
-          className="absolute inset-y-1.5 left-0 w-[3px] rounded-r bg-[#111111]"
-          aria-hidden
-        />
+        <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-r bg-[#111111]" aria-hidden />
       )}
       <Icon
         size={16}
@@ -70,7 +64,6 @@ function NavLink({
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     try {
@@ -91,7 +84,6 @@ export function Sidebar() {
 
   const toggleCollapsed = useCallback(() => setCollapsed((c) => !c), []);
 
-  // Cmd/Ctrl+B shortcut
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && (e.key === "b" || e.key === "B")) {
@@ -121,18 +113,7 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile hamburger */}
-      <button
-        type="button"
-        className="focus-ring fixed left-4 top-4 z-40 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#EBEBEB] bg-white text-[#111111] md:hidden"
-        onClick={() => setMobileOpen((v) => !v)}
-        aria-expanded={mobileOpen}
-        aria-label={mobileOpen ? "Close menu" : "Open menu"}
-      >
-        {mobileOpen ? <X size={16} /> : <Menu size={16} />}
-      </button>
-
-      {/* Desktop sidebar */}
+      {/* ── Desktop sidebar (md+) ─────────────────────────────── */}
       <aside
         style={{ width }}
         className={[
@@ -143,11 +124,9 @@ export function Sidebar() {
         {/* Logo */}
         <div className={collapsed ? "flex justify-center px-1 py-1" : "px-2 py-1"}>
           {collapsed ? (
-            <span className="text-[12px] font-bold tracking-tight text-[#111111]">SO</span>
+            <LogoMark size={28} />
           ) : (
-            <span className="text-[13px] font-semibold tracking-tight text-[#111111]">
-              Seissense Ops
-            </span>
+            <LogoFull />
           )}
         </div>
 
@@ -161,12 +140,7 @@ export function Sidebar() {
             )}
             <nav className="mt-2 flex flex-col gap-0.5">
               {toolsNav.map((item) => (
-                <NavLink
-                  key={item.href}
-                  item={item}
-                  active={pathname === item.href}
-                  collapsed={collapsed}
-                />
+                <NavLink key={item.href} item={item} active={pathname === item.href} collapsed={collapsed} />
               ))}
             </nav>
           </div>
@@ -179,12 +153,7 @@ export function Sidebar() {
             )}
             <nav className="mt-2 flex flex-col gap-0.5">
               {settingsNav.map((item) => (
-                <NavLink
-                  key={item.href}
-                  item={item}
-                  active={pathname === item.href}
-                  collapsed={collapsed}
-                />
+                <NavLink key={item.href} item={item} active={pathname === item.href} collapsed={collapsed} />
               ))}
             </nav>
           </div>
@@ -225,70 +194,7 @@ export function Sidebar() {
         </div>
       </aside>
 
-      {/* Mobile drawer overlay */}
-      {mobileOpen && (
-        <>
-          <button
-            type="button"
-            className="fixed inset-0 z-20 bg-black/40 backdrop-blur-sm md:hidden"
-            aria-label="Close menu"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="fixed inset-y-0 left-0 z-30 flex w-64 flex-col border-r border-[#EBEBEB] bg-white px-3 py-5 md:hidden">
-            <div className="px-2 py-1">
-              <span className="text-[13px] font-semibold tracking-tight text-[#111111]">
-                Seissense Ops
-              </span>
-            </div>
-            <div className="mt-6 flex-1 space-y-5 overflow-y-auto">
-              <div>
-                <div className="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
-                  Tools
-                </div>
-                <nav className="mt-2 flex flex-col gap-0.5">
-                  {toolsNav.map((item) => (
-                    <NavLink
-                      key={item.href}
-                      item={item}
-                      active={pathname === item.href}
-                      collapsed={false}
-                      onClick={() => setMobileOpen(false)}
-                    />
-                  ))}
-                </nav>
-              </div>
-              <div>
-                <div className="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
-                  Settings
-                </div>
-                <nav className="mt-2 flex flex-col gap-0.5">
-                  {settingsNav.map((item) => (
-                    <NavLink
-                      key={item.href}
-                      item={item}
-                      active={pathname === item.href}
-                      collapsed={false}
-                      onClick={() => setMobileOpen(false)}
-                    />
-                  ))}
-                </nav>
-              </div>
-            </div>
-            <div className="mt-auto border-t border-[#EBEBEB] pt-3">
-              <button
-                type="button"
-                onClick={() => void logout()}
-                className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium text-[#999999] transition-colors hover:bg-[#F7F7F7] hover:text-[#111111]"
-              >
-                <LogOut size={16} strokeWidth={2} />
-                <span>Sign out</span>
-              </button>
-            </div>
-          </aside>
-        </>
-      )}
-
-      {/* Mobile bottom tab bar */}
+      {/* ── Mobile bottom tab bar (< md) ─────────────────────── */}
       <nav className="fixed bottom-0 inset-x-0 z-30 flex border-t border-[#EBEBEB] bg-white md:hidden">
         {allNav.map((item) => {
           const Icon = item.icon;
@@ -309,5 +215,21 @@ export function Sidebar() {
         })}
       </nav>
     </>
+  );
+}
+
+/** Small square logo mark for collapsed sidebar */
+function LogoMark({ size = 28 }: { size?: number }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/logo.svg" alt="Seissense Ops" width={size} height={size} className="object-contain" />
+  );
+}
+
+/** Full logo for expanded sidebar */
+function LogoFull() {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/logo.svg" alt="Seissense Ops" height={28} className="h-7 w-auto object-contain" />
   );
 }

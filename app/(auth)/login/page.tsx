@@ -14,11 +14,10 @@ export default function LoginPage({
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
-      <div className="mb-7 text-center">
-        <div className="text-[22px] font-semibold tracking-tight text-[#111111]">
-          Seissense Ops
-        </div>
-        <div className="mt-1 text-[13px] text-[#999999]">Internal operations portal</div>
+      <div className="mb-7 flex flex-col items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.svg" alt="Seissense Ops" className="h-10 w-auto" />
+        <div className="text-[13px] text-[#999999]">Internal operations portal</div>
       </div>
 
       <div className="w-full max-w-sm rounded-card border border-[#EBEBEB] bg-white p-7 shadow-pop">

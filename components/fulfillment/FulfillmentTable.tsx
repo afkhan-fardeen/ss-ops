@@ -130,6 +130,7 @@ export function FulfillmentTable({
         <thead>
           <tr className="border-b border-[#EBEBEB] bg-[#F7F7F7] text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
             <th className="px-3 py-3">Order</th>
+            <th className="hidden px-3 py-3 sm:table-cell">Date</th>
             <th className="px-3 py-3">Status</th>
             <th className="px-3 py-3">UBEX ID</th>
             <th className="px-3 py-3">Tracking</th>
@@ -144,6 +145,9 @@ export function FulfillmentTable({
           {rows.map((r, i) => {
             const state = stateMap[r.orderName];
             const status: RowStatus = state?.status ?? "pending";
+            const orderDateFmt = r.orderDate
+              ? new Date(r.orderDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
+              : "—";
             return (
               <tr
                 key={r.orderName}
@@ -155,6 +159,7 @@ export function FulfillmentTable({
                 }
               >
                 <td className="px-3 py-3 font-mono text-[12px] font-medium">{r.orderName}</td>
+                <td className="hidden px-3 py-3 text-[12px] text-[#555555] sm:table-cell">{orderDateFmt}</td>
                 <td className="px-3 py-3">
                   <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
                   {status === "error" && state?.message ? (

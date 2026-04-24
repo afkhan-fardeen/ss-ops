@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+  Acumin Pro via Adobe Fonts (Typekit).
+  Replace the URL below with your own kit URL from https://fonts.adobe.com/
+  If you don't have an Adobe Fonts subscription yet, the fallback stack
+  (system-ui, -apple-system, Helvetica Neue, Arial) renders cleanly until you do.
+*/
+/* @import url("https://use.typekit.net/YOUR_KIT_ID.css"); */
+
 :root {
   --bg:              #FFFFFF;
   --bg2:             #FFFFFF;

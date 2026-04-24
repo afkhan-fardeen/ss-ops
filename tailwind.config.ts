@@ -29,8 +29,25 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
-        display: ["var(--font-inter)", "system-ui", "sans-serif"],
+        // Primary: Acumin Pro (Adobe Fonts / Typekit) — falls back gracefully
+        sans: [
+          "acumin-pro",
+          "Acumin Pro",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
+        display: [
+          "acumin-pro",
+          "Acumin Pro",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Helvetica Neue",
+          "Arial",
+          "sans-serif",
+        ],
         mono: ["var(--font-jetbrains-mono)", "ui-monospace", "monospace"],
       },
       borderRadius: {

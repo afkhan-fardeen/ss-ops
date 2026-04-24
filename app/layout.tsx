@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
-  display: "swap",
-});
+// Acumin Pro is served via Adobe Fonts (Typekit).
+// The @import is in globals.css. We still load Inter as a fallback so
+// text never renders in system-default sans-serif during the Adobe Fonts FOUT.
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -19,12 +16,18 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Seissense Ops",
   description: "Internal operations portal",
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "128x128", type: "image/png" },
+      { url: "/favicon-256.png", sizes: "256x256", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${jetbrainsMono.variable}`}>{children}</body>
+      <body className={jetbrainsMono.variable}>{children}</body>
     </html>
   );
 }
