@@ -7,7 +7,7 @@ import { buildUbexLookup, type UbexLookup } from "@/lib/ubex/build-lookup";
 import { getUbexToken } from "@/lib/ubex/client";
 import { getFulfillmentWindow } from "@/lib/datetime/fulfillment-window";
 import { getLastLogsForOrders } from "@/lib/fulfillment/log";
-import type { InitialLogEntry } from "@/components/cod-list/CODListView";
+import type { InitialLogEntry } from "@/hooks/useRowPushQueue";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 
@@ -25,13 +25,13 @@ export default function FulfillmentPage() {
 function FulfillmentSkeleton() {
   return (
     <>
-      <div className="rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+      <div className="rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
-            <div className="h-2.5 w-32 animate-pulse rounded bg-portal-border/60" />
-            <div className="h-4 w-48 animate-pulse rounded bg-portal-border/50" />
+            <div className="h-2.5 w-32 animate-pulse rounded bg-[#EBEBEB]" />
+            <div className="h-4 w-48 animate-pulse rounded bg-[#EBEBEB]" />
           </div>
-          <div className="h-3 w-40 animate-pulse rounded bg-portal-border/40" />
+          <div className="h-3 w-40 animate-pulse rounded bg-[#EBEBEB]" />
         </div>
       </div>
       <TableSkeleton rows={8} columns={7} />
@@ -57,6 +57,7 @@ async function FulfillmentContent() {
         createdAtMinIso: win.createdAtMinIso,
         createdAtMaxIso: win.createdAtMaxIso,
         fulfillmentStatus: "any",
+        cacheStrategy: "live",
       }),
       buildUbexLookup().catch((e) => {
         console.warn("[ubex] lookup failed:", e);
@@ -93,27 +94,27 @@ async function FulfillmentContent() {
 
   if (error) {
     return (
-      <div className="rounded-card border border-portal-red/25 bg-portal-redSoft p-6 text-portal-text">
-        <div className="flex items-center gap-2 text-portal-red">
+      <div className="rounded-card border border-[#C25151]/25 bg-[rgba(194,81,81,0.10)] p-6">
+        <div className="flex items-center gap-2 text-[#C25151]">
           <AlertTriangle size={18} />
           <h2 className="text-base font-semibold">Could not load fulfillment queue</h2>
         </div>
-        <p className="mt-2 text-[13px] text-portal-text">{error}</p>
+        <p className="mt-2 text-[13px] text-[#111111]">{error}</p>
       </div>
     );
   }
 
   return (
     <>
-      <section className="animate-fade-up rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+      <section className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-portal-text3">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
               Fulfillment window
             </h2>
-            <p className="mt-1 text-[14px] font-medium text-portal-text">{windowLabel}</p>
+            <p className="mt-1 text-[14px] font-medium text-[#111111]">{windowLabel}</p>
           </div>
-          <p className="font-mono text-[11px] text-portal-text3">
+          <p className="font-mono text-[11px] text-[#999999]">
             {ordersScannedInWindow} order{ordersScannedInWindow === 1 ? "" : "s"} scanned ·{" "}
             {rows.filter((r) => !r.alreadyFulfilled).length} unfulfilled ·{" "}
             {rows.filter((r) => r.alreadyFulfilled).length} fulfilled

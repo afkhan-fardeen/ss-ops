@@ -1,7 +1,3 @@
-/**
- * Shimmering table placeholder used across the portal while server components load.
- * No client JS required — Tailwind's `animate-pulse` handles the shimmer.
- */
 export function TableSkeleton({
   rows = 8,
   columns = 7,
@@ -12,16 +8,18 @@ export function TableSkeleton({
   showHeader?: boolean;
 }) {
   return (
-    <div className="overflow-hidden rounded-card border border-portal-border bg-portal-bg2">
+    <div className="overflow-hidden rounded-card border border-[#EBEBEB] bg-white">
       {showHeader ? (
-        <div className="grid gap-4 border-b border-portal-border bg-portal-bg3/50 px-4 py-3"
-          style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+        <div
+          className="grid gap-4 border-b border-[#EBEBEB] bg-[#F7F7F7] px-4 py-3"
+          style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+        >
           {Array.from({ length: columns }).map((_, i) => (
-            <div key={i} className="h-3 animate-pulse rounded bg-portal-border/60" />
+            <div key={i} className="h-3 animate-pulse rounded bg-[#EBEBEB]" />
           ))}
         </div>
       ) : null}
-      <div className="divide-y divide-portal-border">
+      <div className="divide-y divide-[#EBEBEB]">
         {Array.from({ length: rows }).map((_, r) => (
           <div
             key={r}
@@ -31,7 +29,7 @@ export function TableSkeleton({
             {Array.from({ length: columns }).map((_, c) => (
               <div
                 key={c}
-                className="h-3 animate-pulse rounded bg-portal-border/50"
+                className="h-3 animate-pulse rounded bg-[#EBEBEB]"
                 style={{ animationDelay: `${(r * columns + c) * 20}ms`, width: `${60 + ((r + c) % 5) * 8}%` }}
               />
             ))}
@@ -48,7 +46,7 @@ export function FilterChipSkeleton({ count = 5 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="h-7 animate-pulse rounded-full bg-portal-border/50"
+          className="h-7 animate-pulse rounded-full bg-[#EBEBEB]"
           style={{ width: `${56 + (i % 3) * 18}px` }}
         />
       ))}
@@ -58,11 +56,11 @@ export function FilterChipSkeleton({ count = 5 }: { count?: number }) {
 
 export function StripSkeleton() {
   return (
-    <div className="flex flex-wrap items-center gap-3 rounded-card border border-portal-border bg-portal-bg2 px-4 py-3">
+    <div className="flex flex-wrap items-center gap-3 rounded-card border border-[#EBEBEB] bg-white px-4 py-3">
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="h-5 animate-pulse rounded bg-portal-border/50"
+          className="h-5 animate-pulse rounded bg-[#EBEBEB]"
           style={{ width: `${72 + (i % 3) * 24}px` }}
         />
       ))}

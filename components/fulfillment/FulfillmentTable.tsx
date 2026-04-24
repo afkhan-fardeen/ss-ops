@@ -4,17 +4,17 @@ import { Check, Copy, ExternalLink, Loader2, Send, AlertCircle } from "lucide-re
 import { useState } from "react";
 import type { OrderRow } from "@/lib/orders/build-order-rows";
 import { StatusPill, type StatusTone } from "@/components/portal/StatusPill";
-import type { RowState, RowStateMap, RowStatus } from "@/components/cod-list/CODListView";
+import type { RowState, RowStateMap, RowStatus } from "@/hooks/useRowPushQueue";
 
 const statusLabel: Record<RowStatus, string> = {
-  pending: "No tracking",
+  pending: "Waiting for Ubex",
   matched: "Ready to push",
   fulfilled: "Fulfilled",
   error: "Error",
 };
 
 const statusTone: Record<RowStatus, StatusTone> = {
-  pending: "neutral",
+  pending: "amber",
   matched: "accent",
   fulfilled: "green",
   error: "red",
@@ -38,7 +38,7 @@ function CopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={copy}
-      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-portal-text3 transition hover:bg-portal-bg3 hover:text-portal-text"
+      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-[#999999] transition hover:bg-[#F7F7F7] hover:text-[#111111]"
       title={copied ? "Copied" : "Copy"}
       aria-label="Copy"
     >
@@ -61,7 +61,7 @@ function PushButton({
 
   if (status === "fulfilled") {
     return (
-      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-portal-green">
+      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#4CAF50]">
         <Check size={13} strokeWidth={2.4} />
         Fulfilled
       </span>
@@ -85,8 +85,8 @@ function PushButton({
       className={[
         "focus-ring inline-flex h-8 items-center gap-1.5 rounded-card border px-2.5 text-[12px] font-medium transition",
         status === "error"
-          ? "border-portal-red/30 bg-portal-redSoft text-portal-red hover:bg-portal-red/10"
-          : "border-portal-border bg-portal-bg2 text-portal-text hover:bg-portal-bg3",
+          ? "border-[#C25151]/30 bg-[rgba(194,81,81,0.10)] text-[#C25151] hover:bg-[#C25151]/10"
+          : "border-[#EBEBEB] bg-white text-[#111111] hover:bg-[#F7F7F7]",
         disabled ? "cursor-not-allowed opacity-60" : "",
       ].join(" ")}
     >
@@ -113,11 +113,11 @@ export function FulfillmentTable({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="animate-fade-up space-y-3 rounded-card border border-portal-border bg-portal-bg2 p-8 shadow-soft">
-        <p className="text-center text-sm font-medium text-portal-text">
+      <div className="animate-fade-up space-y-3 rounded-card border border-[#EBEBEB] bg-white p-8 shadow-soft">
+        <p className="text-center text-sm font-medium text-[#111111]">
           No orders match the current filter.
         </p>
-        <p className="text-center text-[12px] text-portal-text3">
+        <p className="text-center text-[12px] text-[#999999]">
           Try widening the window (<code className="font-mono">FULFILLMENT_WINDOW_DAYS</code>) or switching filter.
         </p>
       </div>
@@ -125,10 +125,10 @@ export function FulfillmentTable({
   }
 
   return (
-    <div className="animate-fade-up overflow-x-auto rounded-card border border-portal-border bg-portal-bg2 shadow-soft">
+    <div className="animate-fade-up overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
       <table className="w-full min-w-[1000px] border-collapse text-left text-[13px]">
         <thead>
-          <tr className="border-b border-portal-border bg-portal-bg3/60 text-[10px] font-semibold uppercase tracking-wider text-portal-text3">
+          <tr className="border-b border-[#EBEBEB] bg-[#F7F7F7] text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
             <th className="px-3 py-3">Order</th>
             <th className="px-3 py-3">Status</th>
             <th className="px-3 py-3">UBEX ID</th>
@@ -147,7 +147,7 @@ export function FulfillmentTable({
             return (
               <tr
                 key={r.orderName}
-                className="border-b border-portal-border/70 text-portal-text transition last:border-0 hover:bg-portal-bg3/40"
+                className="border-b border-[#EBEBEB] text-[#111111] transition last:border-0 hover:bg-[#F7F7F7]"
                 style={
                   i < 6
                     ? { animation: "fadeUp 0.4s ease-out both", animationDelay: `${i * 30}ms` }
@@ -158,7 +158,7 @@ export function FulfillmentTable({
                 <td className="px-3 py-3">
                   <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
                   {status === "error" && state?.message ? (
-                    <div className="mt-1 max-w-[240px] truncate text-[11px] text-portal-red" title={state.message}>
+                    <div className="mt-1 max-w-[240px] truncate text-[11px] text-[#C25151]" title={state.message}>
                       {state.message}
                     </div>
                   ) : null}
@@ -166,11 +166,11 @@ export function FulfillmentTable({
                 <td className="px-3 py-3 font-mono text-[12px]">
                   {r.ubexId ? (
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="text-portal-text">{r.ubexId}</span>
+                      <span className="text-[#111111]">{r.ubexId}</span>
                       <CopyButton value={r.ubexId} />
                     </span>
                   ) : (
-                    <span className="text-portal-text3">—</span>
+                    <span className="text-[#999999]">—</span>
                   )}
                 </td>
                 <td className="px-3 py-3">
@@ -180,7 +180,7 @@ export function FulfillmentTable({
                         href={r.trackingUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="focus-ring inline-flex items-center gap-1 rounded-card text-[12px] font-medium text-portal-accent hover:underline"
+                        className="focus-ring inline-flex items-center gap-1 rounded text-[12px] font-medium text-[#111111] hover:underline"
                       >
                         Open
                         <ExternalLink size={11} />
@@ -188,7 +188,7 @@ export function FulfillmentTable({
                       <CopyButton value={r.trackingUrl} />
                     </div>
                   ) : (
-                    <span className="text-portal-text3">—</span>
+                    <span className="text-[#999999]">—</span>
                   )}
                 </td>
                 <td className="hidden px-3 py-3 font-mono text-[12px] md:table-cell">{r.totalGbp}</td>
@@ -197,13 +197,13 @@ export function FulfillmentTable({
                     className={[
                       "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
                       r.isCod
-                        ? "bg-portal-amberSoft text-portal-amber"
-                        : "bg-portal-bg3 text-portal-text2",
+                        ? "bg-[rgba(240,183,67,0.12)] text-[#F0B743]"
+                        : "bg-[#F7F7F7] text-[#555555]",
                     ].join(" ")}
                   >
                     {r.isCod ? "COD" : "Paid"}
                   </span>
-                  <div className="mt-1 truncate text-[11px] text-portal-text3" title={r.paymentLabel}>
+                  <div className="mt-1 truncate text-[11px] text-[#999999]" title={r.paymentLabel}>
                     {r.paymentLabel}
                   </div>
                 </td>

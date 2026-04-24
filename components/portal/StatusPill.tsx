@@ -12,24 +12,24 @@ type Props = {
 
 const toneStyles: Record<StatusTone, { pill: string; dot: string }> = {
   neutral: {
-    pill: "bg-portal-bg3 text-portal-text2 border border-portal-border",
-    dot: "bg-portal-text3",
+    pill: "bg-[#F7F7F7] text-[#555555] border border-[#EBEBEB]",
+    dot: "bg-[#999999]",
   },
   accent: {
-    pill: "bg-portal-accentSoft text-portal-accent border border-portal-accent/20",
-    dot: "bg-portal-accent",
+    pill: "bg-[#F7F7F7] text-[#111111] border border-[#111111]/20",
+    dot: "bg-[#111111]",
   },
   green: {
-    pill: "bg-portal-greenSoft text-portal-green border border-portal-green/20",
-    dot: "bg-portal-green",
+    pill: "bg-[rgba(76,175,80,0.10)] text-[#4CAF50] border border-[#4CAF50]/20",
+    dot: "bg-[#4CAF50]",
   },
   amber: {
-    pill: "bg-portal-amberSoft text-portal-amber border border-portal-amber/20",
-    dot: "bg-portal-amber",
+    pill: "bg-[rgba(240,183,67,0.12)] text-[#F0B743] border border-[#F0B743]/20",
+    dot: "bg-[#F0B743]",
   },
   red: {
-    pill: "bg-portal-redSoft text-portal-red border border-portal-red/20",
-    dot: "bg-portal-red",
+    pill: "bg-[rgba(194,81,81,0.10)] text-[#C25151] border border-[#C25151]/20",
+    dot: "bg-[#C25151]",
   },
 };
 

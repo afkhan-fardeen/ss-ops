@@ -12,12 +12,12 @@ export default async function HistoryPage() {
 
   if (!supabase) {
     return (
-      <div className="mx-auto max-w-2xl rounded-card border border-portal-amber/25 bg-portal-amberSoft p-6 text-portal-text">
-        <div className="flex items-center gap-2 text-portal-amber">
+      <div className="mx-auto max-w-2xl rounded-card border border-[#F0B743]/25 bg-[rgba(240,183,67,0.12)] p-6">
+        <div className="flex items-center gap-2 text-[#F0B743]">
           <AlertTriangle size={18} />
           <h2 className="text-base font-semibold">Supabase not configured</h2>
         </div>
-        <p className="mt-2 text-[13px] text-portal-text">
+        <p className="mt-2 text-[13px] text-[#111111]">
           The history view reads from the <code>fulfillment_log</code> table. Configure
           <code className="ml-1">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
           <code>SUPABASE_SERVICE_ROLE_KEY</code> to enable it.
@@ -39,7 +39,6 @@ export default async function HistoryPage() {
 
     const logs = (data ?? []) as FulfillmentLogRow[];
 
-    // Resolve user emails for created_by in a single follow-up query.
     const userIds = Array.from(
       new Set(logs.map((l) => l.created_by).filter((x): x is string => Boolean(x))),
     );
@@ -73,12 +72,12 @@ export default async function HistoryPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl rounded-card border border-portal-red/25 bg-portal-redSoft p-6 text-portal-text">
-        <div className="flex items-center gap-2 text-portal-red">
+      <div className="mx-auto max-w-2xl rounded-card border border-[#C25151]/25 bg-[rgba(194,81,81,0.10)] p-6">
+        <div className="flex items-center gap-2 text-[#C25151]">
           <AlertTriangle size={18} />
           <h2 className="text-base font-semibold">Could not load history</h2>
         </div>
-        <p className="mt-2 text-[13px] text-portal-text">{error}</p>
+        <p className="mt-2 text-[13px] text-[#111111]">{error}</p>
       </div>
     );
   }
@@ -90,17 +89,17 @@ export default async function HistoryPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-5">
-      <section className="animate-fade-up rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+      <section className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-portal-text3">
+            <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
               <HistoryIcon size={13} /> Fulfillment history
             </h2>
-            <p className="mt-1 text-[14px] font-medium text-portal-text">
+            <p className="mt-1 text-[14px] font-medium text-[#111111]">
               Latest {rows.length} push{rows.length === 1 ? "" : "es"} across COD and Fulfillment
             </p>
           </div>
-          <p className="font-mono text-[11px] text-portal-text3">
+          <p className="font-mono text-[11px] text-[#999999]">
             {successCount} fulfilled · {manualCount} manual · {cronCount} auto-sync · {errorCount} error
           </p>
         </div>

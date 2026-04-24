@@ -56,22 +56,24 @@ function SharedPasswordForm({ nextPath }: { nextPath: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-6 space-y-4">
-      <Field label="Password" htmlFor="password">
-        <PasswordInput
-          id="password"
-          icon={<Lock size={15} />}
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Enter portal password"
-          required
-          invalid={Boolean(error)}
-        />
-      </Field>
-      {error ? <FieldError message={error} /> : null}
-      <SubmitButton loading={loading} label="Continue" />
-    </form>
+    <fieldset disabled={loading} className={loading ? "pointer-events-none opacity-60" : ""}>
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <Field label="Password" htmlFor="password">
+          <PasswordInput
+            id="password"
+            icon={<Lock size={15} />}
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter portal password"
+            required
+            invalid={Boolean(error)}
+          />
+        </Field>
+        {error ? <FieldError message={error} /> : null}
+        <SubmitButton loading={loading} label="Continue" />
+      </form>
+    </fieldset>
   );
 }
 
@@ -129,54 +131,56 @@ function SupabaseLoginForm({ nextPath }: { nextPath: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mt-6 space-y-4">
-      <Field label="Email" htmlFor="email">
-        <Input
-          id="email"
-          type="email"
-          icon={<Mail size={15} />}
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@seissense.com"
-          required
-          invalid={Boolean(error)}
-        />
-      </Field>
-
-      {mode === "password" ? (
-        <Field label="Password" htmlFor="password">
-          <PasswordInput
-            id="password"
-            icon={<Lock size={15} />}
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
+    <fieldset disabled={loading} className={loading ? "pointer-events-none opacity-60" : ""}>
+      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+        <Field label="Email" htmlFor="email">
+          <Input
+            id="email"
+            type="email"
+            icon={<Mail size={15} />}
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@seissense.com"
             required
             invalid={Boolean(error)}
           />
         </Field>
-      ) : null}
 
-      <div className="flex items-center justify-between gap-2">
-        <button
-          type="button"
-          onClick={() => {
-            setError(null);
-            setMode((m) => (m === "password" ? "magic" : "password"));
-          }}
-          className="focus-ring inline-flex items-center gap-1.5 rounded-card px-1 text-[12px] font-medium text-portal-accent transition hover:underline"
-        >
-          <Mail size={12} />
-          {mode === "password" ? "Use magic link instead" : "Use password instead"}
-        </button>
-      </div>
+        {mode === "password" ? (
+          <Field label="Password" htmlFor="password">
+            <PasswordInput
+              id="password"
+              icon={<Lock size={15} />}
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              invalid={Boolean(error)}
+            />
+          </Field>
+        ) : null}
 
-      {error ? <FieldError message={error} /> : null}
+        <div className="flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              setMode((m) => (m === "password" ? "magic" : "password"));
+            }}
+            className="focus-ring inline-flex items-center gap-1.5 rounded px-1 text-[12px] font-medium text-[#555555] transition hover:text-[#111111] hover:underline"
+          >
+            <Mail size={12} />
+            {mode === "password" ? "Use magic link instead" : "Use password instead"}
+          </button>
+        </div>
 
-      <SubmitButton loading={loading} label={mode === "password" ? "Sign in" : "Send magic link"} />
-    </form>
+        {error ? <FieldError message={error} /> : null}
+
+        <SubmitButton loading={loading} label={mode === "password" ? "Sign in" : "Send magic link"} />
+      </form>
+    </fieldset>
   );
 }
 
@@ -185,7 +189,7 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-portal-text3"
+        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#999999]"
       >
         {label}
       </label>
@@ -196,7 +200,7 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
 
 function FieldError({ message }: { message: string }) {
   return (
-    <p className="text-[12px] font-medium text-portal-red" role="alert">
+    <p className="text-[12px] font-medium text-[#C25151]" role="alert">
       {message}
     </p>
   );
@@ -207,7 +211,7 @@ function SubmitButton({ loading, label }: { loading: boolean; label: string }) {
     <button
       type="submit"
       disabled={loading}
-      className="focus-ring inline-flex h-11 w-full items-center justify-center gap-2 rounded-card bg-portal-accent px-4 text-[13.5px] font-semibold text-portal-accentContrast shadow-soft transition hover:opacity-95 disabled:opacity-60"
+      className="focus-ring inline-flex h-11 w-full items-center justify-center gap-2 rounded-card bg-[#111111] px-4 text-[13.5px] font-semibold text-white shadow-soft transition hover:bg-[#333333] disabled:opacity-60"
     >
       {loading ? (
         <Loader2 size={15} className="animate-spin" />

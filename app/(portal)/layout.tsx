@@ -14,7 +14,7 @@ const BOOT_SCRIPT = `
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-portal-bg text-portal-text">
+    <div className="min-h-screen bg-white text-[#111111]">
       <script
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }}
@@ -22,7 +22,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       <Sidebar />
       <div style={{ marginLeft: "var(--sb-w, 240px)" }} className="transition-[margin] duration-200">
         <Topbar />
-        <main className="px-4 pb-28 pt-6 md:px-8">{children}</main>
+        <main className="px-4 pb-24 pt-6 md:px-8 md:pb-10">{children}</main>
       </div>
       <Toaster position="top-right" richColors closeButton />
     </div>

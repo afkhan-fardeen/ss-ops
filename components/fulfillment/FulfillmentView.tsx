@@ -111,15 +111,15 @@ export function FulfillmentView({
               className={[
                 "focus-ring inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12px] font-medium transition",
                 active
-                  ? "border-portal-accent bg-portal-accentSoft text-portal-accent"
-                  : "border-portal-border bg-portal-bg2 text-portal-text2 hover:bg-portal-bg3",
+                  ? "border-[#111111] bg-[#F7F7F7] text-[#111111]"
+                  : "border-[#EBEBEB] bg-white text-[#555555] hover:bg-[#F7F7F7]",
               ].join(" ")}
             >
               <span>{f.label}</span>
               <span
                 className={[
                   "rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums",
-                  active ? "bg-portal-bg2 text-portal-accent" : "bg-portal-bg3 text-portal-text3",
+                  active ? "bg-white text-[#111111]" : "bg-[#F7F7F7] text-[#999999]",
                 ].join(" ")}
               >
                 {count}

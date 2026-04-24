@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { CODListView, type InitialLogEntry } from "@/components/cod-list/CODListView";
+import { CODListView } from "@/components/cod-list/CODListView";
 import { getCollectionWindow } from "@/lib/datetime/collection-window";
 import { fetchCodOrders } from "@/lib/shopify/fetch-cod-orders";
 import { getRates } from "@/lib/fx/getRates";
@@ -7,12 +7,10 @@ import { getCurrencyForCountry } from "@/lib/currency";
 import { buildCodRows } from "@/lib/cod/build-rows";
 import { buildUbexLookup, shopifyLast4Set, type UbexLookup } from "@/lib/ubex/build-lookup";
 import { getUbexToken } from "@/lib/ubex/client";
-import { getLastLogsForOrders } from "@/lib/fulfillment/log";
 import { AlertTriangle } from "lucide-react";
-import { StripSkeleton, TableSkeleton } from "@/components/ui/TableSkeleton";
+import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 
-/** Shell renders instantly — Suspense streams the data in when ready. */
 export default function CodListPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
@@ -26,13 +24,13 @@ export default function CodListPage() {
 function CodListSkeleton() {
   return (
     <>
-      <div className="rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+      <div className="rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
-            <div className="h-2.5 w-32 animate-pulse rounded bg-portal-border/60" />
-            <div className="h-4 w-64 animate-pulse rounded bg-portal-border/50" />
+            <div className="h-2.5 w-32 animate-pulse rounded bg-[#EBEBEB]" />
+            <div className="h-4 w-64 animate-pulse rounded bg-[#EBEBEB]" />
           </div>
-          <div className="h-3 w-40 animate-pulse rounded bg-portal-border/40" />
+          <div className="h-3 w-40 animate-pulse rounded bg-[#EBEBEB]" />
         </div>
       </div>
       <TableSkeleton rows={8} columns={8} />
@@ -50,7 +48,6 @@ async function CodListContent() {
   let ordersScannedInWindow = 0;
   const ubexTokenConfigured = Boolean(getUbexToken());
   let ubexLookup: UbexLookup | undefined;
-  let initialLogs: InitialLogEntry[] = [];
 
   try {
     const window = getCollectionWindow();
@@ -59,6 +56,7 @@ async function CodListContent() {
     const { codOrders, ordersScannedInWindow: scanned } = await fetchCodOrders({
       createdAtMinIso: window.createdAtMinIso,
       createdAtMaxIso: window.createdAtMaxIso,
+      cacheStrategy: "live",
     });
     ordersScannedInWindow = scanned;
 
@@ -89,33 +87,19 @@ async function CodListContent() {
       .filter((r) => r.ubexId && !r.alreadyFulfilled)
       .map((r) => ({ shopifyOrderId: r.orderId, shopifyOrderName: r.orderName, ubexTracking: r.ubexId }));
     void upsertOrderUbexLinks(matches).catch(() => {});
-
-    const logs = await getLastLogsForOrders(codOrders.map((o) => o.id)).catch(() => new Map());
-    initialLogs = rows
-      .map((r): InitialLogEntry | null => {
-        const log = logs.get(r.orderId);
-        if (!log) return null;
-        return {
-          orderName: r.orderName,
-          status: log.status === "success" ? "success" : "error",
-          message: log.error ?? undefined,
-          fulfillmentId: log.shopify_fulfillment_id ?? undefined,
-        };
-      })
-      .filter((x): x is InitialLogEntry => Boolean(x));
   } catch (e) {
     error = e instanceof Error ? e.message : "Failed to load COD list";
   }
 
   if (error) {
     return (
-      <div className="rounded-card border border-portal-red/25 bg-portal-redSoft p-6 text-portal-text">
-        <div className="flex items-center gap-2 text-portal-red">
+      <div className="rounded-card border border-[#C25151]/25 bg-[rgba(194,81,81,0.10)] p-6">
+        <div className="flex items-center gap-2 text-[#C25151]">
           <AlertTriangle size={18} />
           <h2 className="text-base font-semibold">Could not load COD list</h2>
         </div>
-        <p className="mt-2 text-[13px] text-portal-text">{error}</p>
-        <p className="mt-3 font-mono text-[11px] text-portal-text2">
+        <p className="mt-2 text-[13px] text-[#111111]">{error}</p>
+        <p className="mt-3 font-mono text-[11px] text-[#555555]">
           Check env vars, Shopify token, and network. FX cache (Supabase) is optional; Frankfurter + open.er-api load
           without it.
         </p>
@@ -125,15 +109,15 @@ async function CodListContent() {
 
   return (
     <>
-      <section className="animate-fade-up rounded-card border border-portal-border bg-portal-bg2 p-5 shadow-soft">
+      <section className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-portal-text3">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
               Collection window
             </h2>
-            <p className="mt-1 text-[14px] font-medium text-portal-text">{windowLabel}</p>
+            <p className="mt-1 text-[14px] font-medium text-[#111111]">{windowLabel}</p>
           </div>
-          <p className="font-mono text-[11px] text-portal-text3">
+          <p className="font-mono text-[11px] text-[#999999]">
             {ordersScannedInWindow} order{ordersScannedInWindow === 1 ? "" : "s"} scanned · {rows.length} COD
           </p>
         </div>
@@ -147,7 +131,6 @@ async function CodListContent() {
         ubexConflictsCount={ubexLookup?.last4Conflicts.size}
         ubexApiMessage={ubexLookup?.apiMessage}
         ubexError={ubexLookup?.error}
-        initialLogs={initialLogs}
       />
     </>
   );
