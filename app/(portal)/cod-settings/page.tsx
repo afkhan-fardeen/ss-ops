@@ -1,9 +1,11 @@
+import { unstable_noStore as noStore } from "next/cache";
 import { getSupabaseService } from "@/lib/supabase/service";
-import { ensureCodSettings } from "@/lib/supabase/ensure-cod-settings";
 import { RecipientGroup } from "@/components/cod-settings/RecipientGroup";
 import { Mail, Bell, AlertTriangle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
+
+const EMPTY: SettingsMap = { email_recipients: [], fulfillment_notify_emails: [], error_notify_emails: [] };
 
 type SettingsMap = {
   email_recipients: string[];
@@ -12,28 +14,34 @@ type SettingsMap = {
 };
 
 async function loadSettings(): Promise<SettingsMap> {
-  await ensureCodSettings();
+  // Opt out of Next.js data cache so the Supabase fetch always hits the DB.
+  noStore();
+
   const supabase = getSupabaseService();
-  if (!supabase) return { email_recipients: [], fulfillment_notify_emails: [], error_notify_emails: [] };
-
-  try {
-    const { data } = await supabase
-      .from("cod_settings")
-      .select("key, value")
-      .in("key", ["email_recipients", "fulfillment_notify_emails", "error_notify_emails"]);
-
-    const map: Record<string, string[]> = {};
-    for (const row of (data ?? []) as { key: string; value: string }[]) {
-      map[row.key] = row.value.split(",").map((e) => e.trim()).filter(Boolean);
-    }
-    return {
-      email_recipients: map["email_recipients"] ?? [],
-      fulfillment_notify_emails: map["fulfillment_notify_emails"] ?? [],
-      error_notify_emails: map["error_notify_emails"] ?? [],
-    };
-  } catch {
-    return { email_recipients: [], fulfillment_notify_emails: [], error_notify_emails: [] };
+  if (!supabase) {
+    console.warn("[cod-settings] Supabase service client not configured");
+    return EMPTY;
   }
+
+  const { data, error } = await supabase
+    .from("cod_settings")
+    .select("key, value")
+    .in("key", ["email_recipients", "fulfillment_notify_emails", "error_notify_emails"]);
+
+  if (error) {
+    console.error("[cod-settings] Failed to load settings:", error.message);
+    return EMPTY;
+  }
+
+  const map: Record<string, string[]> = {};
+  for (const row of (data ?? []) as { key: string; value: string }[]) {
+    map[row.key] = (row.value ?? "").split(",").map((e) => e.trim()).filter(Boolean);
+  }
+  return {
+    email_recipients: map["email_recipients"] ?? [],
+    fulfillment_notify_emails: map["fulfillment_notify_emails"] ?? [],
+    error_notify_emails: map["error_notify_emails"] ?? [],
+  };
 }
 
 export default async function CODSettingsPage() {

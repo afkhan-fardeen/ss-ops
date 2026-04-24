@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/require-session";
 import { getSupabaseService } from "@/lib/supabase/service";
-import { ensureCodSettings } from "@/lib/supabase/ensure-cod-settings";
 
 const ALLOWED_KEYS = [
   "email_recipients",          // daily COD list email
@@ -36,30 +35,29 @@ export async function GET(req: Request) {
   const supabase = getSupabaseService();
   if (!supabase) return NextResponse.json({ settings: {}, recipients: [] });
 
-  await ensureCodSettings();
-
   const url = new URL(req.url);
   const singleKey = url.searchParams.get("key");
 
-  try {
-    const { data } = await supabase
-      .from("cod_settings")
-      .select("key, value")
-      .in("key", [...ALLOWED_KEYS]);
+  const { data, error } = await supabase
+    .from("cod_settings")
+    .select("key, value")
+    .in("key", [...ALLOWED_KEYS]);
 
-    const map: Record<string, string[]> = {};
-    for (const row of (data ?? []) as { key: string; value: string }[]) {
-      map[row.key] = parseList(row.value);
-    }
-
-    if (singleKey) {
-      return NextResponse.json({ recipients: map[singleKey] ?? [] });
-    }
-
-    return NextResponse.json({ settings: map });
-  } catch {
-    return NextResponse.json({ settings: {}, recipients: [] });
+  if (error) {
+    console.error("[cod-settings GET] Supabase error:", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  const map: Record<string, string[]> = {};
+  for (const row of (data ?? []) as { key: string; value: string }[]) {
+    map[row.key] = parseList(row.value);
+  }
+
+  if (singleKey) {
+    return NextResponse.json({ recipients: map[singleKey] ?? [] });
+  }
+
+  return NextResponse.json({ settings: map });
 }
 
 /**
@@ -77,8 +75,6 @@ export async function POST(req: Request) {
 
   const supabase = getSupabaseService();
   if (!supabase) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
-
-  await ensureCodSettings();
 
   try {
     const body = (await req.json()) as { key?: string; recipients: string[] };
