@@ -8,6 +8,10 @@ import { startCronRun, completeCronRun } from "@/lib/supabase/cron-run-log";
 import { createFulfillment } from "@/lib/shopify/fulfill-order";
 import { fetchShipmentDetails } from "@/lib/ubex/shipment-details";
 import { resolveTrackingUrl } from "@/lib/ubex/tracking-url";
+import {
+  sendFulfillmentNotification,
+  sendErrorNotification,
+} from "@/lib/email/send-fulfillment-notification";
 
 /**
  * POST /api/sync/auto-fulfill
@@ -168,6 +172,33 @@ export async function POST(req: NextRequest) {
       errors,
     });
   }
+
+  // ── Notification emails (non-blocking — never fail the response) ──
+  const fulfilledOrders = results
+    .filter((r) => r.action === "fulfilled")
+    .map((r) => ({ order: r.order, tracking: r.tracking, trackingUrl: undefined as string | undefined }));
+
+  const failedOrders = results
+    .filter((r) => r.action === "error")
+    .map((r) => ({ order: r.order, tracking: r.tracking, detail: r.detail }));
+
+  await Promise.allSettled([
+    fulfilledOrders.length > 0
+      ? sendFulfillmentNotification({
+          fulfilled: fulfilledOrders,
+          skipped,
+          checked: links.length,
+          dryRun,
+        })
+      : Promise.resolve(),
+    failedOrders.length > 0
+      ? sendErrorNotification({
+          errors: failedOrders,
+          fulfilled,
+          checked: links.length,
+        })
+      : Promise.resolve(),
+  ]);
 
   return NextResponse.json({
     ok: true,

@@ -45,10 +45,12 @@ export async function ensureCodSettings(): Promise<void> {
       END $$;
     `);
 
-    // Seed default row
+    // Seed default rows for all known keys
     await client.query(`
-      INSERT INTO cod_settings (key, value)
-      VALUES ('email_recipients', '')
+      INSERT INTO cod_settings (key, value) VALUES
+        ('email_recipients', ''),
+        ('fulfillment_notify_emails', ''),
+        ('error_notify_emails', '')
       ON CONFLICT (key) DO NOTHING;
     `);
 

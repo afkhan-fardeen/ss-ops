@@ -3,10 +3,30 @@ import { requireSession } from "@/lib/auth/require-session";
 import { getSupabaseService } from "@/lib/supabase/service";
 import { ensureCodSettings } from "@/lib/supabase/ensure-cod-settings";
 
-const TABLE = "cod_settings";
-const KEY = "email_recipients";
+const ALLOWED_KEYS = [
+  "email_recipients",          // daily COD list email
+  "fulfillment_notify_emails", // notify when cron fulfills orders
+  "error_notify_emails",       // notify on cron errors
+] as const;
 
-export async function GET(_req: Request) {
+type AllowedKey = (typeof ALLOWED_KEYS)[number];
+
+function isAllowedKey(k: unknown): k is AllowedKey {
+  return ALLOWED_KEYS.includes(k as AllowedKey);
+}
+
+function parseList(raw: string): string[] {
+  return raw.split(",").map((e) => e.trim()).filter(Boolean);
+}
+
+/**
+ * GET /api/cod-settings
+ * Returns all settings keys as { settings: Record<key, string[]> }
+ *
+ * GET /api/cod-settings?key=email_recipients
+ * Returns { recipients: string[] } for one key (backward compat).
+ */
+export async function GET(req: Request) {
   try {
     await requireSession();
   } catch {
@@ -14,29 +34,40 @@ export async function GET(_req: Request) {
   }
 
   const supabase = getSupabaseService();
-  if (!supabase) return NextResponse.json({ recipients: [] });
+  if (!supabase) return NextResponse.json({ settings: {}, recipients: [] });
 
   await ensureCodSettings();
 
+  const url = new URL(req.url);
+  const singleKey = url.searchParams.get("key");
+
   try {
     const { data } = await supabase
-      .from(TABLE)
-      .select("value")
-      .eq("key", KEY)
-      .maybeSingle();
+      .from("cod_settings")
+      .select("key, value")
+      .in("key", [...ALLOWED_KEYS]);
 
-    const raw = (data as { value: string } | null)?.value ?? "";
-    const recipients = raw
-      .split(",")
-      .map((e) => e.trim())
-      .filter(Boolean);
+    const map: Record<string, string[]> = {};
+    for (const row of (data ?? []) as { key: string; value: string }[]) {
+      map[row.key] = parseList(row.value);
+    }
 
-    return NextResponse.json({ recipients });
+    if (singleKey) {
+      return NextResponse.json({ recipients: map[singleKey] ?? [] });
+    }
+
+    return NextResponse.json({ settings: map });
   } catch {
-    return NextResponse.json({ recipients: [] });
+    return NextResponse.json({ settings: {}, recipients: [] });
   }
 }
 
+/**
+ * POST /api/cod-settings
+ * Body: { key: string; recipients: string[] }
+ *
+ * Also accepts legacy body { recipients: string[] } which defaults to "email_recipients".
+ */
 export async function POST(req: Request) {
   try {
     await requireSession();
@@ -50,19 +81,23 @@ export async function POST(req: Request) {
   await ensureCodSettings();
 
   try {
-    const body = (await req.json()) as { recipients: string[] };
+    const body = (await req.json()) as { key?: string; recipients: string[] };
+    const key = isAllowedKey(body.key) ? body.key : "email_recipients";
     const value = (body.recipients ?? [])
       .map((e) => e.trim())
       .filter((e) => e.includes("@"))
       .join(",");
 
     const { error } = await supabase
-      .from(TABLE)
-      .upsert({ key: KEY, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+      .from("cod_settings")
+      .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
 
     if (error) throw new Error(error.message);
     return NextResponse.json({ ok: true });
   } catch (e) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : "Failed" }, { status: 500 });
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Failed" },
+      { status: 500 },
+    );
   }
 }
