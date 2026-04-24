@@ -54,9 +54,10 @@ export function CODTable({ rows, ordersScannedInWindow }: { rows: CodRow[]; orde
   }
 
   return (
-    <div className="animate-fade-up overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
+    <div className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white shadow-soft">
+      <div className="max-h-[65vh] overflow-auto">
       <table className="w-full min-w-[900px] border-collapse text-left text-[13px]">
-        <thead>
+        <thead className="sticky top-0 z-10">
           <tr className="border-b border-[#EBEBEB] bg-[#F7F7F7] text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
             <th className="px-3 py-3">Order</th>
             <th className="px-3 py-3">Date</th>
@@ -123,6 +124,7 @@ export function CODTable({ rows, ordersScannedInWindow }: { rows: CodRow[]; orde
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

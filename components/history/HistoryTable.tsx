@@ -124,9 +124,9 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
       </div>
 
       <div className="overflow-hidden rounded-card border border-[#EBEBEB] bg-white shadow-soft">
-        <div className="overflow-x-auto">
+        <div className="max-h-[65vh] overflow-auto">
           <table className="w-full min-w-[700px] divide-y divide-[#EBEBEB] text-[13px]">
-            <thead className="bg-[#F7F7F7]">
+            <thead className="sticky top-0 z-10 bg-[#F7F7F7]">
               <tr className="text-left text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
                 <th className="px-4 py-2.5">When</th>
                 <th className="px-4 py-2.5">Order</th>
@@ -237,3 +237,4 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
     </div>
   );
 }
+
