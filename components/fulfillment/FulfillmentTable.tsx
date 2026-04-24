@@ -27,10 +27,7 @@ function CopyButton({ value }: { value: string }) {
     e.preventDefault();
     e.stopPropagation();
     navigator.clipboard.writeText(value).then(
-      () => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1400);
-      },
+      () => { setCopied(true); setTimeout(() => setCopied(false), 1400); },
       () => {},
     );
   }
@@ -47,15 +44,7 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
-function PushButton({
-  row,
-  state,
-  onPush,
-}: {
-  row: OrderRow;
-  state: RowState | undefined;
-  onPush: (row: OrderRow) => Promise<boolean>;
-}) {
+function PushButton({ row, state, onPush }: { row: OrderRow; state: RowState | undefined; onPush: (row: OrderRow) => Promise<boolean> }) {
   const status: RowStatus = state?.status ?? "pending";
   const busy = state?.busy === true;
 
@@ -75,13 +64,7 @@ function PushButton({
       type="button"
       onClick={() => void onPush(row)}
       disabled={disabled}
-      title={
-        !row.ubexId
-          ? "No Ubex tracking id yet"
-          : status === "error"
-          ? state?.message
-          : "Push fulfillment to Shopify"
-      }
+      title={!row.ubexId ? "No Ubex tracking id yet" : status === "error" ? state?.message : "Push fulfillment to Shopify"}
       className={[
         "focus-ring inline-flex h-8 items-center gap-1.5 rounded-card border px-2.5 text-[12px] font-medium transition",
         status === "error"
@@ -90,23 +73,13 @@ function PushButton({
         disabled ? "cursor-not-allowed opacity-60" : "",
       ].join(" ")}
     >
-      {busy ? (
-        <Loader2 size={13} className="animate-spin-slow" />
-      ) : status === "error" ? (
-        <AlertCircle size={13} />
-      ) : (
-        <Send size={13} />
-      )}
+      {busy ? <Loader2 size={13} className="animate-spin-slow" /> : status === "error" ? <AlertCircle size={13} /> : <Send size={13} />}
       <span>{busy ? "Pushing…" : status === "error" ? "Retry" : "Push"}</span>
     </button>
   );
 }
 
-export function FulfillmentTable({
-  rows,
-  stateMap,
-  onPush,
-}: {
+export function FulfillmentTable({ rows, stateMap, onPush }: {
   rows: OrderRow[];
   stateMap: RowStateMap;
   onPush: (row: OrderRow) => Promise<boolean>;
@@ -114,9 +87,7 @@ export function FulfillmentTable({
   if (rows.length === 0) {
     return (
       <div className="animate-fade-up space-y-3 rounded-card border border-[#EBEBEB] bg-white p-8 shadow-soft">
-        <p className="text-center text-sm font-medium text-[#111111]">
-          No orders match the current filter.
-        </p>
+        <p className="text-center text-sm font-medium text-[#111111]">No orders match the current filter.</p>
         <p className="text-center text-[12px] text-[#999999]">
           Try widening the window (<code className="font-mono">FULFILLMENT_WINDOW_DAYS</code>) or switching filter.
         </p>
@@ -126,18 +97,18 @@ export function FulfillmentTable({
 
   return (
     <div className="animate-fade-up overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
-      <table className="w-full min-w-[420px] border-collapse text-left text-[13px]">
+      <table className="w-full min-w-[900px] border-collapse text-left text-[13px]">
         <thead>
           <tr className="border-b border-[#EBEBEB] bg-[#F7F7F7] text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
             <th className="px-3 py-3">Order</th>
-            <th className="hidden px-3 py-3 sm:table-cell">Date</th>
+            <th className="px-3 py-3">Date</th>
             <th className="px-3 py-3">Status</th>
-            <th className="hidden px-3 py-3 md:table-cell">UBEX ID</th>
-            <th className="hidden px-3 py-3 md:table-cell">Tracking</th>
-            <th className="hidden px-3 py-3 lg:table-cell">Total</th>
-            <th className="hidden px-3 py-3 sm:table-cell">Payment</th>
-            <th className="hidden px-3 py-3 lg:table-cell">Customer</th>
-            <th className="hidden px-3 py-3 lg:table-cell">Country</th>
+            <th className="px-3 py-3">UBEX ID</th>
+            <th className="px-3 py-3">Tracking</th>
+            <th className="px-3 py-3">Total</th>
+            <th className="px-3 py-3">Payment</th>
+            <th className="px-3 py-3">Customer</th>
+            <th className="px-3 py-3">Country</th>
             <th className="px-3 py-3 text-right">Action</th>
           </tr>
         </thead>
@@ -152,14 +123,10 @@ export function FulfillmentTable({
               <tr
                 key={r.orderName}
                 className="border-b border-[#EBEBEB] text-[#111111] transition last:border-0 hover:bg-[#F7F7F7]"
-                style={
-                  i < 6
-                    ? { animation: "fadeUp 0.4s ease-out both", animationDelay: `${i * 30}ms` }
-                    : undefined
-                }
+                style={i < 6 ? { animation: "fadeUp 0.4s ease-out both", animationDelay: `${i * 30}ms` } : undefined}
               >
                 <td className="px-3 py-3 font-mono text-[12px] font-medium">{r.orderName}</td>
-                <td className="hidden px-3 py-3 text-[12px] text-[#555555] sm:table-cell">{orderDateFmt}</td>
+                <td className="px-3 py-3 text-[12px] text-[#555555]">{orderDateFmt}</td>
                 <td className="px-3 py-3">
                   <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
                   {status === "error" && state?.message ? (
@@ -168,49 +135,36 @@ export function FulfillmentTable({
                     </div>
                   ) : null}
                 </td>
-                <td className="hidden px-3 py-3 font-mono text-[12px] md:table-cell">
+                <td className="px-3 py-3 font-mono text-[12px]">
                   {r.ubexId ? (
                     <span className="inline-flex items-center gap-1.5">
                       <span className="text-[#111111]">{r.ubexId}</span>
                       <CopyButton value={r.ubexId} />
                     </span>
-                  ) : (
-                    <span className="text-[#999999]">—</span>
-                  )}
+                  ) : <span className="text-[#999999]">—</span>}
                 </td>
-                <td className="hidden px-3 py-3 md:table-cell">
+                <td className="px-3 py-3">
                   {r.trackingUrl ? (
                     <div className="inline-flex items-center gap-1.5">
-                      <a
-                        href={r.trackingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="focus-ring inline-flex items-center gap-1 rounded text-[12px] font-medium text-[#111111] hover:underline"
-                      >
-                        Open
-                        <ExternalLink size={11} />
+                      <a href={r.trackingUrl} target="_blank" rel="noopener noreferrer"
+                        className="focus-ring inline-flex items-center gap-1 rounded text-[12px] font-medium text-[#111111] hover:underline">
+                        Open <ExternalLink size={11} />
                       </a>
                       <CopyButton value={r.trackingUrl} />
                     </div>
-                  ) : (
-                    <span className="text-[#999999]">—</span>
-                  )}
+                  ) : <span className="text-[#999999]">—</span>}
                 </td>
-                <td className="hidden px-3 py-3 font-mono text-[12px] lg:table-cell">{r.totalGbp}</td>
-                <td className="hidden px-3 py-3 text-[12px] sm:table-cell">
-                  <span
-                    className={[
-                      "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
-                      r.isCod
-                        ? "bg-[rgba(240,183,67,0.12)] text-[#F0B743]"
-                        : "bg-[#F7F7F7] text-[#555555]",
-                    ].join(" ")}
-                  >
+                <td className="px-3 py-3 font-mono text-[12px]">{r.totalGbp}</td>
+                <td className="px-3 py-3 text-[12px]">
+                  <span className={[
+                    "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
+                    r.isCod ? "bg-[rgba(240,183,67,0.12)] text-[#F0B743]" : "bg-[#F7F7F7] text-[#555555]",
+                  ].join(" ")}>
                     {r.isCod ? "COD" : "Paid"}
                   </span>
                 </td>
-                <td className="hidden px-3 py-3 text-[12px] lg:table-cell">{r.customerName}</td>
-                <td className="hidden px-3 py-3 font-mono text-[12px] lg:table-cell">{r.shippingCountry}</td>
+                <td className="px-3 py-3 text-[12px]">{r.customerName}</td>
+                <td className="px-3 py-3 font-mono text-[12px]">{r.shippingCountry}</td>
                 <td className="px-3 py-3 text-right">
                   <PushButton row={r} state={state} onPush={onPush} />
                 </td>

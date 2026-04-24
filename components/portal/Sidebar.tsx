@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { settingsNav, toolsNav, type NavItem } from "@/config/navigation";
+import { navGroups, mobileBottomItems, type NavItem } from "@/config/navigation";
 
 const STORAGE_KEY = "portal.sidebar.collapsed";
 const WIDTH_EXPANDED = 240;
@@ -12,7 +12,6 @@ const WIDTH_COLLAPSED = 64;
 
 function applySidebarWidth(collapsed: boolean) {
   if (typeof document === "undefined") return;
-  // On mobile the sidebar is never shown — keep --sb-w at 0
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   if (isMobile) {
     document.documentElement.style.setProperty("--sb-w", "0px");
@@ -24,15 +23,7 @@ function applySidebarWidth(collapsed: boolean) {
   );
 }
 
-function NavLink({
-  item,
-  active,
-  collapsed,
-}: {
-  item: NavItem;
-  active: boolean;
-  collapsed: boolean;
-}) {
+function NavLink({ item, active, collapsed }: { item: NavItem; active: boolean; collapsed: boolean }) {
   const Icon = item.icon;
   return (
     <Link
@@ -68,13 +59,6 @@ function NavLink({
   );
 }
 
-// Only 4 primary items in the mobile bottom bar (COD, Fulfillment, History, Account)
-// COD Settings is accessible via Account on mobile
-const mobileBottomNav: NavItem[] = [
-  ...toolsNav,
-  settingsNav[settingsNav.length - 1], // Account (last settings item)
-];
-
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<boolean>(() => {
@@ -90,16 +74,11 @@ export function Sidebar() {
     applySidebarWidth(collapsed);
     try {
       window.localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0");
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
   }, [collapsed]);
 
-  // Also re-apply on window resize so toggling desktop/mobile updates --sb-w
   useEffect(() => {
-    function onResize() {
-      applySidebarWidth(collapsed);
-    }
+    const onResize = () => applySidebarWidth(collapsed);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, [collapsed]);
@@ -109,14 +88,8 @@ export function Sidebar() {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if ((e.metaKey || e.ctrlKey) && (e.key === "b" || e.key === "B")) {
-        const target = e.target as HTMLElement | null;
-        if (
-          target &&
-          (target.tagName === "INPUT" ||
-            target.tagName === "TEXTAREA" ||
-            target.isContentEditable)
-        )
-          return;
+        const t = e.target as HTMLElement | null;
+        if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
         e.preventDefault();
         toggleCollapsed();
       }
@@ -144,36 +117,30 @@ export function Sidebar() {
       >
         {/* Logo */}
         <div className={collapsed ? "flex justify-center px-1 py-1" : "px-2 py-1"}>
-          {collapsed ? <LogoMark size={28} /> : <LogoFull />}
+          {collapsed ? <LogoMark /> : <LogoFull />}
         </div>
 
-        {/* Nav */}
+        {/* Nav groups */}
         <div className="mt-6 flex-1 space-y-5 overflow-y-auto">
-          <div>
-            {!collapsed && (
-              <div className="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
-                Tools
-              </div>
-            )}
-            <nav className="mt-2 flex flex-col gap-0.5">
-              {toolsNav.map((item) => (
-                <NavLink key={item.href} item={item} active={pathname === item.href} collapsed={collapsed} />
-              ))}
-            </nav>
-          </div>
-
-          <div>
-            {!collapsed && (
-              <div className="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
-                Settings
-              </div>
-            )}
-            <nav className="mt-2 flex flex-col gap-0.5">
-              {settingsNav.map((item) => (
-                <NavLink key={item.href} item={item} active={pathname === item.href} collapsed={collapsed} />
-              ))}
-            </nav>
-          </div>
+          {navGroups.map((group) => (
+            <div key={group.label}>
+              {!collapsed && (
+                <div className="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
+                  {group.label}
+                </div>
+              )}
+              <nav className="mt-2 flex flex-col gap-0.5">
+                {group.items.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    item={item}
+                    active={pathname === item.href}
+                    collapsed={collapsed}
+                  />
+                ))}
+              </nav>
+            </div>
+          ))}
         </div>
 
         {/* Bottom actions */}
@@ -211,12 +178,12 @@ export function Sidebar() {
         </div>
       </aside>
 
-      {/* ── Mobile bottom tab bar (< md) — 4 primary items only ── */}
+      {/* ── Mobile bottom tab bar (< md) — 4 items ── */}
       <nav
         className="fixed inset-x-0 bottom-0 z-30 flex border-t border-[#EBEBEB] bg-white md:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
-        {mobileBottomNav.map((item) => {
+        {mobileBottomItems.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;
           return (
@@ -238,14 +205,14 @@ export function Sidebar() {
   );
 }
 
-function LogoMark({ size = 30 }: { size?: number }) {
+function LogoMark() {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src="/favicon.png"
       alt="Seissense Ops"
-      width={size}
-      height={size}
+      width={30}
+      height={30}
       className="rounded-md object-contain"
     />
   );

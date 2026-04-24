@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 const titles: Record<string, string> = {
   "/cod-list":    "COD List",
+  "/cod-history": "COD Archive",
   "/fulfillment": "Fulfillment",
   "/history":     "History",
   "/account":     "Account",
@@ -12,7 +13,8 @@ const titles: Record<string, string> = {
 };
 
 const sections: Record<string, string> = {
-  "/cod-list":    "Tools",
+  "/cod-list":    "COD",
+  "/cod-history": "COD",
   "/fulfillment": "Tools",
   "/history":     "Tools",
   "/account":     "Settings",
