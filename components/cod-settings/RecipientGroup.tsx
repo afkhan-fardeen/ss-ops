@@ -2,6 +2,7 @@
 
 import { Plus, Trash2, Mail, Save, Loader2, CheckCircle } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export function RecipientGroup({
@@ -15,6 +16,7 @@ export function RecipientGroup({
   placeholder?: string;
   saveLabel?: string;
 }) {
+  const router = useRouter();
   const [recipients, setRecipients] = useState<string[]>(initialRecipients);
   const [newEmail, setNewEmail] = useState("");
   const [saving, setSaving] = useState(false);
@@ -47,6 +49,9 @@ export function RecipientGroup({
       if (!res.ok || !data.ok) throw new Error(data.error ?? "Save failed");
       setSaved(true);
       toast.success("Saved");
+      // Invalidate the Next.js Router Cache so the server component re-fetches
+      // fresh data from Supabase on the next navigation to this page.
+      router.refresh();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Failed to save");
     } finally {

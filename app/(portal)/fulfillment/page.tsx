@@ -107,7 +107,7 @@ async function FulfillmentContent() {
   return (
     <>
       <section className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
               Fulfillment window
@@ -115,9 +115,7 @@ async function FulfillmentContent() {
             <p className="mt-1 text-[14px] font-medium text-[#111111]">{windowLabel}</p>
           </div>
           <p className="font-mono text-[11px] text-[#999999]">
-            {ordersScannedInWindow} order{ordersScannedInWindow === 1 ? "" : "s"} scanned ·{" "}
-            {rows.filter((r) => !r.alreadyFulfilled).length} unfulfilled ·{" "}
-            {rows.filter((r) => r.alreadyFulfilled).length} fulfilled
+            {ordersScannedInWindow} order{ordersScannedInWindow === 1 ? "" : "s"} in window
           </p>
         </div>
       </section>
