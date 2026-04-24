@@ -126,18 +126,18 @@ export function FulfillmentTable({
 
   return (
     <div className="animate-fade-up overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
-      <table className="w-full min-w-[1000px] border-collapse text-left text-[13px]">
+      <table className="w-full min-w-[420px] border-collapse text-left text-[13px]">
         <thead>
           <tr className="border-b border-[#EBEBEB] bg-[#F7F7F7] text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
             <th className="px-3 py-3">Order</th>
             <th className="hidden px-3 py-3 sm:table-cell">Date</th>
             <th className="px-3 py-3">Status</th>
-            <th className="px-3 py-3">UBEX ID</th>
-            <th className="px-3 py-3">Tracking</th>
-            <th className="hidden px-3 py-3 md:table-cell">Total</th>
-            <th className="px-3 py-3">Payment</th>
-            <th className="px-3 py-3">Customer</th>
-            <th className="px-3 py-3">Country</th>
+            <th className="hidden px-3 py-3 md:table-cell">UBEX ID</th>
+            <th className="hidden px-3 py-3 md:table-cell">Tracking</th>
+            <th className="hidden px-3 py-3 lg:table-cell">Total</th>
+            <th className="hidden px-3 py-3 sm:table-cell">Payment</th>
+            <th className="hidden px-3 py-3 lg:table-cell">Customer</th>
+            <th className="hidden px-3 py-3 lg:table-cell">Country</th>
             <th className="px-3 py-3 text-right">Action</th>
           </tr>
         </thead>
@@ -163,12 +163,12 @@ export function FulfillmentTable({
                 <td className="px-3 py-3">
                   <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
                   {status === "error" && state?.message ? (
-                    <div className="mt-1 max-w-[240px] truncate text-[11px] text-[#C25151]" title={state.message}>
+                    <div className="mt-1 max-w-[200px] truncate text-[11px] text-[#C25151]" title={state.message}>
                       {state.message}
                     </div>
                   ) : null}
                 </td>
-                <td className="px-3 py-3 font-mono text-[12px]">
+                <td className="hidden px-3 py-3 font-mono text-[12px] md:table-cell">
                   {r.ubexId ? (
                     <span className="inline-flex items-center gap-1.5">
                       <span className="text-[#111111]">{r.ubexId}</span>
@@ -178,7 +178,7 @@ export function FulfillmentTable({
                     <span className="text-[#999999]">—</span>
                   )}
                 </td>
-                <td className="px-3 py-3">
+                <td className="hidden px-3 py-3 md:table-cell">
                   {r.trackingUrl ? (
                     <div className="inline-flex items-center gap-1.5">
                       <a
@@ -196,8 +196,8 @@ export function FulfillmentTable({
                     <span className="text-[#999999]">—</span>
                   )}
                 </td>
-                <td className="hidden px-3 py-3 font-mono text-[12px] md:table-cell">{r.totalGbp}</td>
-                <td className="px-3 py-3 text-[12px]">
+                <td className="hidden px-3 py-3 font-mono text-[12px] lg:table-cell">{r.totalGbp}</td>
+                <td className="hidden px-3 py-3 text-[12px] sm:table-cell">
                   <span
                     className={[
                       "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
@@ -208,12 +208,9 @@ export function FulfillmentTable({
                   >
                     {r.isCod ? "COD" : "Paid"}
                   </span>
-                  <div className="mt-1 truncate text-[11px] text-[#999999]" title={r.paymentLabel}>
-                    {r.paymentLabel}
-                  </div>
                 </td>
-                <td className="px-3 py-3 text-[12px]">{r.customerName}</td>
-                <td className="px-3 py-3 font-mono text-[12px]">{r.shippingCountry}</td>
+                <td className="hidden px-3 py-3 text-[12px] lg:table-cell">{r.customerName}</td>
+                <td className="hidden px-3 py-3 font-mono text-[12px] lg:table-cell">{r.shippingCountry}</td>
                 <td className="px-3 py-3 text-right">
                   <PushButton row={r} state={state} onPush={onPush} />
                 </td>

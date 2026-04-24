@@ -1,18 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/require-session";
 import { getSupabaseService } from "@/lib/supabase/service";
+import { ensureCodSettings } from "@/lib/supabase/ensure-cod-settings";
 
 const TABLE = "cod_settings";
 const KEY = "email_recipients";
 
-async function ensureTable(supabase: ReturnType<typeof getSupabaseService>) {
-  if (!supabase) return;
-  // Create table if not exists via raw SQL through RPC isn't available on anon key,
-  // so we just attempt the upsert and ignore "relation does not exist" by running migration.
-  // The migration SQL file handles creation; if table doesn't exist we catch and return empty.
-}
-
-export async function GET(req: Request) {
+export async function GET(_req: Request) {
   try {
     await requireSession();
   } catch {
@@ -21,6 +15,8 @@ export async function GET(req: Request) {
 
   const supabase = getSupabaseService();
   if (!supabase) return NextResponse.json({ recipients: [] });
+
+  await ensureCodSettings();
 
   try {
     const { data } = await supabase
@@ -51,6 +47,8 @@ export async function POST(req: Request) {
   const supabase = getSupabaseService();
   if (!supabase) return NextResponse.json({ error: "Supabase not configured" }, { status: 500 });
 
+  await ensureCodSettings();
+
   try {
     const body = (await req.json()) as { recipients: string[] };
     const value = (body.recipients ?? [])
@@ -68,5 +66,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: e instanceof Error ? e.message : "Failed" }, { status: 500 });
   }
 }
-
-void ensureTable(null);

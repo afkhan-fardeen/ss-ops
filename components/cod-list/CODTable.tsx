@@ -66,19 +66,19 @@ export function CODTable({
 
   return (
     <div className="animate-fade-up overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
-      <table className="w-full min-w-[1000px] border-collapse text-left text-[13px]">
+      <table className="w-full min-w-[380px] border-collapse text-left text-[13px]">
         <thead>
           <tr className="border-b border-[#EBEBEB] bg-[#F7F7F7] text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
             <th className="px-3 py-3">Order</th>
-            <th className="hidden px-3 py-3 sm:table-cell">Order Date</th>
+            <th className="hidden px-3 py-3 sm:table-cell">Date</th>
             <th className="px-3 py-3">Status</th>
-            <th className="px-3 py-3">UBEX ID</th>
-            <th className="px-3 py-3">Tracking</th>
-            <th className="hidden px-3 py-3 md:table-cell">Outstanding</th>
+            <th className="hidden px-3 py-3 md:table-cell">UBEX ID</th>
+            <th className="hidden px-3 py-3 md:table-cell">Tracking</th>
+            <th className="hidden px-3 py-3 lg:table-cell">Outstanding</th>
             <th className="px-3 py-3">To Collect</th>
-            <th className="px-3 py-3">Customer</th>
-            <th className="hidden min-w-[200px] px-3 py-3 lg:table-cell">Address</th>
-            <th className="px-3 py-3">Country</th>
+            <th className="hidden px-3 py-3 sm:table-cell">Customer</th>
+            <th className="hidden px-3 py-3 xl:table-cell">Address</th>
+            <th className="hidden px-3 py-3 lg:table-cell">Country</th>
           </tr>
         </thead>
         <tbody>
@@ -103,10 +103,10 @@ export function CODTable({
                   {hasUbex ? (
                     <StatusPill tone="green">Matched</StatusPill>
                   ) : (
-                    <StatusPill tone="amber">Waiting for Ubex</StatusPill>
+                    <StatusPill tone="amber">Waiting</StatusPill>
                   )}
                 </td>
-                <td className="px-3 py-3 font-mono text-[12px]">
+                <td className="hidden px-3 py-3 font-mono text-[12px] md:table-cell">
                   {r.ubexId ? (
                     <span className="inline-flex items-center gap-1.5">
                       <span className="text-[#111111]">{r.ubexId}</span>
@@ -116,7 +116,7 @@ export function CODTable({
                     <span className="text-[#999999]">—</span>
                   )}
                 </td>
-                <td className="px-3 py-3">
+                <td className="hidden px-3 py-3 md:table-cell">
                   {r.trackingUrl ? (
                     <div className="inline-flex items-center gap-1.5">
                       <a
@@ -134,14 +134,14 @@ export function CODTable({
                     <span className="text-[#999999]">—</span>
                   )}
                 </td>
-                <td className="hidden px-3 py-3 font-mono text-[12px] md:table-cell">{r.outstandingGbp}</td>
+                <td className="hidden px-3 py-3 font-mono text-[12px] lg:table-cell">{r.outstandingGbp}</td>
                 <td className="px-3 py-3 font-mono text-[12px]" title={r.currencyWarning}>
                   {r.toCollect}
                   {r.currencyWarning ? <span className="ml-1 text-[#C25151]">!</span> : null}
                 </td>
-                <td className="px-3 py-3 text-[12px]">{r.customerName}</td>
-                <td className="hidden px-3 py-3 text-[12px] text-[#555555] lg:table-cell">{r.shippingAddress}</td>
-                <td className="px-3 py-3 font-mono text-[12px]">{r.shippingCountry}</td>
+                <td className="hidden px-3 py-3 text-[12px] sm:table-cell">{r.customerName}</td>
+                <td className="hidden px-3 py-3 text-[12px] text-[#555555] xl:table-cell">{r.shippingAddress}</td>
+                <td className="hidden px-3 py-3 font-mono text-[12px] lg:table-cell">{r.shippingCountry}</td>
               </tr>
             );
           })}

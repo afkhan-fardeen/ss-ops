@@ -79,7 +79,7 @@ export function Topbar() {
   });
 
   return (
-    <header className="sticky top-0 z-10 flex h-13 items-center justify-between gap-4 border-b border-[#EBEBEB] bg-white px-4 py-3 md:px-6">
+    <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b border-[#EBEBEB] bg-white px-4 md:px-6">
       <div className="flex items-center gap-2">
         {section && (
           <>

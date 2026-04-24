@@ -12,6 +12,12 @@ const WIDTH_COLLAPSED = 64;
 
 function applySidebarWidth(collapsed: boolean) {
   if (typeof document === "undefined") return;
+  // On mobile the sidebar is never shown — keep --sb-w at 0
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  if (isMobile) {
+    document.documentElement.style.setProperty("--sb-w", "0px");
+    return;
+  }
   document.documentElement.style.setProperty(
     "--sb-w",
     `${collapsed ? WIDTH_COLLAPSED : WIDTH_EXPANDED}px`,
@@ -62,6 +68,13 @@ function NavLink({
   );
 }
 
+// Only 4 primary items in the mobile bottom bar (COD, Fulfillment, History, Account)
+// COD Settings is accessible via Account on mobile
+const mobileBottomNav: NavItem[] = [
+  ...toolsNav,
+  settingsNav[settingsNav.length - 1], // Account (last settings item)
+];
+
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<boolean>(() => {
@@ -80,6 +93,15 @@ export function Sidebar() {
     } catch {
       /* ignore */
     }
+  }, [collapsed]);
+
+  // Also re-apply on window resize so toggling desktop/mobile updates --sb-w
+  useEffect(() => {
+    function onResize() {
+      applySidebarWidth(collapsed);
+    }
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, [collapsed]);
 
   const toggleCollapsed = useCallback(() => setCollapsed((c) => !c), []);
@@ -109,7 +131,6 @@ export function Sidebar() {
   }
 
   const width = collapsed ? WIDTH_COLLAPSED : WIDTH_EXPANDED;
-  const allNav = [...toolsNav, ...settingsNav];
 
   return (
     <>
@@ -123,11 +144,7 @@ export function Sidebar() {
       >
         {/* Logo */}
         <div className={collapsed ? "flex justify-center px-1 py-1" : "px-2 py-1"}>
-          {collapsed ? (
-            <LogoMark size={28} />
-          ) : (
-            <LogoFull />
-          )}
+          {collapsed ? <LogoMark size={28} /> : <LogoFull />}
         </div>
 
         {/* Nav */}
@@ -194,9 +211,12 @@ export function Sidebar() {
         </div>
       </aside>
 
-      {/* ── Mobile bottom tab bar (< md) ─────────────────────── */}
-      <nav className="fixed bottom-0 inset-x-0 z-30 flex border-t border-[#EBEBEB] bg-white md:hidden">
-        {allNav.map((item) => {
+      {/* ── Mobile bottom tab bar (< md) — 4 primary items only ── */}
+      <nav
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-[#EBEBEB] bg-white md:hidden"
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
+        {mobileBottomNav.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;
           return (
@@ -204,7 +224,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={[
-                "flex flex-1 flex-col items-center justify-center gap-1 py-2 text-[10px] font-medium transition-colors",
+                "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium transition-colors",
                 active ? "text-[#111111]" : "text-[#999999]",
               ].join(" ")}
             >
@@ -218,7 +238,6 @@ export function Sidebar() {
   );
 }
 
-/** Small square logo mark for collapsed sidebar */
 function LogoMark({ size = 28 }: { size?: number }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -226,7 +245,6 @@ function LogoMark({ size = 28 }: { size?: number }) {
   );
 }
 
-/** Full logo for expanded sidebar */
 function LogoFull() {
   return (
     // eslint-disable-next-line @next/next/no-img-element

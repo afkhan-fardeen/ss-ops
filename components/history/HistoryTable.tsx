@@ -125,15 +125,15 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
 
       <div className="overflow-hidden rounded-card border border-[#EBEBEB] bg-white shadow-soft">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-[#EBEBEB] text-[13px]">
+          <table className="min-w-[360px] w-full divide-y divide-[#EBEBEB] text-[13px]">
             <thead className="bg-[#F7F7F7]">
               <tr className="text-left text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
                 <th className="px-4 py-2.5">When</th>
                 <th className="px-4 py-2.5">Order</th>
-                <th className="px-4 py-2.5">Tracking</th>
+                <th className="hidden px-4 py-2.5 sm:table-cell">Tracking</th>
                 <th className="px-4 py-2.5">Status</th>
-                <th className="px-4 py-2.5">User</th>
-                <th className="px-4 py-2.5 text-right">Details</th>
+                <th className="hidden px-4 py-2.5 md:table-cell">User</th>
+                <th className="hidden px-4 py-2.5 text-right sm:table-cell">Details</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[#EBEBEB]">
@@ -145,19 +145,19 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                     <tr className="align-top">
                       <td className="px-4 py-3 text-[12px]">
                         <div className="font-medium text-[#111111]">{when.rel}</div>
-                        <div className="font-mono text-[11px] text-[#999999]">{when.abs}</div>
+                        <div className="hidden font-mono text-[11px] text-[#999999] sm:block">{when.abs}</div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="font-mono text-[12.5px] font-medium text-[#111111]">
                           {row.orderName}
                         </div>
                         {row.fulfillmentId ? (
-                          <div className="mt-0.5 font-mono text-[10.5px] text-[#999999]">
+                          <div className="mt-0.5 hidden font-mono text-[10.5px] text-[#999999] sm:block">
                             FID {row.fulfillmentId}
                           </div>
                         ) : null}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="hidden px-4 py-3 sm:table-cell">
                         {row.tracking ? (
                           <div className="flex items-center gap-1">
                             <span className="font-mono text-[12px] text-[#111111]">{row.tracking}</span>
@@ -187,10 +187,10 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                           tone={row.status === "success" ? "green" : "red"}
                           icon={row.status === "error" ? <AlertCircle size={11} /> : undefined}
                         >
-                          {row.status === "success" ? "Success" : "Error"}
+                          {row.status === "success" ? "OK" : "Err"}
                         </StatusPill>
                       </td>
-                      <td className="px-4 py-3 text-[12px] text-[#555555]">
+                      <td className="hidden px-4 py-3 text-[12px] text-[#555555] md:table-cell">
                         {row.userEmail ? (
                           <span className="inline-flex items-center gap-1">
                             <User size={11} className="text-[#999999]" />
@@ -199,11 +199,11 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-full bg-[#F7F7F7] px-2 py-0.5 text-[11px] font-medium text-[#111111]">
                             <Bot size={11} />
-                            Auto-Sync
+                            Auto
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right">
+                      <td className="hidden px-4 py-3 text-right sm:table-cell">
                         {row.error ? (
                           <button
                             type="button"
