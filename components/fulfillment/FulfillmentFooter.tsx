@@ -32,8 +32,8 @@ export function FulfillmentFooter({
 
   return (
     <div
-      className="fixed bottom-0 right-0 z-20 border-t border-[#EBEBEB] bg-white/90 px-4 py-3 backdrop-blur"
-      style={{ left: "var(--sb-w, 240px)" }}
+      className="fixed bottom-16 right-0 z-20 border-t border-[#EBEBEB] bg-white/90 px-4 py-3 backdrop-blur md:bottom-0"
+      style={{ left: "var(--sb-w, 0px)" }}
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3 text-[12px] text-[#555555]">

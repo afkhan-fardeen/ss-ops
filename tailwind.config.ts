@@ -29,10 +29,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        // Primary: Acumin Pro (Adobe Fonts / Typekit) — falls back gracefully
         sans: [
-          "acumin-pro",
-          "Acumin Pro",
+          "var(--font-montserrat)",
+          "Montserrat",
           "-apple-system",
           "BlinkMacSystemFont",
           "Helvetica Neue",
@@ -40,12 +39,10 @@ const config: Config = {
           "sans-serif",
         ],
         display: [
-          "acumin-pro",
-          "Acumin Pro",
+          "var(--font-montserrat)",
+          "Montserrat",
           "-apple-system",
           "BlinkMacSystemFont",
-          "Helvetica Neue",
-          "Arial",
           "sans-serif",
         ],
         mono: ["var(--font-jetbrains-mono)", "ui-monospace", "monospace"],

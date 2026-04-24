@@ -2,14 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
-  Acumin Pro via Adobe Fonts (Typekit).
-  Replace the URL below with your own kit URL from https://fonts.adobe.com/
-  If you don't have an Adobe Fonts subscription yet, the fallback stack
-  (system-ui, -apple-system, Helvetica Neue, Arial) renders cleanly until you do.
-*/
-/* @import url("https://use.typekit.net/YOUR_KIT_ID.css"); */
-
 :root {
   --bg:              #FFFFFF;
   --bg2:             #FFFFFF;
@@ -33,11 +25,15 @@
 
 html {
   color-scheme: light;
+  /* Prevent any child from creating a horizontal scrollbar on mobile */
+  overflow-x: hidden;
 }
 
 body {
-  @apply bg-portal-bg text-portal-text font-sans antialiased;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  @apply bg-portal-bg text-portal-text;
+  overflow-x: hidden;
+  max-width: 100vw;
+  /* font-sans + antialiased are applied via className in RootLayout */
 }
 
 @keyframes fadeUp {

@@ -238,10 +238,16 @@ export function Sidebar() {
   );
 }
 
-function LogoMark({ size = 28 }: { size?: number }) {
+function LogoMark({ size = 30 }: { size?: number }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src="/logo.svg" alt="Seissense Ops" width={size} height={size} className="object-contain" />
+    <img
+      src="/favicon.png"
+      alt="Seissense Ops"
+      width={size}
+      height={size}
+      className="rounded-md object-contain"
+    />
   );
 }
 

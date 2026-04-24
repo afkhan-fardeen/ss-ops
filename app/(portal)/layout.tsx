@@ -14,17 +14,19 @@ const BOOT_SCRIPT = `
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white text-[#111111]">
+    <div className="overflow-x-hidden">
       <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
       <Sidebar />
       {/* On mobile margin-left is 0; on md+ it follows --sb-w */}
       <div
         style={{ marginLeft: "var(--sb-w, 0px)" }}
-        className="flex min-h-screen flex-col transition-[margin] duration-200"
+        className="flex min-h-screen flex-col bg-white text-[#111111] transition-[margin] duration-200"
       >
         <Topbar />
-        {/* pb-20 on mobile to clear the fixed bottom tab bar */}
-        <main className="flex-1 px-4 pb-20 pt-4 md:px-8 md:pb-8 md:pt-6">{children}</main>
+        {/* pb-24 on mobile so content doesn't hide behind the fixed bottom tab bar */}
+        <main className="flex-1 overflow-x-hidden px-4 pb-24 pt-4 md:px-8 md:pb-8 md:pt-6">
+          {children}
+        </main>
       </div>
       <Toaster position="top-right" richColors closeButton />
     </div>
