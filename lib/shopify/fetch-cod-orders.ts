@@ -52,12 +52,14 @@ export type FetchCodOrdersResult = {
 export async function fetchCodOrders(params: {
   createdAtMinIso: string;
   createdAtMaxIso: string;
+  cacheStrategy?: "prefer-cache" | "live" | "cache-only";
 }): Promise<FetchCodOrdersResult> {
   const { fetchOrders } = await import("@/lib/orders/fetch-orders");
   const { orders, ordersScannedInWindow } = await fetchOrders({
     createdAtMinIso: params.createdAtMinIso,
     createdAtMaxIso: params.createdAtMaxIso,
     cod: "only",
+    cacheStrategy: params.cacheStrategy,
   });
   return { codOrders: orders, ordersScannedInWindow };
 }
