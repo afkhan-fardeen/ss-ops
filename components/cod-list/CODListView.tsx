@@ -27,19 +27,23 @@ export function CODListView({
   ubexError?: string;
 }) {
   return (
-    <div className="space-y-5 pb-24 sm:pb-20">
-      <UbexStatusLine
-        tokenConfigured={ubexTokenConfigured}
-        codRows={rows}
-        totalShipments={ubexTotalShipments}
-        conflictsCount={ubexConflictsCount}
-        apiMessage={ubexApiMessage}
-        error={ubexError}
-      />
+    <div className="space-y-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
+        <Suspense fallback={null}>
+          <CodListFloatingActions dateOptions={dateOptions} />
+        </Suspense>
+        <div className="min-w-0 flex-1">
+          <UbexStatusLine
+            tokenConfigured={ubexTokenConfigured}
+            codRows={rows}
+            totalShipments={ubexTotalShipments}
+            conflictsCount={ubexConflictsCount}
+            apiMessage={ubexApiMessage}
+            error={ubexError}
+          />
+        </div>
+      </div>
       <CODTable rows={rows} ordersScannedInWindow={ordersScannedInWindow} />
-      <Suspense fallback={null}>
-        <CodListFloatingActions dateOptions={dateOptions} />
-      </Suspense>
     </div>
   );
 }

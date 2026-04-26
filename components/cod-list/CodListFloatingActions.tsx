@@ -252,8 +252,8 @@ export function CodListFloatingActions({ dateOptions }: { dateOptions: CodDateOp
 
   return (
     <>
-      <div className="pointer-events-auto fixed bottom-4 right-4 z-40 sm:bottom-5 sm:right-5">
-        <div className="flex flex-col divide-y divide-[#EBEBEB] overflow-hidden rounded-card border border-[#EBEBEB] bg-white/95 shadow-[0_8px_30px_rgba(15,23,42,0.12)] backdrop-blur-[2px]">
+      <div className="max-w-full shrink-0">
+        <div className="inline-flex max-w-full min-w-0 divide-x divide-[#EBEBEB] overflow-hidden rounded-card border border-[#EBEBEB] bg-white/95 shadow-soft backdrop-blur-[2px]">
           <button
             type="button"
             onClick={() => {
@@ -261,10 +261,10 @@ export function CodListFloatingActions({ dateOptions }: { dateOptions: CodDateOp
               setErrorMsg(null);
               setActive("download");
             }}
-            className="focus-ring flex w-full min-w-0 items-center gap-2 px-3.5 py-2.5 text-left text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] sm:min-w-[10.5rem] sm:px-4"
+            className="focus-ring inline-flex min-h-[2.25rem] items-center justify-center gap-1.5 bg-white px-2.5 py-1.5 text-[11px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] sm:px-3 sm:py-2 sm:text-[12px]"
           >
-            <Download size={16} strokeWidth={2} className="shrink-0 text-[#555555]" />
-            <span>Download Excel</span>
+            <Download size={15} strokeWidth={2} className="shrink-0 text-[#555555] sm:h-4 sm:w-4" />
+            <span className="whitespace-nowrap">Download Excel</span>
           </button>
           <button
             type="button"
@@ -273,10 +273,10 @@ export function CodListFloatingActions({ dateOptions }: { dateOptions: CodDateOp
               setErrorMsg(null);
               setActive("email");
             }}
-            className="focus-ring flex w-full min-w-0 items-center gap-2 px-3.5 py-2.5 text-left text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] sm:min-w-[10.5rem] sm:px-4"
+            className="focus-ring inline-flex min-h-[2.25rem] items-center justify-center gap-1.5 bg-white px-2.5 py-1.5 text-[11px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] sm:px-3 sm:py-2 sm:text-[12px]"
           >
-            <Mail size={16} strokeWidth={2} className="shrink-0 text-[#555555]" />
-            <span>Email Ubex</span>
+            <Mail size={15} strokeWidth={2} className="shrink-0 text-[#555555] sm:h-4 sm:w-4" />
+            <span className="whitespace-nowrap">Email Ubex</span>
           </button>
         </div>
       </div>
