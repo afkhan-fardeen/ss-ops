@@ -80,8 +80,8 @@ export function CODTable({ rows, ordersScannedInWindow }: { rows: CodRow[]; orde
             return (
               <tr
                 key={r.orderName}
-                className="border-b border-[#EBEBEB] text-[#111111] transition last:border-0 hover:bg-[#F7F7F7]"
-                style={i < 6 ? { animation: "fadeUp 0.4s ease-out both", animationDelay: `${i * 30}ms` } : undefined}
+                className="animate-cod-row border-b border-[#EBEBEB] text-[#111111] transition last:border-0 hover:bg-[#F7F7F7]"
+                style={{ animationDelay: `${Math.min(i, 24) * 22}ms` }}
               >
                 <td className="px-3 py-3 font-mono text-[12px] font-medium">{r.orderName}</td>
                 <td className="px-3 py-3 text-[12px] text-[#555555]">{orderDateFmt}</td>

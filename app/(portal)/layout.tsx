@@ -20,7 +20,7 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
       {/* On mobile margin-left is 0; on md+ it follows --sb-w */}
       <div
         style={{ marginLeft: "var(--sb-w, 0px)" }}
-        className="flex min-h-screen flex-col bg-white text-[#111111] transition-[margin] duration-200"
+        className="flex min-h-screen flex-col bg-transparent text-[#111111] transition-[margin] duration-200"
       >
         <Topbar />
         {/* pb-24 on mobile so content doesn't hide behind the fixed bottom tab bar */}

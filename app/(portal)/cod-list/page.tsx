@@ -1,10 +1,14 @@
-import { Suspense } from "react";
+import { Fragment, Suspense } from "react";
 import Link from "next/link";
 import { Archive } from "lucide-react";
 import { CODListView } from "@/components/cod-list/CODListView";
+import { CodDatePills, type CodDatePill } from "@/components/cod-list/CodDatePills";
+import { StatTick } from "@/components/cod-list/StatTick";
 import {
   getCollectionWindow,
+  getLastNWindows,
   getWindowForDateKey,
+  shortWindowLabel,
   type CollectionWindow,
 } from "@/lib/datetime/collection-window";
 import { fetchCodOrders } from "@/lib/shopify/fetch-cod-orders";
@@ -108,23 +112,53 @@ async function CodListContent({ dateKey }: { dateKey?: string }) {
     );
   }
 
+  const todayW = getCollectionWindow();
+  const activeKey = dateKey ?? todayW.dateKey;
+  const five = getLastNWindows(5);
+  const pillsOrdered: CodDatePill[] = [...five].reverse().map((w) => {
+    const isTodayW = w.dateKey === todayW.dateKey;
+    return {
+      dateKey: w.dateKey,
+      href: isTodayW ? "/cod-list" : `/cod-list?date=${w.dateKey}`,
+      label: shortWindowLabel(w),
+      isToday: w.isToday,
+      isActive: w.dateKey === activeKey,
+    };
+  });
+
   return (
-    <>
+    <Fragment key={dateKey ?? "today"}>
       {/* Window header */}
-      <section className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+      <section className="animate-fade-in rounded-card border border-[#EBEBEB] bg-white/95 p-5 shadow-soft backdrop-blur-[2px] transition-shadow duration-300 hover:shadow-md">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0 flex-1">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
               Collection window
             </p>
-            <h2 className="mt-1 text-[18px] font-semibold text-[#111111]">{win.label}</h2>
+            <div className="mt-1 flex items-center gap-2">
+              {win.isToday ? (
+                <span
+                  className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#4CAF50] animate-pulse-dot"
+                  title="Current window (live)"
+                />
+              ) : null}
+              <h2 className="text-[18px] font-semibold text-[#111111]">{win.label}</h2>
+            </div>
             <p className="mt-0.5 text-[12px] text-[#999999]">
               Yesterday 14:00 → Today 14:00 · Bahrain (UTC+3)
             </p>
+            <div className="mt-3">
+              <CodDatePills pills={pillsOrdered} />
+            </div>
           </div>
-          <div className="flex items-center gap-4">
-            <p className="font-mono text-[12px] text-[#999999]">
-              {ordersScannedInWindow} scanned · {rows.length} COD
+          <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
+            <p className="text-[12px] text-[#999999]">
+              <span className="inline-flex flex-wrap items-baseline gap-x-1.5">
+                <StatTick value={ordersScannedInWindow} />
+                <span>scanned ·</span>
+                <StatTick value={rows.length} />
+                <span>COD</span>
+              </span>
             </p>
             <Link
               href="/cod-history"
@@ -137,16 +171,18 @@ async function CodListContent({ dateKey }: { dateKey?: string }) {
         </div>
       </section>
 
-      <CODListView
-        rows={rows}
-        ordersScannedInWindow={ordersScannedInWindow}
-        ratesView={ratesView}
-        ubexTokenConfigured={ubexTokenConfigured}
-        ubexTotalShipments={ubexLookup?.totalShipments}
-        ubexConflictsCount={ubexLookup?.last4Conflicts.size}
-        ubexApiMessage={ubexLookup?.apiMessage}
-        ubexError={ubexLookup?.error}
-      />
-    </>
+      <div className="animate-fade-in" style={{ animationDelay: "40ms" }}>
+        <CODListView
+          rows={rows}
+          ordersScannedInWindow={ordersScannedInWindow}
+          ratesView={ratesView}
+          ubexTokenConfigured={ubexTokenConfigured}
+          ubexTotalShipments={ubexLookup?.totalShipments}
+          ubexConflictsCount={ubexLookup?.last4Conflicts.size}
+          ubexApiMessage={ubexLookup?.apiMessage}
+          ubexError={ubexLookup?.error}
+        />
+      </div>
+    </Fragment>
   );
 }

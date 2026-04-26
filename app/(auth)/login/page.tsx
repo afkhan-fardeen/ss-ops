@@ -13,7 +13,7 @@ export default function LoginPage({
       : "Enter the portal password to continue.";
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-white px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-page px-4">
       <div className="mb-7 flex flex-col items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.svg" alt="Seissense Ops" className="h-10 w-auto" />

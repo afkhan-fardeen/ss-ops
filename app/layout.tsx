@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Montserrat } from "next/font/google";
+import { SubtlePageGrid } from "@/components/layout/SubtlePageGrid";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -34,8 +35,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${montserrat.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
-        {children}
+      <body
+        className={`${montserrat.variable} ${jetbrainsMono.variable} font-sans antialiased relative min-h-screen bg-page`}
+      >
+        <SubtlePageGrid />
+        <div className="relative z-10 min-h-screen">{children}</div>
       </body>
     </html>
   );
