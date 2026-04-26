@@ -79,9 +79,9 @@ function htmlWrap(title: string, content: string): string {
 </head>
 <body>
 <div class="wrapper">
-  <div class="header"><h1>${title}</h1><p>Seissense Ops · Auto-Sync</p></div>
+  <div class="header"><h1>${title}</h1><p>Seissense Ops Bot</p></div>
   <div class="body">${content}</div>
-  <div class="footer">Seissense Ops · Auto-Sync · ${new Date().toLocaleString("en-GB", { timeZone: "Asia/Bahrain" })} (Bahrain)</div>
+  <div class="footer">Seissense Ops Bot · ${new Date().toLocaleString("en-GB", { timeZone: "Asia/Bahrain" })} (Bahrain)</div>
 </div>
 </body></html>`;
 }
@@ -104,7 +104,7 @@ export async function sendFulfillmentNotification(params: {
 
   const { fulfilled, skipped, checked, dryRun } = params;
   const prefix = dryRun ? "[DRY RUN] " : "";
-  const subject = `${prefix}✓ ${fulfilled.length} order${fulfilled.length !== 1 ? "s" : ""} fulfilled — Seissense Auto-Sync`;
+  const subject = `${prefix}✓ ${fulfilled.length} order${fulfilled.length !== 1 ? "s" : ""} fulfilled — Seissense Ops Bot`;
 
   const rows = fulfilled
     .map(
@@ -158,7 +158,7 @@ export async function sendErrorNotification(params: {
   if (!transporter) return;
 
   const { errors, fulfilled, checked } = params;
-  const subject = `⚠ ${errors.length} auto-fulfill error${errors.length !== 1 ? "s" : ""} — Seissense Ops`;
+  const subject = `⚠ ${errors.length} auto-fulfill error${errors.length !== 1 ? "s" : ""} — Seissense Ops Bot`;
 
   const rows = errors
     .map(
@@ -172,7 +172,7 @@ export async function sendErrorNotification(params: {
 
   const content = `
     <p style="color:#b33;font-size:14px;margin:0 0 8px;">
-      <strong>${errors.length}</strong> order${errors.length !== 1 ? "s" : ""} could not be fulfilled during the auto-sync run.
+      <strong>${errors.length}</strong> order${errors.length !== 1 ? "s" : ""} could not be fulfilled during the Seissense Ops Bot run.
     </p>
     <p style="color:#777;font-size:13px;margin:0 0 20px;">
       Checked <strong>${checked}</strong> · Fulfilled <strong>${fulfilled}</strong> · Failed <strong>${errors.length}</strong>

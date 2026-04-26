@@ -160,7 +160,7 @@ export function CronStatus() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <RefreshCw size={16} className="text-muted" />
-          <h3 className="text-sm font-semibold text-foreground">Auto-Sync Cron</h3>
+          <h3 className="text-sm font-semibold text-foreground">Seissense Ops Bot</h3>
           {latest?.dry_run && (
             <span className="text-[10px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
               dry-run

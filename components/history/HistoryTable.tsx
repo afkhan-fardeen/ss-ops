@@ -90,7 +90,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
         {([
           { key: "all",     label: "All",         count: rows.length },
           { key: "manual",  label: "Manual",       count: rows.filter((r) => r.userEmail !== null && r.status === "success").length },
-          { key: "cron",    label: "Auto-Sync",    count: rows.filter((r) => r.userEmail === null && r.status === "success").length },
+          { key: "cron",    label: "Seissense Ops Bot", count: rows.filter((r) => r.userEmail === null && r.status === "success").length },
           { key: "success", label: "Success",      count: rows.filter((r) => r.status === "success").length },
           { key: "error",   label: "Errors",       count: rows.filter((r) => r.status === "error").length },
         ] as const).map((f) => {
@@ -199,7 +199,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                         ) : (
                           <span className="inline-flex items-center gap-1 rounded-full bg-[#F7F7F7] px-2 py-0.5 text-[11px] font-medium text-[#111111]">
                             <Bot size={11} />
-                            Auto-Sync
+                            Seissense Ops Bot
                           </span>
                         )}
                       </td>

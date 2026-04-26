@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
             orderName: shopify_order_name,
             trackingNumber: ubex_tracking,
             trackingUrl: trackingUrl || undefined,
-            createdBy: "auto-sync",
+            createdBy: "seissense-ops-bot",
           });
 
           if (result.ok) {

@@ -100,7 +100,7 @@ export default async function HistoryPage() {
             </p>
           </div>
           <p className="font-mono text-[11px] text-[#999999]">
-            {successCount} fulfilled · {manualCount} manual · {cronCount} auto-sync · {errorCount} error
+            {successCount} fulfilled · {manualCount} manual · {cronCount} bot · {errorCount} error
           </p>
         </div>
       </section>

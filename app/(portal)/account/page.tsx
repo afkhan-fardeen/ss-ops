@@ -130,10 +130,10 @@ export default async function AccountPage() {
         </div>
       </section>
 
-      {/* Auto-Sync Status — visible to all roles */}
+      {/* Seissense Ops Bot — visible to all roles */}
       <section className="animate-fade-up">
         <div className="mb-2">
-          <h2 className="text-sm font-semibold text-[#111111]">Auto-Sync Status</h2>
+          <h2 className="text-sm font-semibold text-[#111111]">Seissense Ops Bot</h2>
           <p className="mt-0.5 text-[12.5px] text-[#555555]">
             Monitors Ubex delivery status and auto-fulfils Shopify orders. Runs every 15 minutes.
           </p>

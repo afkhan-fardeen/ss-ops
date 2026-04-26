@@ -52,7 +52,7 @@ export default async function CODSettingsPage() {
       <header>
         <h1 className="text-xl font-semibold text-[#111111]">COD Settings</h1>
         <p className="mt-1 text-[13px] text-[#555555]">
-          Manage email recipients for the COD list and auto-sync notifications.
+          Manage email recipients for the COD list and Seissense Ops Bot notifications.
         </p>
       </header>
 
@@ -86,7 +86,7 @@ export default async function CODSettingsPage() {
           </h2>
         </div>
         <p className="text-[13px] text-[#555555]">
-          When the auto-sync cron successfully fulfills one or more orders in Shopify, an email
+          When Seissense Ops Bot successfully fulfills one or more orders in Shopify, an email
           is sent here with a summary of fulfilled orders and their tracking links.
         </p>
         <RecipientGroup
@@ -108,7 +108,7 @@ export default async function CODSettingsPage() {
           </h2>
         </div>
         <p className="text-[13px] text-[#555555]">
-          If the auto-sync cron encounters errors (e.g. Shopify fulfillment failed), an alert
+          If Seissense Ops Bot encounters errors (e.g. Shopify fulfillment failed), an alert
           email is sent here with the affected orders and error details.
         </p>
         <RecipientGroup
