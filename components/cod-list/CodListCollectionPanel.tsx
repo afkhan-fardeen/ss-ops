@@ -47,7 +47,7 @@ export function CodListCollectionPanel({
 
   return (
     <section
-      className="flex h-full min-h-0 flex-col rounded-card border border-[#EBEBEB] bg-white/95 p-5 shadow-soft backdrop-blur-[2px] transition-shadow duration-300 hover:shadow-md"
+      className="flex h-full min-h-0 flex-1 flex-col rounded-card border border-[#EBEBEB] bg-white/95 p-5 shadow-soft backdrop-blur-[2px] transition-shadow duration-300 hover:shadow-md"
       aria-busy={isPending}
     >
       <div

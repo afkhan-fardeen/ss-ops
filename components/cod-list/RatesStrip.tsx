@@ -16,8 +16,8 @@ export function RatesStrip(props: {
 }) {
   const keys = Object.keys(props.rates).sort();
   return (
-    <section className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white p-4 shadow-soft md:p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <section className="flex h-full min-h-0 animate-fade-up flex-col rounded-card border border-[#EBEBEB] bg-white p-4 shadow-soft md:p-5">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <StatusPill tone={props.stale ? "amber" : "green"}>
             {props.stale ? "Cached" : "Live FX"}
@@ -26,7 +26,7 @@ export function RatesStrip(props: {
         </div>
         <span className="font-mono text-[10px] uppercase tracking-wider text-[#999999]">{props.source}</span>
       </div>
-      <div className="-mx-1 mt-3 flex snap-x gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible">
+      <div className="-mx-1 mt-3 flex min-h-0 flex-1 snap-x gap-2 overflow-x-auto overflow-y-auto px-1 pb-1 sm:flex-wrap sm:content-start sm:overflow-visible">
         {keys.map((ccy) => {
           const v = props.rates[ccy];
           if (typeof v !== "number") return null;

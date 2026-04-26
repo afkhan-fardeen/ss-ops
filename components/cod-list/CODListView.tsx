@@ -2,11 +2,13 @@
 
 import { Suspense } from "react";
 import type { CodRow } from "@/lib/cod/build-rows";
+import type { CodDateOption } from "./CodDatePicker";
+import { CodListFloatingActions } from "./CodListFloatingActions";
 import { CODTable } from "./CODTable";
-import { FooterBar } from "./FooterBar";
 import { UbexStatusLine } from "./UbexStatusLine";
 
 export function CODListView({
+  dateOptions,
   rows,
   ordersScannedInWindow,
   ubexTokenConfigured,
@@ -15,6 +17,7 @@ export function CODListView({
   ubexApiMessage,
   ubexError,
 }: {
+  dateOptions: CodDateOption[];
   rows: CodRow[];
   ordersScannedInWindow: number;
   ubexTokenConfigured: boolean;
@@ -24,7 +27,7 @@ export function CODListView({
   ubexError?: string;
 }) {
   return (
-    <div className="space-y-5 pb-40 sm:pb-36 md:pb-32">
+    <div className="space-y-5 pb-24 sm:pb-20">
       <UbexStatusLine
         tokenConfigured={ubexTokenConfigured}
         codRows={rows}
@@ -35,7 +38,7 @@ export function CODListView({
       />
       <CODTable rows={rows} ordersScannedInWindow={ordersScannedInWindow} />
       <Suspense fallback={null}>
-        <FooterBar />
+        <CodListFloatingActions dateOptions={dateOptions} />
       </Suspense>
     </div>
   );

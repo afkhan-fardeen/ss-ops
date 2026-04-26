@@ -92,22 +92,24 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
 
   return (
     <Fragment key={data.dateKeys.join(",")}>
-      <div className="grid animate-fade-in gap-4 lg:grid-cols-2 lg:items-stretch">
-        <CodListCollectionPanel
-          titleLine={titleLine}
-          subLine={subLine}
-          options={options}
-          selectedDateKeys={data.dateKeys}
-          ordersScannedInWindow={data.ordersScannedInWindow}
-          singleIsToday={Boolean(single?.isToday)}
-        />
-        <div className="min-w-0 lg:flex lg:flex-col">
+      <div className="grid min-h-0 animate-fade-in auto-rows-[minmax(0,1fr)] gap-4 lg:grid-cols-2 lg:items-stretch">
+        <div className="flex min-h-[12rem] min-w-0 flex-col lg:min-h-0">
+          <CodListCollectionPanel
+            titleLine={titleLine}
+            subLine={subLine}
+            options={options}
+            selectedDateKeys={data.dateKeys}
+            ordersScannedInWindow={data.ordersScannedInWindow}
+            singleIsToday={Boolean(single?.isToday)}
+          />
+        </div>
+        <div className="flex min-h-[12rem] min-w-0 flex-col lg:min-h-0">
           {data.ratesView ? (
-            <div className="h-full min-h-0">
+            <div className="min-h-0 flex-1">
               <RatesStrip {...data.ratesView} />
             </div>
           ) : (
-            <div className="flex h-full min-h-[7rem] items-center justify-center rounded-card border border-[#EBEBEB] bg-white/95 p-5 text-center text-[12px] text-[#999999] shadow-soft">
+            <div className="flex h-full min-h-[7rem] flex-1 items-center justify-center rounded-card border border-[#EBEBEB] bg-white/95 p-5 text-center text-[12px] text-[#999999] shadow-soft">
               FX rates unavailable for this view.
             </div>
           )}
@@ -116,6 +118,7 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
 
       <div className="animate-fade-in" style={{ animationDelay: "40ms" }}>
         <CODListView
+          dateOptions={options}
           rows={data.rows}
           ordersScannedInWindow={data.ordersScannedInWindow}
           ubexTokenConfigured={ubexTokenConfigured}
