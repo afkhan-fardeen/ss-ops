@@ -4,7 +4,16 @@ import { useCallback, useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import { Check, Download, Loader2, Mail, X } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { getLastNWindows, shortWindowLabel } from "@/lib/datetime/collection-window";
 import type { CodDateOption } from "./CodDatePicker";
+
+function buildDefaultDateOptions(): CodDateOption[] {
+  return getLastNWindows(14).map((w) => ({
+    dateKey: w.dateKey,
+    label: shortWindowLabel(w),
+    isToday: w.isToday,
+  }));
+}
 
 const MODAL_Z = 280;
 
@@ -48,7 +57,9 @@ function progressRowState(s: StepState, index: 0 | 1 | 2): "wait" | "active" | "
   return "wait";
 }
 
-export function CodListFloatingActions({ dateOptions }: { dateOptions: CodDateOption[] }) {
+/** `dateOptions` optional: defaults to last 14 windows, newest (today) first → older. */
+export function CodListFloatingActions({ dateOptions: dateOptionsProp }: { dateOptions?: CodDateOption[] }) {
+  const dateOptions = dateOptionsProp ?? buildDefaultDateOptions();
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState<ActiveModal>(null);

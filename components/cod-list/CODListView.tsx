@@ -1,14 +1,10 @@
 "use client";
 
-import { Suspense } from "react";
 import type { CodRow } from "@/lib/cod/build-rows";
-import type { CodDateOption } from "./CodDatePicker";
-import { CodListFloatingActions } from "./CodListFloatingActions";
 import { CODTable } from "./CODTable";
 import { UbexStatusLine } from "./UbexStatusLine";
 
 export function CODListView({
-  dateOptions,
   rows,
   ordersScannedInWindow,
   ubexTokenConfigured,
@@ -17,7 +13,6 @@ export function CODListView({
   ubexApiMessage,
   ubexError,
 }: {
-  dateOptions: CodDateOption[];
   rows: CodRow[];
   ordersScannedInWindow: number;
   ubexTokenConfigured: boolean;
@@ -28,21 +23,14 @@ export function CODListView({
 }) {
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-4">
-        <Suspense fallback={null}>
-          <CodListFloatingActions dateOptions={dateOptions} />
-        </Suspense>
-        <div className="min-w-0 flex-1">
-          <UbexStatusLine
-            tokenConfigured={ubexTokenConfigured}
-            codRows={rows}
-            totalShipments={ubexTotalShipments}
-            conflictsCount={ubexConflictsCount}
-            apiMessage={ubexApiMessage}
-            error={ubexError}
-          />
-        </div>
-      </div>
+      <UbexStatusLine
+        tokenConfigured={ubexTokenConfigured}
+        codRows={rows}
+        totalShipments={ubexTotalShipments}
+        conflictsCount={ubexConflictsCount}
+        apiMessage={ubexApiMessage}
+        error={ubexError}
+      />
       <CODTable rows={rows} ordersScannedInWindow={ordersScannedInWindow} />
     </div>
   );

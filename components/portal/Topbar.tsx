@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { CodListFloatingActions } from "@/components/cod-list/CodListFloatingActions";
 
 const titles: Record<string, string> = {
   "/cod-list":    "COD List",
@@ -79,17 +80,24 @@ export function Topbar() {
   });
 
   return (
-    <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b border-[#EBEBEB] bg-white/90 px-4 backdrop-blur-sm md:px-6">
-      <div className="flex items-center gap-2">
+    <header className="sticky top-0 z-10 flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-[#EBEBEB] bg-white/90 px-4 py-1.5 backdrop-blur-sm md:px-6">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-2 sm:gap-3">
         {section && (
           <>
             <span className="text-[12px] font-medium text-[#999999]">{section}</span>
             <span className="text-[#EBEBEB]">/</span>
           </>
         )}
-        <h1 className="text-[14px] font-semibold text-[#111111]">{title}</h1>
+        <h1 className="shrink-0 text-[14px] font-semibold text-[#111111]">{title}</h1>
+        {pathname === "/cod-list" && (
+          <Suspense fallback={null}>
+            <div className="min-w-0 pl-0 sm:pl-1">
+              <CodListFloatingActions />
+            </div>
+          </Suspense>
+        )}
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-3">
         <UbexIndicator />
         <span className="hidden font-mono text-[11px] text-[#999999] sm:inline">{today}</span>
       </div>

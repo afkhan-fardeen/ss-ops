@@ -68,14 +68,12 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
     void upsertOrderUbexLinks(matches).catch(() => {});
   }
 
-  const fourteen = getLastNWindows(14);
-  const options: CodDateOption[] = [...fourteen]
-    .reverse()
-    .map((w) => ({
-      dateKey: w.dateKey,
-      label: shortWindowLabel(w),
-      isToday: w.isToday,
-    }));
+  /** Newest (current window) first, then older days — same order as in the date picker. */
+  const options: CodDateOption[] = getLastNWindows(14).map((w) => ({
+    dateKey: w.dateKey,
+    label: shortWindowLabel(w),
+    isToday: w.isToday,
+  }));
 
   const single = data.singleWindow;
   const titleLine = single ? single.label : `${data.dateKeys.length} days selected`;
@@ -118,7 +116,6 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
 
       <div className="animate-fade-in" style={{ animationDelay: "40ms" }}>
         <CODListView
-          dateOptions={options}
           rows={data.rows}
           ordersScannedInWindow={data.ordersScannedInWindow}
           ubexTokenConfigured={ubexTokenConfigured}
