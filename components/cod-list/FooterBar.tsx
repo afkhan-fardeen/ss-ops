@@ -31,18 +31,22 @@ export function FooterBar() {
 
   return (
     <div
-      className="fixed bottom-16 right-0 z-20 border-t border-[#EBEBEB] bg-white/90 px-4 py-3 backdrop-blur md:bottom-0"
+      className="fixed bottom-16 right-0 z-20 border-t border-[#EBEBEB] bg-white/95 shadow-[0_-4px_20px_rgba(15,23,42,0.06)] md:bottom-0"
       style={{ left: "var(--sb-w, 0px)" }}
     >
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3 text-[12px] text-[#555555]">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between md:px-6">
+        <div className="min-w-0 flex-1 text-[12px] text-[#555555] sm:flex sm:items-center sm:pr-4">
           {emailMsg ? (
-            <span className="rounded-full bg-[#F7F7F7] px-2.5 py-0.5 font-medium text-[#111111]">{emailMsg}</span>
+            <span className="inline-flex rounded-full bg-[#F7F7F7] px-2.5 py-0.5 font-medium text-[#111111]">
+              {emailMsg}
+            </span>
           ) : (
-            <span className="text-[#999999]">Download the Excel sheet or email it to Ubex.</span>
+            <span className="text-[#999999] [text-wrap:balance]">
+              Download the Excel sheet or email it to Ubex.
+            </span>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-2" aria-live="polite">
+        <div className="flex shrink-0 flex-wrap items-center gap-2" aria-live="polite">
           <a
             href="/api/cod-list/download"
             className="focus-ring inline-flex h-9 items-center gap-1.5 rounded-card border border-[#EBEBEB] bg-white px-3 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"

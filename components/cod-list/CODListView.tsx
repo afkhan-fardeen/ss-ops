@@ -26,7 +26,7 @@ export function CODListView({
   ubexError?: string;
 }) {
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-40 sm:pb-36 md:pb-32">
       {ratesView ? <RatesStrip {...ratesView} /> : null}
       <UbexStatusLine
         tokenConfigured={ubexTokenConfigured}
