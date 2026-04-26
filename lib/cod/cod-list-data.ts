@@ -5,6 +5,10 @@ import { getRates } from "@/lib/fx/getRates";
 import { getCurrencyForCountry } from "@/lib/currency";
 import { buildCodRows } from "@/lib/cod/build-rows";
 import { buildUbexLookup, shopifyLast4Set, type UbexLookup } from "@/lib/ubex/build-lookup";
+import {
+  getCachedOrdersForDateKeys,
+  upsertCodListDayCacheSlices,
+} from "@/lib/supabase/cod-list-day-cache";
 
 const MAX_PICK = 14;
 
@@ -95,40 +99,16 @@ export type LoadCodListDataResult = {
   rangeEndIso: string;
 } | { ok: false; error: string };
 
-/**
- * One loader for the COD list page, download, and email.
- */
-export async function loadCodListData(params: { dates?: string; date?: string } | undefined): Promise<LoadCodListDataResult> {
-  const parsed = parseCodListDateParam(params);
-  if (parsed.error) {
-    return { ok: false, error: parsed.error };
-  }
-  const dateKeys = resolveDateKeys(parsed.dateKeys);
-  const windows = windowsForKeys(dateKeys);
-  if (dateKeys.length === 0) {
-    return { ok: false, error: "No dates selected." };
-  }
-
+async function buildResultFromWindowOrders(
+  dateKeys: string[],
+  windows: CollectionWindow[],
+  globalMin: string,
+  globalMax: string,
+  /** Orders already in selection windows, deduped by id */
+  codOrders: ShopifyOrder[],
+): Promise<LoadCodListDataResult & { ok: true }> {
   const todayKey = getCollectionWindow().dateKey;
   const shouldUpsertUbexLinks = dateKeys.length === 1 && dateKeys[0] === todayKey;
-
-  const globalMin = windows.reduce(
-    (min, w) => (Date.parse(w.createdAtMinIso) < Date.parse(min) ? w.createdAtMinIso : min),
-    windows[0]!.createdAtMinIso,
-  );
-  const globalMax = windows.reduce(
-    (max, w) => (Date.parse(w.createdAtMaxIso) > Date.parse(max) ? w.createdAtMaxIso : max),
-    windows[0]!.createdAtMaxIso,
-  );
-
-  const { codOrders: rawCod } = await fetchCodOrders({
-    createdAtMinIso: globalMin,
-    createdAtMaxIso: globalMax,
-    cacheStrategy: "prefer-cache",
-  });
-
-  const inWindows = rawCod.filter((o) => orderFallsInAnyWindow(o.created_at, windows));
-  const codOrders = dedupeByOrderId(inWindows);
   const ordersScannedInWindow = codOrders.length;
 
   const currencies = codOrders
@@ -151,7 +131,6 @@ export async function loadCodListData(params: { dates?: string; date?: string } 
     source: ratesResult.source,
   };
   const rows = buildCodRows(codOrders, ratesResult.rates, ubexResult);
-
   const singleWindow = dateKeys.length === 1 ? getWindowForDateKey(dateKeys[0]!) : null;
 
   return {
@@ -168,4 +147,58 @@ export async function loadCodListData(params: { dates?: string; date?: string } 
     rangeStartIso: globalMin,
     rangeEndIso: globalMax,
   };
+}
+
+/**
+ * One loader for the COD list page, download, and email.
+ */
+export async function loadCodListData(params: { dates?: string; date?: string } | undefined): Promise<LoadCodListDataResult> {
+  const parsed = parseCodListDateParam(params);
+  if (parsed.error) {
+    return { ok: false, error: parsed.error };
+  }
+  const dateKeys = resolveDateKeys(parsed.dateKeys);
+  const windows = windowsForKeys(dateKeys);
+  if (dateKeys.length === 0) {
+    return { ok: false, error: "No dates selected." };
+  }
+
+  const globalMin = windows.reduce(
+    (min, w) => (Date.parse(w.createdAtMinIso) < Date.parse(min) ? w.createdAtMinIso : min),
+    windows[0]!.createdAtMinIso,
+  );
+  const globalMax = windows.reduce(
+    (max, w) => (Date.parse(w.createdAtMaxIso) > Date.parse(max) ? w.createdAtMaxIso : max),
+    windows[0]!.createdAtMaxIso,
+  );
+
+  const anyTodayWindow = windows.some((w) => w.isToday);
+  if (!anyTodayWindow) {
+    const cached = await getCachedOrdersForDateKeys(dateKeys);
+    if (cached !== null) {
+      const codOrders = dedupeByOrderId(cached);
+      return buildResultFromWindowOrders(dateKeys, windows, globalMin, globalMax, codOrders);
+    }
+  }
+
+  const { codOrders: rawCod } = await fetchCodOrders({
+    createdAtMinIso: globalMin,
+    createdAtMaxIso: globalMax,
+    cacheStrategy: "prefer-cache",
+  });
+
+  const inWindows = rawCod.filter((o) => orderFallsInAnyWindow(o.created_at, windows));
+  const codOrders = dedupeByOrderId(inWindows);
+
+  const fetchedAt = new Date().toISOString();
+  const slices: { dateKey: string; orders: ShopifyOrder[] }[] = [];
+  for (let i = 0; i < dateKeys.length; i++) {
+    const w = windows[i]!;
+    if (w.isToday) continue;
+    const slice = codOrders.filter((o) => orderFallsInAnyWindow(o.created_at, [w]));
+    slices.push({ dateKey: dateKeys[i]!, orders: slice });
+  }
+  void upsertCodListDayCacheSlices(slices, fetchedAt);
+
+  return buildResultFromWindowOrders(dateKeys, windows, globalMin, globalMax, codOrders);
 }

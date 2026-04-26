@@ -31,25 +31,30 @@ export function sheetTitleFromDate(d = new Date()): string {
   return `${ordinalDay(d.getDate())} ${d.toLocaleString("en-GB", { month: "long" })} ${d.getFullYear()}`;
 }
 
-export function codFilenameFromDate(d = new Date()): string {
-  const dd   = d.getDate().toString().padStart(2, "0");
-  const mon  = d.toLocaleString("en-GB", { month: "short" });
-  const yyyy = d.getFullYear();
-  return `COD_Seissense_${dd}-${mon}-${yyyy}.xlsx`;
+/** `YYYY-MM-DD` (Bahrain close key) to `dd-MM-yyyy` for filenames (no timezone math). */
+function dateKeyToDdMmYyyy(dateKey: string): string {
+  const p = dateKey.split("-");
+  if (p.length === 3 && p[0] && p[1] && p[2]) {
+    return `${p[2]}-${p[1]}-${p[0]}`;
+  }
+  return dateKey;
 }
 
-/** Multi-day export: YYYY-MM-DD list (Bahrain close-date keys) */
+export function codFilenameFromDate(d = new Date()): string {
+  const dd = d.getDate().toString().padStart(2, "0");
+  const mm = (d.getMonth() + 1).toString().padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `COD_Seissense_${dd}-${mm}-${yyyy}.xlsx`;
+}
+
+/** Export filename: `COD_Seissense_26-04-2026_to_30-04-2026.xlsx` (Bahrain `dateKey`s). */
 export function codFilenameForDateKeys(dateKeys: string[]): string {
   if (dateKeys.length === 0) return codFilenameFromDate();
   if (dateKeys.length === 1) {
-    const p = dateKeys[0]!.split("-").map(Number);
-    const y = p[0]!;
-    const m = p[1]!;
-    const d = p[2]!;
-    return codFilenameFromDate(new Date(y, m - 1, d));
+    return `COD_Seissense_${dateKeyToDdMmYyyy(dateKeys[0]!)}.xlsx`;
   }
   const s = [...dateKeys].sort();
-  return `COD_Seissense_${s[0]!.replace(/-/g, "")}_to_${s[s.length - 1]!.replace(/-/g, "")}.xlsx`;
+  return `COD_Seissense_${dateKeyToDdMmYyyy(s[0]!)}_to_${dateKeyToDdMmYyyy(s[s.length - 1]!)}.xlsx`;
 }
 
 function formatOrderDate(iso: string | null): string {
