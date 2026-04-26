@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Archive, History, ListChecks, PackageCheck, Settings2, User2 } from "lucide-react";
+import { History, ListChecks, PackageCheck, Settings2, User2 } from "lucide-react";
 
 export type NavItem = {
   label: string;
@@ -13,11 +13,8 @@ export type NavGroup = {
   items: NavItem[];
 };
 
-/** COD sub-section — list + archive */
-export const codNav: NavItem[] = [
-  { label: "COD List",    href: "/cod-list",   icon: ListChecks },
-  { label: "COD Archive", href: "/cod-history", icon: Archive },
-];
+/** COD sub-section */
+export const codNav: NavItem[] = [{ label: "COD List", href: "/cod-list", icon: ListChecks }];
 
 /** Other operational tools */
 export const toolsNav: NavItem[] = [

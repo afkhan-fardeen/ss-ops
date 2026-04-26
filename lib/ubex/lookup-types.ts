@@ -20,4 +20,9 @@ export type BuildUbexLookupOptions = {
   needed?: Set<string>;
   /** Bypass the module-level TTL cache. */
   force?: boolean;
+  /**
+   * COD list only: if true, skip shipment `details` fetches when `needed` is fully matched after
+   * the list pages; if still unmatched, use a lower detail cap. Fulfillment should leave this off.
+   */
+  skipDetailFetches?: boolean;
 };

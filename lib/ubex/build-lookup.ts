@@ -155,8 +155,45 @@ export async function buildUbexLookup(options: BuildUbexLookupOptions = {}): Pro
     }
   }
 
+  // COD: skip all detail fetches when list data already matches every `needed` last-4
+  if (options.skipDetailFetches && allNeededMatched(options.needed, last4ToTracking) && !error) {
+    const last4ConflictsEarly = new Set<string>();
+    for (const [l4, set] of last4Sets) {
+      if (set.size > 1) last4ConflictsEarly.add(l4);
+    }
+    const valueEarly: UbexLookup = {
+      refToTracking,
+      last4ToTracking,
+      last4Conflicts: last4ConflictsEarly,
+      trackingUrls,
+      totalShipments: trackings.size,
+      apiMessage,
+      error,
+    };
+    if (!error) {
+      CACHE.set(cacheKey, { at: Date.now(), value: valueEarly });
+      const listArr = [...trackings];
+      const capEarly = listArr.slice(0, DEFAULT_MAX_DETAIL_FETCHES);
+      const entries = capEarly.map((tracking) => {
+        let sender_barcode: string | null = null;
+        for (const [ref, t] of refToTracking) {
+          if (t === tracking) {
+            sender_barcode = ref;
+            break;
+          }
+        }
+        return { tracking, sender_barcode, tracking_url: trackingUrls.get(tracking) ?? null };
+      });
+      void upsertUbexCache(entries).catch((e) => console.warn("[ubex-cache] persist failed:", e));
+    }
+    return valueEarly;
+  }
+
   const list = [...trackings];
-  const capped = list.slice(0, DEFAULT_MAX_DETAIL_FETCHES);
+  const maxDetailFetches = options.skipDetailFetches
+    ? Math.min(24, DEFAULT_MAX_DETAIL_FETCHES)
+    : DEFAULT_MAX_DETAIL_FETCHES;
+  const capped = list.slice(0, maxDetailFetches);
 
   outer: for (let i = 0; i < capped.length; i += DETAIL_CONCURRENCY) {
     const slice = capped.slice(i, i + DETAIL_CONCURRENCY);

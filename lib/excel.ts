@@ -38,6 +38,20 @@ export function codFilenameFromDate(d = new Date()): string {
   return `COD_Seissense_${dd}-${mon}-${yyyy}.xlsx`;
 }
 
+/** Multi-day export: YYYY-MM-DD list (Bahrain close-date keys) */
+export function codFilenameForDateKeys(dateKeys: string[]): string {
+  if (dateKeys.length === 0) return codFilenameFromDate();
+  if (dateKeys.length === 1) {
+    const p = dateKeys[0]!.split("-").map(Number);
+    const y = p[0]!;
+    const m = p[1]!;
+    const d = p[2]!;
+    return codFilenameFromDate(new Date(y, m - 1, d));
+  }
+  const s = [...dateKeys].sort();
+  return `COD_Seissense_${s[0]!.replace(/-/g, "")}_to_${s[s.length - 1]!.replace(/-/g, "")}.xlsx`;
+}
+
 function formatOrderDate(iso: string | null): string {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("en-GB", {

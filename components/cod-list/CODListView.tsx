@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import type { CodRow } from "@/lib/cod/build-rows";
 import { CODTable } from "./CODTable";
 import { FooterBar } from "./FooterBar";
@@ -37,7 +38,9 @@ export function CODListView({
         error={ubexError}
       />
       <CODTable rows={rows} ordersScannedInWindow={ordersScannedInWindow} />
-      <FooterBar />
+      <Suspense fallback={null}>
+        <FooterBar />
+      </Suspense>
     </div>
   );
 }

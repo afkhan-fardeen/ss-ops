@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Copy, ExternalLink } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import type { CodRow } from "@/lib/cod/build-rows";
 import { StatusPill } from "@/components/portal/StatusPill";
@@ -29,26 +29,15 @@ function CopyButton({ value }: { value: string }) {
   );
 }
 
-export function CODTable({ rows, ordersScannedInWindow }: { rows: CodRow[]; ordersScannedInWindow: number }) {
+export function CODTable({ rows, ordersScannedInWindow: _n }: { rows: CodRow[]; ordersScannedInWindow: number }) {
+  void _n;
   if (rows.length === 0) {
     return (
       <div className="animate-fade-up space-y-3 rounded-card border border-[#EBEBEB] bg-white p-8 shadow-soft">
-        <p className="text-center text-sm font-medium text-[#111111]">No COD orders in this collection window.</p>
-        {ordersScannedInWindow > 0 ? (
-          <div className="mx-auto max-w-lg rounded-card border border-[#F0B743]/25 bg-[rgba(240,183,67,0.12)] p-4 text-left text-[13px] text-[#111111]">
-            <p className="font-medium text-[#F0B743]">
-              Shopify returned {ordersScannedInWindow} order(s) in the window, but none matched COD.
-            </p>
-            <p className="mt-2 text-[12px] text-[#555555]">
-              Open an order in Admin and check <strong>Payment method</strong>. This app looks for &quot;cash on delivery&quot;, &quot;(COD)&quot;, or similar.
-              If yours is named differently, extend <code className="font-mono">SHOPIFY_COD_MATCH_EXTRA</code> in <code className="font-mono">.env</code>.
-            </p>
-          </div>
-        ) : (
-          <p className="text-center text-[12px] text-[#999999]">
-            No orders at all in this collection window.
-          </p>
-        )}
+        <p className="text-center text-sm font-medium text-[#111111]">No COD orders for the selected day(s).</p>
+        <p className="text-center text-[12px] text-[#999999]">
+          Add another day above or check Shopify. Custom COD names: <code className="font-mono">SHOPIFY_COD_MATCH_EXTRA</code> in <code className="font-mono">.env</code>.
+        </p>
       </div>
     );
   }
@@ -56,14 +45,13 @@ export function CODTable({ rows, ordersScannedInWindow }: { rows: CodRow[]; orde
   return (
     <div className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white shadow-soft">
       <div className="max-h-[65vh] overflow-auto">
-      <table className="w-full min-w-[900px] border-collapse text-left text-[13px]">
+      <table className="w-full min-w-[820px] border-collapse text-left text-[13px]">
         <thead className="sticky top-0 z-10">
           <tr className="border-b border-[#EBEBEB] bg-[#F7F7F7] text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
             <th className="px-3 py-3">Order</th>
             <th className="px-3 py-3">Date</th>
             <th className="px-3 py-3">Status</th>
             <th className="px-3 py-3">UBEX ID</th>
-            <th className="px-3 py-3">Tracking</th>
             <th className="px-3 py-3">Outstanding</th>
             <th className="px-3 py-3">To Collect</th>
             <th className="px-3 py-3">Customer</th>
@@ -98,17 +86,6 @@ export function CODTable({ rows, ordersScannedInWindow }: { rows: CodRow[]; orde
                       <span className="text-[#111111]">{r.ubexId}</span>
                       <CopyButton value={r.ubexId} />
                     </span>
-                  ) : <span className="text-[#999999]">—</span>}
-                </td>
-                <td className="px-3 py-3">
-                  {r.trackingUrl ? (
-                    <div className="inline-flex items-center gap-1.5">
-                      <a href={r.trackingUrl} target="_blank" rel="noopener noreferrer"
-                        className="focus-ring inline-flex items-center gap-1 rounded text-[12px] font-medium text-[#111111] hover:underline">
-                        Open <ExternalLink size={11} />
-                      </a>
-                      <CopyButton value={r.trackingUrl} />
-                    </div>
                   ) : <span className="text-[#999999]">—</span>}
                 </td>
                 <td className="px-3 py-3 font-mono text-[12px]">{r.outstandingGbp}</td>

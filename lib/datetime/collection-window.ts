@@ -93,7 +93,7 @@ export function getCollectionWindow(now = new Date()): CollectionWindow {
 
 /**
  * Returns the collection window for a specific YYYY-MM-DD string (Bahrain date).
- * Used by /cod-list?date=YYYY-MM-DD and the /cod-history page.
+ * Used by /cod-list?dates=… (and legacy ?date=) for a specific close date.
  */
 export function getWindowForDateKey(dateKey: string): CollectionWindow {
   // Parse as Bahrain midnight then shift to that calendar date

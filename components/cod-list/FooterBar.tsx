@@ -1,18 +1,62 @@
 "use client";
 
 import { Download, Loader2, Mail } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
+function buildListQueryString(searchParams: ReturnType<typeof useSearchParams>): string {
+  const d = searchParams.get("dates");
+  const o = searchParams.get("date");
+  const sp = new URLSearchParams();
+  if (d) sp.set("dates", d);
+  else if (o) sp.set("date", o);
+  return sp.toString();
+}
+
 export function FooterBar() {
+  const searchParams = useSearchParams();
+  const listQuery = buildListQueryString(searchParams);
+  const [downloading, setDownloading] = useState(false);
   const [pendingEmail, startEmailTransition] = useTransition();
   const [emailMsg, setEmailMsg] = useState<string | null>(null);
 
+  function download() {
+    setDownloading(true);
+    const t = toast.loading("Preparing download…");
+    const q = listQuery;
+    const url = q ? `/api/cod-list/download?${q}` : "/api/cod-list/download";
+    void fetch(url)
+      .then(async (res) => {
+        if (!res.ok) {
+          const j = (await res.json().catch(() => ({}))) as { error?: string };
+          toast.error(j.error ?? "Download failed", { id: t });
+          return;
+        }
+        const blob = await res.blob();
+        const cd = res.headers.get("Content-Disposition");
+        const m = /filename="([^"]+)"/.exec(cd ?? "");
+        const fn = m?.[1] ?? "COD_Seissense.xlsx";
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = fn;
+        a.click();
+        URL.revokeObjectURL(a.href);
+        toast.success("File saved", { id: t });
+      })
+      .catch(() => {
+        toast.error("Network error", { id: t });
+      })
+      .finally(() => setDownloading(false));
+  }
+
   function sendEmail() {
     setEmailMsg(null);
+    const q = listQuery;
+    const url = q ? `/api/cod-list/email?${q}` : "/api/cod-list/email";
     startEmailTransition(async () => {
       try {
-        const resp = await fetch("/api/cod-list/email", { method: "POST" });
+        const resp = await fetch(url, { method: "POST" });
         const data = (await resp.json()) as { ok: boolean; error?: string };
         if (data.ok) {
           setEmailMsg("Email sent");
@@ -41,19 +85,19 @@ export function FooterBar() {
               {emailMsg}
             </span>
           ) : (
-            <span className="text-[#999999] [text-wrap:balance]">
-              Download the Excel sheet or email it to Ubex.
-            </span>
+            <span className="text-[#999999] [text-wrap:balance]">Download the Excel sheet or email it to Ubex.</span>
           )}
         </div>
         <div className="flex shrink-0 flex-wrap items-center gap-2" aria-live="polite">
-          <a
-            href="/api/cod-list/download"
-            className="focus-ring inline-flex h-9 items-center gap-1.5 rounded-card border border-[#EBEBEB] bg-white px-3 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+          <button
+            type="button"
+            onClick={() => void download()}
+            disabled={downloading}
+            className="focus-ring inline-flex h-9 items-center gap-1.5 rounded-card border border-[#EBEBEB] bg-white px-3 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Download size={14} strokeWidth={2} />
-            Download Excel
-          </a>
+            {downloading ? <Loader2 size={14} className="animate-spin-slow" /> : <Download size={14} strokeWidth={2} />}
+            {downloading ? "Downloading…" : "Download Excel"}
+          </button>
           <button
             type="button"
             onClick={sendEmail}
