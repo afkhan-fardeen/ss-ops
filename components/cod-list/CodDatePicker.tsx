@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, CalendarRange } from "lucide-react";
 
 export type CodDateOption = {
@@ -12,34 +12,96 @@ export type CodDateOption = {
 
 const MAX_DAYS = 14;
 const DEBOUNCE_MS = 250;
+const POP_Z = 200;
+const GAP = 6;
+
+type PopPos = { top: number; left: number; width: number };
+
+function clampPopoverLeft(left: number, width: number): number {
+  if (typeof window === "undefined") return left;
+  const pad = 8;
+  return Math.max(pad, Math.min(left, window.innerWidth - width - pad));
+}
 
 /**
- * Multi-select for up to 14 collection close dates. URL: `?dates=YYYY-MM-DD,…` (sorted after apply).
- * Popover + grid; debounced `router.push` in a transition.
+ * Multi-select (checkboxes) for up to 14 close dates. Popover in a portal to avoid z-index with fixed footer.
+ * URL updates via parent `onApplyKeys` (debounced).
  */
-export function CodDatePicker({ options, selectedDateKeys }: { options: CodDateOption[]; selectedDateKeys: string[] }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+export function CodDatePicker({
+  options,
+  selectedDateKeys,
+  onApplyKeys,
+  isPending,
+}: {
+  options: CodDateOption[];
+  selectedDateKeys: string[];
+  onApplyKeys: (sortedKeys: string[]) => void;
+  isPending: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [localKeys, setLocalKeys] = useState<string[]>(selectedDateKeys);
-  const [isPending, startTransition] = useTransition();
-  const popRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [popPos, setPopPos] = useState<PopPos>({ top: 0, left: 0, width: 280 });
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setLocalKeys(selectedDateKeys);
   }, [selectedDateKeys]);
 
   useEffect(() => {
+    if (isPending) setOpen(false);
+  }, [isPending]);
+
+  const updatePosition = useCallback(() => {
+    const el = triggerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const w = Math.min(320, Math.max(r.width, 220));
+    const left = clampPopoverLeft(r.left, w);
+    setPopPos({ top: r.bottom + GAP, left, width: w });
+  }, []);
+
+  useLayoutEffect(() => {
     if (!open) return;
-    function handle(e: MouseEvent) {
-      if (popRef.current && !popRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+    updatePosition();
+  }, [open, updatePosition]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onScrollOrResize = () => updatePosition();
+    window.addEventListener("scroll", onScrollOrResize, true);
+    window.addEventListener("resize", onScrollOrResize);
+    return () => {
+      window.removeEventListener("scroll", onScrollOrResize, true);
+      window.removeEventListener("resize", onScrollOrResize);
+    };
+  }, [open, updatePosition]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onDocMouseDown(e: MouseEvent) {
+      const t = e.target as Node;
+      if (triggerRef.current?.contains(t)) return;
+      if (popoverRef.current?.contains(t)) return;
+      setOpen(false);
     }
-    document.addEventListener("mousedown", handle);
-    return () => document.removeEventListener("mousedown", handle);
+    document.addEventListener("mousedown", onDocMouseDown);
+    return () => document.removeEventListener("mousedown", onDocMouseDown);
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
   useEffect(
@@ -49,22 +111,6 @@ export function CodDatePicker({ options, selectedDateKeys }: { options: CodDateO
     [],
   );
 
-  const pushKeys = useCallback(
-    (sorted: string[]) => {
-      const sp = new URLSearchParams(searchParams.toString());
-      if (sorted.length === 1) {
-        sp.set("dates", sorted[0]!);
-      } else {
-        sp.set("dates", sorted.join(","));
-      }
-      const q = sp.toString();
-      startTransition(() => {
-        router.push(q ? `${pathname}?${q}` : pathname, { scroll: false });
-      });
-    },
-    [pathname, router, searchParams],
-  );
-
   const schedulePush = useCallback(
     (next: string[]) => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -72,10 +118,10 @@ export function CodDatePicker({ options, selectedDateKeys }: { options: CodDateO
         debounceRef.current = null;
         const sorted = [...new Set(next)].filter(Boolean).sort();
         if (sorted.length === 0) return;
-        pushKeys(sorted);
+        onApplyKeys(sorted);
       }, DEBOUNCE_MS);
     },
-    [pushKeys],
+    [onApplyKeys],
   );
 
   function toggle(key: string) {
@@ -95,11 +141,22 @@ export function CodDatePicker({ options, selectedDateKeys }: { options: CodDateO
   const singleLabel = localKeys.length === 1 ? options.find((o) => o.dateKey === localKeys[0])?.label : null;
   const triggerLabel = singleLabel ?? `${localKeys.length} day${localKeys.length === 1 ? "" : "s"} selected`;
 
+  const popoverStyle: CSSProperties = {
+    zIndex: POP_Z,
+    top: popPos.top,
+    left: popPos.left,
+    width: popPos.width,
+    maxWidth: "calc(100vw - 16px)",
+  };
+
   return (
-    <div className="relative" ref={popRef}>
+    <div className="relative">
       <button
+        ref={triggerRef}
         type="button"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          setOpen((o) => !o);
+        }}
         className={[
           "focus-ring inline-flex w-full min-w-0 max-w-md items-center justify-between gap-2 rounded-card border border-[#EBEBEB] bg-white px-3 py-2 text-left text-[12px] font-medium transition hover:border-[#CCCCCC] hover:bg-[#F7F7F7] sm:min-w-[220px]",
           isPending ? "opacity-60" : "",
@@ -118,52 +175,59 @@ export function CodDatePicker({ options, selectedDateKeys }: { options: CodDateO
           strokeWidth={2}
         />
       </button>
-
-      {open ? (
-        <div
-          id="cod-date-picker-popover"
-          className="absolute left-0 top-[calc(100%+6px)] z-50 w-[min(100vw-2rem,20rem)] rounded-card border border-[#EBEBEB] bg-white p-3 shadow-[0_8px_30px_rgba(15,23,42,0.12)]"
-          role="dialog"
-          aria-label="Select collection days"
-        >
-          <p className="mb-2 text-[10.5px] font-medium uppercase tracking-wide text-[#999999]">Bahrain 14:00 → 14:00</p>
-          <div
-            className="grid grid-cols-4 gap-1.5 sm:grid-cols-7"
-            role="group"
-            aria-label="Select collection days (Bahrain 14:00 to 14:00)"
-          >
-            {options.map((o) => {
-              const on = localKeys.includes(o.dateKey);
-              return (
-                <button
-                  key={o.dateKey}
-                  type="button"
-                  onClick={() => void toggle(o.dateKey)}
-                  className={[
-                    "focus-ring flex min-h-[2.5rem] flex-col items-center justify-center gap-0.5 rounded-lg border px-1 py-1.5 text-center text-[10.5px] font-medium leading-tight tabular-nums",
-                    on
-                      ? "border-[#111111] bg-[#111111] text-white"
-                      : "border-[#EBEBEB] bg-white text-[#555555] hover:border-[#CCCCCC] hover:text-[#111111]",
-                  ].join(" ")}
-                  aria-pressed={on}
-                >
-                  {o.isToday ? (
-                    <span
-                      className={["inline-block h-1.5 w-1.5 shrink-0 rounded-full", on ? "bg-emerald-300" : "bg-[#4CAF50]"].join(" ")}
-                      title="Current collection window"
-                    />
-                  ) : (
-                    <span className="h-1.5 shrink-0" aria-hidden />
-                  )}
-                  <span className="w-full [text-wrap:balance] [overflow-wrap:break-word] text-[10px] font-medium leading-tight [overflow-wrap:anywhere]">
-                    {o.label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
+      {mounted && open
+        ? createPortal(
+            <div
+              ref={popoverRef}
+              id="cod-date-picker-popover"
+              className="fixed max-h-[min(50vh,20rem)] overflow-hidden rounded-card border border-[#EBEBEB] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.12)]"
+              style={popoverStyle}
+              role="dialog"
+              aria-label="Select collection days"
+            >
+              <fieldset className="border-0 p-3">
+                <legend className="mb-2 block text-[10.5px] font-medium uppercase tracking-wide text-[#999999]">
+                  Collection close dates · Bahrain 14:00 → 14:00
+                </legend>
+                <div className="max-h-[min(48vh,18.5rem)] space-y-0 overflow-y-auto pr-0.5">
+                  {options.map((o) => {
+                    const checked = localKeys.includes(o.dateKey);
+                    const id = `cod-day-${o.dateKey}`;
+                    return (
+                      <label
+                        key={o.dateKey}
+                        htmlFor={id}
+                        className={[
+                          "flex cursor-pointer items-center gap-2.5 rounded-lg border border-transparent py-1.5 pl-0.5 pr-2 text-[12px] leading-snug",
+                          "hover:border-[#EBEBEB] hover:bg-[#F7F7F7]",
+                        ].join(" ")}
+                      >
+                        <input
+                          id={id}
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => void toggle(o.dateKey)}
+                          className="focus-ring h-3.5 w-3.5 shrink-0 rounded border-[#CCCCCC] text-[#111111] accent-[#111111]"
+                        />
+                        {o.isToday ? (
+                          <span
+                            className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-[#4CAF50]"
+                            title="Current collection window"
+                            aria-label="Current collection window"
+                          />
+                        ) : (
+                          <span className="h-1.5 w-1.5 shrink-0" aria-hidden />
+                        )}
+                        <span className="min-w-0 flex-1 text-[#111111] [overflow-wrap:break-word]">{o.label}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

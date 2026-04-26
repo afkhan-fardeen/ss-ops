@@ -1,8 +1,9 @@
 import { Fragment, Suspense } from "react";
 import { CODListView } from "@/components/cod-list/CODListView";
-import { CodDatePicker, type CodDateOption } from "@/components/cod-list/CodDatePicker";
-import { StatTick } from "@/components/cod-list/StatTick";
-import { getCollectionWindow, getLastNWindows, shortWindowLabel } from "@/lib/datetime/collection-window";
+import { CodListCollectionPanel } from "@/components/cod-list/CodListCollectionPanel";
+import type { CodDateOption } from "@/components/cod-list/CodDatePicker";
+import { RatesStrip } from "@/components/cod-list/RatesStrip";
+import { getLastNWindows, shortWindowLabel } from "@/lib/datetime/collection-window";
 import { loadCodListData } from "@/lib/cod/cod-list-data";
 import { getUbexToken } from "@/lib/ubex/client";
 import { AlertTriangle } from "lucide-react";
@@ -26,13 +27,19 @@ export default function CodListPage({
 function CodListSkeleton() {
   return (
     <>
-      <div className="rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div className="space-y-2">
-            <div className="h-2.5 w-20 animate-pulse rounded bg-[#EBEBEB]" />
-            <div className="h-5 w-48 animate-pulse rounded bg-[#EBEBEB]" />
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+        <div className="rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="space-y-2">
+              <div className="h-2.5 w-20 animate-pulse rounded bg-[#EBEBEB]" />
+              <div className="h-5 w-48 animate-pulse rounded bg-[#EBEBEB]" />
+            </div>
+            <div className="h-3 w-40 animate-pulse rounded bg-[#EBEBEB]" />
           </div>
-          <div className="h-3 w-40 animate-pulse rounded bg-[#EBEBEB]" />
+        </div>
+        <div className="hidden min-h-[100px] rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft lg:block">
+          <div className="h-3 w-24 animate-pulse rounded bg-[#EBEBEB]" />
+          <div className="mt-4 h-8 w-full max-w-sm animate-pulse rounded bg-[#EBEBEB]" />
         </div>
       </div>
       <TableSkeleton rows={8} columns={8} />
@@ -71,7 +78,6 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
     }));
 
   const single = data.singleWindow;
-  const multi = data.dateKeys.length > 1;
   const titleLine = single ? single.label : `${data.dateKeys.length} days selected`;
   const subLine = single
     ? "Yesterday 14:00 → Today 14:00 · Bahrain (UTC+3)"
@@ -86,40 +92,32 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
 
   return (
     <Fragment key={data.dateKeys.join(",")}>
-      <section className="animate-fade-in rounded-card border border-[#EBEBEB] bg-white/95 p-5 shadow-soft backdrop-blur-[2px] transition-shadow duration-300 hover:shadow-md">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">Collection</p>
-            <div className="mt-1 flex items-center gap-2">
-              {single?.isToday ? (
-                <span
-                  className="inline-block h-2 w-2 shrink-0 rounded-full bg-[#4CAF50] animate-pulse-dot"
-                  title="Includes current collection window (live)"
-                />
-              ) : null}
-              <h2 className="text-[18px] font-semibold text-[#111111]">{titleLine}</h2>
+      <div className="grid animate-fade-in gap-4 lg:grid-cols-2 lg:items-stretch">
+        <CodListCollectionPanel
+          titleLine={titleLine}
+          subLine={subLine}
+          options={options}
+          selectedDateKeys={data.dateKeys}
+          ordersScannedInWindow={data.ordersScannedInWindow}
+          singleIsToday={Boolean(single?.isToday)}
+        />
+        <div className="min-w-0 lg:flex lg:flex-col">
+          {data.ratesView ? (
+            <div className="h-full min-h-0">
+              <RatesStrip {...data.ratesView} />
             </div>
-            <p className="mt-0.5 text-[12px] text-[#999999]">{subLine}</p>
-            <div className="mt-3">
-              <CodDatePicker options={options} selectedDateKeys={data.dateKeys} />
+          ) : (
+            <div className="flex h-full min-h-[7rem] items-center justify-center rounded-card border border-[#EBEBEB] bg-white/95 p-5 text-center text-[12px] text-[#999999] shadow-soft">
+              FX rates unavailable for this view.
             </div>
-          </div>
-          <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
-            <p className="text-[12px] text-[#999999]">
-              <span className="inline-flex flex-wrap items-baseline gap-x-1.5">
-                <StatTick value={data.ordersScannedInWindow} />
-                <span>COD in selection</span>
-              </span>
-            </p>
-          </div>
+          )}
         </div>
-      </section>
+      </div>
 
       <div className="animate-fade-in" style={{ animationDelay: "40ms" }}>
         <CODListView
           rows={data.rows}
           ordersScannedInWindow={data.ordersScannedInWindow}
-          ratesView={data.ratesView}
           ubexTokenConfigured={ubexTokenConfigured}
           ubexTotalShipments={data.ubexLookup?.totalShipments}
           ubexConflictsCount={data.ubexLookup?.last4Conflicts.size}
