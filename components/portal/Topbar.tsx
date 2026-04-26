@@ -10,6 +10,7 @@ const titles: Record<string, string> = {
   "/history":     "History",
   "/account":     "Account",
   "/cod-settings":"COD Settings",
+  "/admin":       "Admin",
 };
 
 const sections: Record<string, string> = {
@@ -18,6 +19,7 @@ const sections: Record<string, string> = {
   "/history":     "Tools",
   "/account":     "Settings",
   "/cod-settings":"Settings",
+  "/admin":       "Settings",
 };
 
 type UbexStatus = "checking" | "ok" | "error" | "unconfigured";

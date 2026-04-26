@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AlertTriangle, KeyRound, Mail, Shield, ShieldCheck, User2 } from "lucide-react";
 import { requireSession } from "@/lib/auth/require-session";
 import { getSupabaseService } from "@/lib/supabase/service";
@@ -81,6 +82,15 @@ export default async function AccountPage() {
             </div>
           </div>
         </div>
+
+        {session.mode === "supabase" && isAdmin ? (
+          <p className="mt-4 text-[13px]">
+            <Link href="/admin" className="font-medium text-[#111111] underline underline-offset-2 hover:text-[#555555]">
+              Open admin
+            </Link>
+            <span className="text-[#999999]"> — user stats and tools</span>
+          </p>
+        ) : null}
 
         <dl className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <InfoRow icon={<Mail size={13} />} label="Email">

@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { History, ListChecks, PackageCheck, Settings2, User2 } from "lucide-react";
+import { History, ListChecks, PackageCheck, Settings2, Shield, User2 } from "lucide-react";
 
 export type NavItem = {
   label: string;
@@ -27,7 +27,21 @@ export const settingsNav: NavItem[] = [
   { label: "Account",      href: "/account",       icon: User2 },
 ];
 
-/** Grouped sidebar nav (desktop) */
+const adminSettingsItem: NavItem = { label: "Admin", href: "/admin", icon: Shield };
+
+/**
+ * Desktop sidebar — includes Admin in Settings (first) when the user is a portal admin.
+ */
+export function getPortalNavGroups(showAdmin: boolean): NavGroup[] {
+  const settingsItems = showAdmin ? [adminSettingsItem, ...settingsNav] : settingsNav;
+  return [
+    { label: "COD", items: codNav },
+    { label: "Tools", items: toolsNav },
+    { label: "Settings", items: settingsItems },
+  ];
+}
+
+/** Grouped sidebar nav (desktop) — use getPortalNavGroups for admin-aware list */
 export const navGroups: NavGroup[] = [
   { label: "COD",      items: codNav },
   { label: "Tools",    items: toolsNav },

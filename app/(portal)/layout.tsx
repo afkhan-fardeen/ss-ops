@@ -1,4 +1,5 @@
 import { Toaster } from "sonner";
+import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { Sidebar } from "@/components/portal/Sidebar";
 import { Topbar } from "@/components/portal/Topbar";
 
@@ -12,11 +13,12 @@ const BOOT_SCRIPT = `
 }catch(e){document.documentElement.style.setProperty('--sb-w','0px');}})();
 `;
 
-export default function PortalLayout({ children }: { children: React.ReactNode }) {
+export default async function PortalLayout({ children }: { children: React.ReactNode }) {
+  const showAdminLink = await isPortalAdmin();
   return (
     <div className="overflow-x-hidden">
       <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
-      <Sidebar />
+      <Sidebar showAdminLink={showAdminLink} />
       {/* On mobile margin-left is 0; on md+ it follows --sb-w */}
       <div
         style={{ marginLeft: "var(--sb-w, 0px)" }}

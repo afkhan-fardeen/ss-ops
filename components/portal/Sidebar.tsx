@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { LogOut, PanelLeftClose, PanelLeftOpen } from "lucide-react";
-import { navGroups, mobileBottomItems, type NavItem } from "@/config/navigation";
+import { getPortalNavGroups, mobileBottomItems, type NavItem } from "@/config/navigation";
 
 const STORAGE_KEY = "portal.sidebar.collapsed";
 const WIDTH_EXPANDED = 240;
@@ -59,8 +59,9 @@ function NavLink({ item, active, collapsed }: { item: NavItem; active: boolean; 
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) {
   const pathname = usePathname();
+  const navGroups = getPortalNavGroups(showAdminLink);
   const [collapsed, setCollapsed] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     try {
