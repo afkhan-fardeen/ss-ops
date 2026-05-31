@@ -9,6 +9,8 @@ import {
   getCachedOrdersForDateKeys,
   upsertCodListDayCacheSlices,
 } from "@/lib/supabase/cod-list-day-cache";
+import { getOrderUbexLinksForOrderIds } from "@/lib/supabase/order-ubex-links";
+import { applyStoredUbexLinks } from "@/lib/ubex/apply-stored-links";
 
 const MAX_PICK = 14;
 
@@ -130,7 +132,13 @@ async function buildResultFromWindowOrders(
     stale: ratesResult.stale,
     source: ratesResult.source,
   };
-  const rows = buildCodRows(codOrders, ratesResult.rates, ubexResult);
+  let rows = buildCodRows(codOrders, ratesResult.rates, ubexResult);
+
+  const storedLinks = await getOrderUbexLinksForOrderIds(codOrders.map((o) => o.id)).catch(
+    () => new Map<number, string>(),
+  );
+  rows = applyStoredUbexLinks(rows, storedLinks);
+
   const singleWindow = dateKeys.length === 1 ? getWindowForDateKey(dateKeys[0]!) : null;
 
   return {

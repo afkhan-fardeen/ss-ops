@@ -37,6 +37,39 @@ export async function upsertOrderUbexLinks(entries: OrderUbexLinkInput[]): Promi
 }
 
 /**
+ * Load persisted Ubex tracking ids for a set of Shopify order ids (portal display fallback).
+ */
+export async function getOrderUbexLinksForOrderIds(
+  orderIds: number[],
+): Promise<Map<number, string>> {
+  const supabase = getSupabaseService();
+  if (!supabase || orderIds.length === 0) return new Map();
+
+  const unique = [...new Set(orderIds)];
+  const out = new Map<number, string>();
+
+  // Supabase .in() is fine for typical window sizes; chunk for very large sets.
+  const chunkSize = 200;
+  for (let i = 0; i < unique.length; i += chunkSize) {
+    const slice = unique.slice(i, i + chunkSize);
+    const { data, error } = await supabase
+      .from("order_ubex_links")
+      .select("shopify_order_id, ubex_tracking")
+      .in("shopify_order_id", slice);
+    if (error) {
+      console.warn("[order-ubex-links] batch read failed:", error.message);
+      continue;
+    }
+    for (const row of (data ?? []) as { shopify_order_id: number; ubex_tracking: string }[]) {
+      const tracking = row.ubex_tracking?.trim();
+      if (tracking) out.set(row.shopify_order_id, tracking);
+    }
+  }
+
+  return out;
+}
+
+/**
  * Return all pending (not yet auto-fulfilled) links, oldest first.
  * Capped at 100 rows per cron run to stay within Ubex API rate limits.
  */

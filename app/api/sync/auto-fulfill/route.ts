@@ -16,7 +16,7 @@ import {
 /**
  * POST /api/sync/auto-fulfill
  *
- * Cron endpoint — called every 15 minutes by Vercel Cron (or any external scheduler).
+ * Cron endpoint — scheduled 4× daily via Vercel Cron (see vercel.json / lib/cron/auto-fulfill-schedule.ts).
  *
  * For every Shopify order that has a known Ubex tracking (stored in order_ubex_links
  * by the portal pages), this checks whether Ubex has marked the shipment as

@@ -9,7 +9,8 @@ import { getFulfillmentWindow } from "@/lib/datetime/fulfillment-window";
 import { getLastLogsForOrders } from "@/lib/fulfillment/log";
 import type { InitialLogEntry } from "@/hooks/useRowPushQueue";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
-import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
+import { upsertOrderUbexLinks, getOrderUbexLinksForOrderIds } from "@/lib/supabase/order-ubex-links";
+import { applyStoredUbexLinks } from "@/lib/ubex/apply-stored-links";
 
 /** Shell renders instantly — Suspense streams the data in when ready. */
 export default function FulfillmentPage() {
@@ -68,6 +69,9 @@ async function FulfillmentContent() {
     ordersScannedInWindow = scanned;
     ubexLookup = ubexResult;
     rows = buildOrderRows(orders, ubexLookup);
+
+    const storedLinks = await getOrderUbexLinksForOrderIds(orders.map((o) => o.id)).catch(() => new Map());
+    rows = applyStoredUbexLinks(rows, storedLinks);
 
     // Save matched order→tracking links to Supabase for the auto-sync cron.
     const matches = rows

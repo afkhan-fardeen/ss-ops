@@ -14,22 +14,20 @@ import {
   ChevronUp,
 } from "lucide-react";
 import type { CronRunLog } from "@/lib/supabase/cron-run-log";
+import { msToNextAutoFulfillRun } from "@/lib/cron/auto-fulfill-schedule";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
 function msToNextRun(): number {
-  const now = new Date();
-  const msSinceBoundary =
-    (now.getMinutes() % 15) * 60 * 1000 +
-    now.getSeconds() * 1000 +
-    now.getMilliseconds();
-  return 15 * 60 * 1000 - msSinceBoundary;
+  return msToNextAutoFulfillRun();
 }
 
 function fmtCountdown(ms: number): string {
   const totalSec = Math.max(0, Math.ceil(ms / 1000));
-  const m = Math.floor(totalSec / 60);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
+  if (h > 0) return `${h}h ${m}m`;
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
