@@ -1,10 +1,11 @@
 /**
  * Auto-fulfill cron schedule (UTC). Keep in sync with vercel.json:
- *   "schedule": "0 2,8,14,20 * * *"
+ *   "schedule": "0 14 * * *"  →  17:00 Asia/Bahrain (5:00 PM)
  */
-export const AUTO_FULFILL_CRON_HOURS_UTC = [2, 8, 14, 20] as const;
+export const AUTO_FULFILL_CRON_HOURS_UTC = [14] as const;
 
-export const AUTO_FULFILL_CRON_DESCRIPTION = "4 times daily (02:00, 08:00, 14:00, 20:00 UTC)";
+export const AUTO_FULFILL_CRON_DESCRIPTION =
+  "Daily at 5:00 PM Bahrain (14:00 UTC)";
 
 /** Milliseconds until the next scheduled auto-fulfill run. */
 export function msToNextAutoFulfillRun(now = new Date()): number {

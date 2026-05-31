@@ -145,7 +145,7 @@ export default async function AccountPage() {
         <div className="mb-2">
           <h2 className="text-sm font-semibold text-[#111111]">Seissense Ops Bot</h2>
           <p className="mt-0.5 text-[12.5px] text-[#555555]">
-            Monitors Ubex delivery status and auto-fulfils Shopify orders. Runs 4 times daily (02:00, 08:00, 14:00, 20:00 UTC).
+            Monitors Ubex delivery status and auto-fulfils Shopify orders. Runs daily at 5:00 PM Bahrain time.
           </p>
         </div>
         <CronStatus />
