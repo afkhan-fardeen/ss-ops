@@ -23,7 +23,7 @@ function clampPopoverLeft(left: number, width: number): number {
 }
 
 /**
- * Multi-select (checkboxes) with draft; **Apply** commits URL. When checking a non-today day, today is auto-uncheck.
+ * Multi-select (checkboxes) with draft; **Apply** commits URL. Today and past days can be selected together.
  */
 export function CodDatePicker({
   options,
@@ -114,28 +114,20 @@ export function CodDatePicker({
     return () => document.removeEventListener("keydown", onKey);
   }, [open, close]);
 
-  const todayKey = options.find((o) => o.isToday)?.dateKey;
-
-  const toggle = useCallback(
-    (key: string, o: CodDateOption) => {
-      setApplyError(false);
-      setDraftKeys((prev) => {
-        const has = prev.includes(key);
-        if (has) {
-          if (prev.length <= 1) return prev;
-          return prev.filter((k) => k !== key).sort();
-        }
-        if (prev.length >= MAX_DAYS) return prev;
-        const next = new Set(prev);
-        if (!o.isToday && todayKey) {
-          next.delete(todayKey);
-        }
-        next.add(key);
-        return [...next].sort();
-      });
-    },
-    [todayKey],
-  );
+  const toggle = useCallback((key: string, _o: CodDateOption) => {
+    setApplyError(false);
+    setDraftKeys((prev) => {
+      const has = prev.includes(key);
+      if (has) {
+        if (prev.length <= 1) return prev;
+        return prev.filter((k) => k !== key).sort();
+      }
+      if (prev.length >= MAX_DAYS) return prev;
+      const next = new Set(prev);
+      next.add(key);
+      return [...next].sort();
+    });
+  }, []);
 
   function apply() {
     if (draftKeys.length === 0) {
@@ -159,7 +151,7 @@ export function CodDatePicker({
 
   return (
     <div className="relative">
-      <p className="mb-1.5 text-[10px] text-[#999999]">Select dates, then Apply. Changing non-today days drops &quot;current window&quot; unless you re-add it.</p>
+      <p className="mb-1.5 text-[10px] text-[#999999]">Select one or more dates (including today), then Apply.</p>
       <button
         ref={triggerRef}
         type="button"

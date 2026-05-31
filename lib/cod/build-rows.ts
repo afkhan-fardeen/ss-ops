@@ -3,6 +3,7 @@ import { formatMoneyGbp } from "@/lib/utils";
 import type { ShopifyOrder } from "@/lib/shopify/types";
 import { formatShippingAddress } from "@/lib/shopify/fetch-cod-orders";
 import { ubexTrackingForShopifyOrder, type UbexLookup } from "@/lib/ubex/build-lookup";
+import { lookupHasEntries } from "@/lib/ubex/merge-lookup";
 import { resolveTrackingUrl } from "@/lib/ubex/tracking-url";
 
 export type CodRow = {
@@ -49,8 +50,7 @@ export function buildCodRows(
     const last = o.customer?.last_name?.trim() ?? "";
     const customerName = [first, last].filter(Boolean).join(" ") || "—";
 
-    const hasLookup =
-      ubexLookup instanceof Map ? ubexLookup.size > 0 : !!ubexLookup && ubexLookup.refToTracking.size > 0;
+    const hasLookup = lookupHasEntries(ubexLookup);
     const ubexId = hasLookup && ubexLookup ? ubexTrackingForShopifyOrder(o, ubexLookup) : "";
     // Prefer Ubex's tracking_url only when it actually embeds the tracking id; otherwise build from template.
     const urlFromLookup =

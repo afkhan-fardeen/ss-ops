@@ -9,8 +9,7 @@ import {
   getCachedOrdersForDateKeys,
   upsertCodListDayCacheSlices,
 } from "@/lib/supabase/cod-list-day-cache";
-import { getOrderUbexLinksForOrderIds } from "@/lib/supabase/order-ubex-links";
-import { applyStoredUbexLinks } from "@/lib/ubex/apply-stored-links";
+import { applyUbexRowFallbacks } from "@/lib/ubex/apply-row-fallbacks";
 
 const MAX_PICK = 14;
 
@@ -109,8 +108,6 @@ async function buildResultFromWindowOrders(
   /** Orders already in selection windows, deduped by id */
   codOrders: ShopifyOrder[],
 ): Promise<LoadCodListDataResult & { ok: true }> {
-  const todayKey = getCollectionWindow().dateKey;
-  const shouldUpsertUbexLinks = dateKeys.length === 1 && dateKeys[0] === todayKey;
   const ordersScannedInWindow = codOrders.length;
 
   const currencies = codOrders
@@ -134,10 +131,9 @@ async function buildResultFromWindowOrders(
   };
   let rows = buildCodRows(codOrders, ratesResult.rates, ubexResult);
 
-  const storedLinks = await getOrderUbexLinksForOrderIds(codOrders.map((o) => o.id)).catch(
-    () => new Map<number, string>(),
-  );
-  rows = applyStoredUbexLinks(rows, storedLinks);
+  rows = await applyUbexRowFallbacks(rows, codOrders.map((o) => o.id));
+
+  const shouldUpsertUbexLinks = rows.some((r) => r.ubexId && !r.alreadyFulfilled);
 
   const singleWindow = dateKeys.length === 1 ? getWindowForDateKey(dateKeys[0]!) : null;
 

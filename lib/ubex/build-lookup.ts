@@ -15,6 +15,7 @@ import {
   allNeededMatched,
   emptyLookup,
 } from "./lookup-helpers";
+import { mergeUbexLookups } from "./merge-lookup";
 
 // Re-export so callers don't need to update their imports.
 export type { UbexLookup, BuildUbexLookupOptions } from "./lookup-types";
@@ -77,6 +78,12 @@ async function hydrateFromSupabase(token: string): Promise<UbexLookup | null> {
     })();
   }
   return hydratingPromise;
+}
+
+async function enrichLookupFromSupabaseCache(lookup: UbexLookup): Promise<UbexLookup> {
+  const fromDb = await buildLookupFromSupabase().catch(() => null);
+  if (fromDb) mergeUbexLookups(lookup, fromDb);
+  return lookup;
 }
 
 /** Invalidate the TTL cache (called after we mutate Ubex state, e.g. a fulfillment). */
@@ -186,7 +193,7 @@ export async function buildUbexLookup(options: BuildUbexLookupOptions = {}): Pro
       });
       void upsertUbexCache(entries).catch((e) => console.warn("[ubex-cache] persist failed:", e));
     }
-    return valueEarly;
+    return enrichLookupFromSupabaseCache(valueEarly);
   }
 
   const list = [...trackings];
@@ -251,7 +258,7 @@ export async function buildUbexLookup(options: BuildUbexLookupOptions = {}): Pro
     void upsertUbexCache(entries).catch((e) => console.warn("[ubex-cache] persist failed:", e));
   }
 
-  return value;
+  return enrichLookupFromSupabaseCache(value);
 }
 
 /**
