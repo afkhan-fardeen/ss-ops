@@ -197,7 +197,7 @@ export async function fetchShopifyVariantsByBarcode(
   return out;
 }
 
-const CONCURRENCY = 4;
+const CONCURRENCY = 12;
 
 /** Batch read by barcode with limited concurrency. Read-only. */
 export async function fetchShopifyInventoryByBarcodes(
@@ -222,5 +222,93 @@ export async function fetchShopifyInventoryByBarcodes(
   }
 
   await Promise.all(Array.from({ length: Math.min(CONCURRENCY, unique.length) }, () => worker()));
+  return out;
+}
+
+const ALL_VARIANTS_QUERY = `
+query AllVariantsInventory($locationId: ID!, $cursor: String) {
+  productVariants(first: 250, after: $cursor) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    nodes {
+      id
+      barcode
+      displayName
+      inventoryItem {
+        id
+        inventoryLevel(locationId: $locationId) {
+          quantities(names: ["on_hand", "available", "committed"]) {
+            name
+            quantity
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+type AllVariantsQueryData = {
+  productVariants: {
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+    nodes: Array<{
+      id: string;
+      barcode: string | null;
+      displayName: string;
+      inventoryItem: {
+        id: string;
+        inventoryLevel: {
+          quantities: Array<{ name: string; quantity: number }>;
+        } | null;
+      } | null;
+    }>;
+  };
+};
+
+function nodeToVariant(node: AllVariantsQueryData["productVariants"]["nodes"][number]): ShopifyVariantInventory | null {
+  const bc = normalizeBarcode(node.barcode ?? "");
+  if (!bc) return null;
+  const item = node.inventoryItem;
+  if (!item) return null;
+  const q = item.inventoryLevel
+    ? quantityMap(item.inventoryLevel.quantities)
+    : { onHand: 0, available: 0, committed: 0 };
+  return {
+    variantId: node.id,
+    barcode: bc,
+    displayName: node.displayName,
+    inventoryItemId: item.id,
+    ...q,
+  };
+}
+
+/** Paginate all Shopify variants at a location — O(variant pages) not O(barcodes). */
+export async function fetchAllShopifyInventoryAtLocation(
+  locationId: number,
+): Promise<Map<string, ShopifyVariantInventory[]>> {
+  const out = new Map<string, ShopifyVariantInventory[]>();
+  let cursor: string | null = null;
+  let hasNext = true;
+
+  while (hasNext) {
+    const data: AllVariantsQueryData = await shopifyGraphql(ALL_VARIANTS_QUERY, {
+      locationId: locationGid(locationId),
+      cursor,
+    });
+
+    for (const node of data.productVariants.nodes) {
+      const variant = nodeToVariant(node);
+      if (!variant) continue;
+      const list = out.get(variant.barcode) ?? [];
+      list.push(variant);
+      out.set(variant.barcode, list);
+    }
+
+    hasNext = data.productVariants.pageInfo.hasNextPage;
+    cursor = data.productVariants.pageInfo.endCursor;
+  }
+
   return out;
 }

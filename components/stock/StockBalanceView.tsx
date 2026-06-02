@@ -20,6 +20,7 @@ type Props = {
     skipped: number;
     mismatched: number;
   };
+  onRefresh?: () => void | Promise<void>;
 };
 
 const statusLabel: Record<StockBalanceRow["status"], string> = {
@@ -71,22 +72,34 @@ export function StockBalanceView({
   fetchedAt,
   itemCount,
   summary,
+  onRefresh,
 }: Props) {
   const router = useRouter();
   const { state, restockOne, restockBulk } = useRestockQueue();
-  const [mismatchesOnly, setMismatchesOnly] = useState(true);
+  const [mismatchesOnly, setMismatchesOnly] = useState(false);
+  const [search, setSearch] = useState("");
   const [confirmRows, setConfirmRows] = useState<RestockRowInput[] | null>(null);
   const [confirmBusy, setConfirmBusy] = useState(false);
 
   const visible = useMemo(() => {
-    if (!mismatchesOnly) return rows;
-    return rows.filter(
+    let list = rows;
+    if (mismatchesOnly) {
+      list = list.filter(
+        (r) =>
+          r.status === "unlinked" ||
+          r.status === "ambiguous" ||
+          (r.status === "matched" && r.delta !== null && r.delta !== 0),
+      );
+    }
+    const q = search.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter(
       (r) =>
-        r.status === "unlinked" ||
-        r.status === "ambiguous" ||
-        (r.status === "matched" && r.delta !== null && r.delta !== 0),
+        r.productName.toLowerCase().includes(q) ||
+        r.barcode.toLowerCase().includes(q) ||
+        (r.shopifyVariantLabel?.toLowerCase().includes(q) ?? false),
     );
-  }, [rows, mismatchesOnly]);
+  }, [rows, mismatchesOnly, search]);
 
   const restockableVisible = useMemo(
     () => visible.filter((r) => r.restockable),
@@ -113,7 +126,8 @@ export function StockBalanceView({
         await restockBulk(confirmRows);
       }
       setConfirmRows(null);
-      router.refresh();
+      if (onRefresh) await onRefresh();
+      else router.refresh();
     } finally {
       setConfirmBusy(false);
     }
@@ -127,15 +141,24 @@ export function StockBalanceView({
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <label className="inline-flex cursor-pointer items-center gap-2 text-[13px] text-[#555555]">
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="inline-flex cursor-pointer items-center gap-2 text-[13px] text-[#555555]">
+            <input
+              type="checkbox"
+              checked={mismatchesOnly}
+              onChange={(e) => setMismatchesOnly(e.target.checked)}
+              className="h-4 w-4 rounded border-[#EBEBEB]"
+            />
+            Mismatches only
+          </label>
           <input
-            type="checkbox"
-            checked={mismatchesOnly}
-            onChange={(e) => setMismatchesOnly(e.target.checked)}
-            className="h-4 w-4 rounded border-[#EBEBEB]"
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search product or barcode…"
+            className="w-48 rounded-card border border-[#EBEBEB] px-2.5 py-1.5 text-[12px] text-[#111111] placeholder:text-[#BBBBBB] focus:border-[#111111] focus:outline-none md:w-64"
           />
-          Mismatches only
-        </label>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           {restockableVisible.length > 0 ? (
             <button
@@ -149,7 +172,7 @@ export function StockBalanceView({
           ) : null}
           <button
             type="button"
-            onClick={() => router.refresh()}
+            onClick={() => (onRefresh ? void onRefresh() : router.refresh())}
             className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
           >
             Refresh
@@ -262,8 +285,10 @@ export function StockBalanceView({
       </div>
 
       <p className="text-[12px] text-[#999999]">
-        Location: {locationName} (id {locationId}) · {itemCount} Ubex items · Matched {summary.matched},
-        unlinked {summary.unlinked}, ambiguous {summary.ambiguous} · Fetched {fetchedLabel}
+        Location: {locationName} (id {locationId}) · {itemCount} Ubex items loaded · Showing{" "}
+        {visible.length} row{visible.length === 1 ? "" : "s"}
+        {search.trim() ? ` matching “${search.trim()}”` : ""} · Matched {summary.matched}, unlinked{" "}
+        {summary.unlinked}, ambiguous {summary.ambiguous} · Fetched {fetchedLabel}
       </p>
 
       {confirmRows ? (

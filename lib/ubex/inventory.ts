@@ -84,22 +84,53 @@ export async function fetchUbexInventoryPage(page: number): Promise<UbexInventor
   return out;
 }
 
-export function stockBalanceMaxItems(): number {
-  return Math.max(1, Number.parseInt(process.env.STOCK_BALANCE_MAX_ITEMS ?? "20", 10) || 20);
+export function stockBalanceMaxItems(): number | null {
+  const raw = process.env.STOCK_BALANCE_MAX_ITEMS?.trim();
+  // Unset or 0 = load entire Ubex catalog (default).
+  if (!raw || raw === "0") return null;
+  const n = Number.parseInt(raw, 10);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return n;
 }
 
-/** Fetch up to maxItems from Ubex inventory (paginated). Read-only. */
-export async function fetchUbexInventoryUpTo(maxItems = stockBalanceMaxItems()): Promise<UbexInventoryItem[]> {
+const PAGE_PARALLEL = 15;
+
+/** Fetch Ubex inventory; paginates all pages when maxItems is null. */
+export async function fetchUbexInventoryAll(
+  maxItems: number | null = stockBalanceMaxItems(),
+): Promise<UbexInventoryItem[]> {
   const out: UbexInventoryItem[] = [];
-  let page = 1;
-  while (out.length < maxItems) {
-    const batch = await fetchUbexInventoryPage(page);
-    if (batch.length === 0) break;
-    out.push(...batch);
-    if (batch.length < PAGE_SIZE) break;
-    page++;
+  let startPage = 1;
+
+  while (maxItems === null || out.length < maxItems) {
+    const pageNumbers = Array.from({ length: PAGE_PARALLEL }, (_, i) => startPage + i);
+    const batches = await Promise.all(pageNumbers.map((p) => fetchUbexInventoryPage(p)));
+
+    let stop = false;
+    for (const batch of batches) {
+      if (batch.length === 0) {
+        stop = true;
+        break;
+      }
+      out.push(...batch);
+      if (batch.length < PAGE_SIZE) {
+        stop = true;
+        break;
+      }
+    }
+
+    if (stop) break;
+    startPage += PAGE_PARALLEL;
   }
-  return out.slice(0, maxItems);
+
+  return maxItems === null ? out : out.slice(0, maxItems);
+}
+
+/** @deprecated alias — use fetchUbexInventoryAll */
+export async function fetchUbexInventoryUpTo(
+  maxItems: number | null = stockBalanceMaxItems(),
+): Promise<UbexInventoryItem[]> {
+  return fetchUbexInventoryAll(maxItems);
 }
 
 /** GET /api/v2/inventory/get-stock?ids[]=… — read-only fresh quantities for ids. */
@@ -108,24 +139,28 @@ export async function fetchUbexStockByIds(ids: string[]): Promise<Map<string, nu
   const out = new Map<string, number>();
   if (unique.length === 0) return out;
 
-  const query = unique.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
-  const res = await ubexFetch(`/api/v2/inventory/get-stock?${query}`, { method: "GET" });
-  const json = (await res.json()) as UbexGetStockResponse;
-  if (!res.ok) {
-    throw new Error(`Ubex get-stock HTTP ${res.status}: ${JSON.stringify(json).slice(0, 300)}`);
-  }
-  if (!ubexJsonStatusOk(json.status)) {
-    throw new Error(`Ubex get-stock error: ${json.msg ?? JSON.stringify(json).slice(0, 200)}`);
-  }
-  for (const row of json.stock ?? []) {
-    const id = row.uuid?.trim();
-    if (!id) continue;
-    out.set(id, resolveUbexQuantity(row.stock, row.available_qty));
-  }
-  for (const row of json.data ?? []) {
-    const id = row.id?.trim();
-    if (!id || out.has(id)) continue;
-    out.set(id, resolveUbexQuantity(row.stock, row.available_qty));
+  const GET_STOCK_BATCH = 50;
+  for (let i = 0; i < unique.length; i += GET_STOCK_BATCH) {
+    const chunk = unique.slice(i, i + GET_STOCK_BATCH);
+    const query = chunk.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
+    const res = await ubexFetch(`/api/v2/inventory/get-stock?${query}`, { method: "GET" });
+    const json = (await res.json()) as UbexGetStockResponse;
+    if (!res.ok) {
+      throw new Error(`Ubex get-stock HTTP ${res.status}: ${JSON.stringify(json).slice(0, 300)}`);
+    }
+    if (!ubexJsonStatusOk(json.status)) {
+      throw new Error(`Ubex get-stock error: ${json.msg ?? JSON.stringify(json).slice(0, 200)}`);
+    }
+    for (const row of json.stock ?? []) {
+      const id = row.uuid?.trim();
+      if (!id) continue;
+      out.set(id, resolveUbexQuantity(row.stock, row.available_qty));
+    }
+    for (const row of json.data ?? []) {
+      const id = row.id?.trim();
+      if (!id || out.has(id)) continue;
+      out.set(id, resolveUbexQuantity(row.stock, row.available_qty));
+    }
   }
   return out;
 }

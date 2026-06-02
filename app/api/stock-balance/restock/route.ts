@@ -30,6 +30,8 @@ function validateItem(item: SingleBody): string | null {
   return null;
 }
 
+export const maxDuration = 300;
+
 /**
  * POST /api/stock-balance/restock
  * Admin-only. Sets Shopify on_hand to fresh Ubex qty. No Ubex writes.
@@ -59,7 +61,7 @@ export async function POST(req: Request) {
     if (body.items.length === 0) {
       return NextResponse.json({ ok: false, error: "Empty items array" }, { status: 400 });
     }
-    if (body.items.length > maxItems) {
+    if (maxItems !== null && body.items.length > maxItems) {
       return NextResponse.json(
         { ok: false, error: `Max ${maxItems} items per bulk restock` },
         { status: 400 },
