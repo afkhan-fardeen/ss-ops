@@ -45,8 +45,8 @@ function locationGid(numericId: number): string {
 }
 
 const SET_ON_HAND_MUTATION = `
-mutation SetOnHand($input: InventorySetQuantitiesInput!) {
-  inventorySetQuantities(input: $input) {
+mutation SetOnHand($input: InventorySetQuantitiesInput!, $idempotencyKey: String!) {
+  inventorySetQuantities(input: $input) @idempotent(key: $idempotencyKey) {
     inventoryAdjustmentGroup {
       createdAt
     }
@@ -72,6 +72,7 @@ export async function setShopifyOnHand(
   quantity: number,
   /** Expected current on_hand for compare-and-swap; pass null to skip the check. */
   changeFromQuantity: number | null,
+  idempotencyKey: string,
 ): Promise<void> {
   const qty = Math.max(0, Math.floor(quantity));
   const data = await shopifyGraphql<SetOnHandData>(SET_ON_HAND_MUTATION, {
@@ -88,6 +89,7 @@ export async function setShopifyOnHand(
         },
       ],
     },
+    idempotencyKey,
   });
 
   const errors = data.inventorySetQuantities.userErrors;

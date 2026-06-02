@@ -220,8 +220,6 @@ export function StockBalanceView({
         await restockBulk(confirmRows);
       }
       setConfirmRows(null);
-      if (onRefresh) onRefresh();
-      else router.refresh();
     } finally {
       setConfirmBusy(false);
     }
