@@ -120,7 +120,7 @@ export async function restockItemToUbex(
   }
 
   try {
-    await setShopifyOnHand(variant.inventoryItemId, location.id, ubexStock);
+    await setShopifyOnHand(variant.inventoryItemId, location.id, ubexStock, previousOnHand);
   } catch (e) {
     await releaseRestockIdempotency(idemKey);
     const message = e instanceof Error ? e.message : "Shopify inventory update failed";

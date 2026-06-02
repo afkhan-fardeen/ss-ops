@@ -70,6 +70,8 @@ export async function setShopifyOnHand(
   inventoryItemId: string,
   locationId: number,
   quantity: number,
+  /** Expected current on_hand for compare-and-swap; pass null to skip the check. */
+  changeFromQuantity: number | null,
 ): Promise<void> {
   const qty = Math.max(0, Math.floor(quantity));
   const data = await shopifyGraphql<SetOnHandData>(SET_ON_HAND_MUTATION, {
@@ -81,6 +83,8 @@ export async function setShopifyOnHand(
           inventoryItemId,
           locationId: locationGid(locationId),
           quantity: qty,
+          changeFromQuantity:
+            changeFromQuantity === null ? null : Math.max(0, Math.floor(changeFromQuantity)),
         },
       ],
     },
