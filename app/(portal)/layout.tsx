@@ -1,5 +1,6 @@
 import { Toaster } from "sonner";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { PortalStockBalanceShell } from "@/components/portal/PortalStockBalanceShell";
 import { Sidebar } from "@/components/portal/Sidebar";
 import { Topbar } from "@/components/portal/Topbar";
 
@@ -27,7 +28,7 @@ export default async function PortalLayout({ children }: { children: React.React
         <Topbar />
         {/* pb-24 on mobile so content doesn't hide behind the fixed bottom tab bar */}
         <main className="flex-1 overflow-x-hidden px-4 pb-24 pt-4 md:px-8 md:pb-8 md:pt-6">
-          {children}
+          <PortalStockBalanceShell enabled={showAdminLink}>{children}</PortalStockBalanceShell>
         </main>
       </div>
       <Toaster position="top-right" richColors closeButton />

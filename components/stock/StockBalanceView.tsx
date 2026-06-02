@@ -28,7 +28,8 @@ type Props = {
     skipped: number;
     mismatched: number;
   };
-  onRefresh?: () => void | Promise<void>;
+  refreshLoading?: boolean;
+  onRefresh?: () => void;
 };
 
 const statusLabel: Record<StockBalanceRow["status"], string> = {
@@ -153,6 +154,7 @@ export function StockBalanceView({
   fetchedAt,
   itemCount,
   summary,
+  refreshLoading = false,
   onRefresh,
 }: Props) {
   const router = useRouter();
@@ -218,7 +220,7 @@ export function StockBalanceView({
         await restockBulk(confirmRows);
       }
       setConfirmRows(null);
-      if (onRefresh) await onRefresh();
+      if (onRefresh) onRefresh();
       else router.refresh();
     } finally {
       setConfirmBusy(false);
@@ -264,10 +266,11 @@ export function StockBalanceView({
           ) : null}
           <button
             type="button"
-            onClick={() => (onRefresh ? void onRefresh() : router.refresh())}
-            className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+            disabled={refreshLoading}
+            onClick={() => (onRefresh ? onRefresh() : router.refresh())}
+            className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Refresh
+            {refreshLoading ? "Refreshing…" : "Refresh"}
           </button>
         </div>
       </div>
