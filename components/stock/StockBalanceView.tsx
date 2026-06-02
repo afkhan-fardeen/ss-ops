@@ -1,11 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, Check, Loader2, PackagePlus, X } from "lucide-react";
+import { AlertCircle, ArrowLeftRight, Check, ChevronLeft, ChevronRight, Loader2, PackagePlus, X } from "lucide-react";
 import type { StockBalanceRow } from "@/lib/stock/build-balance-rows";
 import { StatusPill, type StatusTone } from "@/components/portal/StatusPill";
 import { useRestockQueue, type RestockRowInput } from "@/hooks/useRestockQueue";
+
+const PAGE_SIZE = 20;
+
+const thNeutral = "px-3 py-2.5 font-semibold";
+const thUbex = `${thNeutral} bg-violet-50/80 text-right text-violet-900/70`;
+const thShopify = `${thNeutral} bg-emerald-50/80 text-right text-emerald-900/70`;
+const tdUbex = "bg-violet-50/40 px-3 py-2.5 text-right tabular-nums text-violet-950/90";
+const tdShopify = "bg-emerald-50/30 px-3 py-2.5 text-right tabular-nums text-emerald-950/90";
 
 type Props = {
   rows: StockBalanceRow[];
@@ -65,6 +73,79 @@ function toRestockInput(row: StockBalanceRow): RestockRowInput {
   };
 }
 
+function shopifySubtitle(row: StockBalanceRow): string | null {
+  const label = row.shopifyVariantLabel?.trim();
+  if (!label || row.status !== "matched") return null;
+  if (label.toLowerCase() === row.productName.trim().toLowerCase()) return null;
+  return label;
+}
+
+function ProductCell({ row }: { row: StockBalanceRow }) {
+  const subtitle = shopifySubtitle(row);
+  return (
+    <td className="min-w-[220px] max-w-[360px] px-3 py-2.5 align-top">
+      <p className="line-clamp-2 font-medium leading-snug text-[#111111]" title={row.productName}>
+        {row.productName}
+      </p>
+      {subtitle ? (
+        <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-emerald-800/70" title={subtitle}>
+          Shopify: {subtitle}
+        </p>
+      ) : null}
+    </td>
+  );
+}
+
+function RestockIconButton({
+  busy,
+  done,
+  err,
+  onClick,
+}: {
+  busy: boolean;
+  done: boolean;
+  err: boolean;
+  onClick: () => void;
+}) {
+  const label = busy
+    ? "Restocking"
+    : done
+      ? "Restocked"
+      : err
+        ? "Retry restock"
+        : "Restock Shopify on hand to Ubex";
+
+  return (
+    <button
+      type="button"
+      disabled={busy || done}
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      aria-busy={busy || undefined}
+      className={[
+        "focus-ring inline-flex h-8 w-8 items-center justify-center rounded-card border transition",
+        err
+          ? "border-[#C25151]/30 bg-[rgba(194,81,81,0.10)] text-[#C25151]"
+          : done
+            ? "border-[#4CAF50]/30 text-[#4CAF50]"
+            : "border-[#EBEBEB] bg-white text-[#111111] hover:bg-[#F7F7F7]",
+        busy || done ? "cursor-not-allowed opacity-70" : "",
+      ].join(" ")}
+    >
+      {busy ? (
+        <Loader2 size={15} className="animate-spin-slow" />
+      ) : done ? (
+        <Check size={15} strokeWidth={2.4} />
+      ) : err ? (
+        <AlertCircle size={15} />
+      ) : (
+        <ArrowLeftRight size={15} strokeWidth={2.2} />
+      )}
+    </button>
+  );
+}
+
 export function StockBalanceView({
   rows,
   locationName,
@@ -78,6 +159,7 @@ export function StockBalanceView({
   const { state, restockOne, restockBulk } = useRestockQueue();
   const [mismatchesOnly, setMismatchesOnly] = useState(false);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
   const [confirmRows, setConfirmRows] = useState<RestockRowInput[] | null>(null);
   const [confirmBusy, setConfirmBusy] = useState(false);
 
@@ -100,6 +182,16 @@ export function StockBalanceView({
         (r.shopifyVariantLabel?.toLowerCase().includes(q) ?? false),
     );
   }, [rows, mismatchesOnly, search]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [mismatchesOnly, search]);
+
+  const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pageStart = (safePage - 1) * PAGE_SIZE;
+  const pageRows = visible.slice(pageStart, pageStart + PAGE_SIZE);
+  const rangeEnd = visible.length === 0 ? 0 : Math.min(pageStart + PAGE_SIZE, visible.length);
 
   const restockableVisible = useMemo(
     () => visible.filter((r) => r.restockable),
@@ -181,18 +273,18 @@ export function StockBalanceView({
       </div>
 
       <div className="overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
-        <table className="w-full min-w-[960px] border-collapse text-left text-[12.5px]">
+        <table className="w-full min-w-[980px] border-collapse text-left text-[12.5px]">
           <thead>
-            <tr className="border-b border-[#EBEBEB] bg-[#FAFAFA] text-[11px] font-semibold uppercase tracking-wide text-[#999999]">
-              <th className="px-3 py-2.5 font-semibold">Product</th>
-              <th className="px-3 py-2.5 font-semibold">Barcode</th>
-              <th className="px-3 py-2.5 font-semibold text-right">Ubex</th>
-              <th className="px-3 py-2.5 font-semibold text-right">On hand</th>
-              <th className="px-3 py-2.5 font-semibold text-right">Available</th>
-              <th className="px-3 py-2.5 font-semibold text-right">Committed</th>
-              <th className="px-3 py-2.5 font-semibold text-right">Δ</th>
-              <th className="px-3 py-2.5 font-semibold">Status</th>
-              <th className="px-3 py-2.5 font-semibold">Actions</th>
+            <tr className="border-b border-[#EBEBEB] text-[11px] font-semibold uppercase tracking-wide">
+              <th className={thNeutral}>Product</th>
+              <th className={thNeutral}>Barcode</th>
+              <th className={thUbex}>Ubex</th>
+              <th className={thShopify}>On hand</th>
+              <th className={thShopify}>Available</th>
+              <th className={thShopify}>Committed</th>
+              <th className={`${thNeutral} text-right`}>Δ</th>
+              <th className={thNeutral}>Status</th>
+              <th className={`${thNeutral} text-center`}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -203,7 +295,7 @@ export function StockBalanceView({
                 </td>
               </tr>
             ) : (
-              visible.map((row) => {
+              pageRows.map((row) => {
                 const rowState = state[row.ubexId];
                 const busy = rowState?.status === "busy";
                 const done = rowState?.status === "success";
@@ -212,21 +304,16 @@ export function StockBalanceView({
                 return (
                   <tr
                     key={row.ubexId}
-                    className="border-b border-[#F0F0F0] last:border-0 hover:bg-[#FAFAFA]"
+                    className="border-b border-[#F0F0F0] last:border-0 hover:bg-[#FAFAFA]/80"
                   >
-                    <td
-                      className="max-w-[200px] truncate px-3 py-2.5 font-medium text-[#111111]"
-                      title={row.productName}
-                    >
-                      {row.productName}
-                    </td>
+                    <ProductCell row={row} />
                     <td className="px-3 py-2.5 font-mono text-[12px] text-[#555555]">
                       {row.barcode || "—"}
                     </td>
-                    <td className="px-3 py-2.5 text-right tabular-nums">{fmt(row.ubexStock)}</td>
-                    <td className="px-3 py-2.5 text-right tabular-nums">{fmt(row.shopifyOnHand)}</td>
-                    <td className="px-3 py-2.5 text-right tabular-nums">{fmt(row.shopifyAvailable)}</td>
-                    <td className="px-3 py-2.5 text-right tabular-nums">{fmt(row.shopifyCommitted)}</td>
+                    <td className={tdUbex}>{fmt(row.ubexStock)}</td>
+                    <td className={tdShopify}>{fmt(row.shopifyOnHand)}</td>
+                    <td className={tdShopify}>{fmt(row.shopifyAvailable)}</td>
+                    <td className={tdShopify}>{fmt(row.shopifyCommitted)}</td>
                     <td
                       className={`px-3 py-2.5 text-right font-medium tabular-nums ${deltaClass(row.delta)}`}
                     >
@@ -235,34 +322,14 @@ export function StockBalanceView({
                     <td className="px-3 py-2.5">
                       <StatusPill tone={statusTone[row.status]}>{statusLabel[row.status]}</StatusPill>
                     </td>
-                    <td className="px-3 py-2.5">
+                    <td className="px-3 py-2.5 text-center">
                       {row.restockable ? (
-                        <button
-                          type="button"
-                          disabled={busy || done}
+                        <RestockIconButton
+                          busy={busy}
+                          done={done}
+                          err={err}
                           onClick={() => setConfirmRows([toRestockInput(row)])}
-                          title="Set Shopify on hand to Ubex quantity"
-                          className={[
-                            "focus-ring inline-flex h-8 items-center gap-1.5 rounded-card border px-2.5 text-[12px] font-medium transition",
-                            err
-                              ? "border-[#C25151]/30 bg-[rgba(194,81,81,0.10)] text-[#C25151]"
-                              : done
-                                ? "border-[#4CAF50]/30 text-[#4CAF50]"
-                                : "border-[#EBEBEB] bg-white text-[#111111] hover:bg-[#F7F7F7]",
-                            busy || done ? "cursor-not-allowed opacity-70" : "",
-                          ].join(" ")}
-                        >
-                          {busy ? (
-                            <Loader2 size={13} className="animate-spin-slow" />
-                          ) : done ? (
-                            <Check size={13} />
-                          ) : err ? (
-                            <AlertCircle size={13} />
-                          ) : (
-                            <PackagePlus size={13} />
-                          )}
-                          <span>{busy ? "Restocking…" : done ? "Done" : err ? "Retry" : "Restock"}</span>
-                        </button>
+                        />
                       ) : (
                         <span
                           className="text-[11px] text-[#BBBBBB]"
@@ -284,11 +351,47 @@ export function StockBalanceView({
         </table>
       </div>
 
+      {visible.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p className="text-[12px] tabular-nums text-[#555555]">
+            {visible.length <= PAGE_SIZE
+              ? `Showing all ${visible.length} row${visible.length === 1 ? "" : "s"}`
+              : `Showing ${pageStart + 1}–${rangeEnd} of ${visible.length}`}
+            {totalPages > 1 ? ` · Page ${safePage} of ${totalPages}` : ""}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={safePage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="focus-ring inline-flex items-center gap-1 rounded-card border border-[#EBEBEB] bg-white px-2.5 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft size={14} />
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={safePage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="focus-ring inline-flex items-center gap-1 rounded-card border border-[#EBEBEB] bg-white px-2.5 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <p className="text-[12px] text-[#999999]">
-        Location: {locationName} (id {locationId}) · {itemCount} Ubex items loaded · Showing{" "}
-        {visible.length} row{visible.length === 1 ? "" : "s"}
-        {search.trim() ? ` matching “${search.trim()}”` : ""} · Matched {summary.matched}, unlinked{" "}
-        {summary.unlinked}, ambiguous {summary.ambiguous} · Fetched {fetchedLabel}
+        Location: {locationName} (id {locationId}) · {itemCount} Ubex items loaded
+        {visible.length !== itemCount ? ` · ${visible.length} after filter` : ""}
+        {visible.length > 0
+          ? ` · Showing ${pageStart + 1}–${rangeEnd}${search.trim() ? ` matching “${search.trim()}”` : ""}`
+          : search.trim()
+            ? ` · 0 matching “${search.trim()}”`
+            : ""}{" "}
+        · Matched {summary.matched}, unlinked {summary.unlinked}, ambiguous {summary.ambiguous} ·
+        Fetched {fetchedLabel}
       </p>
 
       {confirmRows ? (
@@ -305,9 +408,7 @@ export function StockBalanceView({
             className="relative z-10 w-full max-w-md rounded-card border border-[#EBEBEB] bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.18)]"
           >
             <div className="mb-3 flex items-start justify-between gap-2">
-              <h2 className="text-base font-semibold text-[#111111]">
-                Confirm restock
-              </h2>
+              <h2 className="text-base font-semibold text-[#111111]">Confirm restock</h2>
               <button
                 type="button"
                 disabled={confirmBusy}
@@ -339,9 +440,7 @@ export function StockBalanceView({
                   <p className="font-medium text-[#111111]">{r.productName}</p>
                   <p className="mt-0.5 text-[#555555]">
                     on hand {fmt(r.shopifyOnHand)} → {r.ubexStock}
-                    {(r.shopifyCommitted ?? 0) > 0
-                      ? ` · committed ${r.shopifyCommitted}`
-                      : ""}
+                    {(r.shopifyCommitted ?? 0) > 0 ? ` · committed ${r.shopifyCommitted}` : ""}
                   </p>
                 </li>
               ))}
