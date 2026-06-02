@@ -19,6 +19,7 @@ type UbexInventoryListResponse = {
     name?: string;
     barcode?: string;
     stock?: string | number;
+    available_qty?: number;
     sku?: string;
     track_qty?: boolean;
   }>;
@@ -30,7 +31,7 @@ type UbexGetStockResponse = {
   /** Live API shape */
   stock?: Array<{ uuid?: string; stock?: string | number; available_qty?: number }>;
   /** Doc sample shape */
-  data?: Array<{ id?: string; stock?: string | number }>;
+  data?: Array<{ id?: string; stock?: string | number; available_qty?: number }>;
 };
 
 const PAGE_SIZE = 10;
@@ -44,17 +45,12 @@ function parseStock(raw: string | number | undefined): number {
   return 0;
 }
 
-function stockFromGetStockRow(row: {
-  stock?: string | number;
-  available_qty?: number;
-}): number {
-  if (row.stock !== undefined && row.stock !== null && row.stock !== "") {
-    return parseStock(row.stock);
+/** Live Ubex API: `available_qty` is sellable stock; `stock` is often 0 while qty lives in available_qty. */
+function resolveUbexQuantity(stock?: string | number, availableQty?: number): number {
+  if (typeof availableQty === "number" && Number.isFinite(availableQty)) {
+    return Math.max(0, Math.floor(availableQty));
   }
-  if (typeof row.available_qty === "number" && Number.isFinite(row.available_qty)) {
-    return Math.max(0, Math.floor(row.available_qty));
-  }
-  return 0;
+  return parseStock(stock);
 }
 
 function mapRow(row: NonNullable<UbexInventoryListResponse["data"]>[number]): UbexInventoryItem | null {
@@ -64,7 +60,7 @@ function mapRow(row: NonNullable<UbexInventoryListResponse["data"]>[number]): Ub
     id,
     name: (row.name ?? "").trim() || "—",
     barcode: (row.barcode ?? "").trim(),
-    stock: parseStock(row.stock),
+    stock: resolveUbexQuantity(row.stock, row.available_qty),
     sku: (row.sku ?? "").trim(),
     trackQty: row.track_qty !== false,
   };
@@ -124,12 +120,12 @@ export async function fetchUbexStockByIds(ids: string[]): Promise<Map<string, nu
   for (const row of json.stock ?? []) {
     const id = row.uuid?.trim();
     if (!id) continue;
-    out.set(id, stockFromGetStockRow(row));
+    out.set(id, resolveUbexQuantity(row.stock, row.available_qty));
   }
   for (const row of json.data ?? []) {
     const id = row.id?.trim();
     if (!id || out.has(id)) continue;
-    out.set(id, parseStock(row.stock));
+    out.set(id, resolveUbexQuantity(row.stock, row.available_qty));
   }
   return out;
 }
