@@ -36,6 +36,21 @@ type UbexGetStockResponse = {
 
 const PAGE_SIZE = 10;
 
+async function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function inventoryPageDelayMs(): number {
+  return Math.max(0, Number.parseInt(process.env.UBEX_INVENTORY_PAGE_DELAY_MS ?? "350", 10) || 350);
+}
+
+/** Ubex rate-limits burst traffic; default 1 page at a time (max 3 via env). */
+function inventoryPageParallel(): number {
+  const n = Number.parseInt(process.env.UBEX_INVENTORY_PAGE_PARALLEL ?? "1", 10);
+  if (!Number.isFinite(n) || n < 1) return 1;
+  return Math.min(3, Math.floor(n));
+}
+
 function parseStock(raw: string | number | undefined): number {
   if (typeof raw === "number" && Number.isFinite(raw)) return Math.max(0, Math.floor(raw));
   if (typeof raw === "string") {
@@ -68,20 +83,36 @@ function mapRow(row: NonNullable<UbexInventoryListResponse["data"]>[number]): Ub
 
 /** GET /api/v2/inventory?page=N — read-only list (10 items per page in Ubex API). */
 export async function fetchUbexInventoryPage(page: number): Promise<UbexInventoryItem[]> {
-  const res = await ubexFetch(`/api/v2/inventory?page=${page}`);
-  const json = (await res.json()) as UbexInventoryListResponse;
-  if (!res.ok) {
-    throw new Error(`Ubex inventory list HTTP ${res.status}: ${JSON.stringify(json).slice(0, 300)}`);
+  const max429Retries = 5;
+  let lastError = "";
+
+  for (let attempt = 1; attempt <= max429Retries; attempt++) {
+    const res = await ubexFetch(`/api/v2/inventory?page=${page}`);
+    const json = (await res.json()) as UbexInventoryListResponse;
+
+    if (res.status === 429 && attempt < max429Retries) {
+      await sleep(2000 * attempt);
+      continue;
+    }
+
+    if (!res.ok) {
+      lastError = `Ubex inventory list HTTP ${res.status}: ${JSON.stringify(json).slice(0, 300)}`;
+      break;
+    }
+    if (!ubexJsonStatusOk(json.status)) {
+      lastError = `Ubex inventory list error: ${json.msg ?? JSON.stringify(json).slice(0, 200)}`;
+      break;
+    }
+
+    const out: UbexInventoryItem[] = [];
+    for (const row of json.data ?? []) {
+      const item = mapRow(row);
+      if (item) out.push(item);
+    }
+    return out;
   }
-  if (!ubexJsonStatusOk(json.status)) {
-    throw new Error(`Ubex inventory list error: ${json.msg ?? JSON.stringify(json).slice(0, 200)}`);
-  }
-  const out: UbexInventoryItem[] = [];
-  for (const row of json.data ?? []) {
-    const item = mapRow(row);
-    if (item) out.push(item);
-  }
-  return out;
+
+  throw new Error(lastError || `Ubex inventory list failed for page ${page}`);
 }
 
 export function stockBalanceMaxItems(): number | null {
@@ -93,18 +124,25 @@ export function stockBalanceMaxItems(): number | null {
   return n;
 }
 
-const PAGE_PARALLEL = 15;
-
-/** Fetch Ubex inventory; paginates all pages when maxItems is null. */
+/** Fetch Ubex inventory; paginates all pages when maxItems is null. Throttled to avoid 429. */
 export async function fetchUbexInventoryAll(
   maxItems: number | null = stockBalanceMaxItems(),
 ): Promise<UbexInventoryItem[]> {
   const out: UbexInventoryItem[] = [];
+  const parallel = inventoryPageParallel();
+  const delayMs = inventoryPageDelayMs();
   let startPage = 1;
 
   while (maxItems === null || out.length < maxItems) {
-    const pageNumbers = Array.from({ length: PAGE_PARALLEL }, (_, i) => startPage + i);
-    const batches = await Promise.all(pageNumbers.map((p) => fetchUbexInventoryPage(p)));
+    const pageNumbers = Array.from({ length: parallel }, (_, i) => startPage + i);
+    const batches: UbexInventoryItem[][] = [];
+
+    for (const page of pageNumbers) {
+      if (delayMs > 0 && batches.length > 0) {
+        await sleep(delayMs);
+      }
+      batches.push(await fetchUbexInventoryPage(page));
+    }
 
     let stop = false;
     for (const batch of batches) {
@@ -120,7 +158,7 @@ export async function fetchUbexInventoryAll(
     }
 
     if (stop) break;
-    startPage += PAGE_PARALLEL;
+    startPage += parallel;
   }
 
   return maxItems === null ? out : out.slice(0, maxItems);
@@ -140,7 +178,9 @@ export async function fetchUbexStockByIds(ids: string[]): Promise<Map<string, nu
   if (unique.length === 0) return out;
 
   const GET_STOCK_BATCH = 50;
+  const batchDelay = Math.max(0, Number.parseInt(process.env.UBEX_INVENTORY_PAGE_DELAY_MS ?? "350", 10) || 350);
   for (let i = 0; i < unique.length; i += GET_STOCK_BATCH) {
+    if (i > 0 && batchDelay > 0) await sleep(batchDelay);
     const chunk = unique.slice(i, i + GET_STOCK_BATCH);
     const query = chunk.map((id) => `ids[]=${encodeURIComponent(id)}`).join("&");
     const res = await ubexFetch(`/api/v2/inventory/get-stock?${query}`, { method: "GET" });

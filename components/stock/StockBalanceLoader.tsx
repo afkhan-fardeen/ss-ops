@@ -52,8 +52,8 @@ export function StockBalanceLoader() {
         <Loader2 size={28} className="animate-spin-slow text-[#999999]" />
         <p className="text-[13px] font-medium text-[#111111]">Loading full Ubex catalog…</p>
         <p className="max-w-sm text-center text-[12px] text-[#999999]">
-          Fetching every product from Ubex and matching Shopify by barcode. This can take 1–3
-          minutes for large catalogs.
+          Fetching products from Ubex and matching Shopify by barcode. Large catalogs may take
+          a minute — Ubex limits how fast we can page inventory.
         </p>
       </div>
     );
