@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { History, ListChecks, PackageCheck, Settings2, Shield, User2 } from "lucide-react";
+import { History, ListChecks, PackageCheck, Scale, Settings2, Shield, User2 } from "lucide-react";
 
 export type NavItem = {
   label: string;
@@ -28,15 +28,18 @@ export const settingsNav: NavItem[] = [
 ];
 
 const adminSettingsItem: NavItem = { label: "Admin", href: "/admin", icon: Shield };
+const stockBalanceItem: NavItem = { label: "Stock balance", href: "/stock-balance", icon: Scale };
 
 /**
  * Desktop sidebar — includes Admin in Settings (first) when the user is a portal admin.
+ * Stock balance (read-only preview) appears under Tools for admins only.
  */
 export function getPortalNavGroups(showAdmin: boolean): NavGroup[] {
   const settingsItems = showAdmin ? [adminSettingsItem, ...settingsNav] : settingsNav;
+  const toolsItems = showAdmin ? [...toolsNav, stockBalanceItem] : toolsNav;
   return [
     { label: "COD", items: codNav },
-    { label: "Tools", items: toolsNav },
+    { label: "Tools", items: toolsItems },
     { label: "Settings", items: settingsItems },
   ];
 }

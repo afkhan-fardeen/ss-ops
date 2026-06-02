@@ -1,0 +1,226 @@
+type ShopifyEnv = {
+  domain: string;
+  token: string;
+  version: string;
+};
+
+function getEnv(): ShopifyEnv {
+  const domain = process.env.SHOPIFY_STORE_DOMAIN;
+  const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
+  const version = process.env.SHOPIFY_API_VERSION ?? "2024-01";
+  if (!domain || !token) {
+    throw new Error("Missing SHOPIFY_STORE_DOMAIN or SHOPIFY_ADMIN_ACCESS_TOKEN");
+  }
+  return { domain, token, version };
+}
+
+async function shopifyRestFetch<T>(path: string): Promise<T> {
+  const { domain, token, version } = getEnv();
+  const url = `https://${domain}/admin/api/${version}${path}`;
+  const res = await fetch(url, {
+    headers: {
+      "X-Shopify-Access-Token": token,
+      Accept: "application/json",
+    },
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`Shopify REST ${res.status}: ${text.slice(0, 500)}`);
+  }
+  return (await res.json()) as T;
+}
+
+async function shopifyGraphql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
+  const { domain, token, version } = getEnv();
+  const url = `https://${domain}/admin/api/${version}/graphql.json`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "X-Shopify-Access-Token": token,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ query, variables }),
+    cache: "no-store",
+  });
+  const json = (await res.json()) as { data?: T; errors?: Array<{ message: string }> };
+  if (!res.ok) {
+    throw new Error(`Shopify GraphQL HTTP ${res.status}: ${JSON.stringify(json).slice(0, 500)}`);
+  }
+  if (json.errors?.length) {
+    throw new Error(`Shopify GraphQL: ${json.errors.map((e) => e.message).join("; ")}`);
+  }
+  if (!json.data) {
+    throw new Error("Shopify GraphQL: empty data");
+  }
+  return json.data;
+}
+
+export type ShopifyLocation = {
+  id: number;
+  name: string;
+  active: boolean;
+};
+
+export type ShopifyVariantInventory = {
+  variantId: string;
+  barcode: string;
+  displayName: string;
+  inventoryItemId: string;
+  onHand: number;
+  available: number;
+  committed: number;
+};
+
+type LocationsResponse = {
+  locations: Array<{ id: number; name: string; active: boolean; legacy?: boolean }>;
+};
+
+let cachedLocation: ShopifyLocation | null = null;
+
+/** Resolve default Shopify location (env override or first active, prefer legacy). Read-only. */
+export async function getDefaultShopifyLocation(): Promise<ShopifyLocation> {
+  if (cachedLocation) return cachedLocation;
+
+  const envId = process.env.SHOPIFY_LOCATION_ID?.trim();
+  const { locations } = await shopifyRestFetch<LocationsResponse>("/locations.json");
+
+  if (envId) {
+    const numeric = Number.parseInt(envId, 10);
+    const hit = locations.find((l) => String(l.id) === envId || l.id === numeric);
+    if (hit) {
+      cachedLocation = { id: hit.id, name: hit.name, active: hit.active };
+      return cachedLocation;
+    }
+  }
+
+  const active = locations.filter((l) => l.active);
+  const nonLegacy = active.find((l) => !l.legacy);
+  const pick = nonLegacy ?? active[0];
+  if (!pick) {
+    throw new Error("No active Shopify location found");
+  }
+  cachedLocation = { id: pick.id, name: pick.name, active: pick.active };
+  return cachedLocation;
+}
+
+function locationGid(numericId: number): string {
+  return `gid://shopify/Location/${numericId}`;
+}
+
+function quantityMap(
+  quantities: Array<{ name: string; quantity: number }> | undefined,
+): { onHand: number; available: number; committed: number } {
+  let onHand = 0;
+  let available = 0;
+  let committed = 0;
+  for (const q of quantities ?? []) {
+    if (q.name === "on_hand") onHand = q.quantity;
+    else if (q.name === "available") available = q.quantity;
+    else if (q.name === "committed") committed = q.quantity;
+  }
+  return { onHand, available, committed };
+}
+
+const VARIANT_BY_BARCODE_QUERY = `
+query VariantInventoryByBarcode($query: String!, $locationId: ID!) {
+  productVariants(first: 10, query: $query) {
+    nodes {
+      id
+      barcode
+      displayName
+      inventoryItem {
+        id
+        inventoryLevel(locationId: $locationId) {
+          quantities(names: ["on_hand", "available", "committed"]) {
+            name
+            quantity
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+type VariantQueryData = {
+  productVariants: {
+    nodes: Array<{
+      id: string;
+      barcode: string | null;
+      displayName: string;
+      inventoryItem: {
+        id: string;
+        inventoryLevel: {
+          quantities: Array<{ name: string; quantity: number }>;
+        } | null;
+      } | null;
+    }>;
+  };
+};
+
+function normalizeBarcode(barcode: string): string {
+  return barcode.trim();
+}
+
+/** Read-only: find variant(s) by exact barcode and inventory buckets at location. */
+export async function fetchShopifyVariantsByBarcode(
+  barcode: string,
+  locationId: number,
+): Promise<ShopifyVariantInventory[]> {
+  const bc = normalizeBarcode(barcode);
+  if (!bc) return [];
+
+  const data = await shopifyGraphql<VariantQueryData>(VARIANT_BY_BARCODE_QUERY, {
+    query: `barcode:${bc}`,
+    locationId: locationGid(locationId),
+  });
+
+  const out: ShopifyVariantInventory[] = [];
+  for (const node of data.productVariants.nodes) {
+    const nodeBc = normalizeBarcode(node.barcode ?? "");
+    if (nodeBc !== bc) continue;
+    const item = node.inventoryItem;
+    if (!item) continue;
+    const q = item.inventoryLevel
+      ? quantityMap(item.inventoryLevel.quantities)
+      : { onHand: 0, available: 0, committed: 0 };
+    out.push({
+      variantId: node.id,
+      barcode: bc,
+      displayName: node.displayName,
+      inventoryItemId: item.id,
+      ...q,
+    });
+  }
+  return out;
+}
+
+const CONCURRENCY = 4;
+
+/** Batch read by barcode with limited concurrency. Read-only. */
+export async function fetchShopifyInventoryByBarcodes(
+  barcodes: string[],
+  locationId: number,
+): Promise<Map<string, ShopifyVariantInventory[]>> {
+  const unique = [...new Set(barcodes.map(normalizeBarcode).filter(Boolean))];
+  const out = new Map<string, ShopifyVariantInventory[]>();
+
+  let i = 0;
+  async function worker() {
+    while (i < unique.length) {
+      const bc = unique[i++]!;
+      try {
+        const variants = await fetchShopifyVariantsByBarcode(bc, locationId);
+        out.set(bc, variants);
+      } catch (e) {
+        console.warn(`[shopify-inventory] barcode ${bc}:`, e instanceof Error ? e.message : e);
+        out.set(bc, []);
+      }
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(CONCURRENCY, unique.length) }, () => worker()));
+  return out;
+}
