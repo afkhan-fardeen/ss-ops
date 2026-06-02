@@ -14,10 +14,21 @@ export type StockBalanceRow = {
   delta: number | null;
   status: StockBalanceStatus;
   shopifyVariantLabel: string | null;
+  shopifyVariantId: string | null;
+  shopifyInventoryItemId: string | null;
+  restockable: boolean;
 };
 
 function normalizeBarcode(raw: string): string {
   return raw.trim();
+}
+
+function emptyShopifyIds(): {
+  shopifyVariantId: null;
+  shopifyInventoryItemId: null;
+  restockable: false;
+} {
+  return { shopifyVariantId: null, shopifyInventoryItemId: null, restockable: false };
 }
 
 export function buildStockBalanceRows(
@@ -40,6 +51,7 @@ export function buildStockBalanceRows(
         delta: null,
         status: "skipped",
         shopifyVariantLabel: null,
+        ...emptyShopifyIds(),
       });
       continue;
     }
@@ -56,6 +68,7 @@ export function buildStockBalanceRows(
         delta: null,
         status: "skipped",
         shopifyVariantLabel: null,
+        ...emptyShopifyIds(),
       });
       continue;
     }
@@ -73,6 +86,7 @@ export function buildStockBalanceRows(
         delta: null,
         status: "unlinked",
         shopifyVariantLabel: null,
+        ...emptyShopifyIds(),
       });
       continue;
     }
@@ -89,11 +103,13 @@ export function buildStockBalanceRows(
         delta: null,
         status: "ambiguous",
         shopifyVariantLabel: `${variants.length} variants`,
+        ...emptyShopifyIds(),
       });
       continue;
     }
 
     const v = variants[0]!;
+    const delta = item.stock - v.onHand;
     rows.push({
       ubexId: item.id,
       productName: item.name,
@@ -102,9 +118,12 @@ export function buildStockBalanceRows(
       shopifyOnHand: v.onHand,
       shopifyAvailable: v.available,
       shopifyCommitted: v.committed,
-      delta: item.stock - v.onHand,
+      delta,
       status: "matched",
       shopifyVariantLabel: v.displayName,
+      shopifyVariantId: v.variantId,
+      shopifyInventoryItemId: v.inventoryItemId,
+      restockable: delta !== 0,
     });
   }
 
