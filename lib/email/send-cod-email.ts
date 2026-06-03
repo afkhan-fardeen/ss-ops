@@ -61,6 +61,10 @@ export async function sendCodListEmail(params: {
   windowStart?: string;
   windowEnd?: string;
   sentByEmail?: string | null;
+  /** Override attachment filename (month export). */
+  attachmentFilename?: string;
+  /** Override subject suffix, e.g. "April 2026" (month export). */
+  subjectLabel?: string;
 }): Promise<{ ok: true } | { ok: false; error: string }> {
   const transporter = getTransporter();
   if (!transporter) return { ok: false, error: "GMAIL_USER or GMAIL_APP_PASSWORD is not set" };
@@ -72,9 +76,9 @@ export async function sendCodListEmail(params: {
 
   const wb = await buildCodWorkbook(params.rows);
   const buffer = await workbookToBuffer(wb);
-  const filename = codFilenameFromDate();
+  const filename = params.attachmentFilename ?? codFilenameFromDate();
   const dateLine = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-  const subject = `COD List — Seissense — ${dateLine}`;
+  const subject = `COD List — Seissense — ${params.subjectLabel ?? dateLine}`;
   const body = `COD list attached.\n\nOrders: ${params.orderCount}\nTotal (GBP): £${params.totalGbp.toFixed(2)}\n`;
 
   try {

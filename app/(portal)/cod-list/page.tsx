@@ -1,6 +1,7 @@
 import { Fragment, Suspense } from "react";
 import { CODListView } from "@/components/cod-list/CODListView";
 import { CodListCollectionPanel } from "@/components/cod-list/CodListCollectionPanel";
+import { CodMonthExportPanel } from "@/components/cod-list/CodMonthExportPanel";
 import type { CodDateOption } from "@/components/cod-list/CodDatePicker";
 import { RatesStrip } from "@/components/cod-list/RatesStrip";
 import { getLastNWindows, shortWindowLabel } from "@/lib/datetime/collection-window";
@@ -113,6 +114,8 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
           )}
         </div>
       </div>
+
+      <CodMonthExportPanel />
 
       <div className="animate-fade-in" style={{ animationDelay: "40ms" }}>
         <CODListView

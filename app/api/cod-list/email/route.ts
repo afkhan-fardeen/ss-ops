@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/require-session";
+import { monthLabel } from "@/lib/cod/cod-list-month";
 import { loadCodListData } from "@/lib/cod/cod-list-data";
+import { loadCodListByMonth } from "@/lib/cod/load-cod-list-by-month";
+import { codFilenameForDateKeys } from "@/lib/excel";
 import { sendCodListEmail } from "@/lib/email/send-cod-email";
 
-/** POST /api/cod-list/email — same date selection as the list (?dates= / ?date=). */
+/** POST /api/cod-list/email — day selection (?dates= / ?date=) or monthly (?month=YYYY-MM). */
 export async function POST(req: Request) {
   let session: Awaited<ReturnType<typeof requireSession>>;
   try {
@@ -13,10 +16,13 @@ export async function POST(req: Request) {
   }
 
   const u = new URL(req.url);
-  const data = await loadCodListData({
-    dates: u.searchParams.get("dates") ?? undefined,
-    date: u.searchParams.get("date") ?? undefined,
-  });
+  const month = u.searchParams.get("month")?.trim();
+  const data = month
+    ? await loadCodListByMonth(month)
+    : await loadCodListData({
+        dates: u.searchParams.get("dates") ?? undefined,
+        date: u.searchParams.get("date") ?? undefined,
+      });
 
   if (!data.ok) {
     return NextResponse.json({ ok: false, error: data.error }, { status: 400 });
@@ -31,6 +37,12 @@ export async function POST(req: Request) {
       windowStart: data.rangeStartIso,
       windowEnd: data.rangeEndIso,
       sentByEmail: session.email ?? null,
+      ...(month
+        ? {
+            attachmentFilename: codFilenameForDateKeys(data.dateKeys),
+            subjectLabel: monthLabel(month),
+          }
+        : {}),
     });
 
     if (!result.ok) return NextResponse.json(result, { status: 500 });

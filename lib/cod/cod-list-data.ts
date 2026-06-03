@@ -154,14 +154,10 @@ async function buildResultFromWindowOrders(
 }
 
 /**
- * One loader for the COD list page, download, and email.
+ * Load COD list data for an already-resolved list of collection close date keys.
+ * Used by day mode (after URL parse) and monthly export.
  */
-export async function loadCodListData(params: { dates?: string; date?: string } | undefined): Promise<LoadCodListDataResult> {
-  const parsed = parseCodListDateParam(params);
-  if (parsed.error) {
-    return { ok: false, error: parsed.error };
-  }
-  const dateKeys = resolveDateKeys(parsed.dateKeys);
+export async function loadCodListDataForDateKeys(dateKeys: string[]): Promise<LoadCodListDataResult> {
   const windows = windowsForKeys(dateKeys);
   if (dateKeys.length === 0) {
     return { ok: false, error: "No dates selected." };
@@ -205,4 +201,16 @@ export async function loadCodListData(params: { dates?: string; date?: string } 
   void upsertCodListDayCacheSlices(slices, fetchedAt);
 
   return buildResultFromWindowOrders(dateKeys, windows, globalMin, globalMax, codOrders);
+}
+
+/**
+ * One loader for the COD list page, download, and email (day / multi-day selection only).
+ */
+export async function loadCodListData(params: { dates?: string; date?: string } | undefined): Promise<LoadCodListDataResult> {
+  const parsed = parseCodListDateParam(params);
+  if (parsed.error) {
+    return { ok: false, error: parsed.error };
+  }
+  const dateKeys = resolveDateKeys(parsed.dateKeys);
+  return loadCodListDataForDateKeys(dateKeys);
 }
