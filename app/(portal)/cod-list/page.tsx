@@ -6,20 +6,25 @@ import type { CodDateOption } from "@/components/cod-list/CodDatePicker";
 import { RatesStrip } from "@/components/cod-list/RatesStrip";
 import { getLastNWindows, shortWindowLabel } from "@/lib/datetime/collection-window";
 import { loadCodListData } from "@/lib/cod/cod-list-data";
+import {
+  resolveCodListPageSearchParams,
+  type CodListSearchParamsInput,
+} from "@/lib/cod/cod-list-params";
 import { getUbexToken } from "@/lib/ubex/client";
 import { AlertTriangle } from "lucide-react";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 
-export default function CodListPage({
+export default async function CodListPage({
   searchParams,
 }: {
-  searchParams?: { date?: string; dates?: string };
+  searchParams?: CodListSearchParamsInput | Promise<CodListSearchParamsInput | undefined>;
 }) {
+  const resolvedParams = await resolveCodListPageSearchParams(searchParams);
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <Suspense fallback={<CodListSkeleton />}>
-        <CodListContent searchParams={searchParams} />
+        <CodListContent searchParams={resolvedParams} />
       </Suspense>
     </div>
   );
@@ -48,17 +53,26 @@ function CodListSkeleton() {
   );
 }
 
+function CodListErrorCard({ title, message }: { title: string; message: string }) {
+  return (
+    <div className="rounded-card border border-[#C25151]/25 bg-[rgba(194,81,81,0.10)] p-6">
+      <div className="flex items-center gap-2 text-[#C25151]">
+        <AlertTriangle size={18} />
+        <h2 className="text-base font-semibold">{title}</h2>
+      </div>
+      <p className="mt-2 text-[13px] text-[#111111]">{message}</p>
+    </div>
+  );
+}
+
 async function CodListContent({ searchParams }: { searchParams?: { date?: string; dates?: string } }) {
   const data = await loadCodListData(searchParams);
   if (!data.ok) {
     return (
-      <div className="rounded-card border border-[#C25151]/25 bg-[rgba(194,81,81,0.10)] p-6">
-        <div className="flex items-center gap-2 text-[#C25151]">
-          <AlertTriangle size={18} />
-          <h2 className="text-base font-semibold">Invalid date selection</h2>
-        </div>
-        <p className="mt-2 text-[13px] text-[#111111]">{data.error}</p>
-      </div>
+      <CodListErrorCard
+        title={data.error.includes("Invalid") || data.error.includes("Select at most") ? "Invalid date selection" : "Could not load COD list"}
+        message={data.error}
+      />
     );
   }
 

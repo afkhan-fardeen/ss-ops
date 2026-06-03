@@ -10,18 +10,23 @@ import {
   upsertCodListDayCacheSlices,
 } from "@/lib/supabase/cod-list-day-cache";
 import { applyUbexRowFallbacks } from "@/lib/ubex/apply-row-fallbacks";
+import {
+  normalizeCodListSearchParams,
+  type CodListSearchParamsInput,
+} from "@/lib/cod/cod-list-params";
 
 const MAX_PICK = 14;
 
 /**
  * From URL: `dates` comma-separated, or `date` (legacy) single, or null → default to current window.
  */
-export function parseCodListDateParam(params: { dates?: string; date?: string } | undefined): {
+export function parseCodListDateParam(params: CodListSearchParamsInput | undefined): {
   dateKeys: string[] | null;
   /** Non-null = invalid; caller shows error */
   error: string | null;
 } {
-  const dFromDates = params?.dates?.trim();
+  const normalized = normalizeCodListSearchParams(params);
+  const dFromDates = normalized.dates;
   if (dFromDates) {
     const seen = new Set<string>();
     const out: string[] = [];
@@ -42,8 +47,8 @@ export function parseCodListDateParam(params: { dates?: string; date?: string } 
       return { dateKeys: out, error: null };
     }
   }
-  if (params?.date?.trim()) {
-    const d = params.date.trim();
+  if (normalized.date) {
+    const d = normalized.date;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) return { dateKeys: null, error: "Invalid ?date= format (use YYYY-MM-DD)." };
     return { dateKeys: [d], error: null };
   }
@@ -158,6 +163,20 @@ async function buildResultFromWindowOrders(
  * Used by day mode (after URL parse) and monthly export.
  */
 export async function loadCodListDataForDateKeys(dateKeys: string[]): Promise<LoadCodListDataResult> {
+  try {
+    return await loadCodListDataForDateKeysInner(dateKeys);
+  } catch (e) {
+    console.error("[cod-list] load failed:", e);
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Failed to load COD list",
+    };
+  }
+}
+
+async function loadCodListDataForDateKeysInner(
+  dateKeys: string[],
+): Promise<LoadCodListDataResult> {
   const windows = windowsForKeys(dateKeys);
   if (dateKeys.length === 0) {
     return { ok: false, error: "No dates selected." };
@@ -206,7 +225,9 @@ export async function loadCodListDataForDateKeys(dateKeys: string[]): Promise<Lo
 /**
  * One loader for the COD list page, download, and email (day / multi-day selection only).
  */
-export async function loadCodListData(params: { dates?: string; date?: string } | undefined): Promise<LoadCodListDataResult> {
+export async function loadCodListData(
+  params: CodListSearchParamsInput | undefined,
+): Promise<LoadCodListDataResult> {
   const parsed = parseCodListDateParam(params);
   if (parsed.error) {
     return { ok: false, error: parsed.error };
