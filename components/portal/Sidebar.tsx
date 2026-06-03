@@ -2,20 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ChevronDown,
   Home,
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
 import {
-  getModuleOpenKey,
   getPortalModules,
   HOME_HREF,
   isNavItemActive,
-  isPathInModule,
   type ModuleNavItem,
   type PortalModule,
 } from "@/config/modules";
@@ -39,13 +36,8 @@ function applySidebarWidth(collapsed: boolean) {
   );
 }
 
-function readModuleOpen(id: string, pathname: string, moduleId: string): boolean {
-  if (isPathInModule(pathname, moduleId as "cod" | "fulfillment" | "stock")) return true;
-  try {
-    return window.localStorage.getItem(getModuleOpenKey(id as "cod" | "fulfillment" | "stock")) !== "0";
-  } catch {
-    return true;
-  }
+function moduleDashboardHref(module: PortalModule): string {
+  return module.items.find((i) => i.label === "Dashboard")?.href ?? module.items[0]!.href;
 }
 
 function ModuleNavLink({
@@ -88,17 +80,13 @@ function ModuleSection({
   module,
   collapsed,
   pathname,
-  open,
-  onToggle,
 }: {
   module: PortalModule;
   collapsed: boolean;
   pathname: string;
-  open: boolean;
-  onToggle: () => void;
 }) {
   const ModuleIcon = module.icon;
-  const moduleActive = isPathInModule(pathname, module.id);
+  const moduleActive = module.items.some((item) => isNavItemActive(pathname, item));
 
   if (collapsed) {
     const first = module.items[0]!;
@@ -121,45 +109,37 @@ function ModuleSection({
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={onToggle}
+      <Link
+        href={moduleDashboardHref(module)}
         className={[
-          "focus-ring flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider transition-colors",
+          "focus-ring flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors",
           moduleActive ? module.accent.activeText : "text-[#999999] hover:bg-[#F7F7F7]",
         ].join(" ")}
       >
         <span className={`h-2 w-2 shrink-0 rounded-full ${module.accent.rail}`} aria-hidden />
         <span className="flex-1">{module.label}</span>
-        <ChevronDown
-          size={14}
-          className={`shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
-        />
-      </button>
-      {open ? (
-        <nav className="mt-0.5 flex flex-col gap-0.5">
-          {module.items.map((item) => (
-            <ModuleNavLink
-              key={item.href}
-              item={item}
-              module={module}
-              active={isNavItemActive(pathname, item)}
-              collapsed={false}
-            />
-          ))}
-        </nav>
-      ) : null}
+      </Link>
+      <nav className="mt-0.5 flex flex-col gap-0.5">
+        {module.items.map((item) => (
+          <ModuleNavLink
+            key={item.href}
+            item={item}
+            module={module}
+            active={isNavItemActive(pathname, item)}
+            collapsed={false}
+          />
+        ))}
+      </nav>
     </div>
   );
 }
 
 export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) {
   const pathname = usePathname();
-  const modules = getPortalModules(showAdminLink);
+  const modules = useMemo(() => getPortalModules(showAdminLink), [showAdminLink]);
   const settingsItems = getSettingsNavItems(showAdminLink);
 
   const [collapsed, setCollapsed] = useState(false);
-  const [openModules, setOpenModules] = useState<Record<string, boolean>>({});
   const [mobileSheetModule, setMobileSheetModule] = useState<PortalModule | null>(null);
 
   useEffect(() => {
@@ -169,12 +149,8 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
   }, []);
 
   useEffect(() => {
-    const next: Record<string, boolean> = {};
-    for (const m of modules) {
-      next[m.id] = readModuleOpen(m.id, pathname, m.id);
-    }
-    setOpenModules(next);
-  }, [pathname, modules]);
+    setMobileSheetModule(null);
+  }, [pathname]);
 
   useEffect(() => {
     applySidebarWidth(collapsed);
@@ -190,16 +166,6 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
   }, [collapsed]);
 
   const toggleCollapsed = useCallback(() => setCollapsed((c) => !c), []);
-
-  const toggleModule = useCallback((id: string) => {
-    setOpenModules((prev) => {
-      const next = !prev[id];
-      try {
-        window.localStorage.setItem(getModuleOpenKey(id as "cod" | "fulfillment" | "stock"), next ? "1" : "0");
-      } catch { /* ignore */ }
-      return { ...prev, [id]: next };
-    });
-  }, []);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -244,8 +210,6 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
               module={module}
               collapsed={collapsed}
               pathname={pathname}
-              open={openModules[module.id] ?? true}
-              onToggle={() => toggleModule(module.id)}
             />
           ))}
 

@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { getSafeNextPath } from "@/lib/auth/safe-next-path";
 import { getSupabaseEnv } from "@/lib/supabase/env";
 
 /**
  * Supabase magic-link callback. Exchanges the `?code=…` for a session cookie, then redirects
- * back to the `next` param (defaults to /cod-list).
+ * back to the `next` param (defaults to /dashboard).
  */
 export async function GET(req: NextRequest) {
   const env = getSupabaseEnv();
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
-  const next = url.searchParams.get("next") ?? "/dashboard";
+  const next = getSafeNextPath(url.searchParams.get("next"));
 
   const res = NextResponse.redirect(new URL(next, req.url));
 

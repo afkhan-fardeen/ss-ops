@@ -6,6 +6,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/Input";
 import { PasswordInput } from "@/components/ui/PasswordInput";
+import { DEFAULT_POST_LOGIN_PATH, getSafeNextPath } from "@/lib/auth/safe-next-path";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
 
 export function LoginForm({
@@ -15,10 +16,11 @@ export function LoginForm({
   nextPath: string;
   authMode: "supabase" | "shared";
 }) {
+  const safeNext = getSafeNextPath(nextPath);
   if (authMode === "supabase") {
-    return <SupabaseLoginForm nextPath={nextPath} />;
+    return <SupabaseLoginForm nextPath={safeNext} />;
   }
-  return <SharedPasswordForm nextPath={nextPath} />;
+  return <SharedPasswordForm nextPath={safeNext} />;
 }
 
 function SharedPasswordForm({ nextPath }: { nextPath: string }) {
@@ -44,7 +46,7 @@ function SharedPasswordForm({ nextPath }: { nextPath: string }) {
         toast.error(msg);
         return;
       }
-      const target = data.next ?? "/dashboard";
+      const target = data.next ?? DEFAULT_POST_LOGIN_PATH;
       router.replace(target);
       router.refresh();
     } catch {

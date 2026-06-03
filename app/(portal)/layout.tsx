@@ -9,7 +9,7 @@ import { Topbar } from "@/components/portal/Topbar";
 const BOOT_SCRIPT = `
 (function(){try{
   var isMd = window.matchMedia && window.matchMedia('(min-width: 768px)').matches;
-  var w = isMd ? (localStorage.getItem('portal.sidebar.collapsed')==='1' ? '64px' : '240px') : '0px';
+  var w = isMd ? (localStorage.getItem('portal.sidebar.collapsed')==='1' ? '64px' : '248px') : '0px';
   document.documentElement.style.setProperty('--sb-w', w);
 }catch(e){document.documentElement.style.setProperty('--sb-w','0px');}})();
 `;

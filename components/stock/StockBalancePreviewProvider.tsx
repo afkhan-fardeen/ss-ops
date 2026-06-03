@@ -86,7 +86,7 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
               duration: 8_000,
               action: {
                 label: "View",
-                onClick: () => router.push("/stock-balance"),
+                onClick: () => router.push("/stock-balance/balance"),
               },
             },
           );

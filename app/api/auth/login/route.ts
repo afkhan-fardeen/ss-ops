@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
+import { getSafeNextPath } from "@/lib/auth/safe-next-path";
 import {
   createSessionToken,
   sessionCookieOptions,
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
   }
 
   const token = createSessionToken(secret);
-  const res = NextResponse.json({ ok: true, next: body.next ?? "/dashboard" });
+  const res = NextResponse.json({ ok: true, next: getSafeNextPath(body.next) });
   const opts = sessionCookieOptions(7 * 24 * 60 * 60);
   res.cookies.set(SESSION_COOKIE_NAME, token, {
     httpOnly: opts.httpOnly,

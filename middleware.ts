@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/constants";
+import { DEFAULT_POST_LOGIN_PATH } from "@/lib/auth/safe-next-path";
 import { verifySessionTokenEdge } from "@/lib/auth/session-edge";
 import { getAuthMode } from "@/lib/auth/mode";
 import { createSupabaseMiddlewareClient } from "@/lib/supabase/middleware";
@@ -78,7 +79,7 @@ export async function middleware(req: NextRequest) {
 
   if (pathname === "/login") {
     const url = req.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = DEFAULT_POST_LOGIN_PATH;
     url.search = "";
     return NextResponse.redirect(url);
   }

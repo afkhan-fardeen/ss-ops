@@ -1,5 +1,6 @@
 import { LoginForm } from "@/components/auth/LoginForm";
 import { getAuthMode } from "@/lib/auth/mode";
+import { getSafeNextPath } from "@/lib/auth/safe-next-path";
 
 export default function LoginPage({
   searchParams,
@@ -23,7 +24,7 @@ export default function LoginPage({
       <div className="w-full max-w-sm rounded-card border border-[#EBEBEB] bg-white p-7 shadow-pop">
         <h1 className="text-xl font-semibold text-[#111111]">Sign in</h1>
         <p className="mt-1 text-[13px] text-[#555555]">{description}</p>
-        <LoginForm nextPath={searchParams.next ?? "/dashboard"} authMode={authMode} />
+        <LoginForm nextPath={getSafeNextPath(searchParams.next)} authMode={authMode} />
       </div>
 
       <p className="mt-6 font-mono text-[11px] text-[#999999]">Internal use only · Seissense Operations</p>
