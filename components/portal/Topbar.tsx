@@ -1,26 +1,10 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense } from "react";
 import { CodListFloatingActions } from "@/components/cod-list/CodListFloatingActions";
-
-const titles: Record<string, string> = {
-  "/cod-list":    "COD List",
-  "/fulfillment": "Fulfillment",
-  "/history":     "History",
-  "/account":     "Account",
-  "/cod-settings":"COD Settings",
-  "/admin":       "Admin",
-};
-
-const sections: Record<string, string> = {
-  "/cod-list":    "COD",
-  "/fulfillment": "Tools",
-  "/history":     "Tools",
-  "/account":     "Settings",
-  "/cod-settings":"Settings",
-  "/admin":       "Settings",
-};
+import { isCodListPath, resolveRouteMeta } from "@/config/modules";
 
 type UbexStatus = "checking" | "ok" | "error" | "unconfigured";
 
@@ -40,28 +24,32 @@ function UbexIndicator() {
 
   useEffect(() => {
     void check();
-    // Re-check every 5 minutes
     timerRef.current = setInterval(() => void check(), 5 * 60_000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
   }, []);
 
   const dot: Record<UbexStatus, string> = {
-    checking:     "bg-[#999999] animate-pulse",
-    ok:           "bg-[#4CAF50]",
-    error:        "bg-[#C25151]",
+    checking: "bg-[#999999] animate-pulse",
+    ok: "bg-[#4CAF50]",
+    error: "bg-[#C25151]",
     unconfigured: "bg-[#F0B743]",
   };
   const label: Record<UbexStatus, string> = {
-    checking:     "Checking…",
-    ok:           "Ubex live",
-    error:        "Ubex error",
+    checking: "Checking…",
+    ok: "Ubex live",
+    error: "Ubex error",
     unconfigured: "Ubex not set",
   };
 
   return (
     <button
       type="button"
-      onClick={() => { setStatus("checking"); void check(); }}
+      onClick={() => {
+        setStatus("checking");
+        void check();
+      }}
       title={`${label[status]} — click to recheck`}
       className="focus-ring flex items-center gap-1.5 rounded-full border border-[#EBEBEB] px-2.5 py-1 transition hover:bg-[#F7F7F7]"
     >
@@ -73,31 +61,34 @@ function UbexIndicator() {
 
 export function Topbar() {
   const pathname = usePathname();
-  const title   = titles[pathname]   ?? "Portal";
-  const section = sections[pathname] ?? "";
-  const today   = new Date().toLocaleDateString("en-GB", {
+  const meta = resolveRouteMeta(pathname);
+  const today = new Date().toLocaleDateString("en-GB", {
     weekday: "short",
-    day:     "numeric",
-    month:   "short",
+    day: "numeric",
+    month: "short",
   });
 
   return (
     <header className="sticky top-0 z-10 flex min-h-14 flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-[#EBEBEB] bg-white/90 px-4 py-1.5 backdrop-blur-sm md:px-6">
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-2 sm:gap-3">
-        {section && (
+        {meta.moduleLabel && meta.accent ? (
           <>
-            <span className="text-[12px] font-medium text-[#999999]">{section}</span>
+            <span
+              className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${meta.accent.pillBg} ${meta.accent.pillText}`}
+            >
+              {meta.moduleLabel}
+            </span>
             <span className="text-[#EBEBEB]">/</span>
           </>
-        )}
-        <h1 className="shrink-0 text-[14px] font-semibold text-[#111111]">{title}</h1>
-        {pathname === "/cod-list" && (
+        ) : null}
+        <h1 className="shrink-0 text-[14px] font-semibold text-[#111111]">{meta.title}</h1>
+        {isCodListPath(pathname) ? (
           <Suspense fallback={null}>
             <div className="min-w-0 pl-0 sm:pl-1">
               <CodListFloatingActions />
             </div>
           </Suspense>
-        )}
+        ) : null}
       </div>
       <div className="flex shrink-0 items-center gap-3">
         <UbexIndicator />

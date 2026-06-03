@@ -44,7 +44,7 @@ function SharedPasswordForm({ nextPath }: { nextPath: string }) {
         toast.error(msg);
         return;
       }
-      const target = data.next ?? "/cod-list";
+      const target = data.next ?? "/dashboard";
       router.replace(target);
       router.refresh();
     } catch {

@@ -78,7 +78,7 @@ export async function middleware(req: NextRequest) {
 
   if (pathname === "/login") {
     const url = req.nextUrl.clone();
-    url.pathname = "/cod-list";
+    url.pathname = "/dashboard";
     url.search = "";
     return NextResponse.redirect(url);
   }

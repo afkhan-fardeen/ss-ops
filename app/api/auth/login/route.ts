@@ -65,7 +65,7 @@ export async function POST(req: Request) {
   }
 
   const token = createSessionToken(secret);
-  const res = NextResponse.json({ ok: true, next: body.next ?? "/cod-list" });
+  const res = NextResponse.json({ ok: true, next: body.next ?? "/dashboard" });
   const opts = sessionCookieOptions(7 * 24 * 60 * 60);
   res.cookies.set(SESSION_COOKIE_NAME, token, {
     httpOnly: opts.httpOnly,

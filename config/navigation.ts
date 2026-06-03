@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react";
-import { History, ListChecks, PackageCheck, Scale, Settings2, Shield, User2 } from "lucide-react";
+import { Settings2, Shield, User2 } from "lucide-react";
+import { getPortalModules, HOME_HREF, type ModuleId } from "@/config/modules";
 
+/** @deprecated Use ModuleNavItem from config/modules */
 export type NavItem = {
   label: string;
   href: string;
@@ -13,48 +15,26 @@ export type NavGroup = {
   items: NavItem[];
 };
 
-/** COD sub-section */
-export const codNav: NavItem[] = [{ label: "COD List", href: "/cod-list", icon: ListChecks }];
-
-/** Other operational tools */
-export const toolsNav: NavItem[] = [
-  { label: "Fulfillment", href: "/fulfillment", icon: PackageCheck },
-  { label: "History",     href: "/history",     icon: History },
-];
-
 export const settingsNav: NavItem[] = [
-  { label: "COD Settings", href: "/cod-settings", icon: Settings2 },
-  { label: "Account",      href: "/account",       icon: User2 },
+  { label: "Account", href: "/account", icon: User2 },
 ];
 
 const adminSettingsItem: NavItem = { label: "Admin", href: "/admin", icon: Shield };
-const stockBalanceItem: NavItem = { label: "Stock balance", href: "/stock-balance", icon: Scale };
 
-/**
- * Desktop sidebar — includes Admin in Settings (first) when the user is a portal admin.
- * Stock balance (read-only preview) appears under Tools for admins only.
- */
+export function getSettingsNavItems(showAdmin: boolean): NavItem[] {
+  return showAdmin ? [adminSettingsItem, ...settingsNav] : settingsNav;
+}
+
+/** Legacy — flat groups for any code still importing */
 export function getPortalNavGroups(showAdmin: boolean): NavGroup[] {
-  const settingsItems = showAdmin ? [adminSettingsItem, ...settingsNav] : settingsNav;
-  const toolsItems = showAdmin ? [...toolsNav, stockBalanceItem] : toolsNav;
+  const modules = getPortalModules(showAdmin);
   return [
-    { label: "COD", items: codNav },
-    { label: "Tools", items: toolsItems },
-    { label: "Settings", items: settingsItems },
+    ...modules.map((m) => ({
+      label: m.label,
+      items: m.items.map((i) => ({ label: i.label, href: i.href, icon: i.icon })),
+    })),
+    { label: "Settings", items: getSettingsNavItems(showAdmin) },
   ];
 }
 
-/** Grouped sidebar nav (desktop) — use getPortalNavGroups for admin-aware list */
-export const navGroups: NavGroup[] = [
-  { label: "COD",      items: codNav },
-  { label: "Tools",    items: toolsNav },
-  { label: "Settings", items: settingsNav },
-];
-
-/** Mobile bottom bar — 4 primary shortcuts */
-export const mobileBottomItems: NavItem[] = [
-  codNav[0],       // COD List
-  toolsNav[0],     // Fulfillment
-  toolsNav[1],     // History
-  settingsNav[1],  // Account
-];
+export { HOME_HREF, getPortalModules, type ModuleId };
