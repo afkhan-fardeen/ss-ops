@@ -1,28 +1,44 @@
 import Link from "next/link";
 import type { ModuleId } from "@/config/modules";
 import { getPortalModules } from "@/config/modules";
+import {
+  DashboardChartGrid,
+  DashboardHeader,
+  DashboardKpiGrid,
+  DashboardPage,
+} from "@/components/dashboard/DashboardPage";
 
 type Props = {
   moduleId: ModuleId;
   title: string;
   description: string;
+  kpi?: React.ReactNode;
+  charts?: React.ReactNode;
   children?: React.ReactNode;
 };
 
-export function ModuleDashboardShell({ moduleId, title, description, children }: Props) {
+export function ModuleDashboardShell({
+  moduleId,
+  title,
+  description,
+  kpi,
+  charts,
+  children,
+}: Props) {
   const mod = getPortalModules(true).find((m) => m.id === moduleId)!;
 
   return (
-    <div className="mx-auto max-w-3xl space-y-5">
-      <header className={`animate-fade-up rounded-card border border-[#EBEBEB] border-l-4 bg-white p-5 shadow-soft ${moduleId === "cod" ? "border-l-blue-500" : moduleId === "fulfillment" ? "border-l-[#E57373]" : "border-l-emerald-500"}`}>
-        <p className={`text-[11px] font-semibold uppercase tracking-wider ${mod.accent.activeText}`}>
-          {mod.label}
-        </p>
-        <h1 className="mt-1 text-xl font-semibold text-[#111111]">{title}</h1>
-        <p className="mt-2 text-[13px] text-[#555555]">{description}</p>
-      </header>
+    <DashboardPage moduleId={moduleId}>
+      <DashboardHeader
+        moduleId={moduleId}
+        moduleLabel={mod.label}
+        title={title}
+        description={description}
+      />
+      {kpi ? <DashboardKpiGrid>{kpi}</DashboardKpiGrid> : null}
+      {charts ? <DashboardChartGrid>{charts}</DashboardChartGrid> : null}
       {children}
-    </div>
+    </DashboardPage>
   );
 }
 
@@ -35,7 +51,7 @@ export function ModuleQuickLinks({
 }) {
   const mod = getPortalModules(true).find((m) => m.id === moduleId)!;
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {links.map((link) => (
         <Link
           key={link.href}

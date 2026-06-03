@@ -2,29 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
+import { X, type LucideIcon } from "lucide-react";
 import {
+  HOME_ACCENT,
   HOME_HREF,
   isNavItemActive,
   isPathInModule,
+  SETTINGS_ACCENT,
   type ModuleId,
   type PortalModule,
 } from "@/config/modules";
-import { getSettingsNavItems } from "@/config/navigation";
 
 type Props = {
   open: boolean;
   module: PortalModule | null;
-  showAdmin: boolean;
   onClose: () => void;
 };
 
-export function MobileModuleSheet({ open, module, showAdmin, onClose }: Props) {
+export function MobileModuleSheet({ open, module, onClose }: Props) {
   const pathname = usePathname();
 
   if (!open || !module) return null;
-
-  const settings = getSettingsNavItems(showAdmin);
 
   return (
     <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true">
@@ -57,7 +55,9 @@ export function MobileModuleSheet({ open, module, showAdmin, onClose }: Props) {
                 onClick={onClose}
                 className={[
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium",
-                  active ? module.accent.activeBg + " " + module.accent.activeText : "text-[#555555]",
+                  active
+                    ? `${module.accent.activeBg} ${module.accent.activeText}`
+                    : "text-[#555555] hover:bg-[#F7F7F7]",
                 ].join(" ")}
               >
                 <Icon size={16} />
@@ -70,11 +70,49 @@ export function MobileModuleSheet({ open, module, showAdmin, onClose }: Props) {
           <Link
             href={HOME_HREF}
             onClick={onClose}
-            className="block rounded-lg px-3 py-2 text-[12px] font-medium text-[#999999] hover:bg-[#F7F7F7]"
+            className={`block rounded-lg px-3 py-2 text-[12px] font-medium ${HOME_ACCENT.labelText} hover:bg-[#F7F7F7]`}
           >
             Home dashboard
           </Link>
-          {settings.map((item) => {
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type SettingsSheetProps = {
+  open: boolean;
+  items: { label: string; href: string; icon: LucideIcon }[];
+  onClose: () => void;
+};
+
+export function MobileSettingsSheet({ open, items, onClose }: SettingsSheetProps) {
+  const pathname = usePathname();
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true">
+      <button
+        type="button"
+        className="absolute inset-0 bg-[#0F172A]/30"
+        aria-label="Close menu"
+        onClick={onClose}
+      />
+      <div className="absolute inset-x-0 bottom-0 max-h-[50vh] overflow-y-auto rounded-t-2xl border border-[#EBEBEB] bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
+        <div className="flex items-center justify-between border-b border-[#EBEBEB] px-4 py-3">
+          <p className={`text-[13px] font-semibold ${SETTINGS_ACCENT.activeText}`}>Settings</p>
+          <button
+            type="button"
+            onClick={onClose}
+            className="focus-ring -m-1 rounded-md p-1 text-[#999999]"
+            aria-label="Close"
+          >
+            <X size={18} />
+          </button>
+        </div>
+        <nav className="flex flex-col gap-0.5 p-2">
+          {items.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
             return (
@@ -83,16 +121,18 @@ export function MobileModuleSheet({ open, module, showAdmin, onClose }: Props) {
                 href={item.href}
                 onClick={onClose}
                 className={[
-                  "mt-0.5 flex items-center gap-3 rounded-lg px-3 py-2 text-[12px] font-medium",
-                  active ? "bg-[#F7F7F7] text-[#111111]" : "text-[#999999]",
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium",
+                  active
+                    ? `${SETTINGS_ACCENT.activeBg} ${SETTINGS_ACCENT.activeText}`
+                    : "text-[#555555] hover:bg-[#F7F7F7]",
                 ].join(" ")}
               >
-                <Icon size={14} />
+                <Icon size={16} />
                 {item.label}
               </Link>
             );
           })}
-        </div>
+        </nav>
       </div>
     </div>
   );

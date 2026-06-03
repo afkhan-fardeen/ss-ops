@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { loadStockRestockActivity } from "@/lib/dashboard/load-stock-restock-activity";
+import { STOCK_ACCENT } from "@/config/modules";
+import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
+import { ActivityStackedChart } from "@/components/dashboard/ActivityStackedChart";
+import { ChartCard } from "@/components/dashboard/ChartCard";
+import { StatCard } from "@/components/dashboard/StatCard";
 import { ModuleDashboardShell, ModuleQuickLinks } from "@/components/portal/ModuleDashboardShell";
-import { loadStockRestockSummary } from "@/lib/stock/load-restock-history";
 
 export const dynamic = "force-dynamic";
 
@@ -15,34 +20,58 @@ export default async function StockBalanceDashboardPage() {
     );
   }
 
-  const summary = await loadStockRestockSummary();
-  const lastLabel = summary.lastRestockAt
-    ? new Date(summary.lastRestockAt).toLocaleString(undefined, {
+  const activity = await loadStockRestockActivity(14);
+
+  const lastLabel = activity.lastRestockAt
+    ? new Date(activity.lastRestockAt).toLocaleString(undefined, {
         dateStyle: "medium",
         timeStyle: "short",
       })
     : "Never";
+
+  const restocksChart = activity.dailyRestocks.map((d) => ({ label: d.label, value: d.count }));
+  const statusChart = activity.dailyStatus.map((d) => ({
+    label: d.label,
+    success: d.success,
+    error: d.error,
+  }));
 
   return (
     <ModuleDashboardShell
       moduleId="stock"
       title="Stock balance dashboard"
       description="Refresh Ubex vs Shopify, fix mismatches, and review restock history."
+      kpi={
+        <>
+          <StatCard label="Last successful restock" value={lastLabel} />
+          <StatCard label="Restocks (7d)" value={String(activity.restocksLast7Days)} />
+          <StatCard label="Restocks (14d)" value={String(activity.restocksLast14Days)} />
+          <StatCard
+            label="Errors (14d)"
+            value={String(activity.dailyStatus.reduce((s, d) => s + d.error, 0))}
+          />
+        </>
+      }
+      charts={
+        <>
+          <ChartCard title="Restocks per day" description="Successful Shopify inventory updates">
+            <ActivityBarChart
+              data={restocksChart}
+              fill={STOCK_ACCENT.chartFill}
+              valueLabel="Restocks"
+              emptyMessage="No restocks in the last 14 days."
+            />
+          </ChartCard>
+          <ChartCard title="Restock outcomes" description="Success vs error per day">
+            <ActivityStackedChart
+              data={statusChart}
+              successFill={STOCK_ACCENT.chartFill}
+              emptyMessage="No restock activity yet."
+            />
+          </ChartCard>
+        </>
+      }
     >
-      <div className="grid gap-3 sm:grid-cols-2">
-        <div className="rounded-card border border-[#EBEBEB] bg-white p-4 shadow-soft">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
-            Last successful restock
-          </p>
-          <p className="mt-1 text-[14px] font-medium text-[#111111]">{lastLabel}</p>
-        </div>
-        <div className="rounded-card border border-[#EBEBEB] bg-white p-4 shadow-soft">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
-            Restocks (7 days)
-          </p>
-          <p className="mt-1 text-[14px] font-medium text-[#111111]">{summary.restocksLast7Days}</p>
-        </div>
-      </div>
       <ModuleQuickLinks
         moduleId="stock"
         links={[

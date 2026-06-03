@@ -8,16 +8,24 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  Settings2,
 } from "lucide-react";
 import {
   getPortalModules,
+  HOME_ACCENT,
   HOME_HREF,
-  isNavItemActive,
-  type ModuleNavItem,
+  isPathInModule,
+  isPathInSettings,
+  moduleDashboardHref,
+  SETTINGS_ACCENT,
   type PortalModule,
 } from "@/config/modules";
 import { getSettingsNavItems } from "@/config/navigation";
-import { mobileModuleActive, MobileModuleSheet } from "@/components/portal/MobileModuleSheet";
+import {
+  NavCollapsibleSection,
+  NavHomeLink,
+} from "@/components/portal/NavCollapsibleSection";
+import { mobileModuleActive, MobileModuleSheet, MobileSettingsSheet } from "@/components/portal/MobileModuleSheet";
 
 const STORAGE_KEY = "portal.sidebar.collapsed";
 const WIDTH_EXPANDED = 248;
@@ -36,111 +44,23 @@ function applySidebarWidth(collapsed: boolean) {
   );
 }
 
-function moduleDashboardHref(module: PortalModule): string {
-  return module.items.find((i) => i.label === "Dashboard")?.href ?? module.items[0]!.href;
-}
-
-function ModuleNavLink({
-  item,
-  module,
-  active,
-  collapsed,
-}: {
-  item: ModuleNavItem;
-  module: PortalModule;
-  active: boolean;
-  collapsed: boolean;
-}) {
-  const Icon = item.icon;
-  return (
-    <Link
-      href={item.href}
-      title={collapsed ? item.label : undefined}
-      className={[
-        "group relative flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium transition-colors",
-        collapsed ? "justify-center px-2" : "pl-4 pr-3",
-        active
-          ? `${module.accent.activeBg} ${module.accent.activeText}`
-          : "text-[#999999] hover:bg-[#F7F7F7] hover:text-[#111111]",
-      ].join(" ")}
-    >
-      {active && (
-        <span
-          className={`absolute inset-y-1.5 left-0 w-[3px] rounded-r ${module.accent.rail}`}
-          aria-hidden
-        />
-      )}
-      <Icon size={16} strokeWidth={2} />
-      {!collapsed && <span className="flex-1">{item.label}</span>}
-    </Link>
-  );
-}
-
-function ModuleSection({
-  module,
-  collapsed,
-  pathname,
-}: {
-  module: PortalModule;
-  collapsed: boolean;
-  pathname: string;
-}) {
-  const ModuleIcon = module.icon;
-  const moduleActive = module.items.some((item) => isNavItemActive(pathname, item));
-
-  if (collapsed) {
-    const first = module.items[0]!;
-    return (
-      <Link
-        href={first.href}
-        title={module.label}
-        className={[
-          "flex justify-center rounded-lg p-2 transition-colors",
-          moduleActive ? module.accent.activeBg : "hover:bg-[#F7F7F7]",
-        ].join(" ")}
-      >
-        <ModuleIcon
-          size={18}
-          className={moduleActive ? module.accent.activeText : "text-[#999999]"}
-        />
-      </Link>
-    );
-  }
-
-  return (
-    <div>
-      <Link
-        href={moduleDashboardHref(module)}
-        className={[
-          "focus-ring flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[11px] font-semibold uppercase tracking-wider transition-colors",
-          moduleActive ? module.accent.activeText : "text-[#999999] hover:bg-[#F7F7F7]",
-        ].join(" ")}
-      >
-        <span className={`h-2 w-2 shrink-0 rounded-full ${module.accent.rail}`} aria-hidden />
-        <span className="flex-1">{module.label}</span>
-      </Link>
-      <nav className="mt-0.5 flex flex-col gap-0.5">
-        {module.items.map((item) => (
-          <ModuleNavLink
-            key={item.href}
-            item={item}
-            module={module}
-            active={isNavItemActive(pathname, item)}
-            collapsed={false}
-          />
-        ))}
-      </nav>
-    </div>
-  );
+function moduleToNavItems(module: PortalModule) {
+  return module.items.map((item) => ({
+    label: item.label,
+    href: item.href,
+    icon: item.icon,
+    aliases: item.aliases,
+  }));
 }
 
 export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) {
   const pathname = usePathname();
   const modules = useMemo(() => getPortalModules(showAdminLink), [showAdminLink]);
-  const settingsItems = getSettingsNavItems(showAdminLink);
+  const settingsItems = useMemo(() => getSettingsNavItems(showAdminLink), [showAdminLink]);
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileSheetModule, setMobileSheetModule] = useState<PortalModule | null>(null);
+  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -150,6 +70,7 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
 
   useEffect(() => {
     setMobileSheetModule(null);
+    setMobileSettingsOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -174,6 +95,13 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
 
   const width = collapsed ? WIDTH_COLLAPSED : WIDTH_EXPANDED;
   const homeActive = pathname === HOME_HREF;
+  const settingsActive = isPathInSettings(pathname);
+
+  const settingsNavItems = settingsItems.map((item) => ({
+    label: item.label,
+    href: item.href,
+    icon: item.icon,
+  }));
 
   return (
     <>
@@ -188,59 +116,39 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
           {collapsed ? <LogoMark /> : <LogoFull />}
         </div>
 
-        <div className="mt-6 flex-1 space-y-4 overflow-y-auto">
-          <Link
+        <div className="mt-6 flex-1 space-y-2 overflow-y-auto">
+          <NavHomeLink
             href={HOME_HREF}
-            title={collapsed ? "Home" : undefined}
-            className={[
-              "flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium transition-colors",
-              collapsed ? "justify-center px-2" : "px-3",
-              homeActive
-                ? "bg-[#F7F7F7] text-[#111111]"
-                : "text-[#999999] hover:bg-[#F7F7F7] hover:text-[#111111]",
-            ].join(" ")}
-          >
-            <Home size={16} />
-            {!collapsed && <span>Home</span>}
-          </Link>
+            label="Home"
+            icon={Home}
+            accent={HOME_ACCENT}
+            active={homeActive}
+            collapsed={collapsed}
+          />
 
           {modules.map((module) => (
-            <ModuleSection
+            <NavCollapsibleSection
               key={module.id}
-              module={module}
+              sectionId={module.id}
+              label={module.label}
+              icon={module.icon}
+              accent={module.accent}
+              homeHref={moduleDashboardHref(module)}
+              items={moduleToNavItems(module)}
               collapsed={collapsed}
-              pathname={pathname}
+              isActive={(p) => isPathInModule(p, module.id)}
             />
           ))}
 
-          {!collapsed ? (
-            <div className="pt-2">
-              <div className="px-3 text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
-                Settings
-              </div>
-              <nav className="mt-2 flex flex-col gap-0.5">
-                {settingsItems.map((item) => {
-                  const Icon = item.icon;
-                  const active = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={[
-                        "flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors",
-                        active
-                          ? "bg-[#F7F7F7] text-[#111111]"
-                          : "text-[#999999] hover:bg-[#F7F7F7] hover:text-[#111111]",
-                      ].join(" ")}
-                    >
-                      <Icon size={16} />
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </nav>
-            </div>
-          ) : null}
+          <NavCollapsibleSection
+            sectionId="settings"
+            label="Settings"
+            icon={Settings2}
+            accent={SETTINGS_ACCENT}
+            items={settingsNavItems}
+            collapsed={collapsed}
+            isActive={(p) => isPathInSettings(p)}
+          />
         </div>
 
         <div className="mt-auto space-y-1 border-t border-[#EBEBEB] pt-3">
@@ -278,10 +186,10 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
           href={HOME_HREF}
           className={[
             "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
-            pathname === HOME_HREF ? "text-[#111111]" : "text-[#999999]",
+            homeActive ? HOME_ACCENT.mobileActive : HOME_ACCENT.labelText,
           ].join(" ")}
         >
-          <Home size={20} />
+          <Home size={20} strokeWidth={homeActive ? 2.2 : 1.8} />
           <span>Home</span>
         </Link>
         {modules.map((module) => {
@@ -291,10 +199,13 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
             <button
               key={module.id}
               type="button"
-              onClick={() => setMobileSheetModule(module)}
+              onClick={() => {
+                setMobileSettingsOpen(false);
+                setMobileSheetModule(module);
+              }}
               className={[
                 "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
-                active ? module.accent.mobileActive : "text-[#999999]",
+                active ? module.accent.mobileActive : module.accent.labelText,
               ].join(" ")}
             >
               <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
@@ -302,13 +213,31 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
             </button>
           );
         })}
+        <button
+          type="button"
+          onClick={() => {
+            setMobileSheetModule(null);
+            setMobileSettingsOpen(true);
+          }}
+          className={[
+            "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
+            settingsActive ? SETTINGS_ACCENT.mobileActive : SETTINGS_ACCENT.labelText,
+          ].join(" ")}
+        >
+          <Settings2 size={20} strokeWidth={settingsActive ? 2.2 : 1.8} />
+          <span>Settings</span>
+        </button>
       </nav>
 
       <MobileModuleSheet
         open={mobileSheetModule !== null}
         module={mobileSheetModule}
-        showAdmin={showAdminLink}
         onClose={() => setMobileSheetModule(null)}
+      />
+      <MobileSettingsSheet
+        open={mobileSettingsOpen}
+        items={settingsNavItems}
+        onClose={() => setMobileSettingsOpen(false)}
       />
     </>
   );

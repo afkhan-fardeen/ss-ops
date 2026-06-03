@@ -20,12 +20,19 @@ export type ModuleNavItem = {
 
 export type ModuleAccent = {
   rail: string;
+  labelText: string;
+  labelHover: string;
   activeBg: string;
   activeText: string;
   pillBg: string;
   pillText: string;
   mobileActive: string;
+  /** Recharts bar / line fill */
+  chartFill: string;
+  chartStroke: string;
 };
+
+export type NavSectionId = ModuleId | "settings" | "home";
 
 export type PortalModule = {
   id: ModuleId;
@@ -38,31 +45,69 @@ export type PortalModule = {
 
 export const HOME_HREF = "/dashboard";
 
-const COD_ACCENT: ModuleAccent = {
+export const COD_ACCENT: ModuleAccent = {
   rail: "bg-blue-500",
+  labelText: "text-blue-700",
+  labelHover: "hover:bg-blue-50/60",
   activeBg: "bg-blue-50/80",
   activeText: "text-blue-900",
   pillBg: "bg-blue-50",
   pillText: "text-blue-800",
   mobileActive: "text-blue-700",
+  chartFill: "#3B82F6",
+  chartStroke: "#2563EB",
 };
 
-const FULFILLMENT_ACCENT: ModuleAccent = {
+export const FULFILLMENT_ACCENT: ModuleAccent = {
   rail: "bg-[#E57373]",
+  labelText: "text-[#C25151]",
+  labelHover: "hover:bg-[rgba(229,115,115,0.08)]",
   activeBg: "bg-[rgba(229,115,115,0.12)]",
   activeText: "text-[#9B2C2C]",
   pillBg: "bg-[rgba(229,115,115,0.12)]",
   pillText: "text-[#9B2C2C]",
   mobileActive: "text-[#C25151]",
+  chartFill: "#E57373",
+  chartStroke: "#C25151",
 };
 
-const STOCK_ACCENT: ModuleAccent = {
+export const STOCK_ACCENT: ModuleAccent = {
   rail: "bg-emerald-500",
+  labelText: "text-emerald-700",
+  labelHover: "hover:bg-emerald-50/60",
   activeBg: "bg-emerald-50/80",
   activeText: "text-emerald-900",
   pillBg: "bg-emerald-50",
   pillText: "text-emerald-800",
   mobileActive: "text-emerald-700",
+  chartFill: "#10B981",
+  chartStroke: "#059669",
+};
+
+export const HOME_ACCENT: ModuleAccent = {
+  rail: "bg-slate-500",
+  labelText: "text-slate-600",
+  labelHover: "hover:bg-slate-50",
+  activeBg: "bg-slate-50",
+  activeText: "text-slate-900",
+  pillBg: "bg-slate-100",
+  pillText: "text-slate-800",
+  mobileActive: "text-slate-800",
+  chartFill: "#64748B",
+  chartStroke: "#475569",
+};
+
+export const SETTINGS_ACCENT: ModuleAccent = {
+  rail: "bg-[#999999]",
+  labelText: "text-[#555555]",
+  labelHover: "hover:bg-[#F7F7F7]",
+  activeBg: "bg-[#F7F7F7]",
+  activeText: "text-[#111111]",
+  pillBg: "bg-[#F7F7F7]",
+  pillText: "text-[#333333]",
+  mobileActive: "text-[#111111]",
+  chartFill: "#999999",
+  chartStroke: "#666666",
 };
 
 function codModule(): PortalModule {
@@ -279,6 +324,21 @@ export function isCodListPath(pathname: string): boolean {
 
 const OPEN_STORAGE_PREFIX = "portal.nav.open.";
 
-export function getModuleOpenKey(id: ModuleId): string {
+export function getNavOpenKey(id: NavSectionId): string {
   return `${OPEN_STORAGE_PREFIX}${id}`;
+}
+
+/** @deprecated Use getNavOpenKey */
+export function getModuleOpenKey(id: ModuleId): string {
+  return getNavOpenKey(id);
+}
+
+export function moduleDashboardHref(module: PortalModule): string {
+  return module.items.find((i) => i.label === "Dashboard")?.href ?? module.items[0]!.href;
+}
+
+const SETTINGS_PATHS = ["/account", "/admin"];
+
+export function isPathInSettings(pathname: string): boolean {
+  return SETTINGS_PATHS.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
