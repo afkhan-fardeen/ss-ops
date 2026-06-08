@@ -10,6 +10,7 @@ import {
   releaseRestockIdempotency,
   restockIdempotencyKey,
 } from "./restock-log";
+import { targetShopifyOnHand } from "./stock-balance-target";
 
 export type RestockItemInput = {
   ubexId: string;
@@ -38,7 +39,7 @@ function normalizeUbexId(raw: string): string {
   return raw.trim();
 }
 
-/** Restock one matched SKU: Shopify on_hand ← fresh Ubex available_qty. No Ubex writes. */
+/** Restock one matched SKU: Shopify on_hand ← Ubex sellable + committed. No Ubex writes. */
 export async function restockItemToUbex(
   input: RestockItemInput,
   createdBy: string | null,
@@ -71,7 +72,9 @@ export async function restockItemToUbex(
     return { ...base, ok: false, error: "Ubex quantity not found for id" };
   }
 
-  if (ubexStock === previousOnHand) {
+  const targetOnHand = targetShopifyOnHand(ubexStock, committed);
+
+  if (targetOnHand === previousOnHand) {
     await logStockRestock({
       ubexId,
       barcode,
@@ -97,7 +100,7 @@ export async function restockItemToUbex(
     };
   }
 
-  const idemKey = restockIdempotencyKey(barcode, location.id, ubexStock);
+  const idemKey = restockIdempotencyKey(barcode, location.id, targetOnHand);
   const reserved = await claimRestockIdempotency({
     key: idemKey,
     barcode,
@@ -123,7 +126,7 @@ export async function restockItemToUbex(
     await setShopifyOnHand(
       variant.inventoryItemId,
       location.id,
-      ubexStock,
+      targetOnHand,
       previousOnHand,
       idemKey,
     );
@@ -155,7 +158,7 @@ export async function restockItemToUbex(
     locationId: location.id,
     ubexQty: ubexStock,
     previousOnHand,
-    newOnHand: updated?.onHand ?? ubexStock,
+    newOnHand: updated?.onHand ?? targetOnHand,
     committed: updated?.committed ?? committed,
     status: "success",
     createdBy,
@@ -167,7 +170,7 @@ export async function restockItemToUbex(
     ok: true,
     ubexStock,
     previousOnHand,
-    newOnHand: updated?.onHand ?? ubexStock,
+    newOnHand: updated?.onHand ?? targetOnHand,
     shopifyAvailable: updated?.available,
     shopifyCommitted: updated?.committed ?? committed,
   };

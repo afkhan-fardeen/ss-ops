@@ -1,9 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeftRight, Check, ChevronLeft, ChevronRight, Loader2, PackagePlus, X } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeftRight,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  PackagePlus,
+  X,
+} from "lucide-react";
 import type { StockBalanceRow } from "@/lib/stock/build-balance-rows";
+import {
+  applyStockBalanceFilters,
+  DEFAULT_STOCK_BALANCE_FILTERS,
+  filtersAreActive,
+  WEEKLY_RESTOCK_PRESET,
+  type StockBalanceFilterState,
+} from "@/lib/stock/stock-balance-filters";
+import { targetShopifyOnHand } from "@/lib/stock/stock-balance-target";
 import { StatusPill, type StatusTone } from "@/components/portal/StatusPill";
 import { useRestockQueue, type RestockRowInput } from "@/hooks/useRestockQueue";
 
@@ -46,6 +63,16 @@ const statusTone: Record<StockBalanceRow["status"], StatusTone> = {
   skipped: "neutral",
 };
 
+const FILTER_CHIPS: Array<{
+  key: keyof StockBalanceFilterState;
+  label: string;
+}> = [
+  { key: "quantityMismatchOnly", label: "Quantity mismatch" },
+  { key: "noCommittedOnly", label: "No committed" },
+  { key: "hideUnlinked", label: "Hide unlinked" },
+  { key: "hideAmbiguous", label: "Hide ambiguous" },
+];
+
 function fmt(n: number | null): string {
   if (n === null) return "—";
   return String(n);
@@ -81,6 +108,31 @@ function shopifySubtitle(row: StockBalanceRow): string | null {
   return label;
 }
 
+function FilterChip({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "focus-ring rounded-full border px-2.5 py-1 text-[11px] font-medium transition",
+        active
+          ? "border-[#111111] bg-[#111111] text-white"
+          : "border-[#EBEBEB] bg-white text-[#555555] hover:bg-[#F7F7F7]",
+      ].join(" ")}
+    >
+      {label}
+    </button>
+  );
+}
+
 function ProductCell({ row }: { row: StockBalanceRow }) {
   const subtitle = shopifySubtitle(row);
   return (
@@ -114,7 +166,7 @@ function RestockIconButton({
       ? "Restocked"
       : err
         ? "Retry restock"
-        : "Restock Shopify on hand to Ubex";
+        : "Restock so Shopify available matches Ubex";
 
   return (
     <button
@@ -159,35 +211,45 @@ export function StockBalanceView({
 }: Props) {
   const router = useRouter();
   const { state, restockOne, restockBulk } = useRestockQueue();
-  const [mismatchesOnly, setMismatchesOnly] = useState(false);
+  const [filters, setFilters] = useState<StockBalanceFilterState>(DEFAULT_STOCK_BALANCE_FILTERS);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set());
   const [confirmRows, setConfirmRows] = useState<RestockRowInput[] | null>(null);
   const [confirmBusy, setConfirmBusy] = useState(false);
+  const pageCheckboxRef = useRef<HTMLInputElement>(null);
+
+  const rowById = useMemo(() => new Map(rows.map((r) => [r.ubexId, r])), [rows]);
+
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      const next = new Set<string>();
+      for (const id of prev) {
+        if (rowById.has(id)) next.add(id);
+      }
+      return next.size === prev.size ? prev : next;
+    });
+  }, [rowById]);
+
+  const filtered = useMemo(
+    () => applyStockBalanceFilters(rows, filters),
+    [rows, filters],
+  );
 
   const visible = useMemo(() => {
-    let list = rows;
-    if (mismatchesOnly) {
-      list = list.filter(
-        (r) =>
-          r.status === "unlinked" ||
-          r.status === "ambiguous" ||
-          (r.status === "matched" && r.delta !== null && r.delta !== 0),
-      );
-    }
     const q = search.trim().toLowerCase();
-    if (!q) return list;
-    return list.filter(
+    if (!q) return filtered;
+    return filtered.filter(
       (r) =>
         r.productName.toLowerCase().includes(q) ||
         r.barcode.toLowerCase().includes(q) ||
         (r.shopifyVariantLabel?.toLowerCase().includes(q) ?? false),
     );
-  }, [rows, mismatchesOnly, search]);
+  }, [filtered, search]);
 
   useEffect(() => {
     setPage(1);
-  }, [mismatchesOnly, search]);
+  }, [filters, search]);
 
   const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
@@ -200,6 +262,34 @@ export function StockBalanceView({
     [visible],
   );
 
+  const selectedRestockable = useMemo(() => {
+    const out: StockBalanceRow[] = [];
+    for (const id of selectedIds) {
+      const row = rowById.get(id);
+      if (row?.restockable) out.push(row);
+    }
+    return out;
+  }, [selectedIds, rowById]);
+
+  const pageRestockable = useMemo(
+    () => pageRows.filter((r) => r.restockable),
+    [pageRows],
+  );
+
+  const pageSelectedCount = useMemo(
+    () => pageRestockable.filter((r) => selectedIds.has(r.ubexId)).length,
+    [pageRestockable, selectedIds],
+  );
+
+  const pageAllSelected =
+    pageRestockable.length > 0 && pageSelectedCount === pageRestockable.length;
+  const pageSomeSelected = pageSelectedCount > 0 && !pageAllSelected;
+
+  useEffect(() => {
+    const el = pageCheckboxRef.current;
+    if (el) el.indeterminate = pageSomeSelected;
+  }, [pageSomeSelected]);
+
   const fetchedLabel = useMemo(() => {
     try {
       return new Date(fetchedAt).toLocaleString();
@@ -209,6 +299,45 @@ export function StockBalanceView({
   }, [fetchedAt]);
 
   const hasCommitted = confirmRows?.some((r) => (r.shopifyCommitted ?? 0) > 0) ?? false;
+  const activeFilters = filtersAreActive(filters);
+
+  function toggleFilter(key: keyof StockBalanceFilterState) {
+    setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  function applyWeeklyPreset() {
+    setFilters(WEEKLY_RESTOCK_PRESET);
+    setSelectedIds(new Set());
+  }
+
+  function toggleRowSelected(ubexId: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(ubexId)) next.delete(ubexId);
+      else next.add(ubexId);
+      return next;
+    });
+  }
+
+  function togglePageSelection() {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (pageAllSelected) {
+        for (const row of pageRestockable) next.delete(row.ubexId);
+      } else {
+        for (const row of pageRestockable) next.add(row.ubexId);
+      }
+      return next;
+    });
+  }
+
+  function selectAllMatching() {
+    setSelectedIds(new Set(restockableVisible.map((r) => r.ubexId)));
+  }
+
+  function clearSelection() {
+    setSelectedIds(new Set());
+  }
 
   async function handleConfirm() {
     if (!confirmRows?.length) return;
@@ -228,21 +357,28 @@ export function StockBalanceView({
   return (
     <div className="space-y-4">
       <div className="rounded-card border border-[#EBEBEB] bg-[#F7F7F7] px-4 py-3 text-[13px] text-[#555555]">
-        Restock sets Shopify <strong className="font-medium text-[#111111]">on hand</strong> to Ubex.
-        Ubex is never modified.
+        Δ compares Ubex sellable to Shopify <strong className="font-medium text-[#111111]">available</strong>.
+        Restock sets Shopify <strong className="font-medium text-[#111111]">on hand</strong> so available
+        matches Ubex (committed is preserved). Ubex is never modified.
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <label className="inline-flex cursor-pointer items-center gap-2 text-[13px] text-[#555555]">
-            <input
-              type="checkbox"
-              checked={mismatchesOnly}
-              onChange={(e) => setMismatchesOnly(e.target.checked)}
-              className="h-4 w-4 rounded border-[#EBEBEB]"
+        <div className="flex flex-wrap items-center gap-2">
+          {FILTER_CHIPS.map(({ key, label }) => (
+            <FilterChip
+              key={key}
+              label={label}
+              active={filters[key]}
+              onClick={() => toggleFilter(key)}
             />
-            Mismatches only
-          </label>
+          ))}
+          <button
+            type="button"
+            onClick={applyWeeklyPreset}
+            className="focus-ring rounded-full border border-[#EBEBEB] bg-white px-2.5 py-1 text-[11px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+          >
+            Weekly restock preset
+          </button>
           <input
             type="search"
             value={search}
@@ -255,11 +391,29 @@ export function StockBalanceView({
           {restockableVisible.length > 0 ? (
             <button
               type="button"
-              onClick={() => setConfirmRows(restockableVisible.map(toRestockInput))}
+              onClick={selectAllMatching}
+              className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+            >
+              Select all matching ({restockableVisible.length})
+            </button>
+          ) : null}
+          {selectedIds.size > 0 ? (
+            <button
+              type="button"
+              onClick={clearSelection}
+              className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#555555] transition hover:bg-[#F7F7F7]"
+            >
+              Clear selection
+            </button>
+          ) : null}
+          {selectedRestockable.length > 0 ? (
+            <button
+              type="button"
+              onClick={() => setConfirmRows(selectedRestockable.map(toRestockInput))}
               className="focus-ring inline-flex items-center gap-1.5 rounded-card border border-[#111111] bg-[#111111] px-3 py-1.5 text-[12px] font-medium text-white transition hover:opacity-90"
             >
               <PackagePlus size={14} />
-              Restock all visible ({restockableVisible.length})
+              Restock selected ({selectedRestockable.length})
             </button>
           ) : null}
           <button
@@ -274,9 +428,20 @@ export function StockBalanceView({
       </div>
 
       <div className="overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
-        <table className="w-full min-w-[980px] border-collapse text-left text-[12.5px]">
+        <table className="w-full min-w-[1020px] border-collapse text-left text-[12.5px]">
           <thead>
             <tr className="border-b border-[#EBEBEB] text-[11px] font-semibold uppercase tracking-wide">
+              <th className={`${thNeutral} w-10 text-center`}>
+                <input
+                  ref={pageCheckboxRef}
+                  type="checkbox"
+                  checked={pageAllSelected}
+                  disabled={pageRestockable.length === 0}
+                  onChange={togglePageSelection}
+                  aria-label="Select all restockable rows on this page"
+                  className="h-4 w-4 rounded border-[#EBEBEB] disabled:opacity-40"
+                />
+              </th>
               <th className={thNeutral}>Product</th>
               <th className={thNeutral}>Barcode</th>
               <th className={thUbex}>Ubex</th>
@@ -291,8 +456,8 @@ export function StockBalanceView({
           <tbody>
             {visible.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-3 py-8 text-center text-[#999999]">
-                  {mismatchesOnly ? "No mismatches in loaded items." : "No rows to show."}
+                <td colSpan={10} className="px-3 py-8 text-center text-[#999999]">
+                  {activeFilters ? "No rows match the current filters." : "No rows to show."}
                 </td>
               </tr>
             ) : (
@@ -301,12 +466,26 @@ export function StockBalanceView({
                 const busy = rowState?.status === "busy";
                 const done = rowState?.status === "success";
                 const err = rowState?.status === "error";
+                const checked = selectedIds.has(row.ubexId);
 
                 return (
                   <tr
                     key={row.ubexId}
                     className="border-b border-[#F0F0F0] last:border-0 hover:bg-[#FAFAFA]/80"
                   >
+                    <td className="px-3 py-2.5 text-center">
+                      {row.restockable ? (
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() => toggleRowSelected(row.ubexId)}
+                          aria-label={`Select ${row.productName}`}
+                          className="h-4 w-4 rounded border-[#EBEBEB]"
+                        />
+                      ) : (
+                        <span className="inline-block h-4 w-4" aria-hidden />
+                      )}
+                    </td>
                     <ProductCell row={row} />
                     <td className="px-3 py-2.5 font-mono text-[12px] text-[#555555]">
                       {row.barcode || "—"}
@@ -337,7 +516,7 @@ export function StockBalanceView({
                           title={
                             row.status !== "matched"
                               ? "Only matched rows can be restocked"
-                              : "Already in sync"
+                              : "Sellable stock already in sync"
                           }
                         >
                           —
@@ -359,6 +538,7 @@ export function StockBalanceView({
               ? `Showing all ${visible.length} row${visible.length === 1 ? "" : "s"}`
               : `Showing ${pageStart + 1}–${rangeEnd} of ${visible.length}`}
             {totalPages > 1 ? ` · Page ${safePage} of ${totalPages}` : ""}
+            {selectedIds.size > 0 ? ` · ${selectedRestockable.length} selected` : ""}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -391,8 +571,8 @@ export function StockBalanceView({
           : search.trim()
             ? ` · 0 matching “${search.trim()}”`
             : ""}{" "}
-        · Matched {summary.matched}, unlinked {summary.unlinked}, ambiguous {summary.ambiguous} ·
-        Fetched {fetchedLabel}
+        · Matched {summary.matched}, unlinked {summary.unlinked}, ambiguous {summary.ambiguous},
+        mismatched {summary.mismatched} · Fetched {fetchedLabel}
       </p>
 
       {confirmRows ? (
@@ -422,29 +602,37 @@ export function StockBalanceView({
             </div>
 
             <p className="text-[12px] text-[#555555]">
-              Set Shopify on hand to Ubex for {confirmRows.length} item
-              {confirmRows.length === 1 ? "" : "s"} at {locationName}.
+              Set Shopify available to Ubex sellable for {confirmRows.length} item
+              {confirmRows.length === 1 ? "" : "s"} at {locationName} (on hand adjusted; committed
+              preserved).
             </p>
 
             {hasCommitted ? (
-              <p className="mt-2 rounded-lg border border-[#F0B743]/30 bg-[rgba(240,183,67,0.10)] px-3 py-2 text-[12px] text-[#92400E]">
-                Some rows have committed stock — available may change after restock.
+              <p className="mt-2 rounded-lg border border-[#EBEBEB] bg-[#F7F7F7] px-3 py-2 text-[12px] text-[#555555]">
+                Some rows have committed stock — on hand will increase by the committed amount so
+                available matches Ubex.
               </p>
             ) : null}
 
             <ul className="mt-3 max-h-48 space-y-2 overflow-y-auto text-[12px]">
-              {confirmRows.map((r) => (
-                <li
-                  key={r.ubexId}
-                  className="rounded-lg border border-[#F0F0F0] bg-[#FAFAFA] px-3 py-2"
-                >
-                  <p className="font-medium text-[#111111]">{r.productName}</p>
-                  <p className="mt-0.5 text-[#555555]">
-                    on hand {fmt(r.shopifyOnHand)} → {r.ubexStock}
-                    {(r.shopifyCommitted ?? 0) > 0 ? ` · committed ${r.shopifyCommitted}` : ""}
-                  </p>
-                </li>
-              ))}
+              {confirmRows.map((r) => {
+                const targetOnHand = targetShopifyOnHand(r.ubexStock, r.shopifyCommitted);
+                return (
+                  <li
+                    key={r.ubexId}
+                    className="rounded-lg border border-[#F0F0F0] bg-[#FAFAFA] px-3 py-2"
+                  >
+                    <p className="font-medium text-[#111111]">{r.productName}</p>
+                    <p className="mt-0.5 text-[#555555]">
+                      available {fmt(r.shopifyAvailable)} → {r.ubexStock}
+                    </p>
+                    <p className="mt-0.5 text-[#555555]">
+                      on hand {fmt(r.shopifyOnHand)} → {targetOnHand}
+                      {(r.shopifyCommitted ?? 0) > 0 ? ` · committed ${r.shopifyCommitted}` : ""}
+                    </p>
+                  </li>
+                );
+              })}
             </ul>
 
             <div className="mt-4 flex justify-end gap-2">

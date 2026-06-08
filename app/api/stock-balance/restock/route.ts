@@ -34,7 +34,7 @@ export const maxDuration = 300;
 
 /**
  * POST /api/stock-balance/restock
- * Admin-only. Sets Shopify on_hand to fresh Ubex qty. No Ubex writes.
+ * Admin-only. Sets Shopify on_hand so available matches Ubex sellable. No Ubex writes.
  */
 export async function POST(req: Request) {
   let admin;

@@ -109,7 +109,7 @@ export function buildStockBalanceRows(
     }
 
     const v = variants[0]!;
-    const delta = item.stock - v.onHand;
+    const delta = item.stock - v.available;
     rows.push({
       ubexId: item.id,
       productName: item.name,

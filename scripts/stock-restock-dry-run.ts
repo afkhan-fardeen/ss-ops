@@ -38,6 +38,7 @@ async function main() {
     "@/lib/shopify/inventory-read"
   );
   const { loadStockBalancePreview } = await import("@/lib/stock/load-stock-balance-preview");
+  const { targetShopifyOnHand } = await import("@/lib/stock/stock-balance-target");
 
   let barcode = (process.argv[2] ?? "").trim();
   let ubexId = "";
@@ -83,9 +84,11 @@ async function main() {
   const v = variants[0]!;
   console.log(`Variant GID: ${v.variantId}`);
   console.log(`Item GID:    ${v.inventoryItemId}`);
+  const targetOnHand =
+    ubexQty !== undefined ? targetShopifyOnHand(ubexQty, v.committed) : null;
   console.log(`Shopify:     on_hand ${v.onHand}, available ${v.available}, committed ${v.committed}`);
-  console.log(`Target:      set on_hand → ${ubexQty ?? "?"}`);
-  console.log(`Delta:       ${ubexQty !== undefined ? ubexQty - v.onHand : "?"}`);
+  console.log(`Target:      set on_hand → ${targetOnHand ?? "?"}`);
+  console.log(`Sellable Δ:  ${ubexQty !== undefined ? ubexQty - v.available : "?"}`);
   console.log("\nDry-run complete. No API writes were made.");
 }
 

@@ -93,7 +93,7 @@ export function useRestockQueue() {
       });
       if (result.skipped) toast.info(`${row.productName}: already in sync`);
       else if (result.idempotent) toast.info(`${row.productName}: already restocked today`);
-      else toast.success(`${row.productName}: on hand → ${result.newOnHand ?? result.ubexStock}`);
+      else toast.success(`${row.productName}: available → ${result.ubexStock ?? "?"}`);
       return true;
     } catch (e) {
       const message = e instanceof Error ? e.message : "Restock failed";

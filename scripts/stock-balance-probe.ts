@@ -87,7 +87,7 @@ async function main() {
   console.log(`  Unlinked:  ${summary.unlinked}`);
   console.log(`  Ambiguous: ${summary.ambiguous}`);
   console.log(`  Skipped:   ${summary.skipped}`);
-  console.log(`  Mismatch (Δ≠0): ${summary.mismatched}`);
+  console.log(`  Mismatch (sellable Δ≠0): ${summary.mismatched}`);
   console.log(`\nLoaded ${preview.itemCount} Ubex items at ${preview.fetchedAt}`);
 
   process.exit(0);
