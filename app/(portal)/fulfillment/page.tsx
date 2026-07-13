@@ -160,6 +160,7 @@ async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
         </div>
       </section>
       <FulfillmentView
+        key={storeId}
         rows={rows}
         ubexTokenConfigured={ubexTokenConfigured}
         ubexTotalShipments={ubexLookup?.totalShipments}
