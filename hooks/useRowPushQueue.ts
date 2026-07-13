@@ -7,13 +7,16 @@ type FulfillResult =
   | { ok: true; fulfillmentId: number; idempotent?: boolean }
   | { ok: false; error: string };
 
-async function apiFulfill(input: {
-  orderId: number;
-  orderName?: string;
-  trackingNumber: string;
-  trackingUrl?: string;
-}): Promise<FulfillResult> {
-  const res = await fetch("/api/fulfill", {
+async function apiFulfill(
+  input: {
+    orderId: number;
+    orderName?: string;
+    trackingNumber: string;
+    trackingUrl?: string;
+  },
+  endpoint: string,
+): Promise<FulfillResult> {
+  const res = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
@@ -132,10 +135,12 @@ export function deriveInitial<R extends PushableRow>(
  * Shared hook powering COD + Fulfillment row pushes.
  * - Exposes `stateMap`, `pushOne(row)`, and `fulfilAll(rows)`.
  * - Shows sonner toasts on single-row push and a summary toast on bulk fulfil.
+ * - `pushEndpoint` defaults to "/api/fulfill"; pass "/api/store2/fulfill" for Store 2.
  */
 export function useRowPushQueue<R extends PushableRow>(
   rows: R[],
   initialLogs?: InitialLogEntry[],
+  pushEndpoint = "/api/fulfill",
 ) {
   const initial = useMemo(() => deriveInitial(rows, initialLogs), [rows, initialLogs]);
   const [stateMap, dispatch] = useReducer(reducer, initial);
@@ -144,12 +149,15 @@ export function useRowPushQueue<R extends PushableRow>(
     async (row: R, opts?: { silent?: boolean }): Promise<boolean> => {
       if (!row.ubexId) return false;
       dispatch({ type: "busy", orderName: row.orderName });
-      const res = await apiFulfill({
-        orderId: row.orderId,
-        orderName: row.orderName,
-        trackingNumber: row.ubexId,
-        trackingUrl: row.trackingUrl || undefined,
-      });
+      const res = await apiFulfill(
+        {
+          orderId: row.orderId,
+          orderName: row.orderName,
+          trackingNumber: row.ubexId,
+          trackingUrl: row.trackingUrl || undefined,
+        },
+        pushEndpoint,
+      );
       if (res.ok) {
         dispatch({ type: "fulfilled", orderName: row.orderName, fulfillmentId: res.fulfillmentId });
         if (!opts?.silent) {

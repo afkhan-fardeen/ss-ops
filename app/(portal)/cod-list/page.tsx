@@ -4,8 +4,11 @@ import { CodListCollectionPanel } from "@/components/cod-list/CodListCollectionP
 import { CodMonthExportPanel } from "@/components/cod-list/CodMonthExportPanel";
 import type { CodDateOption } from "@/components/cod-list/CodDatePicker";
 import { RatesStrip } from "@/components/cod-list/RatesStrip";
+import { StoreSwitcherTabs } from "@/components/portal/StoreSwitcherTabs";
 import { getLastNWindows, shortWindowLabel } from "@/lib/datetime/collection-window";
 import { loadCodListData } from "@/lib/cod/cod-list-data";
+import { loadStore2CodListData } from "@/lib/store2/cod-list-data";
+import { isStore2Configured } from "@/lib/store2/client";
 import {
   resolveCodListPageSearchParams,
   type CodListSearchParamsInput,
@@ -15,16 +18,32 @@ import { AlertTriangle } from "lucide-react";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 
+type CodListPageSearchParams = CodListSearchParamsInput & {
+  store?: string;
+};
+
 export default async function CodListPage({
   searchParams,
 }: {
-  searchParams?: CodListSearchParamsInput | Promise<CodListSearchParamsInput | undefined>;
+  searchParams?: CodListPageSearchParams | Promise<CodListPageSearchParams | undefined>;
 }) {
   const resolvedParams = await resolveCodListPageSearchParams(searchParams);
+  const storeId = (await searchParams as CodListPageSearchParams | undefined)?.store === "2" ? 2 : 1;
+
   return (
     <div className="mx-auto max-w-7xl space-y-5">
+      {/* Store switcher — only shown when Store 2 is configured */}
+      {isStore2Configured() && (
+        <Suspense>
+          <StoreSwitcherTabs />
+        </Suspense>
+      )}
       <Suspense fallback={<CodListSkeleton />}>
-        <CodListContent searchParams={resolvedParams} />
+        {storeId === 2 ? (
+          <Store2CodListContent searchParams={resolvedParams} />
+        ) : (
+          <CodListContent searchParams={resolvedParams} />
+        )}
       </Suspense>
     </div>
   );
@@ -65,6 +84,8 @@ function CodListErrorCard({ title, message }: { title: string; message: string }
   );
 }
 
+// ─── Store 1 (existing pipeline) ─────────────────────────────────────────────
+
 async function CodListContent({ searchParams }: { searchParams?: { date?: string; dates?: string } }) {
   const data = await loadCodListData(searchParams);
   if (!data.ok) {
@@ -79,11 +100,10 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
   if (data.shouldUpsertUbexLinks) {
     const matches = data.rows
       .filter((r) => r.ubexId && !r.alreadyFulfilled)
-      .map((r) => ({ shopifyOrderId: r.orderId, shopifyOrderName: r.orderName, ubexTracking: r.ubexId }));
+      .map((r) => ({ shopifyOrderId: r.orderId, shopifyOrderName: r.orderName, ubexTracking: r.ubexId! }));
     void upsertOrderUbexLinks(matches).catch(() => {});
   }
 
-  /** Newest (current window) first, then older days — same order as in the date picker. */
   const options: CodDateOption[] = getLastNWindows(14).map((w) => ({
     dateKey: w.dateKey,
     label: shortWindowLabel(w),
@@ -130,6 +150,75 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
       </div>
 
       <CodMonthExportPanel />
+
+      <div className="animate-fade-in" style={{ animationDelay: "40ms" }}>
+        <CODListView
+          rows={data.rows}
+          ordersScannedInWindow={data.ordersScannedInWindow}
+          ubexTokenConfigured={ubexTokenConfigured}
+          ubexTotalShipments={data.ubexLookup?.totalShipments}
+          ubexConflictsCount={data.ubexLookup?.last4Conflicts.size}
+          ubexApiMessage={data.ubexLookup?.apiMessage}
+          ubexError={data.ubexLookup?.error}
+        />
+      </div>
+    </Fragment>
+  );
+}
+
+// ─── Store 2 (GCC) pipeline ───────────────────────────────────────────────────
+
+async function Store2CodListContent({ searchParams }: { searchParams?: { date?: string; dates?: string } }) {
+  const data = await loadStore2CodListData(searchParams);
+  if (!data.ok) {
+    return (
+      <CodListErrorCard
+        title={data.error.includes("Invalid") || data.error.includes("Select at most") ? "Invalid date selection" : "Could not load Store 2 COD list"}
+        message={data.error}
+      />
+    );
+  }
+
+  const options: CodDateOption[] = getLastNWindows(14).map((w) => ({
+    dateKey: w.dateKey,
+    label: shortWindowLabel(w),
+    isToday: w.isToday,
+  }));
+
+  const single = data.singleWindow;
+  const titleLine = single ? `${single.label} · Store 2 (GCC)` : `${data.dateKeys.length} days selected · Store 2 (GCC)`;
+  const subLine = single
+    ? "Yesterday 14:00 → Today 14:00 · Bahrain (UTC+3)"
+    : data.dateKeys
+        .map((k) => {
+          const w = data.windows.find((x) => x.dateKey === k);
+          return w ? shortWindowLabel(w) : k;
+        })
+        .join(" · ");
+
+  const ubexTokenConfigured = Boolean(getUbexToken());
+
+  return (
+    <Fragment key={`s2-${data.dateKeys.join(",")}`}>
+      <div className="grid min-h-0 animate-fade-in auto-rows-[minmax(0,1fr)] gap-4 lg:grid-cols-2 lg:items-stretch">
+        <div className="flex min-h-[12rem] min-w-0 flex-col lg:min-h-0">
+          <CodListCollectionPanel
+            titleLine={titleLine}
+            subLine={subLine}
+            options={options}
+            selectedDateKeys={data.dateKeys}
+            ordersScannedInWindow={data.ordersScannedInWindow}
+            singleIsToday={Boolean(single?.isToday)}
+          />
+        </div>
+        <div className="flex min-h-[12rem] min-w-0 flex-col lg:min-h-0">
+          <div className="min-h-0 flex-1">
+            <RatesStrip {...data.ratesView} />
+          </div>
+        </div>
+      </div>
+
+      {/* Monthly export not shown for Store 2 (no day cache to aggregate from) */}
 
       <div className="animate-fade-in" style={{ animationDelay: "40ms" }}>
         <CODListView

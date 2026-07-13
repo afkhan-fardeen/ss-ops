@@ -3,6 +3,10 @@
     {
       "path": "/api/sync/auto-fulfill",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/store2/sync/auto-fulfill",
+      "schedule": "0 14 * * *"
     }
   ]
 }

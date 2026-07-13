@@ -83,6 +83,7 @@ export function FulfillmentView({
   ubexApiMessage,
   ubexError,
   initialLogs,
+  pushEndpoint,
 }: {
   rows: OrderRow[];
   ubexTokenConfigured: boolean;
@@ -91,8 +92,10 @@ export function FulfillmentView({
   ubexApiMessage?: string;
   ubexError?: string;
   initialLogs?: InitialLogEntry[];
+  /** API route to POST fulfillments to. Defaults to "/api/fulfill". Pass "/api/store2/fulfill" for Store 2. */
+  pushEndpoint?: string;
 }) {
-  const { stateMap, pushOne, fulfilAll } = useRowPushQueue<OrderRow>(rows, initialLogs);
+  const { stateMap, pushOne, fulfilAll } = useRowPushQueue<OrderRow>(rows, initialLogs, pushEndpoint);
   const [filter, setFilter] = useState<FilterKey>("all");
 
   const filteredRows = useMemo(() => applyFilter(rows, filter, stateMap), [rows, filter, stateMap]);

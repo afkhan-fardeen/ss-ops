@@ -14,6 +14,8 @@ export type FulfillmentLogInsert = {
   requestPayload?: unknown;
   responsePayload?: unknown;
   createdBy?: string | null;
+  /** 1 = main store (default), 2 = Store 2. */
+  storeId?: number;
 };
 
 /** Today's UTC date in YYYY-MM-DD. Used inside the idempotency key so retries next day get a fresh attempt. */
@@ -42,6 +44,7 @@ export async function logFulfillment(input: FulfillmentLogInsert): Promise<void>
     request_payload: (input.requestPayload as never) ?? null,
     response_payload: (input.responsePayload as never) ?? null,
     created_by: input.createdBy ?? null,
+    store_id: input.storeId ?? 1,
   });
   if (error) console.warn("[fulfillment-log] insert failed:", error.message);
 }
@@ -51,6 +54,7 @@ export async function claimIdempotency(params: {
   key: string;
   shopifyOrderId: number;
   createdBy?: string | null;
+  storeId?: number;
 }): Promise<boolean> {
   const supabase = getSupabaseService();
   if (!supabase) return true; // No Supabase → degrade to "always allow".
@@ -58,6 +62,7 @@ export async function claimIdempotency(params: {
     key: params.key,
     shopify_order_id: params.shopifyOrderId,
     created_by: params.createdBy ?? null,
+    store_id: params.storeId ?? 1,
   });
   if (!error) return true;
   // 23505 = unique_violation → we were not the first.
@@ -69,7 +74,7 @@ export async function claimIdempotency(params: {
 }
 
 /** Release the idempotency key so a failed push can be retried the same day. */
-export async function releaseIdempotency(key: string): Promise<void> {
+export async function releaseIdempotency(key: string, _storeId?: number): Promise<void> {
   const supabase = getSupabaseService();
   if (!supabase) return;
   const { error } = await supabase.from("push_idempotency").delete().eq("key", key);
@@ -80,6 +85,7 @@ export async function releaseIdempotency(key: string): Promise<void> {
 export async function findLastSuccessForKey(
   shopifyOrderId: number,
   tracking: string,
+  storeId = 1,
 ): Promise<FulfillmentLogRow | null> {
   const supabase = getSupabaseService();
   if (!supabase) return null;
@@ -89,6 +95,7 @@ export async function findLastSuccessForKey(
     .eq("shopify_order_id", shopifyOrderId)
     .eq("ubex_tracking", tracking)
     .eq("status", "success")
+    .eq("store_id", storeId)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -114,6 +121,7 @@ export async function getLastLogForOrder(shopifyOrderId: number): Promise<Fulfil
 /** Bulk-fetch the latest log row per order for a list of order ids. */
 export async function getLastLogsForOrders(
   orderIds: number[],
+  storeId = 1,
 ): Promise<Map<number, FulfillmentLogRow>> {
   const out = new Map<number, FulfillmentLogRow>();
   const supabase = getSupabaseService();
@@ -122,6 +130,7 @@ export async function getLastLogsForOrders(
     .from("fulfillment_log")
     .select("*")
     .in("shopify_order_id", orderIds)
+    .eq("store_id", storeId)
     .order("created_at", { ascending: false });
   if (error || !data) return out;
   for (const row of data as FulfillmentLogRow[]) {

@@ -17,12 +17,16 @@ export type CronRunLog = {
 };
 
 /** Insert a new "running" row at cron start. Returns the row id for later update. */
-export async function startCronRun(dryRun: boolean): Promise<number | null> {
+export async function startCronRun(dryRun: boolean, endpoint?: string): Promise<number | null> {
   const supabase = getSupabaseService();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("cron_run_log")
-    .insert({ status: "running", dry_run: dryRun })
+    .insert({
+      status: "running",
+      dry_run: dryRun,
+      ...(endpoint ? { endpoint } : {}),
+    })
     .select("id")
     .single();
   if (error || !data) {

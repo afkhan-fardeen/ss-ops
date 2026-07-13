@@ -21,13 +21,17 @@ export type OrderUbexLinkInput = {
  * resolves a match. Only updates shopify_order_name, ubex_tracking, and updated_at —
  * never overwrites auto_fulfilled_at once it's set.
  */
-export async function upsertOrderUbexLinks(entries: OrderUbexLinkInput[]): Promise<void> {
+export async function upsertOrderUbexLinks(
+  entries: OrderUbexLinkInput[],
+  opts?: { storeId?: number },
+): Promise<void> {
   const supabase = getSupabaseService();
   if (!supabase || entries.length === 0) return;
   const rows = entries.map((e) => ({
     shopify_order_id: e.shopifyOrderId,
     shopify_order_name: e.shopifyOrderName,
     ubex_tracking: e.ubexTracking,
+    store_id: opts?.storeId ?? 1,
     updated_at: new Date().toISOString(),
   }));
   const { error } = await supabase
@@ -73,12 +77,13 @@ export async function getOrderUbexLinksForOrderIds(
  * Return all pending (not yet auto-fulfilled) links, oldest first.
  * Capped at 100 rows per cron run to stay within Ubex API rate limits.
  */
-export async function getPendingOrderUbexLinks(): Promise<OrderUbexLink[]> {
+export async function getPendingOrderUbexLinks(opts?: { storeId?: number }): Promise<OrderUbexLink[]> {
   const supabase = getSupabaseService();
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("order_ubex_links")
     .select("*")
+    .eq("store_id", opts?.storeId ?? 1)
     .is("auto_fulfilled_at", null)
     .order("created_at", { ascending: true })
     .limit(100);

@@ -1,7 +1,10 @@
 import { Suspense } from "react";
 import { AlertTriangle } from "lucide-react";
 import { FulfillmentView } from "@/components/fulfillment/FulfillmentView";
+import { StoreSwitcherTabs } from "@/components/portal/StoreSwitcherTabs";
 import { fetchOrders } from "@/lib/orders/fetch-orders";
+import { fetchStore2Orders } from "@/lib/store2/fetch-orders";
+import { isStore2Configured } from "@/lib/store2/client";
 import { buildOrderRows } from "@/lib/orders/build-order-rows";
 import { buildUbexLookup, type UbexLookup } from "@/lib/ubex/build-lookup";
 import { getUbexToken } from "@/lib/ubex/client";
@@ -12,12 +15,29 @@ import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 import { applyUbexRowFallbacks } from "@/lib/ubex/apply-row-fallbacks";
 
+type FulfillmentSearchParams = {
+  store?: string;
+};
+
 /** Shell renders instantly — Suspense streams the data in when ready. */
-export default function FulfillmentPage() {
+export default async function FulfillmentPage({
+  searchParams,
+}: {
+  searchParams?: FulfillmentSearchParams | Promise<FulfillmentSearchParams | undefined>;
+}) {
+  const resolved = await searchParams;
+  const storeId = resolved?.store === "2" ? 2 : 1;
+
   return (
     <div className="mx-auto max-w-7xl space-y-5">
+      {/* Store switcher — shown only when Store 2 is configured */}
+      {isStore2Configured() && (
+        <Suspense>
+          <StoreSwitcherTabs />
+        </Suspense>
+      )}
       <Suspense fallback={<FulfillmentSkeleton />}>
-        <FulfillmentContent />
+        <FulfillmentContent storeId={storeId} />
       </Suspense>
     </div>
   );
@@ -40,7 +60,7 @@ function FulfillmentSkeleton() {
   );
 }
 
-async function FulfillmentContent() {
+async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
   let error: string | null = null;
   let windowLabel = "";
   let ordersScannedInWindow = 0;
@@ -49,12 +69,28 @@ async function FulfillmentContent() {
   let initialLogs: InitialLogEntry[] = [];
   const ubexTokenConfigured = Boolean(getUbexToken());
 
+  // For Store 2, use its fulfillment window env var, fallback to the global one.
+  const windowEnvVar =
+    storeId === 2
+      ? (process.env.FULFILLMENT_STORE2_WINDOW_DAYS ?? process.env.FULFILLMENT_WINDOW_DAYS)
+      : process.env.FULFILLMENT_WINDOW_DAYS;
+  const origWindowDays = process.env.FULFILLMENT_WINDOW_DAYS;
+  if (storeId === 2 && windowEnvVar) {
+    process.env.FULFILLMENT_WINDOW_DAYS = windowEnvVar;
+  }
+
   try {
     const win = getFulfillmentWindow();
+    if (storeId === 2 && origWindowDays !== undefined) {
+      process.env.FULFILLMENT_WINDOW_DAYS = origWindowDays;
+    }
+
     windowLabel = `${win.label} · ${new Date(win.createdAtMinIso).toUTCString()} → ${new Date(win.createdAtMaxIso).toUTCString()}`;
 
+    const fetchFn = storeId === 2 ? fetchStore2Orders : fetchOrders;
+
     const [{ orders, ordersScannedInWindow: scanned }, ubexResult] = await Promise.all([
-      fetchOrders({
+      fetchFn({
         createdAtMinIso: win.createdAtMinIso,
         createdAtMaxIso: win.createdAtMaxIso,
         fulfillmentStatus: "any",
@@ -75,10 +111,10 @@ async function FulfillmentContent() {
     // Save matched order→tracking links to Supabase for the auto-sync cron.
     const matches = rows
       .filter((r) => r.ubexId && !r.alreadyFulfilled)
-      .map((r) => ({ shopifyOrderId: r.orderId, shopifyOrderName: r.orderName, ubexTracking: r.ubexId }));
-    void upsertOrderUbexLinks(matches).catch(() => {});
+      .map((r) => ({ shopifyOrderId: r.orderId, shopifyOrderName: r.orderName, ubexTracking: r.ubexId! }));
+    void upsertOrderUbexLinks(matches, { storeId }).catch(() => {});
 
-    const logs = await getLastLogsForOrders(orders.map((o) => o.id)).catch(() => new Map());
+    const logs = await getLastLogsForOrders(orders.map((o) => o.id), storeId).catch(() => new Map());
     initialLogs = rows
       .map((r): InitialLogEntry | null => {
         const log = logs.get(r.orderId);
@@ -92,6 +128,9 @@ async function FulfillmentContent() {
       })
       .filter((x): x is InitialLogEntry => Boolean(x));
   } catch (e) {
+    if (storeId === 2 && origWindowDays !== undefined) {
+      process.env.FULFILLMENT_WINDOW_DAYS = origWindowDays;
+    }
     error = e instanceof Error ? e.message : "Failed to load fulfillment queue";
   }
 
@@ -107,13 +146,15 @@ async function FulfillmentContent() {
     );
   }
 
+  const pushEndpoint = storeId === 2 ? "/api/store2/fulfill" : "/api/fulfill";
+
   return (
     <>
       <section className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
-              Fulfillment window
+              Fulfillment window{storeId === 2 ? " · Store 2 (GCC)" : ""}
             </h2>
             <p className="mt-1 text-[14px] font-medium text-[#111111]">{windowLabel}</p>
           </div>
@@ -130,6 +171,7 @@ async function FulfillmentContent() {
         ubexApiMessage={ubexLookup?.apiMessage}
         ubexError={ubexLookup?.error}
         initialLogs={initialLogs}
+        pushEndpoint={pushEndpoint}
       />
     </>
   );

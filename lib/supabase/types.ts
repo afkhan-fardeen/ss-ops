@@ -19,6 +19,8 @@ export type FulfillmentLogRow = {
   response_payload: unknown | null;
   created_by: string | null;
   created_at: string;
+  /** 1 = main store (default), 2 = Store 2. Added in migration 010. */
+  store_id: number;
 };
 
 export type FxRateSnapshotRow = {
@@ -42,6 +44,8 @@ export type PushIdempotencyRow = {
   shopify_order_id: number;
   created_by: string | null;
   created_at: string;
+  /** 1 = main store (default), 2 = Store 2. Added in migration 010. */
+  store_id: number;
 };
 
 export type CronRunLogRow = {
@@ -66,6 +70,8 @@ export type OrderUbexLinksRow = {
   auto_fulfilled_at: string | null;
   created_at: string;
   updated_at: string;
+  /** 1 = main store (default), 2 = Store 2. Added in migration 010. */
+  store_id: number;
 };
 
 export type ShopifyOrderCacheRow = {
@@ -127,6 +133,11 @@ export type Database = {
         Update: Partial<OrderUbexLinksRow>;
       };
       shopify_orders_cache: {
+        Row: ShopifyOrderCacheRow;
+        Insert: Omit<ShopifyOrderCacheRow, "last_synced_at"> & { last_synced_at?: string };
+        Update: Partial<ShopifyOrderCacheRow>;
+      };
+      shopify_orders_cache_s2: {
         Row: ShopifyOrderCacheRow;
         Insert: Omit<ShopifyOrderCacheRow, "last_synced_at"> & { last_synced_at?: string };
         Update: Partial<ShopifyOrderCacheRow>;
