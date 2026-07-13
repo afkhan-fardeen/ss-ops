@@ -2,9 +2,11 @@
 
 import { Check, Copy, ExternalLink, Loader2, Send, AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { OrderRow } from "@/lib/orders/build-order-rows";
 import { StatusPill, type StatusTone } from "@/components/portal/StatusPill";
 import type { RowState, RowStateMap, RowStatus } from "@/hooks/useRowPushQueue";
+import { easeOut, rowExit } from "@/lib/motion";
 
 const statusLabel: Record<RowStatus, string> = {
   pending: "Waiting for Ubex",
@@ -35,7 +37,7 @@ function CopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={copy}
-      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-[#999999] transition hover:bg-[#F7F7F7] hover:text-[#111111]"
+      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-muted transition hover:bg-canvas hover:text-ink"
       title={copied ? "Copied" : "Copy"}
       aria-label="Copy"
     >
@@ -69,7 +71,7 @@ function PushButton({ row, state, onPush }: { row: OrderRow; state: RowState | u
         "focus-ring inline-flex h-8 items-center gap-1.5 rounded-card border px-2.5 text-[12px] font-medium transition",
         status === "error"
           ? "border-[#C25151]/30 bg-[rgba(194,81,81,0.10)] text-[#C25151] hover:bg-[#C25151]/10"
-          : "border-[#EBEBEB] bg-white text-[#111111] hover:bg-[#F7F7F7]",
+          : "border-line bg-white text-ink hover:bg-canvas",
         disabled ? "cursor-not-allowed opacity-60" : "",
       ].join(" ")}
     >
@@ -86,9 +88,9 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
 }) {
   if (rows.length === 0) {
     return (
-      <div className="animate-fade-up space-y-3 rounded-card border border-[#EBEBEB] bg-white p-8 shadow-soft">
-        <p className="text-center text-sm font-medium text-[#111111]">No orders match the current filter.</p>
-        <p className="text-center text-[12px] text-[#999999]">
+      <div className="animate-fade-up space-y-3 rounded-card border border-line bg-white p-8 shadow-soft">
+        <p className="text-center text-sm font-medium text-ink">No orders match the current filter.</p>
+        <p className="text-center text-[12px] text-muted">
           Try widening the window (<code className="font-mono">FULFILLMENT_WINDOW_DAYS</code>) or switching filter.
         </p>
       </div>
@@ -96,11 +98,11 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
   }
 
   return (
-    <div className="animate-fade-up rounded-card border border-[#EBEBEB] bg-white shadow-soft">
+    <div className="animate-fade-up rounded-card border border-line bg-white shadow-soft">
       <div className="max-h-[65vh] overflow-auto">
       <table className="w-full min-w-[900px] border-collapse text-left text-[13px]">
         <thead className="sticky top-0 z-10">
-          <tr className="border-b border-[#EBEBEB] bg-[#F7F7F7] text-[10px] font-semibold uppercase tracking-wider text-[#999999]">
+          <tr className="border-b border-line bg-canvas text-[10px] font-medium uppercase tracking-wider text-muted">
             <th className="px-3 py-3">Order</th>
             <th className="px-3 py-3">Date</th>
             <th className="px-3 py-3">Status</th>
@@ -114,6 +116,7 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
           </tr>
         </thead>
         <tbody>
+          <AnimatePresence initial={false} mode="popLayout">
           {rows.map((r, i) => {
             const state = stateMap[r.orderName];
             const status: RowStatus = state?.status ?? "pending";
@@ -121,13 +124,16 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
               ? new Date(r.orderDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
               : "—";
             return (
-              <tr
+              <motion.tr
                 key={r.orderName}
-                className="border-b border-[#EBEBEB] text-[#111111] transition last:border-0 hover:bg-[#F7F7F7]"
+                layout
+                exit={rowExit}
+                transition={easeOut}
+                className="border-b border-line text-ink transition last:border-0 hover:bg-canvas"
                 style={i < 6 ? { animation: "fadeUp 0.4s ease-out both", animationDelay: `${i * 30}ms` } : undefined}
               >
                 <td className="px-3 py-3 font-mono text-[12px] font-medium">{r.orderName}</td>
-                <td className="px-3 py-3 text-[12px] text-[#555555]">{orderDateFmt}</td>
+                <td className="px-3 py-3 text-[12px] text-muted">{orderDateFmt}</td>
                 <td className="px-3 py-3">
                   <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
                   {status === "error" && state?.message ? (
@@ -139,27 +145,27 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
                 <td className="px-3 py-3 font-mono text-[12px]">
                   {r.ubexId ? (
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="text-[#111111]">{r.ubexId}</span>
+                      <span className="text-ink">{r.ubexId}</span>
                       <CopyButton value={r.ubexId} />
                     </span>
-                  ) : <span className="text-[#999999]">—</span>}
+                  ) : <span className="text-muted">—</span>}
                 </td>
                 <td className="px-3 py-3">
                   {r.trackingUrl ? (
                     <div className="inline-flex items-center gap-1.5">
                       <a href={r.trackingUrl} target="_blank" rel="noopener noreferrer"
-                        className="focus-ring inline-flex items-center gap-1 rounded text-[12px] font-medium text-[#111111] hover:underline">
+                        className="focus-ring inline-flex items-center gap-1 rounded text-[12px] font-medium text-ink hover:underline">
                         Open <ExternalLink size={11} />
                       </a>
                       <CopyButton value={r.trackingUrl} />
                     </div>
-                  ) : <span className="text-[#999999]">—</span>}
+                  ) : <span className="text-muted">—</span>}
                 </td>
                 <td className="px-3 py-3 font-mono text-[12px]">{r.totalGbp}</td>
                 <td className="px-3 py-3 text-[12px]">
                   <span className={[
                     "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
-                    r.isCod ? "bg-[rgba(240,183,67,0.12)] text-[#F0B743]" : "bg-[#F7F7F7] text-[#555555]",
+                    r.isCod ? "bg-[rgba(240,183,67,0.12)] text-[#F0B743]" : "bg-canvas text-muted",
                   ].join(" ")}>
                     {r.isCod ? "COD" : "Paid"}
                   </span>
@@ -169,9 +175,10 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
                 <td className="px-3 py-3 text-right">
                   <PushButton row={r} state={state} onPush={onPush} />
                 </td>
-              </tr>
+              </motion.tr>
             );
           })}
+          </AnimatePresence>
         </tbody>
       </table>
       </div>

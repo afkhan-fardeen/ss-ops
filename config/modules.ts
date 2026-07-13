@@ -2,10 +2,10 @@ import type { LucideIcon } from "lucide-react";
 import {
   History,
   LayoutDashboard,
-  ListChecks,
-  PackageCheck,
-  Scale,
   Settings2,
+  Truck,
+  Wallet,
+  Warehouse,
 } from "lucide-react";
 
 export type ModuleId = "cod" | "fulfillment" | "stock";
@@ -45,80 +45,81 @@ export type PortalModule = {
 
 export const HOME_HREF = "/dashboard";
 
+// Module accents derive from the cod/fulfillment/stock Tailwind tokens — see design-plan.md.
 export const COD_ACCENT: ModuleAccent = {
-  rail: "bg-blue-500",
-  labelText: "text-blue-700",
-  labelHover: "hover:bg-blue-50/60",
-  activeBg: "bg-blue-50/80",
-  activeText: "text-blue-900",
-  pillBg: "bg-blue-50",
-  pillText: "text-blue-800",
-  mobileActive: "text-blue-700",
-  chartFill: "#3B82F6",
-  chartStroke: "#2563EB",
+  rail: "bg-cod",
+  labelText: "text-cod",
+  labelHover: "hover:bg-cod-bg",
+  activeBg: "bg-cod-bg",
+  activeText: "text-cod",
+  pillBg: "bg-cod-bg",
+  pillText: "text-cod",
+  mobileActive: "text-cod",
+  chartFill: "#2F9E7F",
+  chartStroke: "#237A63",
 };
 
 export const FULFILLMENT_ACCENT: ModuleAccent = {
-  rail: "bg-[#E57373]",
-  labelText: "text-[#C25151]",
-  labelHover: "hover:bg-[rgba(229,115,115,0.08)]",
-  activeBg: "bg-[rgba(229,115,115,0.12)]",
-  activeText: "text-[#9B2C2C]",
-  pillBg: "bg-[rgba(229,115,115,0.12)]",
-  pillText: "text-[#9B2C2C]",
-  mobileActive: "text-[#C25151]",
-  chartFill: "#E57373",
-  chartStroke: "#C25151",
+  rail: "bg-fulfillment",
+  labelText: "text-fulfillment",
+  labelHover: "hover:bg-fulfillment-bg",
+  activeBg: "bg-fulfillment-bg",
+  activeText: "text-fulfillment",
+  pillBg: "bg-fulfillment-bg",
+  pillText: "text-fulfillment",
+  mobileActive: "text-fulfillment",
+  chartFill: "#C4553A",
+  chartStroke: "#9C4230",
 };
 
 export const STOCK_ACCENT: ModuleAccent = {
-  rail: "bg-emerald-500",
-  labelText: "text-emerald-700",
-  labelHover: "hover:bg-emerald-50/60",
-  activeBg: "bg-emerald-50/80",
-  activeText: "text-emerald-900",
-  pillBg: "bg-emerald-50",
-  pillText: "text-emerald-800",
-  mobileActive: "text-emerald-700",
-  chartFill: "#10B981",
-  chartStroke: "#059669",
+  rail: "bg-stock",
+  labelText: "text-stock",
+  labelHover: "hover:bg-stock-bg",
+  activeBg: "bg-stock-bg",
+  activeText: "text-stock",
+  pillBg: "bg-stock-bg",
+  pillText: "text-stock",
+  mobileActive: "text-stock",
+  chartFill: "#6B8A3E",
+  chartStroke: "#546E31",
 };
 
 export const HOME_ACCENT: ModuleAccent = {
-  rail: "bg-slate-500",
-  labelText: "text-slate-600",
-  labelHover: "hover:bg-slate-50",
-  activeBg: "bg-slate-50",
-  activeText: "text-slate-900",
-  pillBg: "bg-slate-100",
-  pillText: "text-slate-800",
-  mobileActive: "text-slate-800",
-  chartFill: "#64748B",
-  chartStroke: "#475569",
+  rail: "bg-ink",
+  labelText: "text-ink",
+  labelHover: "hover:bg-canvas",
+  activeBg: "bg-canvas",
+  activeText: "text-ink",
+  pillBg: "bg-canvas",
+  pillText: "text-ink",
+  mobileActive: "text-ink",
+  chartFill: "#1E1D1A",
+  chartStroke: "#1E1D1A",
 };
 
 export const SETTINGS_ACCENT: ModuleAccent = {
-  rail: "bg-[#999999]",
-  labelText: "text-[#555555]",
-  labelHover: "hover:bg-[#F7F7F7]",
-  activeBg: "bg-[#F7F7F7]",
-  activeText: "text-[#111111]",
-  pillBg: "bg-[#F7F7F7]",
-  pillText: "text-[#333333]",
-  mobileActive: "text-[#111111]",
-  chartFill: "#999999",
-  chartStroke: "#666666",
+  rail: "bg-gold",
+  labelText: "text-gold",
+  labelHover: "hover:bg-[rgba(184,132,46,0.08)]",
+  activeBg: "bg-[rgba(184,132,46,0.12)]",
+  activeText: "text-gold",
+  pillBg: "bg-[rgba(184,132,46,0.12)]",
+  pillText: "text-gold",
+  mobileActive: "text-gold",
+  chartFill: "#B8842E",
+  chartStroke: "#8F6623",
 };
 
 function codModule(): PortalModule {
   return {
     id: "cod",
     label: "COD",
-    icon: ListChecks,
+    icon: Wallet,
     accent: COD_ACCENT,
     items: [
       { label: "Dashboard", href: "/cod/dashboard", icon: LayoutDashboard },
-      { label: "COD List", href: "/cod/list", icon: ListChecks, aliases: ["/cod-list"] },
+      { label: "COD List", href: "/cod/list", icon: Wallet, aliases: ["/cod-list"] },
       { label: "History", href: "/cod/history", icon: History, aliases: ["/cod-history"] },
       { label: "Settings", href: "/cod/settings", icon: Settings2, aliases: ["/cod-settings"] },
     ],
@@ -129,14 +130,14 @@ function fulfillmentModule(): PortalModule {
   return {
     id: "fulfillment",
     label: "Fulfillment",
-    icon: PackageCheck,
+    icon: Truck,
     accent: FULFILLMENT_ACCENT,
     items: [
       { label: "Dashboard", href: "/fulfillment/dashboard", icon: LayoutDashboard },
       {
         label: "Fulfillment list",
         href: "/fulfillment/list",
-        icon: PackageCheck,
+        icon: Truck,
         aliases: ["/fulfillment"],
       },
       { label: "History", href: "/fulfillment/history", icon: History, aliases: ["/history"] },
@@ -149,7 +150,7 @@ function stockModule(): PortalModule {
   return {
     id: "stock",
     label: "Stock balance",
-    icon: Scale,
+    icon: Warehouse,
     adminOnly: true,
     accent: STOCK_ACCENT,
     items: [
@@ -157,7 +158,7 @@ function stockModule(): PortalModule {
       {
         label: "Balance",
         href: "/stock-balance/balance",
-        icon: Scale,
+        icon: Warehouse,
         aliases: ["/stock-balance"],
       },
       { label: "History", href: "/stock-balance/history", icon: History },
@@ -202,7 +203,7 @@ export type RouteMeta = {
 type RouteEntry = RouteMeta & { path: string };
 
 const GLOBAL_ROUTES: RouteEntry[] = [
-  { path: "/dashboard", title: "Home" },
+  { path: "/dashboard/analytics", title: "Analytics" },
   { path: "/account", title: "Account" },
   { path: "/admin", title: "Admin" },
 ];

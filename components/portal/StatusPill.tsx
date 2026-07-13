@@ -12,12 +12,12 @@ type Props = {
 
 const toneStyles: Record<StatusTone, { pill: string; dot: string }> = {
   neutral: {
-    pill: "bg-[#F7F7F7] text-[#555555] border border-[#EBEBEB]",
-    dot: "bg-[#999999]",
+    pill: "bg-canvas text-muted border border-line",
+    dot: "bg-muted",
   },
   accent: {
-    pill: "bg-[#F7F7F7] text-[#111111] border border-[#111111]/20",
-    dot: "bg-[#111111]",
+    pill: "bg-canvas text-ink border border-ink/20",
+    dot: "bg-ink",
   },
   green: {
     pill: "bg-[rgba(76,175,80,0.10)] text-[#4CAF50] border border-[#4CAF50]/20",

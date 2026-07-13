@@ -56,11 +56,11 @@ export function ModuleQuickLinks({
         <Link
           key={link.href}
           href={link.href}
-          className={`rounded-card border border-[#EBEBEB] bg-white p-4 shadow-soft transition hover:bg-[#FAFAFA] ${mod.accent.activeBg}`}
+          className={`rounded-card border border-line bg-white p-4 shadow-soft transition hover:bg-canvas ${mod.accent.activeBg}`}
         >
-          <p className={`text-[13px] font-semibold ${mod.accent.activeText}`}>{link.label}</p>
+          <p className={`text-[13px] font-medium ${mod.accent.activeText}`}>{link.label}</p>
           {link.description ? (
-            <p className="mt-1 text-[12px] text-[#555555]">{link.description}</p>
+            <p className="mt-1 text-[12px] text-muted">{link.description}</p>
           ) : null}
         </Link>
       ))}

@@ -171,7 +171,7 @@ function SupabaseLoginForm({ nextPath }: { nextPath: string }) {
               setError(null);
               setMode((m) => (m === "password" ? "magic" : "password"));
             }}
-            className="focus-ring inline-flex items-center gap-1.5 rounded px-1 text-[12px] font-medium text-[#555555] transition hover:text-[#111111] hover:underline"
+            className="focus-ring inline-flex items-center gap-1.5 rounded px-1 text-[12px] font-medium text-muted transition hover:text-ink hover:underline"
           >
             <Mail size={12} />
             {mode === "password" ? "Use magic link instead" : "Use password instead"}
@@ -191,7 +191,7 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#999999]"
+        className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-muted"
       >
         {label}
       </label>
@@ -213,7 +213,7 @@ function SubmitButton({ loading, label }: { loading: boolean; label: string }) {
     <button
       type="submit"
       disabled={loading}
-      className="focus-ring inline-flex h-11 w-full items-center justify-center gap-2 rounded-card bg-[#111111] px-4 text-[13.5px] font-semibold text-white shadow-soft transition hover:bg-[#333333] disabled:opacity-60"
+      className="focus-ring inline-flex h-11 w-full items-center justify-center gap-2 rounded-card bg-ink px-4 text-[13.5px] font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
     >
       {loading ? (
         <Loader2 size={15} className="animate-spin" />

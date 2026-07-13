@@ -47,7 +47,7 @@ export function CodListCollectionPanel({
 
   return (
     <section
-      className="flex h-full min-h-0 flex-1 flex-col rounded-card border border-[#EBEBEB] bg-white/95 p-5 shadow-soft backdrop-blur-[2px] transition-shadow duration-300 hover:shadow-md"
+      className="flex h-full min-h-0 flex-1 flex-col rounded-card border border-line bg-white/95 p-5 shadow-soft backdrop-blur-[2px] transition-shadow duration-300 hover:shadow-md"
       aria-busy={isPending}
     >
       <div
@@ -57,7 +57,7 @@ export function CodListCollectionPanel({
         ].join(" ")}
       >
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">Collection</p>
+          <p className="text-[11px] font-medium uppercase tracking-wider text-muted">Collection</p>
           <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
             {singleIsToday ? (
               <span
@@ -65,15 +65,15 @@ export function CodListCollectionPanel({
                 title="Includes current collection window (live)"
               />
             ) : null}
-            <h2 className="text-[18px] font-semibold text-[#111111]">{titleLine}</h2>
+            <h2 className="text-[18px] font-medium text-ink">{titleLine}</h2>
             {isPending ? (
-              <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#555555]">
+              <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-muted">
                 <Loader2 size={14} className="animate-spin-slow" aria-hidden />
                 <span>Updating list…</span>
               </span>
             ) : null}
           </div>
-          <p className="mt-0.5 text-[12px] text-[#999999]">{subLine}</p>
+          <p className="mt-0.5 text-[12px] text-muted">{subLine}</p>
           <div className="mt-3">
             <CodDatePicker
               options={options}
@@ -84,7 +84,7 @@ export function CodListCollectionPanel({
           </div>
         </div>
         <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
-          <p className="text-[12px] text-[#999999]">
+          <p className="text-[12px] text-muted">
             <span className="inline-flex flex-wrap items-baseline gap-x-1.5">
               <StatTick value={ordersScannedInWindow} />
               <span>COD in selection</span>

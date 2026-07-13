@@ -9,29 +9,32 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        portal: {
-          bg: "var(--bg)",
-          bg2: "var(--bg2)",
-          bg3: "var(--bg3)",
-          border: "var(--border)",
-          text: "var(--text)",
-          text2: "var(--text2)",
-          text3: "var(--text3)",
-          accent: "var(--accent)",
-          accentSoft: "var(--accent-soft)",
-          accentContrast: "var(--accent-contrast)",
-          green: "var(--green)",
-          greenSoft: "var(--green-soft)",
-          amber: "var(--amber)",
-          amberSoft: "var(--amber-soft)",
-          red: "var(--red)",
-          redSoft: "var(--red-soft)",
+        // Seissense Ops design system — see design-plan.md
+        canvas: "#F6F4EE",
+        ink: "#1E1D1A",
+        muted: "rgba(30,29,26,0.55)",
+        line: "rgba(30,29,26,0.15)",
+        cod: {
+          DEFAULT: "#2F9E7F",
+          bg: "rgba(47,158,127,0.15)",
+          bloom: "#9FDCCB",
         },
+        fulfillment: {
+          DEFAULT: "#C4553A",
+          bg: "rgba(196,85,58,0.15)",
+          bloom: "#F0AE96",
+        },
+        stock: {
+          DEFAULT: "#6B8A3E",
+          bg: "rgba(107,138,62,0.15)",
+          bloom: "#F0CE7E",
+        },
+        gold: "#B8842E",
       },
       fontFamily: {
         sans: [
-          "var(--font-montserrat)",
-          "Montserrat",
+          "var(--font-body)",
+          "Plus Jakarta Sans",
           "-apple-system",
           "BlinkMacSystemFont",
           "Helvetica Neue",
@@ -39,20 +42,24 @@ const config: Config = {
           "sans-serif",
         ],
         display: [
-          "var(--font-montserrat)",
-          "Montserrat",
+          "var(--font-display)",
+          "Sora",
           "-apple-system",
           "BlinkMacSystemFont",
           "sans-serif",
         ],
-        mono: ["var(--font-jetbrains-mono)", "ui-monospace", "monospace"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       borderRadius: {
-        card: "10px",
+        card: "20px",
+      },
+      backdropBlur: {
+        glass: "28px",
       },
       boxShadow: {
         soft: "0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03)",
         pop: "0 10px 30px -12px rgba(15, 23, 42, 0.20), 0 4px 10px -6px rgba(15, 23, 42, 0.10)",
+        glass: "0 8px 30px rgba(120,100,60,0.12)",
       },
     },
   },

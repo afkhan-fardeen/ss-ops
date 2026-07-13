@@ -26,11 +26,11 @@ import { useRestockQueue, type RestockRowInput } from "@/hooks/useRestockQueue";
 
 const PAGE_SIZE = 20;
 
-const thNeutral = "px-3 py-2.5 font-semibold";
+const thNeutral = "px-3 py-2.5 font-medium";
 const thUbex = `${thNeutral} bg-violet-50/80 text-right text-violet-900/70`;
-const thShopify = `${thNeutral} bg-emerald-50/80 text-right text-emerald-900/70`;
-const tdUbex = "bg-violet-50/40 px-3 py-2.5 text-right tabular-nums text-violet-950/90";
-const tdShopify = "bg-emerald-50/30 px-3 py-2.5 text-right tabular-nums text-emerald-950/90";
+const thShopify = `${thNeutral} bg-stock-bg text-right text-stock`;
+const tdUbex = "bg-violet-50/40 px-3 py-2.5 text-right font-mono tabular-nums text-violet-950/90";
+const tdShopify = "bg-stock-bg px-3 py-2.5 text-right font-mono tabular-nums text-stock";
 
 type Props = {
   rows: StockBalanceRow[];
@@ -85,7 +85,7 @@ function fmtDelta(n: number | null): string {
 }
 
 function deltaClass(delta: number | null): string {
-  if (delta === null || delta === 0) return "text-[#555555]";
+  if (delta === null || delta === 0) return "text-muted";
   return delta > 0 ? "text-[#C25151]" : "text-[#4CAF50]";
 }
 
@@ -124,8 +124,8 @@ function FilterChip({
       className={[
         "focus-ring rounded-full border px-2.5 py-1 text-[11px] font-medium transition",
         active
-          ? "border-[#111111] bg-[#111111] text-white"
-          : "border-[#EBEBEB] bg-white text-[#555555] hover:bg-[#F7F7F7]",
+          ? "border-ink bg-ink text-white"
+          : "border-line bg-white text-muted hover:bg-canvas",
       ].join(" ")}
     >
       {label}
@@ -137,11 +137,11 @@ function ProductCell({ row }: { row: StockBalanceRow }) {
   const subtitle = shopifySubtitle(row);
   return (
     <td className="min-w-[220px] max-w-[360px] px-3 py-2.5 align-top">
-      <p className="line-clamp-2 font-medium leading-snug text-[#111111]" title={row.productName}>
+      <p className="line-clamp-2 font-medium leading-snug text-ink" title={row.productName}>
         {row.productName}
       </p>
       {subtitle ? (
-        <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-emerald-800/70" title={subtitle}>
+        <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-stock/70" title={subtitle}>
           Shopify: {subtitle}
         </p>
       ) : null}
@@ -182,7 +182,7 @@ function RestockIconButton({
           ? "border-[#C25151]/30 bg-[rgba(194,81,81,0.10)] text-[#C25151]"
           : done
             ? "border-[#4CAF50]/30 text-[#4CAF50]"
-            : "border-[#EBEBEB] bg-white text-[#111111] hover:bg-[#F7F7F7]",
+            : "border-line bg-white text-ink hover:bg-canvas",
         busy || done ? "cursor-not-allowed opacity-70" : "",
       ].join(" ")}
     >
@@ -356,9 +356,9 @@ export function StockBalanceView({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-card border border-[#EBEBEB] bg-[#F7F7F7] px-4 py-3 text-[13px] text-[#555555]">
-        Δ compares Ubex sellable to Shopify <strong className="font-medium text-[#111111]">available</strong>.
-        Restock sets Shopify <strong className="font-medium text-[#111111]">on hand</strong> so available
+      <div className="rounded-card border border-line bg-canvas px-4 py-3 text-[13px] text-muted">
+        Δ compares Ubex sellable to Shopify <strong className="font-medium text-ink">available</strong>.
+        Restock sets Shopify <strong className="font-medium text-ink">on hand</strong> so available
         matches Ubex (committed is preserved). Ubex is never modified.
       </div>
 
@@ -375,7 +375,7 @@ export function StockBalanceView({
           <button
             type="button"
             onClick={applyWeeklyPreset}
-            className="focus-ring rounded-full border border-[#EBEBEB] bg-white px-2.5 py-1 text-[11px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+            className="focus-ring rounded-full border border-line bg-white px-2.5 py-1 text-[11px] font-medium text-ink transition hover:bg-canvas"
           >
             Weekly restock preset
           </button>
@@ -384,7 +384,7 @@ export function StockBalanceView({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search product or barcode…"
-            className="w-48 rounded-card border border-[#EBEBEB] px-2.5 py-1.5 text-[12px] text-[#111111] placeholder:text-[#BBBBBB] focus:border-[#111111] focus:outline-none md:w-64"
+            className="w-48 rounded-card border border-line px-2.5 py-1.5 text-[12px] text-ink placeholder:text-muted focus:border-ink focus:outline-none md:w-64"
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -392,7 +392,7 @@ export function StockBalanceView({
             <button
               type="button"
               onClick={selectAllMatching}
-              className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+              className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas"
             >
               Select all matching ({restockableVisible.length})
             </button>
@@ -401,7 +401,7 @@ export function StockBalanceView({
             <button
               type="button"
               onClick={clearSelection}
-              className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#555555] transition hover:bg-[#F7F7F7]"
+              className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-muted transition hover:bg-canvas"
             >
               Clear selection
             </button>
@@ -410,7 +410,7 @@ export function StockBalanceView({
             <button
               type="button"
               onClick={() => setConfirmRows(selectedRestockable.map(toRestockInput))}
-              className="focus-ring inline-flex items-center gap-1.5 rounded-card border border-[#111111] bg-[#111111] px-3 py-1.5 text-[12px] font-medium text-white transition hover:opacity-90"
+              className="focus-ring inline-flex items-center gap-1.5 rounded-card border border-ink bg-ink px-3 py-1.5 text-[12px] font-medium text-white transition hover:opacity-90"
             >
               <PackagePlus size={14} />
               Restock selected ({selectedRestockable.length})
@@ -420,17 +420,17 @@ export function StockBalanceView({
             type="button"
             disabled={refreshLoading}
             onClick={() => (onRefresh ? onRefresh() : router.refresh())}
-            className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] disabled:cursor-not-allowed disabled:opacity-50"
+            className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-50"
           >
             {refreshLoading ? "Refreshing…" : "Refresh"}
           </button>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
+      <div className="overflow-x-auto rounded-card border border-line bg-white shadow-soft">
         <table className="w-full min-w-[1020px] border-collapse text-left text-[12.5px]">
           <thead>
-            <tr className="border-b border-[#EBEBEB] text-[11px] font-semibold uppercase tracking-wide">
+            <tr className="border-b border-line text-[11px] font-medium uppercase tracking-wide">
               <th className={`${thNeutral} w-10 text-center`}>
                 <input
                   ref={pageCheckboxRef}
@@ -439,7 +439,7 @@ export function StockBalanceView({
                   disabled={pageRestockable.length === 0}
                   onChange={togglePageSelection}
                   aria-label="Select all restockable rows on this page"
-                  className="h-4 w-4 rounded border-[#EBEBEB] disabled:opacity-40"
+                  className="h-4 w-4 rounded border-line disabled:opacity-40"
                 />
               </th>
               <th className={thNeutral}>Product</th>
@@ -456,7 +456,7 @@ export function StockBalanceView({
           <tbody>
             {visible.length === 0 ? (
               <tr>
-                <td colSpan={10} className="px-3 py-8 text-center text-[#999999]">
+                <td colSpan={10} className="px-3 py-8 text-center text-muted">
                   {activeFilters ? "No rows match the current filters." : "No rows to show."}
                 </td>
               </tr>
@@ -471,7 +471,7 @@ export function StockBalanceView({
                 return (
                   <tr
                     key={row.ubexId}
-                    className="border-b border-[#F0F0F0] last:border-0 hover:bg-[#FAFAFA]/80"
+                    className="border-b border-line last:border-0 hover:bg-canvas/80"
                   >
                     <td className="px-3 py-2.5 text-center">
                       {row.restockable ? (
@@ -480,14 +480,14 @@ export function StockBalanceView({
                           checked={checked}
                           onChange={() => toggleRowSelected(row.ubexId)}
                           aria-label={`Select ${row.productName}`}
-                          className="h-4 w-4 rounded border-[#EBEBEB]"
+                          className="h-4 w-4 rounded border-line"
                         />
                       ) : (
                         <span className="inline-block h-4 w-4" aria-hidden />
                       )}
                     </td>
                     <ProductCell row={row} />
-                    <td className="px-3 py-2.5 font-mono text-[12px] text-[#555555]">
+                    <td className="px-3 py-2.5 font-mono text-[12px] text-muted">
                       {row.barcode || "—"}
                     </td>
                     <td className={tdUbex}>{fmt(row.ubexStock)}</td>
@@ -495,7 +495,7 @@ export function StockBalanceView({
                     <td className={tdShopify}>{fmt(row.shopifyAvailable)}</td>
                     <td className={tdShopify}>{fmt(row.shopifyCommitted)}</td>
                     <td
-                      className={`px-3 py-2.5 text-right font-medium tabular-nums ${deltaClass(row.delta)}`}
+                      className={`px-3 py-2.5 text-right font-mono font-medium tabular-nums ${deltaClass(row.delta)}`}
                     >
                       {fmtDelta(row.delta)}
                     </td>
@@ -512,7 +512,7 @@ export function StockBalanceView({
                         />
                       ) : (
                         <span
-                          className="text-[11px] text-[#BBBBBB]"
+                          className="text-[11px] text-muted"
                           title={
                             row.status !== "matched"
                               ? "Only matched rows can be restocked"
@@ -533,7 +533,7 @@ export function StockBalanceView({
 
       {visible.length > 0 ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-[12px] tabular-nums text-[#555555]">
+          <p className="text-[12px] tabular-nums text-muted">
             {visible.length <= PAGE_SIZE
               ? `Showing all ${visible.length} row${visible.length === 1 ? "" : "s"}`
               : `Showing ${pageStart + 1}–${rangeEnd} of ${visible.length}`}
@@ -545,7 +545,7 @@ export function StockBalanceView({
               type="button"
               disabled={safePage <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="focus-ring inline-flex items-center gap-1 rounded-card border border-[#EBEBEB] bg-white px-2.5 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] disabled:cursor-not-allowed disabled:opacity-40"
+              className="focus-ring inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronLeft size={14} />
               Previous
@@ -554,7 +554,7 @@ export function StockBalanceView({
               type="button"
               disabled={safePage >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="focus-ring inline-flex items-center gap-1 rounded-card border border-[#EBEBEB] bg-white px-2.5 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7] disabled:cursor-not-allowed disabled:opacity-40"
+              className="focus-ring inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
             >
               Next
               <ChevronRight size={14} />
@@ -563,7 +563,7 @@ export function StockBalanceView({
         </div>
       ) : null}
 
-      <p className="text-[12px] text-[#999999]">
+      <p className="text-[12px] text-muted">
         Location: {locationName} (id {locationId}) · {itemCount} Ubex items loaded
         {visible.length !== itemCount ? ` · ${visible.length} after filter` : ""}
         {visible.length > 0
@@ -579,36 +579,36 @@ export function StockBalanceView({
         <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
           <button
             type="button"
-            className="absolute inset-0 bg-[#0F172A]/40 backdrop-blur-[1px]"
+            className="absolute inset-0 bg-ink/40 backdrop-blur-[1px]"
             aria-label="Close"
             onClick={() => !confirmBusy && setConfirmRows(null)}
           />
           <div
             role="dialog"
             aria-modal="true"
-            className="relative z-10 w-full max-w-md rounded-card border border-[#EBEBEB] bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.18)]"
+            className="relative z-10 w-full max-w-md rounded-card border border-line bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.18)]"
           >
             <div className="mb-3 flex items-start justify-between gap-2">
-              <h2 className="text-base font-semibold text-[#111111]">Confirm restock</h2>
+              <h2 className="text-base font-medium text-ink">Confirm restock</h2>
               <button
                 type="button"
                 disabled={confirmBusy}
                 onClick={() => setConfirmRows(null)}
-                className="focus-ring -m-1 rounded-md p-1 text-[#999999] transition hover:bg-[#F7F7F7] hover:text-[#111111]"
+                className="focus-ring -m-1 rounded-md p-1 text-muted transition hover:bg-canvas hover:text-ink"
                 aria-label="Close"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <p className="text-[12px] text-[#555555]">
+            <p className="text-[12px] text-muted">
               Set Shopify available to Ubex sellable for {confirmRows.length} item
               {confirmRows.length === 1 ? "" : "s"} at {locationName} (on hand adjusted; committed
               preserved).
             </p>
 
             {hasCommitted ? (
-              <p className="mt-2 rounded-lg border border-[#EBEBEB] bg-[#F7F7F7] px-3 py-2 text-[12px] text-[#555555]">
+              <p className="mt-2 rounded-lg border border-line bg-canvas px-3 py-2 text-[12px] text-muted">
                 Some rows have committed stock — on hand will increase by the committed amount so
                 available matches Ubex.
               </p>
@@ -620,13 +620,13 @@ export function StockBalanceView({
                 return (
                   <li
                     key={r.ubexId}
-                    className="rounded-lg border border-[#F0F0F0] bg-[#FAFAFA] px-3 py-2"
+                    className="rounded-lg border border-line bg-canvas px-3 py-2"
                   >
-                    <p className="font-medium text-[#111111]">{r.productName}</p>
-                    <p className="mt-0.5 text-[#555555]">
+                    <p className="font-medium text-ink">{r.productName}</p>
+                    <p className="mt-0.5 text-muted">
                       available {fmt(r.shopifyAvailable)} → {r.ubexStock}
                     </p>
-                    <p className="mt-0.5 text-[#555555]">
+                    <p className="mt-0.5 text-muted">
                       on hand {fmt(r.shopifyOnHand)} → {targetOnHand}
                       {(r.shopifyCommitted ?? 0) > 0 ? ` · committed ${r.shopifyCommitted}` : ""}
                     </p>
@@ -640,7 +640,7 @@ export function StockBalanceView({
                 type="button"
                 disabled={confirmBusy}
                 onClick={() => setConfirmRows(null)}
-                className="focus-ring rounded-lg border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#555555] transition hover:bg-[#F7F7F7] disabled:opacity-50"
+                className="focus-ring rounded-lg border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-muted transition hover:bg-canvas disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -648,7 +648,7 @@ export function StockBalanceView({
                 type="button"
                 disabled={confirmBusy}
                 onClick={() => void handleConfirm()}
-                className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-[#111111] bg-[#111111] px-3 py-1.5 text-[12px] font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+                className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-ink bg-ink px-3 py-1.5 text-[12px] font-medium text-white transition hover:opacity-90 disabled:opacity-50"
               >
                 {confirmBusy ? <Loader2 size={13} className="animate-spin-slow" /> : null}
                 Confirm restock

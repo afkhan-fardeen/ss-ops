@@ -54,20 +54,20 @@ function fmtAgo(isoDate: string): string {
 function StatusBadge({ run }: { run: CronRunLog }) {
   if (run.status === "running") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-brand-500 dark:text-brand-400">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-gold">
         <Loader2 size={13} className="animate-spin" /> Running…
       </span>
     );
   }
   if (run.status === "success") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#4CAF50]">
         <CheckCircle size={13} /> Success
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 text-xs font-medium text-red-500 dark:text-red-400">
+    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#C25151]">
       <XCircle size={13} /> Error
     </span>
   );
@@ -153,14 +153,14 @@ export function CronStatus() {
 
   // ── render ────────────────────────────────────────────────────────────────
   return (
-    <div className="rounded-card border border-border/60 bg-surface p-5 space-y-4">
+    <div className="space-y-4 rounded-card border border-line bg-white p-5">
       {/* header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <RefreshCw size={16} className="text-muted" />
-          <h3 className="text-sm font-semibold text-foreground">Seissense Ops Bot</h3>
+          <h3 className="text-[13px] font-medium text-ink">Seissense Ops Bot</h3>
           {latest?.dry_run && (
-            <span className="text-[10px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
+            <span className="rounded-full bg-[rgba(240,183,67,0.15)] px-1.5 py-0.5 text-[10px] font-medium text-[#B8842E]">
               dry-run
             </span>
           )}
@@ -168,7 +168,7 @@ export function CronStatus() {
         <div className="flex items-center gap-1.5 text-xs text-muted">
           <Clock size={12} />
           <span>Next in</span>
-          <span className="font-mono font-semibold text-foreground tabular-nums">
+          <span className="font-mono font-medium tabular-nums text-ink">
             {fmtCountdown(countdown)}
           </span>
         </div>
@@ -176,10 +176,10 @@ export function CronStatus() {
 
       {/* last run summary */}
       {latest ? (
-        <div className="rounded-lg bg-background/60 border border-border/40 px-4 py-3 space-y-3">
+        <div className="space-y-3 rounded-lg border border-line bg-canvas/60 px-4 py-3">
           <div className="flex items-center justify-between">
             <StatusBadge run={latest} />
-            <span className="text-[11px] text-muted">
+            <span className="font-mono text-[11px] text-muted">
               {fmtAgo(latest.started_at)}
               {" · "}
               {fmtDuration(latest.started_at, latest.completed_at)}
@@ -189,17 +189,17 @@ export function CronStatus() {
           {/* stat pills */}
           {latest.status !== "running" && (
             <div className="flex flex-wrap gap-2 text-[11px] font-medium">
-              <span className="px-2 py-0.5 rounded-full bg-muted/30 text-foreground">
+              <span className="rounded-full bg-line/30 px-2 py-0.5 font-mono text-ink">
                 {latest.checked ?? 0} checked
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400">
+              <span className="rounded-full bg-[rgba(76,175,80,0.12)] px-2 py-0.5 font-mono text-[#2E7D32]">
                 {latest.fulfilled ?? 0} fulfilled
               </span>
-              <span className="px-2 py-0.5 rounded-full bg-muted/30 text-foreground">
+              <span className="rounded-full bg-line/30 px-2 py-0.5 font-mono text-ink">
                 {latest.skipped ?? 0} skipped
               </span>
               {(latest.errors ?? 0) > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                <span className="rounded-full bg-[rgba(194,81,81,0.12)] px-2 py-0.5 font-mono text-[#C25151]">
                   {latest.errors} errors
                 </span>
               )}
@@ -207,21 +207,19 @@ export function CronStatus() {
           )}
 
           {latest.status === "error" && latest.error_detail && (
-            <p className="text-[11px] text-red-500 truncate">{latest.error_detail}</p>
+            <p className="truncate text-[11px] text-[#C25151]">{latest.error_detail}</p>
           )}
         </div>
       ) : (
-        <p className="text-xs text-muted italic">No runs recorded yet.</p>
+        <p className="text-xs italic text-muted">No runs recorded yet.</p>
       )}
 
       {/* action buttons */}
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => trigger(true)}
           disabled={triggering || isRunning}
-          className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-card
-            border border-border/60 bg-background text-foreground
-            hover:bg-muted/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="focus-ring inline-flex items-center gap-1.5 rounded-card border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
         >
           {triggering ? (
             <Loader2 size={12} className="animate-spin" />
@@ -234,9 +232,7 @@ export function CronStatus() {
         <button
           onClick={() => trigger(false)}
           disabled={triggering || isRunning}
-          className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-card
-            bg-brand-500 text-white hover:bg-brand-600
-            disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="focus-ring inline-flex items-center gap-1.5 rounded-card bg-gold px-3 py-1.5 text-xs font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {triggering ? (
             <Loader2 size={12} className="animate-spin" />
@@ -249,7 +245,7 @@ export function CronStatus() {
         {runs.length > 1 && (
           <button
             onClick={() => setShowHistory((h) => !h)}
-            className="inline-flex items-center gap-1 text-xs text-muted hover:text-foreground transition-colors ml-auto"
+            className="ml-auto inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-ink"
           >
             {showHistory ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             History
@@ -259,24 +255,24 @@ export function CronStatus() {
 
       {/* run history list */}
       {showHistory && runs.length > 1 && (
-        <div className="space-y-1 pt-1 border-t border-border/40">
+        <div className="space-y-1 border-t border-line pt-1">
           {runs.slice(1).map((run) => (
             <div
               key={run.id}
-              className="flex items-center justify-between text-[11px] py-1"
+              className="flex items-center justify-between py-1 text-[11px]"
             >
               <div className="flex items-center gap-2">
                 <StatusBadge run={run} />
                 {run.dry_run && (
-                  <span className="text-[10px] text-amber-600 dark:text-amber-400">(dry)</span>
+                  <span className="text-[10px] text-gold">(dry)</span>
                 )}
               </div>
-              <div className="flex items-center gap-3 text-muted">
+              <div className="flex items-center gap-3 font-mono text-muted">
                 <span>
                   {run.fulfilled ?? 0} fulfilled / {run.checked ?? 0} checked
                 </span>
                 <span>{fmtAgo(run.started_at)}</span>
-                <span className="font-mono">{fmtDuration(run.started_at, run.completed_at)}</span>
+                <span>{fmtDuration(run.started_at, run.completed_at)}</span>
               </div>
             </div>
           ))}

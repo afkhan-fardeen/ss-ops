@@ -20,17 +20,17 @@ const statusTone = {
 export function StockBalanceHistoryTable({ rows }: { rows: StockRestockLogRow[] }) {
   if (rows.length === 0) {
     return (
-      <p className="rounded-card border border-[#EBEBEB] bg-white px-4 py-8 text-center text-[13px] text-[#999999] shadow-soft">
+      <p className="rounded-card border border-line bg-white px-4 py-8 text-center text-[13px] text-muted shadow-soft">
         No restock actions logged yet.
       </p>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-card border border-[#EBEBEB] bg-white shadow-soft">
+    <div className="overflow-x-auto rounded-card border border-line bg-white shadow-soft">
       <table className="w-full min-w-[720px] border-collapse text-left text-[12.5px]">
         <thead>
-          <tr className="border-b border-[#EBEBEB] bg-[#FAFAFA] text-[11px] font-semibold uppercase tracking-wide text-[#999999]">
+          <tr className="border-b border-line bg-canvas text-[11px] font-medium uppercase tracking-wide text-muted">
             <th className="px-3 py-2.5">When</th>
             <th className="px-3 py-2.5">Barcode</th>
             <th className="px-3 py-2.5 text-right">Ubex</th>
@@ -41,11 +41,11 @@ export function StockBalanceHistoryTable({ rows }: { rows: StockRestockLogRow[] 
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} className="border-b border-[#F0F0F0] last:border-0 hover:bg-[#FAFAFA]">
-              <td className="whitespace-nowrap px-3 py-2.5 text-[#555555]">{fmtWhen(row.createdAt)}</td>
+            <tr key={row.id} className="border-b border-line last:border-0 hover:bg-canvas">
+              <td className="whitespace-nowrap px-3 py-2.5 font-mono text-muted">{fmtWhen(row.createdAt)}</td>
               <td className="px-3 py-2.5 font-mono text-[12px]">{row.barcode || "—"}</td>
-              <td className="px-3 py-2.5 text-right tabular-nums">{row.ubexQty}</td>
-              <td className="px-3 py-2.5 text-right tabular-nums text-[#555555]">
+              <td className="px-3 py-2.5 text-right font-mono tabular-nums">{row.ubexQty}</td>
+              <td className="px-3 py-2.5 text-right font-mono tabular-nums text-muted">
                 {row.previousOnHand ?? "—"} → {row.newOnHand ?? row.ubexQty}
               </td>
               <td className="px-3 py-2.5">
@@ -56,7 +56,7 @@ export function StockBalanceHistoryTable({ rows }: { rows: StockRestockLogRow[] 
                   </p>
                 ) : null}
               </td>
-              <td className="px-3 py-2.5 text-[12px] text-[#555555]">{row.userEmail ?? "—"}</td>
+              <td className="px-3 py-2.5 text-[12px] text-muted">{row.userEmail ?? "—"}</td>
             </tr>
           ))}
         </tbody>

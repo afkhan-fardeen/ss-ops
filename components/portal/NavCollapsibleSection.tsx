@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { ChevronDown, type LucideIcon } from "lucide-react";
+import { motion } from "framer-motion";
+import { spring } from "@/lib/motion";
 import {
   getNavOpenKey,
   isNavItemActive,
@@ -28,6 +30,8 @@ type Props = {
   items: NavCollapsibleItem[];
   collapsed: boolean;
   isActive?: (pathname: string) => boolean;
+  /** Skip the collapse/expand toggle and always render items expanded — used when this is the only section shown (current module in context). */
+  forceOpen?: boolean;
 };
 
 function readStoredOpen(sectionId: NavSectionId, defaultOpen: boolean): boolean {
@@ -56,11 +60,13 @@ function NavChildLink({
         "group relative flex items-center gap-3 rounded-lg py-2 pl-4 pr-3 text-[13px] font-medium transition-colors",
         active
           ? `${accent.activeBg} ${accent.activeText}`
-          : "text-[#999999] hover:bg-[#F7F7F7] hover:text-[#111111]",
+          : "text-muted hover:bg-canvas hover:text-ink",
       ].join(" ")}
     >
       {active ? (
-        <span
+        <motion.span
+          layoutId="sidebar-active-rail"
+          transition={spring}
           className={`absolute inset-y-1.5 left-0 w-[3px] rounded-r ${accent.rail}`}
           aria-hidden
         />
@@ -80,6 +86,7 @@ export function NavCollapsibleSection({
   items,
   collapsed,
   isActive: isActiveProp,
+  forceOpen = false,
 }: Props) {
   const pathname = usePathname();
   const panelId = useId();
@@ -122,6 +129,7 @@ export function NavCollapsibleSection({
   );
 
   const toggle = useCallback(() => persistOpen(!open), [open, persistOpen]);
+  const effectiveOpen = forceOpen || open;
 
   if (collapsed) {
     return (
@@ -132,7 +140,7 @@ export function NavCollapsibleSection({
           onClick={() => setPopoverOpen((v) => !v)}
           className={[
             "flex w-full justify-center rounded-lg p-2 transition-colors",
-            sectionActive || popoverOpen ? accent.activeBg : `hover:bg-[#F7F7F7] ${accent.labelHover}`,
+            sectionActive || popoverOpen ? accent.activeBg : `hover:bg-canvas ${accent.labelHover}`,
           ].join(" ")}
         >
           {SectionIcon ? (
@@ -144,11 +152,11 @@ export function NavCollapsibleSection({
         </button>
         {popoverOpen ? (
           <div
-            className="absolute left-full top-0 z-50 ml-2 min-w-[200px] rounded-card border border-[#EBEBEB] bg-white py-2 shadow-[0_8px_30px_rgba(15,23,42,0.12)]"
+            className="absolute left-full top-0 z-50 ml-2 min-w-[200px] rounded-card border border-line bg-white py-2 shadow-[0_8px_30px_rgba(15,23,42,0.12)]"
             role="menu"
           >
             <p
-              className={`border-b border-[#EBEBEB] px-3 pb-2 text-[11px] font-semibold uppercase tracking-wider ${accent.activeText}`}
+              className={`border-b border-line px-3 pb-2 text-[11px] font-medium uppercase tracking-wider ${accent.activeText}`}
             >
               {label}
             </p>
@@ -162,7 +170,7 @@ export function NavCollapsibleSection({
                     "flex items-center gap-2 rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors",
                     isNavItemActive(pathname, item as ModuleNavItem)
                       ? `${accent.activeBg} ${accent.activeText}`
-                      : "text-[#555555] hover:bg-[#F7F7F7]",
+                      : "text-muted hover:bg-canvas",
                   ].join(" ")}
                 >
                   <item.icon size={15} />
@@ -188,7 +196,7 @@ export function NavCollapsibleSection({
           <Link
             href={homeHref}
             className={[
-              "focus-ring flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-[12px] font-semibold tracking-wide transition-colors",
+              "focus-ring flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-[12px] font-medium tracking-wide transition-colors",
               sectionActive ? accent.activeText : accent.labelText,
             ].join(" ")}
           >
@@ -199,7 +207,7 @@ export function NavCollapsibleSection({
         ) : (
           <span
             className={[
-              "flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-[12px] font-semibold tracking-wide",
+              "flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-[12px] font-medium tracking-wide",
               sectionActive ? accent.activeText : accent.labelText,
             ].join(" ")}
           >
@@ -208,25 +216,27 @@ export function NavCollapsibleSection({
             <span className="truncate">{label}</span>
           </span>
         )}
-        <button
-          type="button"
-          onClick={toggle}
-          aria-expanded={open}
-          aria-controls={panelId}
-          className={`focus-ring mr-1 shrink-0 rounded-md p-1 ${sectionActive ? accent.activeText : accent.labelText}`}
-          aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
-        >
-          <ChevronDown
-            size={14}
-            className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-          />
-        </button>
+        {forceOpen ? null : (
+          <button
+            type="button"
+            onClick={toggle}
+            aria-expanded={open}
+            aria-controls={panelId}
+            className={`focus-ring mr-1 shrink-0 rounded-md p-1 ${sectionActive ? accent.activeText : accent.labelText}`}
+            aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
+          >
+            <ChevronDown
+              size={14}
+              className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+            />
+          </button>
+        )}
       </div>
       <div
         id={panelId}
         className={[
           "grid transition-[grid-template-rows] duration-200 ease-out",
-          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+          effectiveOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
         ].join(" ")}
       >
         <nav className="overflow-hidden">
@@ -266,7 +276,7 @@ export function NavHomeLink({
       href={href}
       title={collapsed ? label : undefined}
       className={[
-        "group relative flex items-center gap-3 rounded-lg py-2 text-[13px] font-semibold transition-colors",
+        "group relative flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium transition-colors",
         collapsed ? "justify-center px-2" : "px-3",
         active
           ? `${accent.activeBg} ${accent.activeText}`
@@ -274,7 +284,9 @@ export function NavHomeLink({
       ].join(" ")}
     >
       {active && !collapsed ? (
-        <span
+        <motion.span
+          layoutId="sidebar-active-rail"
+          transition={spring}
           className={`absolute inset-y-1.5 left-0 w-[3px] rounded-r ${accent.rail}`}
           aria-hidden
         />

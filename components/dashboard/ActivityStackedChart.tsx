@@ -34,7 +34,7 @@ export function ActivityStackedChart({
 
   if (!hasData) {
     return (
-      <div className="flex h-full items-center justify-center text-[12px] text-[#999999]">
+      <div className="flex h-full items-center justify-center text-[12px] text-muted">
         {emptyMessage}
       </div>
     );
@@ -43,17 +43,17 @@ export function ActivityStackedChart({
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E4E1D8" vertical={false} />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 10, fill: "#999999" }}
+          tick={{ fontSize: 10, fill: "#8A8880" }}
           tickLine={false}
-          axisLine={{ stroke: "#EBEBEB" }}
+          axisLine={{ stroke: "#E4E1D8" }}
           interval="preserveStartEnd"
         />
         <YAxis
           allowDecimals={false}
-          tick={{ fontSize: 10, fill: "#999999" }}
+          tick={{ fontSize: 10, fill: "#8A8880" }}
           tickLine={false}
           axisLine={false}
         />
@@ -61,7 +61,7 @@ export function ActivityStackedChart({
           contentStyle={{
             fontSize: 12,
             borderRadius: 8,
-            border: "1px solid #EBEBEB",
+            border: "1px solid #E4E1D8",
           }}
         />
         <Legend

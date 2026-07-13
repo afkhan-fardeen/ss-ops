@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { ListChecks, PackageCheck, Scale } from "lucide-react";
 import { getPortalModules } from "@/config/modules";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { CombinedActivityChart } from "@/components/dashboard/CombinedActivityChart";
@@ -54,8 +53,8 @@ export function HomeDashboard({ showAdmin, summary }: Props) {
     <DashboardPage moduleId="home">
       <DashboardHeader
         moduleId="home"
-        title="Home"
-        description="Seissense Ops — overview and quick access to each module."
+        title="Analytics"
+        description="Portal-wide activity across COD, Fulfillment, and Stock — the numbers behind the modules."
       />
 
       <DashboardKpiGrid>
@@ -91,27 +90,22 @@ export function HomeDashboard({ showAdmin, summary }: Props) {
       </ChartCard>
 
       <div>
-        <h2 className="text-[13px] font-semibold text-[#111111]">Modules</h2>
+        <h2 className="font-display text-[13px] font-medium text-ink">Modules</h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map(({ module, description, href }) => {
-            const Icon =
-              module.id === "cod"
-                ? ListChecks
-                : module.id === "fulfillment"
-                  ? PackageCheck
-                  : Scale;
+            const Icon = module.icon;
             return (
               <Link
                 key={module.id}
                 href={href}
                 className={[
-                  "group animate-fade-up rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft transition hover:border-[#DDDDDD]",
+                  "group animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft transition hover:border-line",
                   "border-l-4",
                   module.id === "cod"
-                    ? "border-l-blue-500"
+                    ? "border-l-cod"
                     : module.id === "fulfillment"
-                      ? "border-l-[#E57373]"
-                      : "border-l-emerald-500",
+                      ? "border-l-fulfillment"
+                      : "border-l-stock",
                 ].join(" ")}
               >
                 <div className="flex items-start gap-3">
@@ -121,13 +115,13 @@ export function HomeDashboard({ showAdmin, summary }: Props) {
                     <Icon size={20} className={module.accent.activeText} />
                   </div>
                   <div className="min-w-0">
-                    <h3 className={`text-[15px] font-semibold ${module.accent.activeText}`}>
+                    <h3 className={`text-[15px] font-medium ${module.accent.activeText}`}>
                       {module.label}
                     </h3>
-                    <p className="mt-1 text-[12px] leading-snug text-[#555555]">{description}</p>
+                    <p className="mt-1 text-[12px] leading-snug text-muted">{description}</p>
                   </div>
                 </div>
-                <p className="mt-4 text-[12px] font-medium text-[#111111] group-hover:underline">
+                <p className="mt-4 text-[12px] font-medium text-ink group-hover:underline">
                   Open module →
                 </p>
               </Link>
@@ -139,20 +133,20 @@ export function HomeDashboard({ showAdmin, summary }: Props) {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/cod/list"
-          className="rounded-card border border-blue-600 bg-blue-600 px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+          className="rounded-card border border-cod bg-cod px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
         >
           COD List
         </Link>
         <Link
           href="/fulfillment/list"
-          className="rounded-card border border-[#C25151] bg-[#C25151] px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+          className="rounded-card border border-fulfillment bg-fulfillment px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
         >
           Fulfillment list
         </Link>
         {showAdmin ? (
           <Link
             href="/stock-balance/balance"
-            className="rounded-card border border-emerald-600 bg-emerald-600 px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+            className="rounded-card border border-stock bg-stock px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
           >
             Stock balance
           </Link>

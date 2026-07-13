@@ -27,5 +27,5 @@ export function StatTick({ value, durationMs = 550 }: { value: number; durationM
     return () => cancelAnimationFrame(raf);
   }, [value, durationMs]);
 
-  return <span className="tabular-nums font-mono text-[12px] text-[#999999]">{n}</span>;
+  return <span className="tabular-nums font-mono text-[12px] text-muted">{n}</span>;
 }

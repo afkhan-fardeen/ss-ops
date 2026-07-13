@@ -28,17 +28,17 @@ export function MobileModuleSheet({ open, module, onClose }: Props) {
     <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true">
       <button
         type="button"
-        className="absolute inset-0 bg-[#0F172A]/30"
+        className="absolute inset-0 bg-ink/30"
         aria-label="Close menu"
         onClick={onClose}
       />
-      <div className="absolute inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-2xl border border-[#EBEBEB] bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
-        <div className="flex items-center justify-between border-b border-[#EBEBEB] px-4 py-3">
-          <p className={`text-[13px] font-semibold ${module.accent.activeText}`}>{module.label}</p>
+      <div className="absolute inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-2xl border border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
+        <div className="flex items-center justify-between border-b border-line px-4 py-3">
+          <p className={`text-[13px] font-medium ${module.accent.activeText}`}>{module.label}</p>
           <button
             type="button"
             onClick={onClose}
-            className="focus-ring -m-1 rounded-md p-1 text-[#999999]"
+            className="focus-ring -m-1 rounded-md p-1 text-muted"
             aria-label="Close"
           >
             <X size={18} />
@@ -57,7 +57,7 @@ export function MobileModuleSheet({ open, module, onClose }: Props) {
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium",
                   active
                     ? `${module.accent.activeBg} ${module.accent.activeText}`
-                    : "text-[#555555] hover:bg-[#F7F7F7]",
+                    : "text-muted hover:bg-canvas",
                 ].join(" ")}
               >
                 <Icon size={16} />
@@ -66,11 +66,11 @@ export function MobileModuleSheet({ open, module, onClose }: Props) {
             );
           })}
         </nav>
-        <div className="border-t border-[#EBEBEB] p-2">
+        <div className="border-t border-line p-2">
           <Link
             href={HOME_HREF}
             onClick={onClose}
-            className={`block rounded-lg px-3 py-2 text-[12px] font-medium ${HOME_ACCENT.labelText} hover:bg-[#F7F7F7]`}
+            className={`block rounded-lg px-3 py-2 text-[12px] font-medium ${HOME_ACCENT.labelText} hover:bg-canvas`}
           >
             Home dashboard
           </Link>
@@ -95,17 +95,17 @@ export function MobileSettingsSheet({ open, items, onClose }: SettingsSheetProps
     <div className="fixed inset-0 z-40 md:hidden" role="dialog" aria-modal="true">
       <button
         type="button"
-        className="absolute inset-0 bg-[#0F172A]/30"
+        className="absolute inset-0 bg-ink/30"
         aria-label="Close menu"
         onClick={onClose}
       />
-      <div className="absolute inset-x-0 bottom-0 max-h-[50vh] overflow-y-auto rounded-t-2xl border border-[#EBEBEB] bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
-        <div className="flex items-center justify-between border-b border-[#EBEBEB] px-4 py-3">
-          <p className={`text-[13px] font-semibold ${SETTINGS_ACCENT.activeText}`}>Settings</p>
+      <div className="absolute inset-x-0 bottom-0 max-h-[50vh] overflow-y-auto rounded-t-2xl border border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
+        <div className="flex items-center justify-between border-b border-line px-4 py-3">
+          <p className={`text-[13px] font-medium ${SETTINGS_ACCENT.activeText}`}>Settings</p>
           <button
             type="button"
             onClick={onClose}
-            className="focus-ring -m-1 rounded-md p-1 text-[#999999]"
+            className="focus-ring -m-1 rounded-md p-1 text-muted"
             aria-label="Close"
           >
             <X size={18} />
@@ -124,7 +124,7 @@ export function MobileSettingsSheet({ open, items, onClose }: SettingsSheetProps
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium",
                   active
                     ? `${SETTINGS_ACCENT.activeBg} ${SETTINGS_ACCENT.activeText}`
-                    : "text-[#555555] hover:bg-[#F7F7F7]",
+                    : "text-muted hover:bg-canvas",
                 ].join(" ")}
               >
                 <Icon size={16} />

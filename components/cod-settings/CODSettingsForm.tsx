@@ -55,31 +55,31 @@ export function CODSettingsForm({ initialRecipients }: { initialRecipients: stri
   return (
     <div className="space-y-5">
       {/* Current recipients */}
-      <section className="rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
-        <h2 className="text-[13px] font-semibold text-[#111111]">Email recipients</h2>
-        <p className="mt-0.5 text-[12px] text-[#999999]">
+      <section className="rounded-card border border-line bg-white p-5 shadow-soft">
+        <h2 className="text-[13px] font-medium text-ink">Email recipients</h2>
+        <p className="mt-0.5 text-[12px] text-muted">
           These addresses receive the COD list Excel when you click &ldquo;Email Ubex&rdquo; on the COD page.
         </p>
 
         <ul className="mt-4 space-y-2">
           {recipients.length === 0 ? (
-            <li className="rounded-lg border border-dashed border-[#EBEBEB] px-4 py-6 text-center text-[13px] text-[#999999]">
+            <li className="rounded-lg border border-dashed border-line px-4 py-6 text-center text-[13px] text-muted">
               No recipients yet — add one below.
             </li>
           ) : (
             recipients.map((email) => (
               <li
                 key={email}
-                className="flex items-center justify-between gap-3 rounded-lg border border-[#EBEBEB] px-4 py-2.5"
+                className="flex items-center justify-between gap-3 rounded-lg border border-line px-4 py-2.5"
               >
                 <div className="flex items-center gap-2">
-                  <Mail size={14} className="shrink-0 text-[#999999]" />
-                  <span className="text-[13px] text-[#111111]">{email}</span>
+                  <Mail size={14} className="shrink-0 text-muted" />
+                  <span className="text-[13px] text-ink">{email}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => remove(email)}
-                  className="focus-ring inline-flex h-7 w-7 items-center justify-center rounded-lg text-[#999999] transition hover:bg-[#F7F7F7] hover:text-[#C25151]"
+                  className="focus-ring inline-flex h-7 w-7 items-center justify-center rounded-lg text-muted transition hover:bg-canvas hover:text-[#C25151]"
                   aria-label={`Remove ${email}`}
                 >
                   <Trash2 size={14} />
@@ -91,11 +91,11 @@ export function CODSettingsForm({ initialRecipients }: { initialRecipients: stri
       </section>
 
       {/* Add recipient */}
-      <section className="rounded-card border border-[#EBEBEB] bg-white p-5 shadow-soft">
-        <h2 className="text-[13px] font-semibold text-[#111111]">Add recipient</h2>
+      <section className="rounded-card border border-line bg-white p-5 shadow-soft">
+        <h2 className="text-[13px] font-medium text-ink">Add recipient</h2>
         <div className="mt-3 flex gap-2">
-          <div className="flex flex-1 items-center rounded-card border border-[#EBEBEB] bg-white focus-within:border-[#111111] focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.08)] transition">
-            <span className="inline-flex h-full items-center pl-3 text-[#999999]">
+          <div className="flex flex-1 items-center rounded-card border border-line bg-white focus-within:border-ink focus-within:shadow-[0_0_0_3px_rgba(17,17,17,0.08)] transition">
+            <span className="inline-flex h-full items-center pl-3 text-muted">
               <Mail size={15} />
             </span>
             <input
@@ -104,13 +104,13 @@ export function CODSettingsForm({ initialRecipients }: { initialRecipients: stri
               onChange={(e) => setNewEmail(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addEmail(); } }}
               placeholder="name@example.com"
-              className="h-11 flex-1 bg-transparent px-2 text-[13.5px] text-[#111111] outline-none placeholder:text-[#999999]"
+              className="h-11 flex-1 bg-transparent px-2 text-[13.5px] text-ink outline-none placeholder:text-muted"
             />
           </div>
           <button
             type="button"
             onClick={addEmail}
-            className="focus-ring inline-flex h-11 items-center gap-1.5 rounded-card border border-[#EBEBEB] bg-white px-4 text-[13px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+            className="focus-ring inline-flex h-11 items-center gap-1.5 rounded-card border border-line bg-white px-4 text-[13px] font-medium text-ink transition hover:bg-canvas"
           >
             <Plus size={15} />
             Add
@@ -130,7 +130,7 @@ export function CODSettingsForm({ initialRecipients }: { initialRecipients: stri
           type="button"
           onClick={() => void save()}
           disabled={saving}
-          className="focus-ring inline-flex h-10 items-center gap-2 rounded-card bg-[#111111] px-5 text-[13px] font-semibold text-white shadow-soft transition hover:bg-[#333333] disabled:opacity-60"
+          className="focus-ring inline-flex h-10 items-center gap-2 rounded-card bg-ink px-5 text-[13px] font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
         >
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
           {saving ? "Saving…" : "Save recipients"}

@@ -1,21 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Montserrat } from "next/font/google";
-import { SubtlePageGrid } from "@/components/layout/SubtlePageGrid";
+import { jakarta, jetbrainsMono, sora } from "./fonts";
+import { MotionProviders } from "@/components/motion/MotionProviders";
 import "./globals.css";
-
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-montserrat",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
 
 export const viewport: Viewport = {
   viewportFit: "cover",
@@ -36,10 +22,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body
-        className={`${montserrat.variable} ${jetbrainsMono.variable} font-sans antialiased relative min-h-screen bg-page`}
+        className={`${sora.variable} ${jakarta.variable} ${jetbrainsMono.variable} font-sans antialiased relative min-h-screen bg-canvas`}
       >
-        <SubtlePageGrid />
-        <div className="relative z-10 min-h-screen">{children}</div>
+        <div className="relative z-10 min-h-screen">
+          <MotionProviders>{children}</MotionProviders>
+        </div>
       </body>
     </html>
   );

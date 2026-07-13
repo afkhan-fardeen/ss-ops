@@ -13,8 +13,8 @@ import {
 import type { CombinedDailySeries } from "@/lib/dashboard/load-portal-home-summary";
 import { COD_ACCENT } from "@/config/modules";
 
-const FULFILLMENT_FILL = "#E57373";
-const STOCK_FILL = "#10B981";
+const FULFILLMENT_FILL = "#C4553A";
+const STOCK_FILL = "#6B8A3E";
 
 type Props = {
   data: CombinedDailySeries[];
@@ -28,7 +28,7 @@ export function CombinedActivityChart({ data, showStock }: Props) {
 
   if (!hasData) {
     return (
-      <div className="flex h-full items-center justify-center text-[12px] text-[#999999]">
+      <div className="flex h-full items-center justify-center text-[12px] text-muted">
         No portal activity in the last 14 days yet.
       </div>
     );
@@ -44,17 +44,17 @@ export function CombinedActivityChart({ data, showStock }: Props) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E4E1D8" vertical={false} />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 10, fill: "#999999" }}
+          tick={{ fontSize: 10, fill: "#8A8880" }}
           tickLine={false}
-          axisLine={{ stroke: "#EBEBEB" }}
+          axisLine={{ stroke: "#E4E1D8" }}
           interval="preserveStartEnd"
         />
         <YAxis
           allowDecimals={false}
-          tick={{ fontSize: 10, fill: "#999999" }}
+          tick={{ fontSize: 10, fill: "#8A8880" }}
           tickLine={false}
           axisLine={false}
         />
@@ -62,7 +62,7 @@ export function CombinedActivityChart({ data, showStock }: Props) {
           contentStyle={{
             fontSize: 12,
             borderRadius: 8,
-            border: "1px solid #EBEBEB",
+            border: "1px solid #E4E1D8",
           }}
         />
         <Legend wrapperStyle={{ fontSize: 11 }} />

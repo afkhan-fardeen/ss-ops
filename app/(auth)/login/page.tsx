@@ -1,4 +1,5 @@
 import { LoginForm } from "@/components/auth/LoginForm";
+import { GlassCard } from "@/components/ui/GlassCard";
 import { getAuthMode } from "@/lib/auth/mode";
 import { getSafeNextPath } from "@/lib/auth/safe-next-path";
 
@@ -14,20 +15,22 @@ export default function LoginPage({
       : "Enter the portal password to continue.";
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-page px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
+      <div className="absolute inset-0 -z-10 animate-mesh-drift gradient-mesh" aria-hidden="true" />
+
       <div className="mb-7 flex flex-col items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.svg" alt="Seissense Ops" className="h-10 w-auto" />
-        <div className="text-[13px] text-[#999999]">Internal operations portal</div>
+        <div className="text-[13px] text-muted">Internal operations portal</div>
       </div>
 
-      <div className="w-full max-w-sm rounded-card border border-[#EBEBEB] bg-white p-7 shadow-pop">
-        <h1 className="text-xl font-semibold text-[#111111]">Sign in</h1>
-        <p className="mt-1 text-[13px] text-[#555555]">{description}</p>
+      <GlassCard className="w-full max-w-sm p-7">
+        <h1 className="font-display text-xl font-medium text-ink">Sign in</h1>
+        <p className="mt-1 text-[13px] text-muted">{description}</p>
         <LoginForm nextPath={getSafeNextPath(searchParams.next)} authMode={authMode} />
-      </div>
+      </GlassCard>
 
-      <p className="mt-6 font-mono text-[11px] text-[#999999]">Internal use only · Seissense Operations</p>
+      <p className="mt-6 font-mono text-[11px] text-muted">Internal use only · Seissense Operations</p>
     </div>
   );
 }

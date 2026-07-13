@@ -16,10 +16,10 @@ export function StockBalanceLoader() {
 
   if (loading && !preview) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 rounded-card border border-[#EBEBEB] bg-white py-16 shadow-soft">
-        <Loader2 size={28} className="animate-spin-slow text-[#999999]" />
-        <p className="text-[13px] font-medium text-[#111111]">Loading full Ubex catalog…</p>
-        <p className="max-w-sm text-center text-[12px] text-[#999999]">
+      <div className="flex flex-col items-center justify-center gap-3 rounded-card border border-line bg-white py-16 shadow-soft">
+        <Loader2 size={28} className="animate-spin-slow text-muted" />
+        <p className="text-[13px] font-medium text-ink">Loading full Ubex catalog…</p>
+        <p className="max-w-sm text-center text-[12px] text-muted">
           Fetching products from Ubex and matching Shopify by barcode. Large catalogs may take
           a minute — Ubex limits how fast we can page inventory. You can leave this page; you
           will get a notification when the refresh finishes.
@@ -37,7 +37,7 @@ export function StockBalanceLoader() {
         <button
           type="button"
           onClick={() => void refresh()}
-          className="focus-ring rounded-card border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+          className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas"
         >
           Retry
         </button>
@@ -50,8 +50,8 @@ export function StockBalanceLoader() {
   return (
     <div className="space-y-4">
       {loading ? (
-        <div className="flex items-center gap-2 rounded-card border border-[#EBEBEB] bg-[#F7F7F7] px-4 py-2.5 text-[12px] text-[#555555]">
-          <Loader2 size={14} className="animate-spin-slow shrink-0 text-[#999999]" />
+        <div className="flex items-center gap-2 rounded-card border border-line bg-canvas px-4 py-2.5 text-[12px] text-muted">
+          <Loader2 size={14} className="animate-spin-slow shrink-0 text-muted" />
           Refreshing catalog in background…
         </div>
       ) : null}

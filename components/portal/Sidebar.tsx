@@ -96,6 +96,9 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
   const width = collapsed ? WIDTH_COLLAPSED : WIDTH_EXPANDED;
   const homeActive = pathname === HOME_HREF;
   const settingsActive = isPathInSettings(pathname);
+  // The launcher already handles switching between top-level modules, so the
+  // shell sidebar only surfaces the module you're currently inside — not all three.
+  const activeModule = modules.find((m) => isPathInModule(pathname, m.id));
 
   const settingsNavItems = settingsItems.map((item) => ({
     label: item.label,
@@ -108,7 +111,7 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
       <aside
         style={{ width }}
         className={[
-          "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-[#EBEBEB] bg-white/90 py-5 backdrop-blur-sm transition-[width] duration-200 md:flex",
+          "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-line bg-white/90 py-5 backdrop-blur-sm transition-[width] duration-200 md:flex",
           collapsed ? "px-2" : "px-3",
         ].join(" ")}
       >
@@ -126,19 +129,32 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
             collapsed={collapsed}
           />
 
-          {modules.map((module) => (
+          {activeModule ? (
             <NavCollapsibleSection
-              key={module.id}
-              sectionId={module.id}
-              label={module.label}
-              icon={module.icon}
-              accent={module.accent}
-              homeHref={moduleDashboardHref(module)}
-              items={moduleToNavItems(module)}
+              key={activeModule.id}
+              sectionId={activeModule.id}
+              label={activeModule.label}
+              icon={activeModule.icon}
+              accent={activeModule.accent}
+              homeHref={moduleDashboardHref(activeModule)}
+              items={moduleToNavItems(activeModule)}
               collapsed={collapsed}
-              isActive={(p) => isPathInModule(p, module.id)}
+              isActive={(p) => isPathInModule(p, activeModule.id)}
+              forceOpen
             />
-          ))}
+          ) : (
+            modules.map((module) => (
+              <NavHomeLink
+                key={module.id}
+                href={moduleDashboardHref(module)}
+                label={module.label}
+                icon={module.icon}
+                accent={module.accent}
+                active={false}
+                collapsed={collapsed}
+              />
+            ))
+          )}
 
           <NavCollapsibleSection
             sectionId="settings"
@@ -151,13 +167,13 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
           />
         </div>
 
-        <div className="mt-auto space-y-1 border-t border-[#EBEBEB] pt-3">
+        <div className="mt-auto space-y-1 border-t border-line pt-3">
           <button
             type="button"
             onClick={toggleCollapsed}
             title={collapsed ? "Expand (⌘B)" : "Collapse (⌘B)"}
             className={[
-              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-[13px] font-medium text-[#999999] transition-colors hover:bg-[#F7F7F7] hover:text-[#111111]",
+              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-[13px] font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
               collapsed ? "justify-center px-2" : "px-3",
             ].join(" ")}
           >
@@ -168,7 +184,7 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
             onClick={() => void logout()}
             title={collapsed ? "Sign out" : undefined}
             className={[
-              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-[13px] font-medium text-[#999999] transition-colors hover:bg-[#F7F7F7] hover:text-[#111111]",
+              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-[13px] font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
               collapsed ? "justify-center px-2" : "px-3",
             ].join(" ")}
           >
@@ -179,7 +195,7 @@ export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) 
       </aside>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-[#EBEBEB] bg-white/90 backdrop-blur-sm md:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-white/90 backdrop-blur-sm md:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <Link

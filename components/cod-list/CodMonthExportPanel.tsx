@@ -136,7 +136,7 @@ export function CodMonthExportPanel() {
     >
       <button
         type="button"
-        className="absolute inset-0 bg-[#0F172A]/40 backdrop-blur-[1px]"
+        className="absolute inset-0 bg-ink/40 backdrop-blur-[1px]"
         aria-label="Close"
         onClick={close}
       />
@@ -144,17 +144,17 @@ export function CodMonthExportPanel() {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative z-10 w-full max-w-md rounded-card border border-[#EBEBEB] bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.18)]"
+        className="relative z-10 w-full max-w-md rounded-card border border-line bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.18)]"
       >
         <div className="mb-3 flex items-start justify-between gap-2">
-          <h2 id={titleId} className="text-base font-semibold text-[#111111]">
+          <h2 id={titleId} className="text-base font-medium text-ink">
             {active === "download" ? "Download monthly Excel" : "Email monthly COD list"}
           </h2>
           <button
             type="button"
             disabled={busy}
             onClick={close}
-            className="focus-ring -m-1 rounded-md p-1 text-[#999999] transition hover:bg-[#F7F7F7] hover:text-[#111111] disabled:cursor-not-allowed disabled:opacity-50"
+            className="focus-ring -m-1 rounded-md p-1 text-muted transition hover:bg-canvas hover:text-ink disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Close"
           >
             <X size={18} />
@@ -163,13 +163,13 @@ export function CodMonthExportPanel() {
 
         {showSummary ? (
           <>
-            <p className="text-[12px] text-[#555555]">
+            <p className="text-[12px] text-muted">
               {active === "email"
                 ? "Send all COD orders for every collection day in the selected month. Recipients are in COD Settings."
                 : "Excel includes all COD orders for each collection day in the month (Bahrain 14:00 windows)."}
             </p>
-            <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-[#999999]">Month</p>
-            <p className="mt-1 text-[13px] font-medium text-[#111111]">
+            <p className="mt-2 text-[11px] font-medium uppercase tracking-wide text-muted">Month</p>
+            <p className="mt-1 text-[13px] font-medium text-ink">
               {summaryLabel} · {dayCount} collection day{dayCount === 1 ? "" : "s"}
             </p>
             {step === "error" && errorMsg ? (
@@ -178,7 +178,7 @@ export function CodMonthExportPanel() {
               </p>
             ) : null}
             {step === "done" ? (
-              <p className="mt-3 text-[12px] font-medium text-[#1E3A5F]">
+              <p className="mt-3 text-[12px] font-medium text-cod">
                 {active === "download" ? "File saved." : "Email sent."}
               </p>
             ) : null}
@@ -186,7 +186,7 @@ export function CodMonthExportPanel() {
               <button
                 type="button"
                 onClick={close}
-                className="focus-ring rounded-lg border border-[#EBEBEB] bg-white px-3 py-1.5 text-[12px] font-medium text-[#555555] transition hover:bg-[#F7F7F7]"
+                className="focus-ring rounded-lg border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-muted transition hover:bg-canvas"
               >
                 {step === "done" || step === "error" ? "Close" : "Cancel"}
               </button>
@@ -197,7 +197,7 @@ export function CodMonthExportPanel() {
                     if (active === "download") void runDownload();
                     else void runEmail();
                   }}
-                  className="focus-ring rounded-lg border border-[#111111] bg-[#111111] px-3 py-1.5 text-[12px] font-medium text-white transition hover:opacity-90"
+                  className="focus-ring rounded-lg border border-ink bg-ink px-3 py-1.5 text-[12px] font-medium text-white transition hover:opacity-90"
                 >
                   {active === "email" ? "Confirm and send" : "Confirm and download"}
                 </button>
@@ -206,7 +206,7 @@ export function CodMonthExportPanel() {
           </>
         ) : (
           <div className="space-y-3">
-            <p className="text-[12px] text-[#999999]">Large months may take a minute.</p>
+            <p className="text-[12px] text-muted">Large months may take a minute.</p>
             <StepRow label="Preparing" state={progressRowState(step, 0)} />
             <StepRow
               label={active === "email" ? "Sending to server" : "Loading data and building file"}
@@ -224,33 +224,33 @@ export function CodMonthExportPanel() {
 
   return (
     <>
-      <section className="rounded-card border border-[#EBEBEB] border-l-4 border-l-blue-500 bg-white/95 p-5 shadow-soft backdrop-blur-[2px]">
+      <section className="rounded-card border border-line border-l-4 border-l-cod bg-white/95 p-5 shadow-soft backdrop-blur-[2px]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-700">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-cod">
               Monthly export
             </p>
-            <h2 className="mt-1 flex items-center gap-2 text-[16px] font-semibold text-[#111111]">
-              <CalendarRange size={18} className="shrink-0 text-blue-700" />
+            <h2 className="mt-1 flex items-center gap-2 text-[16px] font-medium text-ink">
+              <CalendarRange size={18} className="shrink-0 text-cod" />
               Full month COD list
             </h2>
-            <p className="mt-1 text-[12px] text-[#555555]">
+            <p className="mt-1 text-[12px] text-muted">
               {summaryLabel} · {dayCount} collection day{dayCount === 1 ? "" : "s"} · does not change
               the table above
             </p>
-            <p className="mt-1 text-[11px] text-[#999999]">
+            <p className="mt-1 text-[11px] text-muted">
               Uses the same Bahrain 14:00 windows as daily selection. May take longer for a full month.
             </p>
           </div>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[200px]">
-            <label htmlFor="cod-month-select" className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
+            <label htmlFor="cod-month-select" className="text-[11px] font-medium uppercase tracking-wider text-muted">
               Month
             </label>
             <select
               id="cod-month-select"
               value={month}
               onChange={(e) => setMonth(e.target.value)}
-              className="focus-ring w-full rounded-lg border border-[#EBEBEB] bg-white px-3 py-2 text-[13px] font-medium text-[#111111]"
+              className="focus-ring w-full rounded-lg border border-line bg-white px-3 py-2 text-[13px] font-medium text-ink"
             >
               {monthOptions.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -268,7 +268,7 @@ export function CodMonthExportPanel() {
               setErrorMsg(null);
               setActive("download");
             }}
-            className="focus-ring inline-flex items-center gap-2 rounded-card border border-blue-600 bg-blue-600 px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+            className="focus-ring inline-flex items-center gap-2 rounded-card border border-cod bg-cod px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
           >
             <Download size={15} />
             Download Excel
@@ -280,9 +280,9 @@ export function CodMonthExportPanel() {
               setErrorMsg(null);
               setActive("email");
             }}
-            className="focus-ring inline-flex items-center gap-2 rounded-card border border-[#EBEBEB] bg-white px-4 py-2 text-[13px] font-medium text-[#111111] transition hover:bg-[#F7F7F7]"
+            className="focus-ring inline-flex items-center gap-2 rounded-card border border-line bg-white px-4 py-2 text-[13px] font-medium text-ink transition hover:bg-canvas"
           >
-            <Mail size={15} className="text-[#555555]" />
+            <Mail size={15} className="text-muted" />
             Email Ubex
           </button>
         </div>
@@ -297,14 +297,14 @@ function StepRow({ label, state }: { label: string; state: "wait" | "active" | "
     <div className="flex items-center gap-2.5 text-[12px]">
       <span className="flex h-5 w-5 shrink-0 items-center justify-center">
         {state === "done" ? (
-          <Check className="text-[#1E3A5F]" size={16} strokeWidth={2.2} />
+          <Check className="text-cod" size={16} strokeWidth={2.2} />
         ) : state === "active" ? (
-          <Loader2 className="animate-spin-slow text-[#1E3A5F]" size={16} />
+          <Loader2 className="animate-spin-slow text-cod" size={16} />
         ) : (
-          <span className="h-1.5 w-1.5 rounded-full bg-[#D4D4D4]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-line" />
         )}
       </span>
-      <span className={state === "wait" ? "text-[#999999]" : "text-[#111111]"}>{label}</span>
+      <span className={state === "wait" ? "text-muted" : "text-ink"}>{label}</span>
     </div>
   );
 }

@@ -51,7 +51,7 @@ function CopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={copy}
-      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-[#999999] transition hover:bg-[#F7F7F7] hover:text-[#111111]"
+      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-muted transition hover:bg-canvas hover:text-ink"
       title={copied ? "Copied" : "Copy"}
       aria-label="Copy"
     >
@@ -73,10 +73,10 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
 
   if (rows.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-2 rounded-card border border-dashed border-[#EBEBEB] bg-white py-16 text-center">
-        <Inbox size={28} className="text-[#999999]" />
-        <h3 className="text-sm font-semibold text-[#111111]">No fulfillments yet</h3>
-        <p className="max-w-sm text-[13px] text-[#555555]">
+      <div className="flex flex-col items-center gap-2 rounded-card border border-dashed border-line bg-white py-16 text-center">
+        <Inbox size={28} className="text-muted" />
+        <h3 className="text-sm font-medium text-ink">No fulfillments yet</h3>
+        <p className="max-w-sm text-[13px] text-muted">
           Pushes from COD or Fulfillment will appear here with tracking, status, and the signed-in
           user who triggered them.
         </p>
@@ -105,15 +105,15 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
               className={[
                 "focus-ring inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12px] font-medium transition",
                 active
-                  ? "border-[#111111] bg-[#F7F7F7] text-[#111111]"
-                  : "border-[#EBEBEB] bg-white text-[#555555] hover:bg-[#F7F7F7]",
+                  ? "border-ink bg-canvas text-ink"
+                  : "border-line bg-white text-muted hover:bg-canvas",
               ].join(" ")}
             >
               <span>{f.label}</span>
               <span
                 className={[
-                  "rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums",
-                  active ? "bg-white text-[#111111]" : "bg-[#F7F7F7] text-[#999999]",
+                  "rounded-full px-1.5 py-0.5 text-[10px] font-medium tabular-nums",
+                  active ? "bg-white text-ink" : "bg-canvas text-muted",
                 ].join(" ")}
               >
                 {f.count}
@@ -123,11 +123,11 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
         })}
       </div>
 
-      <div className="overflow-hidden rounded-card border border-[#EBEBEB] bg-white shadow-soft">
+      <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
         <div className="max-h-[65vh] overflow-auto">
-          <table className="w-full min-w-[700px] divide-y divide-[#EBEBEB] text-[13px]">
-            <thead className="sticky top-0 z-10 bg-[#F7F7F7]">
-              <tr className="text-left text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
+          <table className="w-full min-w-[700px] divide-y divide-line text-[13px]">
+            <thead className="sticky top-0 z-10 bg-canvas">
+              <tr className="text-left text-[11px] font-medium uppercase tracking-wider text-muted">
                 <th className="px-4 py-2.5">When</th>
                 <th className="px-4 py-2.5">Order</th>
                 <th className="px-4 py-2.5">Tracking</th>
@@ -136,7 +136,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                 <th className="px-4 py-2.5 text-right">Details</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#EBEBEB]">
+            <tbody className="divide-y divide-line">
               {filtered.map((row) => {
                 const when = formatWhen(row.createdAt);
                 const isExpanded = expanded[row.id];
@@ -144,15 +144,15 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                   <Fragment key={row.id}>
                     <tr className="align-top">
                       <td className="px-4 py-3 text-[12px]">
-                        <div className="font-medium text-[#111111]">{when.rel}</div>
-                        <div className="font-mono text-[11px] text-[#999999]">{when.abs}</div>
+                        <div className="font-medium text-ink">{when.rel}</div>
+                        <div className="font-mono text-[11px] text-muted">{when.abs}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-mono text-[12.5px] font-medium text-[#111111]">
+                        <div className="font-mono text-[12.5px] font-medium text-ink">
                           {row.orderName}
                         </div>
                         {row.fulfillmentId ? (
-                          <div className="mt-0.5 font-mono text-[10.5px] text-[#999999]">
+                          <div className="mt-0.5 font-mono text-[10.5px] text-muted">
                             FID {row.fulfillmentId}
                           </div>
                         ) : null}
@@ -160,14 +160,14 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                       <td className="px-4 py-3">
                         {row.tracking ? (
                           <div className="flex items-center gap-1">
-                            <span className="font-mono text-[12px] text-[#111111]">{row.tracking}</span>
+                            <span className="font-mono text-[12px] text-ink">{row.tracking}</span>
                             <CopyButton value={row.tracking} />
                             {row.trackingUrl ? (
                               <a
                                 href={row.trackingUrl}
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-[#999999] transition hover:bg-[#F7F7F7] hover:text-[#111111]"
+                                className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-muted transition hover:bg-canvas hover:text-ink"
                                 title="Open tracking"
                                 aria-label="Open tracking"
                               >
@@ -176,10 +176,10 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                             ) : null}
                           </div>
                         ) : (
-                          <span className="text-[#999999]">—</span>
+                          <span className="text-muted">—</span>
                         )}
                         {row.trackingCompany ? (
-                          <div className="mt-0.5 text-[11px] text-[#999999]">{row.trackingCompany}</div>
+                          <div className="mt-0.5 text-[11px] text-muted">{row.trackingCompany}</div>
                         ) : null}
                       </td>
                       <td className="px-4 py-3">
@@ -190,14 +190,14 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                           {row.status === "success" ? "Success" : "Error"}
                         </StatusPill>
                       </td>
-                      <td className="px-4 py-3 text-[12px] text-[#555555]">
+                      <td className="px-4 py-3 text-[12px] text-muted">
                         {row.userEmail ? (
                           <span className="inline-flex items-center gap-1">
-                            <User size={11} className="text-[#999999]" />
+                            <User size={11} className="text-muted" />
                             {row.userEmail}
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-[#F7F7F7] px-2 py-0.5 text-[11px] font-medium text-[#111111]">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-canvas px-2 py-0.5 text-[11px] font-medium text-ink">
                             <Bot size={11} />
                             Seissense Ops Bot
                           </span>
@@ -208,13 +208,13 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                           <button
                             type="button"
                             onClick={() => setExpanded((s) => ({ ...s, [row.id]: !s[row.id] }))}
-                            className="focus-ring inline-flex items-center gap-1 rounded-card px-2 py-1 text-[11.5px] font-medium text-[#555555] transition hover:bg-[#F7F7F7] hover:text-[#111111]"
+                            className="focus-ring inline-flex items-center gap-1 rounded-card px-2 py-1 text-[11.5px] font-medium text-muted transition hover:bg-canvas hover:text-ink"
                           >
                             {isExpanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
                             {isExpanded ? "Hide" : "Show"}
                           </button>
                         ) : (
-                          <span className="text-[11.5px] text-[#999999]">—</span>
+                          <span className="text-[11.5px] text-muted">—</span>
                         )}
                       </td>
                     </tr>

@@ -8,8 +8,8 @@ import { StoreSwitcherTabs } from "./StoreSwitcherTabs";
 function StorePill({ label, status }: { label: string; status: StoreConnectionStatus }) {
   if (!status.configured) {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-[#EBEBEB] bg-[#F7F7F7] px-3 py-1 text-[11px] font-medium text-[#999999]">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#CCCCCC]" />
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-canvas px-3 py-1 text-[11px] font-medium text-muted">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-line" />
         {label} — not configured
       </span>
     );
@@ -44,7 +44,7 @@ function StorePill({ label, status }: { label: string; status: StoreConnectionSt
 
 // ─── Async data fetcher ──────────────────────────────────────────────────────
 
-async function StoreStatusPills() {
+async function StoreStatusPills({ namespace }: { namespace: string }) {
   const { store1, store2 } = await pingBothStores();
 
   // If Store 2 is not configured at all, hide it entirely (store-switcher also hidden).
@@ -53,7 +53,7 @@ async function StoreStatusPills() {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <Suspense>
-        <StoreSwitcherTabs />
+        <StoreSwitcherTabs namespace={namespace} />
       </Suspense>
       <div className="flex flex-wrap items-center gap-2">
         <StorePill label="Store 1 (BH)" status={store1} />
@@ -68,13 +68,13 @@ async function StoreStatusPills() {
 function StoreStatusSkeleton() {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex items-center gap-1 rounded-lg border border-[#EBEBEB] bg-[#F7F7F7] p-1">
-        <div className="h-8 w-28 animate-pulse rounded-md bg-[#EBEBEB]" />
-        <div className="h-8 w-28 animate-pulse rounded-md bg-[#EBEBEB]" />
+      <div className="flex items-center gap-1 rounded-lg border border-line bg-canvas p-1">
+        <div className="h-8 w-28 animate-pulse rounded-md bg-line" />
+        <div className="h-8 w-28 animate-pulse rounded-md bg-line" />
       </div>
       <div className="flex items-center gap-2">
-        <div className="h-6 w-32 animate-pulse rounded-full bg-[#EBEBEB]" />
-        <div className="h-6 w-36 animate-pulse rounded-full bg-[#EBEBEB]" />
+        <div className="h-6 w-32 animate-pulse rounded-full bg-line" />
+        <div className="h-6 w-36 animate-pulse rounded-full bg-line" />
       </div>
     </div>
   );
@@ -87,10 +87,10 @@ function StoreStatusSkeleton() {
  * for each configured store. Pings Shopify on every page load (no caching) so
  * the status is always current. Wrapped in Suspense so it never blocks render.
  */
-export function StoreConnectionStatus() {
+export function StoreConnectionStatus({ namespace = "default" }: { namespace?: string }) {
   return (
     <Suspense fallback={<StoreStatusSkeleton />}>
-      <StoreStatusPills />
+      <StoreStatusPills namespace={namespace} />
     </Suspense>
   );
 }

@@ -53,7 +53,7 @@ function StatCard({
     blue:    { bg: "bg-[rgba(59,130,246,0.08)]",   text: "text-[#2563EB]", border: "border-[rgba(59,130,246,0.30)]",  num: "text-[#2563EB]" },
     green:   { bg: "bg-[rgba(76,175,80,0.10)]",    text: "text-[#2E7D32]", border: "border-[rgba(76,175,80,0.30)]",   num: "text-[#2E7D32]" },
     red:     { bg: "bg-[rgba(194,81,81,0.10)]",    text: "text-[#C25151]", border: "border-[rgba(194,81,81,0.30)]",   num: "text-[#C25151]" },
-    neutral: { bg: "bg-[#F7F7F7]",                 text: "text-[#555555]", border: "border-[#EBEBEB]",                num: "text-[#111111]" },
+    neutral: { bg: "bg-canvas",                 text: "text-muted", border: "border-line",                num: "text-ink" },
   };
   const c = colors[color];
   return (
@@ -68,7 +68,7 @@ function StatCard({
     >
       <Icon size={18} className={c.text} strokeWidth={2} />
       <div>
-        <p className={`text-xl font-bold tabular-nums ${c.num}`}>{count}</p>
+        <p className={`text-xl font-medium tabular-nums ${c.num}`}>{count}</p>
         <p className={`text-[11px] font-medium ${c.text}`}>{label}</p>
       </div>
     </button>
@@ -191,15 +191,15 @@ export function FulfillmentView({
               className={[
                 "focus-ring inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12px] font-medium transition",
                 active
-                  ? "border-[#111111] bg-[#111111] text-white"
-                  : "border-[#EBEBEB] bg-white text-[#555555] hover:bg-[#F7F7F7]",
+                  ? "border-ink bg-ink text-white"
+                  : "border-line bg-white text-muted hover:bg-canvas",
               ].join(" ")}
             >
               <span>{f.label}</span>
               <span
                 className={[
-                  "rounded-full px-1.5 py-0.5 text-[10px] font-semibold tabular-nums",
-                  active ? "bg-white/20 text-white" : "bg-[#F7F7F7] text-[#999999]",
+                  "rounded-full px-1.5 py-0.5 text-[10px] font-medium tabular-nums",
+                  active ? "bg-white/20 text-white" : "bg-canvas text-muted",
                 ].join(" ")}
               >
                 {count}

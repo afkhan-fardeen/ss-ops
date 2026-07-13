@@ -37,7 +37,7 @@ export function RegisterWebhooksButton({ disabled }: { disabled?: boolean }) {
       type="button"
       onClick={() => void register()}
       disabled={disabled || loading}
-      className="focus-ring inline-flex h-10 items-center gap-2 rounded-card bg-[#111111] px-4 text-[13px] font-semibold text-white shadow-soft transition hover:bg-[#333333] disabled:opacity-60"
+      className="focus-ring inline-flex h-10 items-center gap-2 rounded-card bg-ink px-4 text-[13px] font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
     >
       {loading ? <Loader2 size={15} className="animate-spin" /> : <Zap size={15} strokeWidth={2.2} />}
       <span>{loading ? "Registering…" : "Register webhooks"}</span>

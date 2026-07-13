@@ -6,10 +6,10 @@ type Props = {
 };
 
 const BORDER: Record<string, string> = {
-  home: "border-l-slate-500",
-  cod: "border-l-blue-500",
-  fulfillment: "border-l-[#E57373]",
-  stock: "border-l-emerald-500",
+  home: "border-l-ink",
+  cod: "border-l-cod",
+  fulfillment: "border-l-fulfillment",
+  stock: "border-l-stock",
 };
 
 export function DashboardPage({ children, moduleId }: Props) {
@@ -32,19 +32,19 @@ export function DashboardHeader({
   description?: string;
   moduleId?: ModuleId | "home";
 }) {
-  const border = moduleId ? BORDER[moduleId] : "border-l-slate-500";
+  const border = moduleId ? BORDER[moduleId] : "border-l-ink";
   return (
     <header
-      className={`animate-fade-up rounded-card border border-[#EBEBEB] border-l-4 bg-white p-5 shadow-soft ${border}`}
+      className={`animate-fade-up rounded-card border border-line border-l-4 bg-white p-5 shadow-soft ${border}`}
     >
       {moduleLabel ? (
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#999999]">
+        <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
           {moduleLabel}
         </p>
       ) : null}
-      <h1 className="mt-0.5 text-xl font-semibold text-[#111111]">{title}</h1>
+      <h1 className="mt-0.5 font-display text-xl font-medium text-ink">{title}</h1>
       {description ? (
-        <p className="mt-2 text-[13px] text-[#555555]">{description}</p>
+        <p className="mt-2 text-[13px] text-muted">{description}</p>
       ) : null}
     </header>
   );
