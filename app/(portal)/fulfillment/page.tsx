@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { AlertTriangle } from "lucide-react";
 import { FulfillmentView } from "@/components/fulfillment/FulfillmentView";
-import { StoreSwitcherTabs } from "@/components/portal/StoreSwitcherTabs";
+import { StoreConnectionStatus } from "@/components/portal/StoreConnectionStatus";
 import { fetchOrders } from "@/lib/orders/fetch-orders";
 import { fetchStore2Orders } from "@/lib/store2/fetch-orders";
 import { isStore2Configured } from "@/lib/store2/client";
@@ -30,12 +30,8 @@ export default async function FulfillmentPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-5">
-      {/* Store switcher — shown only when Store 2 is configured */}
-      {isStore2Configured() && (
-        <Suspense>
-          <StoreSwitcherTabs />
-        </Suspense>
-      )}
+      {/* Store connection status + switcher tabs (shown when Store 2 is configured) */}
+      {isStore2Configured() && <StoreConnectionStatus />}
       <Suspense fallback={<FulfillmentSkeleton />}>
         <FulfillmentContent storeId={storeId} />
       </Suspense>

@@ -4,7 +4,7 @@ import { CodListCollectionPanel } from "@/components/cod-list/CodListCollectionP
 import { CodMonthExportPanel } from "@/components/cod-list/CodMonthExportPanel";
 import type { CodDateOption } from "@/components/cod-list/CodDatePicker";
 import { RatesStrip } from "@/components/cod-list/RatesStrip";
-import { StoreSwitcherTabs } from "@/components/portal/StoreSwitcherTabs";
+import { StoreConnectionStatus } from "@/components/portal/StoreConnectionStatus";
 import { getLastNWindows, shortWindowLabel } from "@/lib/datetime/collection-window";
 import { loadCodListData } from "@/lib/cod/cod-list-data";
 import { loadStore2CodListData } from "@/lib/store2/cod-list-data";
@@ -32,12 +32,8 @@ export default async function CodListPage({
 
   return (
     <div className="mx-auto max-w-7xl space-y-5">
-      {/* Store switcher — only shown when Store 2 is configured */}
-      {isStore2Configured() && (
-        <Suspense>
-          <StoreSwitcherTabs />
-        </Suspense>
-      )}
+      {/* Store connection status + switcher tabs (shown when Store 2 is configured) */}
+      {isStore2Configured() && <StoreConnectionStatus />}
       <Suspense fallback={<CodListSkeleton />}>
         {storeId === 2 ? (
           <Store2CodListContent searchParams={resolvedParams} />
