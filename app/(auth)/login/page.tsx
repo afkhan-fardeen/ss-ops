@@ -16,8 +16,6 @@ export default function LoginPage({
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4">
-      <div className="absolute inset-0 -z-10 animate-mesh-drift gradient-mesh" aria-hidden="true" />
-
       <div className="mb-7 flex flex-col items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.svg" alt="Seissense Ops" className="h-10 w-auto" />

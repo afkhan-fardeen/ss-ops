@@ -28,8 +28,11 @@ export function LauncherModules({ modules }: { modules: LauncherModuleData[] }) 
     >
       {modules.map((m) => (
         <motion.div key={m.id} variants={staggerItem}>
-          <GlassCard layoutId={`module-${m.id}`} className="flex h-full flex-col p-6">
-            <Link href={m.href} className="flex flex-1 flex-col">
+          <GlassCard
+            layoutId={`module-${m.id}`}
+            className="flex h-full flex-col items-center p-6 text-center"
+          >
+            <Link href={m.href} className="flex flex-1 flex-col items-center">
               <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-card ${m.iconBg}`}>
                 <span className={m.iconText}>{m.icon}</span>
               </div>
@@ -42,7 +45,7 @@ export function LauncherModules({ modules }: { modules: LauncherModuleData[] }) 
             {m.secondaryLink ? (
               <Link
                 href={m.secondaryLink.href}
-                className="mt-3 inline-flex items-center gap-1 self-start text-[12px] font-medium text-muted transition-colors hover:text-ink"
+                className="mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-muted transition-colors hover:text-ink"
               >
                 {m.secondaryLink.label} <ArrowRight size={12} />
               </Link>

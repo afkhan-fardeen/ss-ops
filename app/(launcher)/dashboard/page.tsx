@@ -61,8 +61,6 @@ export default async function LauncherPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center overflow-hidden px-6 py-6 sm:px-10 sm:py-8">
-      <div className="absolute inset-0 -z-10 animate-mesh-drift gradient-mesh" aria-hidden="true" />
-
       <div className="flex w-full max-w-5xl flex-wrap items-center justify-between gap-y-2">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.svg" alt="Seissense Ops" className="h-6 w-auto object-contain sm:h-7" />
