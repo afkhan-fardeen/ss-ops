@@ -1,4 +1,3 @@
-import { Toaster } from "sonner";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { PortalStockBalanceShell } from "@/components/portal/PortalStockBalanceShell";
 import { Sidebar } from "@/components/portal/Sidebar";
@@ -31,7 +30,6 @@ export default async function PortalLayout({ children }: { children: React.React
           <PortalStockBalanceShell enabled={showAdminLink}>{children}</PortalStockBalanceShell>
         </main>
       </div>
-      <Toaster position="top-right" richColors closeButton />
     </div>
   );
 }

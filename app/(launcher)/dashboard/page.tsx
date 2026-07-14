@@ -1,7 +1,8 @@
+import { Settings2 } from "lucide-react";
 import { requireSession } from "@/lib/auth/require-session";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { getAstGreeting, getDisplayName } from "@/lib/dashboard/get-display-name";
-import { getPortalModules } from "@/config/modules";
+import { getPortalModules, SETTINGS_ACCENT } from "@/config/modules";
 import { LauncherModules, type LauncherModuleData } from "@/components/launcher/LauncherModules";
 import { UbexIndicator } from "@/components/portal/UbexIndicator";
 import { AstClock } from "@/components/portal/AstClock";
@@ -45,6 +46,19 @@ export default async function LauncherPage() {
     };
   });
 
+  const settingsCard: LauncherModuleData = {
+    id: "settings",
+    label: "Settings",
+    description: "Manage your account and portal preferences.",
+    href: "/account",
+    icon: <Settings2 size={22} strokeWidth={1.8} />,
+    iconBg: SETTINGS_ACCENT.activeBg,
+    iconText: SETTINGS_ACCENT.activeText,
+    secondaryLink: showAdmin ? { label: "Admin tools", href: "/admin" } : undefined,
+  };
+
+  const cards: LauncherModuleData[] = [...moduleData, settingsCard];
+
   return (
     <div className="relative flex min-h-screen flex-col items-center overflow-hidden px-6 py-6 sm:px-10 sm:py-8">
       <div className="absolute inset-0 -z-10 animate-mesh-drift gradient-mesh" aria-hidden="true" />
@@ -66,7 +80,7 @@ export default async function LauncherPage() {
         <p className="mt-2 text-[14px] text-muted sm:text-[15px]">Pick a module to get started.</p>
 
         <div className="mt-10 w-full sm:mt-14">
-          <LauncherModules modules={moduleData} />
+          <LauncherModules modules={cards} />
         </div>
       </div>
 

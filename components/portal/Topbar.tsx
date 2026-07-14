@@ -6,6 +6,7 @@ import { CodListFloatingActions } from "@/components/cod-list/CodListFloatingAct
 import { isCodListPath, resolveRouteMeta } from "@/config/modules";
 import { AstClock } from "./AstClock";
 import { UbexIndicator } from "./UbexIndicator";
+import { RestockStatusIndicator } from "./RestockStatusIndicator";
 
 export function Topbar() {
   const pathname = usePathname();
@@ -34,6 +35,7 @@ export function Topbar() {
         ) : null}
       </div>
       <div className="flex shrink-0 items-center gap-3">
+        <RestockStatusIndicator />
         <UbexIndicator />
         <AstClock />
       </div>

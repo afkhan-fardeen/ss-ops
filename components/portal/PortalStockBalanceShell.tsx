@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { StockBalancePreviewProvider } from "@/components/stock/StockBalancePreviewProvider";
+import { RestockQueueProvider } from "@/components/stock/RestockQueueProvider";
 
 export function PortalStockBalanceShell({
   enabled,
@@ -11,5 +12,9 @@ export function PortalStockBalanceShell({
   children: ReactNode;
 }) {
   if (!enabled) return <>{children}</>;
-  return <StockBalancePreviewProvider>{children}</StockBalancePreviewProvider>;
+  return (
+    <StockBalancePreviewProvider>
+      <RestockQueueProvider>{children}</RestockQueueProvider>
+    </StockBalancePreviewProvider>
+  );
 }

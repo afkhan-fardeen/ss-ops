@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Toaster } from "sonner";
 import { jakarta, jetbrainsMono, sora } from "./fonts";
 import { MotionProviders } from "@/components/motion/MotionProviders";
 import "./globals.css";
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="relative z-10 min-h-screen">
           <MotionProviders>{children}</MotionProviders>
         </div>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   );

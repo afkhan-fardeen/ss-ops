@@ -14,6 +14,8 @@ export type LauncherModuleData = {
   icon: React.ReactNode;
   iconBg: string;
   iconText: string;
+  /** Optional secondary action rendered below the primary "Open" link (e.g. Admin tools). */
+  secondaryLink?: { label: string; href: string };
 };
 
 export function LauncherModules({ modules }: { modules: LauncherModuleData[] }) {
@@ -26,8 +28,8 @@ export function LauncherModules({ modules }: { modules: LauncherModuleData[] }) 
     >
       {modules.map((m) => (
         <motion.div key={m.id} variants={staggerItem}>
-          <Link href={m.href} className="block h-full">
-            <GlassCard layoutId={`module-${m.id}`} className="flex h-full flex-col p-6">
+          <GlassCard layoutId={`module-${m.id}`} className="flex h-full flex-col p-6">
+            <Link href={m.href} className="flex flex-1 flex-col">
               <div className={`grid h-12 w-12 shrink-0 place-items-center rounded-card ${m.iconBg}`}>
                 <span className={m.iconText}>{m.icon}</span>
               </div>
@@ -36,8 +38,16 @@ export function LauncherModules({ modules }: { modules: LauncherModuleData[] }) 
               <p className="mt-5 inline-flex items-center gap-1.5 text-[13px] font-medium text-ink transition-transform group-hover:translate-x-0.5">
                 Open <ArrowRight size={14} />
               </p>
-            </GlassCard>
-          </Link>
+            </Link>
+            {m.secondaryLink ? (
+              <Link
+                href={m.secondaryLink.href}
+                className="mt-3 inline-flex items-center gap-1 self-start text-[12px] font-medium text-muted transition-colors hover:text-ink"
+              >
+                {m.secondaryLink.label} <ArrowRight size={12} />
+              </Link>
+            ) : null}
+          </GlassCard>
         </motion.div>
       ))}
     </motion.div>
