@@ -29,6 +29,11 @@ const config: Config = {
           bg: "rgba(107,138,62,0.15)",
           bloom: "#F0CE7E",
         },
+        awb: {
+          DEFAULT: "#2E6BAF",
+          bg: "rgba(46,107,175,0.15)",
+          bloom: "#A8C4E8",
+        },
         gold: "#B8842E",
       },
       fontFamily: {

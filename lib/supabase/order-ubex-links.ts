@@ -125,3 +125,36 @@ export async function updateUbexStatus(
     .eq("shopify_order_id", shopifyOrderId);
   if (error) console.warn("[order-ubex-links] updateStatus failed:", error.message);
 }
+
+/**
+ * Look up a UBEX tracking number by Shopify order name.
+ * Tries both the raw name (e.g. "1234") and the prefixed form (e.g. "#1234").
+ * Returns the tracking string or null if not found.
+ */
+export async function getOrderUbexLinkByOrderName(
+  orderName: string,
+  storeId: number,
+): Promise<string | null> {
+  const supabase = getSupabaseService();
+  if (!supabase) return null;
+
+  // Try both "#NNNN" and "NNNN" variants in case of inconsistent storage.
+  const stripped = orderName.replace(/^#/, "");
+  const prefixed = `#${stripped}`;
+
+  const { data, error } = await supabase
+    .from("order_ubex_links")
+    .select("ubex_tracking")
+    .eq("store_id", storeId)
+    .in("shopify_order_name", [stripped, prefixed])
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.warn("[order-ubex-links] getByOrderName failed:", error.message);
+    return null;
+  }
+
+  const tracking = (data as { ubex_tracking?: string } | null)?.ubex_tracking?.trim();
+  return tracking || null;
+}

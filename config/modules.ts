@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  FileSearch,
   History,
   LayoutDashboard,
   Settings2,
@@ -8,7 +9,7 @@ import {
   Warehouse,
 } from "lucide-react";
 
-export type ModuleId = "cod" | "fulfillment" | "stock";
+export type ModuleId = "cod" | "fulfillment" | "stock" | "awb";
 
 export type ModuleNavItem = {
   label: string;
@@ -111,6 +112,19 @@ export const SETTINGS_ACCENT: ModuleAccent = {
   chartStroke: "#8F6623",
 };
 
+export const AWB_ACCENT: ModuleAccent = {
+  rail: "bg-awb",
+  labelText: "text-awb",
+  labelHover: "hover:bg-awb-bg",
+  activeBg: "bg-awb-bg",
+  activeText: "text-awb",
+  pillBg: "bg-awb-bg",
+  pillText: "text-awb",
+  mobileActive: "text-awb",
+  chartFill: "#2E6BAF",
+  chartStroke: "#235489",
+};
+
 function codModule(): PortalModule {
   return {
     id: "cod",
@@ -167,8 +181,18 @@ function stockModule(): PortalModule {
   };
 }
 
+function awbModule(): PortalModule {
+  return {
+    id: "awb",
+    label: "AWB Lookup",
+    icon: FileSearch,
+    accent: AWB_ACCENT,
+    items: [{ label: "Lookup", href: "/awb", icon: FileSearch }],
+  };
+}
+
 export function getPortalModules(showAdmin: boolean): PortalModule[] {
-  const modules = [codModule(), fulfillmentModule()];
+  const modules = [codModule(), fulfillmentModule(), awbModule()];
   if (showAdmin) modules.push(stockModule());
   return modules;
 }
@@ -182,6 +206,8 @@ export function modulePathPrefixes(id: ModuleId): string[] {
       return ["/fulfillment", "/history"];
     case "stock":
       return ["/stock-balance"];
+    case "awb":
+      return ["/awb"];
     default:
       return [];
   }
@@ -287,6 +313,13 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     moduleId: "stock",
     moduleLabel: "Stock balance",
     accent: STOCK_ACCENT,
+  },
+  {
+    path: "/awb",
+    title: "AWB Lookup",
+    moduleId: "awb",
+    moduleLabel: "AWB Lookup",
+    accent: AWB_ACCENT,
   },
 ];
 

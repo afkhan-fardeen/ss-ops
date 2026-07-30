@@ -23,6 +23,10 @@ const MODULE_META: Record<string, { description: string; href: string }> = {
     description: "Compare Ubex inventory with Shopify and restock on hand.",
     href: "/stock-balance/balance",
   },
+  awb: {
+    description: "Look up an order number and preview the UBEX Airway Bill PDF.",
+    href: "/awb",
+  },
 };
 
 export default async function LauncherPage() {
