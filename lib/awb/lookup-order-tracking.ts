@@ -51,7 +51,7 @@ export async function lookupOrderTracking(
 
   // 3. Run a targeted UBEX lookup using the order's last-4 digits.
   const needed = shopifyLast4Set([order]);
-  const lookup = await buildUbexLookup({ needed, force: false });
+  const lookup = await buildUbexLookup({ needed, force: false, skipDetailFetches: true });
   const tracking = ubexTrackingForShopifyOrder(order, lookup);
 
   if (!tracking) {

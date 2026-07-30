@@ -7,6 +7,7 @@ import { LauncherModules, type LauncherModuleData } from "@/components/launcher/
 import { UbexIndicator } from "@/components/portal/UbexIndicator";
 import { AstClock } from "@/components/portal/AstClock";
 import { SignOutButton } from "@/components/account/SignOutButton";
+import { getUserAllowedModules } from "@/lib/supabase/profiles";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,18 @@ export default async function LauncherPage() {
   const showAdmin = await isPortalAdmin();
   const [name] = await Promise.all([getDisplayName(session)]);
   const greeting = getAstGreeting();
-  const modules = getPortalModules(showAdmin);
+  const allModules = getPortalModules(showAdmin);
+
+  // Admins always see every module. Non-admins are filtered by allowed_modules (null = all).
+  const allowedModules =
+    showAdmin || session.mode !== "supabase" || !session.userId
+      ? null
+      : await getUserAllowedModules(session.userId);
+
+  const modules =
+    allowedModules === null
+      ? allModules
+      : allModules.filter((m) => allowedModules.includes(m.id));
 
   const moduleData: LauncherModuleData[] = modules.map((m) => {
     const meta = MODULE_META[m.id] ?? { description: "", href: "/dashboard" };
