@@ -4,7 +4,7 @@ import { DashboardHeader } from "@/components/dashboard/DashboardPage";
 import { AwbLookupView } from "@/components/awb/AwbLookupView";
 
 export const metadata = {
-  title: "AWB Lookup — Seissense Ops",
+  title: "AWB & Invoice Lookup — Seissense Ops",
 };
 
 function AwbSkeleton() {
@@ -19,12 +19,12 @@ export default async function AwbPage() {
   const storeCount: 1 | 2 = isStore2Configured() ? 2 : 1;
 
   return (
-    <div className="mx-auto max-w-4xl space-y-5">
+    <div className="mx-auto max-w-7xl space-y-5">
       <DashboardHeader
         moduleId="awb"
         moduleLabel="AWB Lookup"
-        title="Airway Bill Lookup"
-        description="Enter an order number to retrieve and preview the UBEX Airway Bill PDF."
+        title="Airway Bill & Invoice Lookup"
+        description="Enter an order number to retrieve the UBEX Airway Bill and Zoho Books invoice side by side."
       />
       <Suspense fallback={<AwbSkeleton />}>
         <AwbLookupView storeCount={storeCount} />

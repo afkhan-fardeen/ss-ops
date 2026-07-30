@@ -1,75 +1,147 @@
 "use client";
 
-import { useState } from "react";
-import { FileSearch, ExternalLink, Download, Loader2, AlertCircle, Tag } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import {
+  FileSearch,
+  ExternalLink,
+  Download,
+  Loader2,
+  AlertCircle,
+  Tag,
+  FileText,
+} from "lucide-react";
 
-type IdleState = { status: "idle" };
-type LoadingState = { status: "loading" };
-type FoundState = {
-  status: "found";
-  pdfUrl: string;
-  tracking: string;
-  orderName: string;
-  source: "db" | "live";
-};
-type ErrorState = {
-  status: "error";
-  message: string;
-  reason: string;
-  tracking?: string;
-};
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
-type LookupState = IdleState | LoadingState | FoundState | ErrorState;
-
-type ApiResponse =
+type AwbApiResponse =
   | { ok: true; pdfUrl: string; tracking: string; orderName: string; source: "db" | "live" }
   | { ok: false; error: string; reason: string; tracking?: string };
+
+type InvoiceApiError = { ok: false; error: string; reason: string };
+
+type PdfState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "found"; blobUrl: string; label: string; directUrl?: string }
+  | { status: "error"; message: string; reason: string };
+
+type AwbFoundExtra = { tracking: string; orderName: string; source: "db" | "live" };
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
 
 export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
   const [orderInput, setOrderInput] = useState("");
   const [store, setStore] = useState<1 | 2>(1);
-  const [state, setState] = useState<LookupState>({ status: "idle" });
+
+  const [awbState, setAwbState] = useState<PdfState>({ status: "idle" });
+  const [awbExtra, setAwbExtra] = useState<AwbFoundExtra | null>(null);
+  const [invoiceState, setInvoiceState] = useState<PdfState>({ status: "idle" });
+
+  // Track blob URLs for cleanup
+  const invoiceBlobRef = useRef<string | null>(null);
+
+  function revokeBlobUrls() {
+    if (invoiceBlobRef.current) {
+      URL.revokeObjectURL(invoiceBlobRef.current);
+      invoiceBlobRef.current = null;
+    }
+  }
+
+  // Cleanup on unmount
+  useEffect(() => () => revokeBlobUrls(), []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const trimmed = orderInput.trim();
     if (!trimmed) return;
 
-    setState({ status: "loading" });
+    revokeBlobUrls();
+    setAwbState({ status: "loading" });
+    setAwbExtra(null);
+    setInvoiceState({ status: "loading" });
 
-    try {
-      const params = new URLSearchParams({ orderName: trimmed, store: String(store) });
-      const res = await fetch(`/api/awb?${params.toString()}`);
-      const json = (await res.json()) as ApiResponse;
+    const params = new URLSearchParams({ orderName: trimmed, store: String(store) });
 
+    const [awbSettled, invoiceSettled] = await Promise.allSettled([
+      // AWB fetch
+      fetch(`/api/awb?${params.toString()}`).then((r) => r.json() as Promise<AwbApiResponse>),
+      // Invoice fetch — returns PDF bytes on success, JSON error on failure
+      fetch(`/api/invoice?orderName=${encodeURIComponent(trimmed)}`).then(async (r) => {
+        if (r.ok) {
+          const invoiceNumber = r.headers.get("x-invoice-number") ?? "Invoice";
+          const bytes = await r.arrayBuffer();
+          const blob = new Blob([bytes], { type: "application/pdf" });
+          const blobUrl = URL.createObjectURL(blob);
+          invoiceBlobRef.current = blobUrl;
+          return { ok: true as const, blobUrl, invoiceNumber };
+        }
+        return r.json() as Promise<InvoiceApiError>;
+      }),
+    ]);
+
+    // Resolve AWB state
+    if (awbSettled.status === "fulfilled") {
+      const json = awbSettled.value;
       if (json.ok) {
-        setState({
+        setAwbState({
           status: "found",
-          pdfUrl: json.pdfUrl,
-          tracking: json.tracking,
-          orderName: json.orderName,
-          source: json.source,
+          blobUrl: json.pdfUrl,
+          label: json.tracking,
+          directUrl: json.pdfUrl,
+        });
+        setAwbExtra({ tracking: json.tracking, orderName: json.orderName, source: json.source });
+      } else {
+        setAwbState({ status: "error", message: json.error, reason: json.reason });
+      }
+    } else {
+      setAwbState({
+        status: "error",
+        message: awbSettled.reason instanceof Error ? awbSettled.reason.message : "AWB request failed",
+        reason: "network",
+      });
+    }
+
+    // Resolve invoice state
+    if (invoiceSettled.status === "fulfilled") {
+      const res = invoiceSettled.value;
+      if (res.ok) {
+        setInvoiceState({
+          status: "found",
+          blobUrl: res.blobUrl,
+          label: res.invoiceNumber,
         });
       } else {
-        setState({
-          status: "error",
-          message: json.error,
-          reason: json.reason,
-          tracking: (json as { tracking?: string }).tracking,
-        });
+        setInvoiceState({ status: "error", message: res.error, reason: res.reason });
       }
-    } catch (err) {
-      setState({
+    } else {
+      setInvoiceState({
         status: "error",
-        message: err instanceof Error ? err.message : "An unexpected error occurred.",
+        message: invoiceSettled.reason instanceof Error ? invoiceSettled.reason.message : "Invoice request failed",
         reason: "network",
       });
     }
   }
 
   function reset() {
-    setState({ status: "idle" });
+    revokeBlobUrls();
+    setAwbState({ status: "idle" });
+    setAwbExtra(null);
+    setInvoiceState({ status: "idle" });
   }
+
+  const isLoading = awbState.status === "loading" || invoiceState.status === "loading";
+  const hasResults =
+    awbState.status === "found" ||
+    awbState.status === "error" ||
+    invoiceState.status === "found" ||
+    invoiceState.status === "error";
+
+  // Only show results after both have settled (loading→found/error)
+  const bothSettled = awbState.status !== "loading" && invoiceState.status !== "loading";
 
   return (
     <div className="space-y-5">
@@ -77,7 +149,10 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
       <div className="rounded-card border border-line bg-white p-5 shadow-soft">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-1.5">
-            <label htmlFor="order-input" className="block text-[12px] font-medium uppercase tracking-wider text-muted">
+            <label
+              htmlFor="order-input"
+              className="block text-[12px] font-medium uppercase tracking-wider text-muted"
+            >
               Order number
             </label>
             <input
@@ -87,14 +162,17 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
               onChange={(e) => setOrderInput(e.target.value)}
               placeholder="#1234 or 1234"
               className="w-full rounded-lg border border-line bg-canvas px-3 py-2 font-mono text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-awb/40 focus:border-awb transition-colors"
-              disabled={state.status === "loading"}
+              disabled={isLoading}
               autoComplete="off"
             />
           </div>
 
           {storeCount === 2 && (
             <div className="space-y-1.5">
-              <label htmlFor="store-select" className="block text-[12px] font-medium uppercase tracking-wider text-muted">
+              <label
+                htmlFor="store-select"
+                className="block text-[12px] font-medium uppercase tracking-wider text-muted"
+              >
                 Store
               </label>
               <select
@@ -102,7 +180,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
                 value={store}
                 onChange={(e) => setStore(Number(e.target.value) as 1 | 2)}
                 className="rounded-lg border border-line bg-canvas px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-awb/40 focus:border-awb transition-colors"
-                disabled={state.status === "loading"}
+                disabled={isLoading}
               >
                 <option value={1}>Store 1</option>
                 <option value={2}>Store 2</option>
@@ -112,99 +190,63 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
 
           <button
             type="submit"
-            disabled={state.status === "loading" || !orderInput.trim()}
+            disabled={isLoading || !orderInput.trim()}
             className="flex items-center gap-2 rounded-lg bg-awb px-5 py-2 text-sm font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {state.status === "loading" ? (
+            {isLoading ? (
               <Loader2 size={15} className="animate-spin" />
             ) : (
               <FileSearch size={15} />
             )}
-            {state.status === "loading" ? "Looking up…" : "Look up"}
+            {isLoading ? "Looking up…" : "Look up"}
           </button>
         </form>
       </div>
 
       {/* Loading state */}
-      {state.status === "loading" && (
+      {isLoading && (
         <div className="flex items-center gap-3 rounded-card border border-line bg-white p-5 shadow-soft text-muted">
           <Loader2 size={18} className="animate-spin shrink-0 text-awb" />
-          <span className="text-sm">Resolving order and fetching AWB…</span>
+          <span className="text-sm">Fetching AWB and invoice…</span>
         </div>
       )}
 
-      {/* Error state */}
-      {state.status === "error" && (
-        <div className="rounded-card border border-fulfillment-bg bg-fulfillment-bg p-5 shadow-soft">
-          <div className="flex items-start gap-3">
-            <AlertCircle size={18} className="mt-0.5 shrink-0 text-fulfillment" />
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium text-fulfillment">
-                {errorTitle(state.reason)}
-              </p>
-              <p className="text-[13px] text-ink/80">{state.message}</p>
-              {state.tracking && (
-                <p className="mt-1 font-mono text-[12px] text-muted">
-                  UBEX tracking: {state.tracking}
-                </p>
-              )}
-            </div>
-          </div>
-          <button
-            onClick={reset}
-            className="mt-3 text-[12px] font-medium text-fulfillment underline underline-offset-2 hover:opacity-80"
-          >
-            Try again
-          </button>
-        </div>
-      )}
-
-      {/* Found state */}
-      {state.status === "found" && (
+      {/* Results — shown after both settle */}
+      {bothSettled && hasResults && (
         <div className="space-y-4">
           {/* Metadata bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-card border border-line bg-white p-4 shadow-soft">
-            <div className="flex flex-wrap items-center gap-3">
+          {awbExtra && (
+            <div className="flex flex-wrap items-center gap-3 rounded-card border border-line bg-white p-4 shadow-soft">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-awb-bg px-3 py-1 font-mono text-[12px] font-medium text-awb">
                 <Tag size={11} />
-                {state.orderName}
+                {awbExtra.orderName}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-awb-bg px-3 py-1 font-mono text-[12px] font-medium text-awb">
-                {state.tracking}
+                {awbExtra.tracking}
               </span>
-              {state.source === "live" && (
+              {awbExtra.source === "live" && (
                 <span className="rounded-full bg-cod-bg px-2.5 py-0.5 text-[11px] font-medium text-cod">
                   live match
                 </span>
               )}
             </div>
-            <div className="flex items-center gap-2">
-              <a
-                href={state.pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-[12px] font-medium text-ink transition-colors hover:bg-canvas"
-              >
-                <ExternalLink size={13} />
-                Open in new tab
-              </a>
-              <a
-                href={state.pdfUrl}
-                download
-                className="flex items-center gap-1.5 rounded-lg bg-awb px-3 py-1.5 text-[12px] font-medium text-white shadow-soft transition-all hover:opacity-90"
-              >
-                <Download size={13} />
-                Download
-              </a>
-            </div>
-          </div>
+          )}
 
-          {/* PDF preview */}
-          <div className="overflow-hidden rounded-card border border-line shadow-soft">
-            <iframe
-              src={state.pdfUrl}
-              className="h-[700px] w-full"
-              title={`AWB for ${state.orderName}`}
+          {/* Two-column PDF grid */}
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+            <PdfColumn
+              title="Airway Bill"
+              icon={<FileSearch size={14} />}
+              state={awbState}
+              accentClass="text-awb"
+              accentBgClass="bg-awb-bg"
+            />
+            <PdfColumn
+              title="Zoho Invoice"
+              icon={<FileText size={14} />}
+              state={invoiceState}
+              accentClass="text-cod"
+              accentBgClass="bg-cod-bg"
             />
           </div>
 
@@ -220,15 +262,102 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
   );
 }
 
-function errorTitle(reason: string): string {
+// ---------------------------------------------------------------------------
+// PdfColumn — renders a single PDF panel (found, error, or loading placeholder)
+// ---------------------------------------------------------------------------
+
+function PdfColumn({
+  title,
+  icon,
+  state,
+  accentClass,
+  accentBgClass,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  state: PdfState;
+  accentClass: string;
+  accentBgClass: string;
+}) {
+  return (
+    <div className="space-y-3">
+      {/* Column header */}
+      <div className="flex items-center justify-between gap-2">
+        <div className={`flex items-center gap-1.5 text-[12px] font-medium ${accentClass}`}>
+          {icon}
+          {title}
+          {state.status === "found" && (
+            <span
+              className={`ml-1 rounded-full ${accentBgClass} px-2.5 py-0.5 font-mono text-[11px]`}
+            >
+              {state.label}
+            </span>
+          )}
+        </div>
+
+        {state.status === "found" && (
+          <div className="flex items-center gap-2">
+            <a
+              href={state.directUrl ?? state.blobUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 rounded-lg border border-line px-2.5 py-1 text-[12px] font-medium text-ink transition-colors hover:bg-canvas"
+            >
+              <ExternalLink size={12} />
+              New tab
+            </a>
+            <a
+              href={state.blobUrl}
+              download={`${title.toLowerCase().replace(" ", "-")}.pdf`}
+              className="flex items-center gap-1 rounded-lg bg-awb px-2.5 py-1 text-[12px] font-medium text-white shadow-soft transition-all hover:opacity-90"
+            >
+              <Download size={12} />
+              Download
+            </a>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      {state.status === "found" && (
+        <div className="overflow-hidden rounded-card border border-line shadow-soft">
+          <iframe
+            src={state.blobUrl}
+            className="h-[680px] w-full"
+            title={title}
+          />
+        </div>
+      )}
+
+      {state.status === "error" && (
+        <div className="rounded-card border border-fulfillment-bg bg-fulfillment-bg p-4">
+          <div className="flex items-start gap-2.5">
+            <AlertCircle size={15} className="mt-0.5 shrink-0 text-fulfillment" />
+            <div className="space-y-0.5">
+              <p className="text-[12px] font-medium text-fulfillment">
+                {columnErrorTitle(state.reason, title)}
+              </p>
+              <p className="text-[12px] text-ink/80">{state.message}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function columnErrorTitle(reason: string, columnTitle: string): string {
+  if (columnTitle === "Airway Bill") {
+    switch (reason) {
+      case "not_found": return "Order not found";
+      case "no_tracking": return "No shipment yet";
+      case "awb_error": return "AWB fetch failed";
+      default: return "AWB unavailable";
+    }
+  }
   switch (reason) {
-    case "not_found":
-      return "Order not found";
-    case "no_tracking":
-      return "No shipment yet";
-    case "awb_error":
-      return "AWB fetch failed";
-    default:
-      return "Something went wrong";
+    case "not_found": return "No invoice found";
+    case "zoho_error": return "Zoho error";
+    default: return "Invoice unavailable";
   }
 }
