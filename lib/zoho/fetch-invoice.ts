@@ -8,23 +8,45 @@ export type InvoiceResult =
 const PO_PREFIXES = ["MOVE", "GCC"] as const;
 const PREFIXED_PO = /^(MOVE|GCC)-/i;
 
+type ZohoInvoiceRow = {
+  invoice_id: string;
+  invoice_number: string;
+  reference_number?: string;
+};
+
 type ZohoInvoiceListResponse = {
   code?: number;
   message?: string;
-  invoices?: Array<{
-    invoice_id: string;
-    invoice_number: string;
-    purchaseorder_number?: string;
-  }>;
+  invoices?: ZohoInvoiceRow[];
 };
 
-async function searchByPoNumber(
+function normalizePo(raw: string): string {
+  return raw.trim().replace(/^#+/, "").toLowerCase();
+}
+
+function pickVerifiedInvoice(
+  invoices: ZohoInvoiceRow[] | undefined,
   poNumber: string,
-): Promise<{ invoiceId: string; invoiceNumber: string } | null> {
+): { invoiceId: string; invoiceNumber: string } | null {
+  const want = normalizePo(poNumber);
+  if (!want || !invoices?.length) return null;
+
+  for (const invoice of invoices) {
+    if (!invoice.invoice_id) continue;
+    if (normalizePo(invoice.reference_number ?? "") !== want) continue;
+    return { invoiceId: invoice.invoice_id, invoiceNumber: invoice.invoice_number };
+  }
+  return null;
+}
+
+async function listInvoicesByQuery(
+  param: "reference_number" | "search_text",
+  value: string,
+): Promise<ZohoInvoiceRow[] | null> {
   let res: Response;
   try {
     res = await zohoFetch(
-      `/books/v3/invoices?purchaseorder_number=${encodeURIComponent(poNumber)}`,
+      `/books/v3/invoices?${param}=${encodeURIComponent(value)}`,
     );
   } catch {
     return null;
@@ -33,10 +55,23 @@ async function searchByPoNumber(
   if (!res.ok) return null;
 
   const json = (await res.json()) as ZohoInvoiceListResponse;
-  const invoice = json.invoices?.[0];
-  if (!invoice?.invoice_id) return null;
+  return json.invoices ?? [];
+}
 
-  return { invoiceId: invoice.invoice_id, invoiceNumber: invoice.invoice_number };
+/**
+ * Find an invoice whose reference_number (PO) matches the order id exactly.
+ * Tries reference_number filter first, then search_text — never returns an unverified row.
+ */
+async function searchByPoNumber(
+  poNumber: string,
+): Promise<{ invoiceId: string; invoiceNumber: string } | null> {
+  const byRef = await listInvoicesByQuery("reference_number", poNumber);
+  const verified = pickVerifiedInvoice(byRef ?? undefined, poNumber);
+  if (verified) return verified;
+
+  // Fallback: broader search, still require exact reference_number match.
+  const byText = await listInvoicesByQuery("search_text", poNumber);
+  return pickVerifiedInvoice(byText ?? undefined, poNumber);
 }
 
 function poCandidates(stripped: string): string[] {
@@ -50,7 +85,8 @@ function poCandidates(stripped: string): string[] {
 /**
  * Find the Zoho Books invoice for a Shopify order number and return its PDF bytes.
  *
- * Uses the full purchaseorder_number when the input already has a MOVE-/GCC- prefix;
+ * PO = order id, stored on the invoice as reference_number.
+ * Uses the full PO when the input already has a MOVE-/GCC- prefix;
  * otherwise tries MOVE-{n} and GCC-{n} in parallel.
  */
 export async function fetchInvoiceForOrder(orderNumber: string): Promise<InvoiceResult> {
@@ -63,7 +99,7 @@ export async function fetchInvoiceForOrder(orderNumber: string): Promise<Invoice
   if (!match) {
     return {
       ok: false,
-      error: `No Zoho Books invoice found for order ${orderNumber}. It may not have been invoiced yet.`,
+      error: `No Zoho Books invoice found with PO/reference ${candidates.join(" or ")}. It may not have been invoiced yet.`,
       reason: "not_found",
     };
   }
