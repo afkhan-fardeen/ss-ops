@@ -4,8 +4,9 @@ export type InvoiceResult =
   | { ok: true; pdfBytes: ArrayBuffer; invoiceNumber: string }
   | { ok: false; error: string; reason: "not_found" | "zoho_error" };
 
-/** PO number prefixes used in Zoho Books (e.g. MOVE-252641, GCC-252641). */
+/** PO number prefixes used in Zoho Books (e.g. MOVE-252641, GCC-SS1011). */
 const PO_PREFIXES = ["MOVE", "GCC"] as const;
+const PREFIXED_PO = /^(MOVE|GCC)-/i;
 
 type ZohoInvoiceListResponse = {
   code?: number;
@@ -38,16 +39,24 @@ async function searchByPoNumber(
   return { invoiceId: invoice.invoice_id, invoiceNumber: invoice.invoice_number };
 }
 
+function poCandidates(stripped: string): string[] {
+  // Staff usually paste the full PO (MOVE-252659 / GCC-SS1011) — search that exact string once.
+  if (PREFIXED_PO.test(stripped)) {
+    return [stripped];
+  }
+  return PO_PREFIXES.map((prefix) => `${prefix}-${stripped}`);
+}
+
 /**
  * Find the Zoho Books invoice for a Shopify order number and return its PDF bytes.
  *
- * Tries MOVE-{number} and GCC-{number} in parallel, takes the first hit.
+ * Uses the full purchaseorder_number when the input already has a MOVE-/GCC- prefix;
+ * otherwise tries MOVE-{n} and GCC-{n} in parallel.
  */
 export async function fetchInvoiceForOrder(orderNumber: string): Promise<InvoiceResult> {
   const stripped = orderNumber.trim().replace(/^#/, "");
+  const candidates = poCandidates(stripped);
 
-  // Try all known PO prefixes in parallel.
-  const candidates = PO_PREFIXES.map((prefix) => `${prefix}-${stripped}`);
   const results = await Promise.all(candidates.map(searchByPoNumber));
   const match = results.find((r) => r !== null) ?? null;
 

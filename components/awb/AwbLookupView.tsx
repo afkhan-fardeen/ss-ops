@@ -66,11 +66,32 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
 
     const params = new URLSearchParams({ orderName: trimmed, store: String(store) });
 
-    const [awbSettled, invoiceSettled] = await Promise.allSettled([
-      // AWB fetch
-      fetch(`/api/awb?${params.toString()}`).then((r) => r.json() as Promise<AwbApiResponse>),
-      // Invoice fetch — returns PDF bytes on success, JSON error on failure
-      fetch(`/api/invoice?orderName=${encodeURIComponent(trimmed)}`).then(async (r) => {
+    // Update each panel as soon as it settles — don't wait for the other side.
+    void fetch(`/api/awb?${params.toString()}`)
+      .then((r) => r.json() as Promise<AwbApiResponse>)
+      .then((json) => {
+        if (json.ok) {
+          setAwbState({
+            status: "found",
+            blobUrl: json.pdfUrl,
+            label: json.tracking,
+            directUrl: json.pdfUrl,
+          });
+          setAwbExtra({ tracking: json.tracking, orderName: json.orderName, source: json.source });
+        } else {
+          setAwbState({ status: "error", message: json.error, reason: json.reason });
+        }
+      })
+      .catch((err) => {
+        setAwbState({
+          status: "error",
+          message: err instanceof Error ? err.message : "AWB request failed",
+          reason: "network",
+        });
+      });
+
+    void fetch(`/api/invoice?orderName=${encodeURIComponent(trimmed)}`)
+      .then(async (r) => {
         if (r.ok) {
           const invoiceNumber = r.headers.get("x-invoice-number") ?? "Invoice";
           const bytes = await r.arrayBuffer();
@@ -80,50 +101,25 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           return { ok: true as const, blobUrl, invoiceNumber };
         }
         return r.json() as Promise<InvoiceApiError>;
-      }),
-    ]);
-
-    // Resolve AWB state
-    if (awbSettled.status === "fulfilled") {
-      const json = awbSettled.value;
-      if (json.ok) {
-        setAwbState({
-          status: "found",
-          blobUrl: json.pdfUrl,
-          label: json.tracking,
-          directUrl: json.pdfUrl,
-        });
-        setAwbExtra({ tracking: json.tracking, orderName: json.orderName, source: json.source });
-      } else {
-        setAwbState({ status: "error", message: json.error, reason: json.reason });
-      }
-    } else {
-      setAwbState({
-        status: "error",
-        message: awbSettled.reason instanceof Error ? awbSettled.reason.message : "AWB request failed",
-        reason: "network",
-      });
-    }
-
-    // Resolve invoice state
-    if (invoiceSettled.status === "fulfilled") {
-      const res = invoiceSettled.value;
-      if (res.ok) {
+      })
+      .then((res) => {
+        if (res.ok) {
+          setInvoiceState({
+            status: "found",
+            blobUrl: res.blobUrl,
+            label: res.invoiceNumber,
+          });
+        } else {
+          setInvoiceState({ status: "error", message: res.error, reason: res.reason });
+        }
+      })
+      .catch((err) => {
         setInvoiceState({
-          status: "found",
-          blobUrl: res.blobUrl,
-          label: res.invoiceNumber,
+          status: "error",
+          message: err instanceof Error ? err.message : "Invoice request failed",
+          reason: "network",
         });
-      } else {
-        setInvoiceState({ status: "error", message: res.error, reason: res.reason });
-      }
-    } else {
-      setInvoiceState({
-        status: "error",
-        message: invoiceSettled.reason instanceof Error ? invoiceSettled.reason.message : "Invoice request failed",
-        reason: "network",
       });
-    }
   }
 
   function reset() {
@@ -134,14 +130,8 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
   }
 
   const isLoading = awbState.status === "loading" || invoiceState.status === "loading";
-  const hasResults =
-    awbState.status === "found" ||
-    awbState.status === "error" ||
-    invoiceState.status === "found" ||
-    invoiceState.status === "error";
-
-  // Only show results after both have settled (loading→found/error)
-  const bothSettled = awbState.status !== "loading" && invoiceState.status !== "loading";
+  const showResults =
+    awbState.status !== "idle" || invoiceState.status !== "idle";
 
   return (
     <div className="space-y-5">
@@ -160,7 +150,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
               type="text"
               value={orderInput}
               onChange={(e) => setOrderInput(e.target.value)}
-              placeholder="#1234 or 1234"
+              placeholder="MOVE-252659 or GCC-SS1011"
               className="w-full rounded-lg border border-line bg-canvas px-3 py-2 font-mono text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-awb/40 focus:border-awb transition-colors"
               disabled={isLoading}
               autoComplete="off"
@@ -203,16 +193,8 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
         </form>
       </div>
 
-      {/* Loading state */}
-      {isLoading && (
-        <div className="flex items-center gap-3 rounded-card border border-line bg-white p-5 shadow-soft text-muted">
-          <Loader2 size={18} className="animate-spin shrink-0 text-awb" />
-          <span className="text-sm">Fetching AWB and invoice…</span>
-        </div>
-      )}
-
-      {/* Results — shown after both settle */}
-      {bothSettled && hasResults && (
+      {/* Results — each panel paints as soon as it settles */}
+      {showResults && (
         <div className="space-y-4">
           {/* Metadata bar */}
           {awbExtra && (
@@ -250,12 +232,14 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
             />
           </div>
 
-          <button
-            onClick={reset}
-            className="text-[12px] font-medium text-muted underline underline-offset-2 hover:text-ink"
-          >
-            Look up another order
-          </button>
+          {!isLoading && (
+            <button
+              onClick={reset}
+              className="text-[12px] font-medium text-muted underline underline-offset-2 hover:text-ink"
+            >
+              Look up another order
+            </button>
+          )}
         </div>
       )}
     </div>
@@ -319,6 +303,13 @@ function PdfColumn({
       </div>
 
       {/* Content */}
+      {state.status === "loading" && (
+        <div className="flex h-[200px] items-center justify-center gap-2 rounded-card border border-line bg-white shadow-soft text-muted">
+          <Loader2 size={16} className={`animate-spin shrink-0 ${accentClass}`} />
+          <span className="text-sm">Loading {title.toLowerCase()}…</span>
+        </div>
+      )}
+
       {state.status === "found" && (
         <div className="overflow-hidden rounded-card border border-line shadow-soft">
           <iframe
