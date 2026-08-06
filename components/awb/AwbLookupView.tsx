@@ -10,6 +10,7 @@ import {
   Tag,
   FileText,
 } from "lucide-react";
+import { STORE_LABELS } from "@/lib/stores/labels";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -172,8 +173,8 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
                 className="rounded-lg border border-line bg-canvas px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-awb/40 focus:border-awb transition-colors"
                 disabled={isLoading}
               >
-                <option value={1}>Store 1</option>
-                <option value={2}>Store 2</option>
+                <option value={1}>{STORE_LABELS[1]}</option>
+                <option value={2}>{STORE_LABELS[2]}</option>
               </select>
             </div>
           )}

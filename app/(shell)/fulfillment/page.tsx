@@ -14,6 +14,7 @@ import type { InitialLogEntry } from "@/hooks/useRowPushQueue";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 import { applyUbexRowFallbacks } from "@/lib/ubex/apply-row-fallbacks";
+import { STORE_LABELS } from "@/lib/stores/labels";
 
 type FulfillmentSearchParams = {
   store?: string;
@@ -150,7 +151,7 @@ async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-[11px] font-medium uppercase tracking-wider text-muted">
-              Fulfillment window{storeId === 2 ? " · Store 2 (GCC)" : ""}
+              Fulfillment window{storeId === 2 ? ` · ${STORE_LABELS[2]}` : ""}
             </h2>
             <p className="mt-1 font-mono text-[13px] font-medium text-ink">{windowLabel}</p>
           </div>

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Wifi, WifiOff, AlertTriangle } from "lucide-react";
 import { pingBothStores, type StoreConnectionStatus } from "@/lib/shopify/ping-store";
+import { STORE_LABELS } from "@/lib/stores/labels";
 import { StoreSwitcherTabs } from "./StoreSwitcherTabs";
 
 // ─── Individual store pill ───────────────────────────────────────────────────
@@ -56,8 +57,8 @@ async function StoreStatusPills({ namespace }: { namespace: string }) {
         <StoreSwitcherTabs namespace={namespace} />
       </Suspense>
       <div className="flex flex-wrap items-center gap-2">
-        <StorePill label="Store 1 (BH)" status={store1} />
-        {showStore2 && <StorePill label="Store 2 (GCC)" status={store2} />}
+        <StorePill label={STORE_LABELS[1]} status={store1} />
+        {showStore2 && <StorePill label={STORE_LABELS[2]} status={store2} />}
       </div>
     </div>
   );

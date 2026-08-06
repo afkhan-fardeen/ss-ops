@@ -2,12 +2,12 @@ import { Settings2 } from "lucide-react";
 import { requireSession } from "@/lib/auth/require-session";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { getAstGreeting, getDisplayName } from "@/lib/dashboard/get-display-name";
-import { getPortalModules, SETTINGS_ACCENT } from "@/config/modules";
+import { SETTINGS_ACCENT } from "@/config/modules";
+import { getVisiblePortalModules } from "@/lib/auth/get-visible-modules";
 import { LauncherModules, type LauncherModuleData } from "@/components/launcher/LauncherModules";
 import { UbexIndicator } from "@/components/portal/UbexIndicator";
 import { AstClock } from "@/components/portal/AstClock";
 import { SignOutButton } from "@/components/account/SignOutButton";
-import { getUserAllowedModules } from "@/lib/supabase/profiles";
 
 export const dynamic = "force-dynamic";
 
@@ -35,24 +35,7 @@ export default async function LauncherPage() {
   const showAdmin = await isPortalAdmin();
   const [name] = await Promise.all([getDisplayName(session)]);
   const greeting = getAstGreeting();
-  // Candidate set always includes stock so grants can surface it.
-  const allModules = getPortalModules(true);
-
-  let modules = allModules;
-  if (showAdmin) {
-    // Admins always see every module.
-    modules = allModules;
-  } else if (session.mode !== "supabase" || !session.userId) {
-    // Shared-password sessions: no stock (legacy).
-    modules = getPortalModules(false);
-  } else {
-    // null allowed_modules = full access (all four modules).
-    const allowedModules = await getUserAllowedModules(session.userId);
-    modules =
-      allowedModules === null
-        ? allModules
-        : allModules.filter((m) => allowedModules.includes(m.id));
-  }
+  const modules = await getVisiblePortalModules(session, showAdmin);
 
   const moduleData: LauncherModuleData[] = modules.map((m) => {
     const meta = MODULE_META[m.id] ?? { description: "", href: "/dashboard" };

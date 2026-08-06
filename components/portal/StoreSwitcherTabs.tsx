@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { spring } from "@/lib/motion";
+import { STORE_LABELS } from "@/lib/stores/labels";
 
 type StoreTab = {
   id: string;
@@ -11,8 +12,8 @@ type StoreTab = {
 };
 
 const STORE_TABS: StoreTab[] = [
-  { id: "1", label: "Store 1 (BH)" },
-  { id: "2", label: "Store 2 (GCC)" },
+  { id: "1", label: STORE_LABELS[1] },
+  { id: "2", label: STORE_LABELS[2] },
 ];
 
 /**

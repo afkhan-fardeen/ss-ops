@@ -55,15 +55,16 @@ function moduleToNavItems(module: PortalModule) {
 
 export function Sidebar({
   showAdminLink = false,
-  showStock = false,
+  allowedModuleIds,
 }: {
   showAdminLink?: boolean;
-  showStock?: boolean;
+  /** Module ids the signed-in user may see (from allowed_modules / admin). */
+  allowedModuleIds: string[];
 }) {
   const pathname = usePathname();
   const modules = useMemo(
-    () => getPortalModules(showStock || showAdminLink),
-    [showStock, showAdminLink],
+    () => getPortalModules(true).filter((m) => allowedModuleIds.includes(m.id)),
+    [allowedModuleIds],
   );
   const settingsItems = useMemo(() => getSettingsNavItems(showAdminLink), [showAdminLink]);
 

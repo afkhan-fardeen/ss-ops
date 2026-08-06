@@ -1,5 +1,9 @@
+import { requireSession } from "@/lib/auth/require-session";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
-import { canAccessModule } from "@/lib/auth/can-access-module";
+import {
+  getVisiblePortalModules,
+  moduleIdsFromVisible,
+} from "@/lib/auth/get-visible-modules";
 import { PortalStockBalanceShell } from "@/components/portal/PortalStockBalanceShell";
 import { Sidebar } from "@/components/portal/Sidebar";
 import { Topbar } from "@/components/portal/Topbar";
@@ -15,12 +19,19 @@ const BOOT_SCRIPT = `
 `;
 
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
+  const session = await requireSession();
   const showAdminLink = await isPortalAdmin();
-  const showStock = await canAccessModule("stock");
+  const visibleModules = await getVisiblePortalModules(session, showAdminLink);
+  const allowedModuleIds = moduleIdsFromVisible(visibleModules);
+  const showStock = allowedModuleIds.includes("stock");
+
   return (
     <div className="overflow-x-hidden">
       <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
-      <Sidebar showAdminLink={showAdminLink} showStock={showStock} />
+      <Sidebar
+        showAdminLink={showAdminLink}
+        allowedModuleIds={allowedModuleIds}
+      />
       {/* On mobile margin-left is 0; on md+ it follows --sb-w */}
       <div
         style={{ marginLeft: "var(--sb-w, 0px)" }}

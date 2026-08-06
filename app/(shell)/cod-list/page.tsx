@@ -17,6 +17,7 @@ import { getUbexToken } from "@/lib/ubex/client";
 import { AlertTriangle } from "lucide-react";
 import { TableSkeleton } from "@/components/ui/TableSkeleton";
 import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
+import { STORE_LABELS } from "@/lib/stores/labels";
 
 type CodListPageSearchParams = CodListSearchParamsInput & {
   store?: string;
@@ -182,7 +183,9 @@ async function Store2CodListContent({ searchParams }: { searchParams?: { date?: 
   }));
 
   const single = data.singleWindow;
-  const titleLine = single ? `${single.label} · Store 2 (GCC)` : `${data.dateKeys.length} days selected · Store 2 (GCC)`;
+  const titleLine = single
+    ? `${single.label} · ${STORE_LABELS[2]}`
+    : `${data.dateKeys.length} days selected · ${STORE_LABELS[2]}`;
   const subLine = single
     ? "Yesterday 14:00 → Today 14:00 · Bahrain (UTC+3)"
     : data.dateKeys

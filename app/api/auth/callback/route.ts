@@ -44,5 +44,25 @@ export async function GET(req: NextRequest) {
     );
   }
 
+  // Record magic-link login for admin activity (best-effort).
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { recordPortalLogin } = await import("@/lib/supabase/portal-login-log");
+      const xf = req.headers.get("x-forwarded-for");
+      const ip = xf ? xf.split(",")[0]?.trim() ?? null : req.headers.get("x-real-ip");
+      await recordPortalLogin({
+        userId: user.id,
+        email: user.email ?? null,
+        ip,
+        userAgent: req.headers.get("user-agent"),
+      });
+    }
+  } catch {
+    /* ignore — login still succeeds */
+  }
+
   return res;
 }

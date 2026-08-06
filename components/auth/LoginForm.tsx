@@ -106,6 +106,8 @@ function SupabaseLoginForm({ nextPath }: { nextPath: string }) {
           toast.error("Could not sign in", { description: err.message });
           return;
         }
+        // Fire-and-forget login activity for admin panel (do not block navigation).
+        void fetch("/api/auth/login-event", { method: "POST" }).catch(() => {});
         router.replace(nextPath);
         router.refresh();
         return;
