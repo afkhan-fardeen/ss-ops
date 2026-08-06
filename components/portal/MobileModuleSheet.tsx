@@ -83,10 +83,11 @@ export function MobileModuleSheet({ open, module, onClose }: Props) {
 type SettingsSheetProps = {
   open: boolean;
   items: { label: string; href: string; icon: LucideIcon }[];
+  title?: string;
   onClose: () => void;
 };
 
-export function MobileSettingsSheet({ open, items, onClose }: SettingsSheetProps) {
+export function MobileSettingsSheet({ open, items, title = "Settings", onClose }: SettingsSheetProps) {
   const pathname = usePathname();
 
   if (!open) return null;
@@ -101,7 +102,7 @@ export function MobileSettingsSheet({ open, items, onClose }: SettingsSheetProps
       />
       <div className="absolute inset-x-0 bottom-0 max-h-[50vh] overflow-y-auto rounded-t-2xl border border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <p className={`text-[13px] font-medium ${SETTINGS_ACCENT.activeText}`}>Settings</p>
+          <p className={`text-[13px] font-medium ${SETTINGS_ACCENT.activeText}`}>{title}</p>
           <button
             type="button"
             onClick={onClose}

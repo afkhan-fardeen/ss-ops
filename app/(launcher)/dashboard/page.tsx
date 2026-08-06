@@ -70,8 +70,8 @@ export default async function LauncherPage() {
 
   const settingsCard: LauncherModuleData = {
     id: "settings",
-    label: "Settings",
-    description: "Manage your account and portal preferences.",
+    label: "Account",
+    description: "Your email, session, and sign out.",
     href: "/account",
     icon: <Settings2 size={22} strokeWidth={1.8} />,
     iconBg: SETTINGS_ACCENT.activeBg,

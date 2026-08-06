@@ -167,7 +167,7 @@ export function Sidebar({
 
           <NavCollapsibleSection
             sectionId="settings"
-            label="Settings"
+            label={showAdminLink ? "Settings" : "Account"}
             icon={Settings2}
             accent={SETTINGS_ACCENT}
             items={settingsNavItems}
@@ -250,7 +250,7 @@ export function Sidebar({
           ].join(" ")}
         >
           <Settings2 size={20} strokeWidth={settingsActive ? 2.2 : 1.8} />
-          <span>Settings</span>
+          <span>{showAdminLink ? "Settings" : "Account"}</span>
         </button>
       </nav>
 
@@ -262,6 +262,7 @@ export function Sidebar({
       <MobileSettingsSheet
         open={mobileSettingsOpen}
         items={settingsNavItems}
+        title={showAdminLink ? "Settings" : "Account"}
         onClose={() => setMobileSettingsOpen(false)}
       />
     </>

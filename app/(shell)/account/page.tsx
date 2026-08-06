@@ -63,7 +63,9 @@ export default async function AccountPage() {
       <header className="animate-fade-up">
         <h1 className="text-xl font-medium text-ink">Account</h1>
         <p className="mt-1 text-[13px] text-muted">
-          Your portal identity, session, and admin controls.
+          {isAdmin
+            ? "Your portal identity, session, and admin controls."
+            : "Your portal identity and session."}
         </p>
       </header>
 
@@ -140,16 +142,19 @@ export default async function AccountPage() {
         </div>
       </section>
 
-      {/* Seissense Ops Bot — visible to all roles */}
-      <section className="animate-fade-up">
-        <div className="mb-2">
-          <h2 className="text-sm font-medium text-ink">Seissense Ops Bot</h2>
-          <p className="mt-0.5 text-[12.5px] text-muted">
-            Monitors Ubex delivery status and auto-fulfils Shopify orders. Runs daily at 5:00 PM Bahrain time.
-          </p>
-        </div>
-        <CronStatus />
-      </section>
+      {/* Seissense Ops Bot — admin only */}
+      {isAdmin ? (
+        <section className="animate-fade-up">
+          <div className="mb-2">
+            <h2 className="text-sm font-medium text-ink">Seissense Ops Bot</h2>
+            <p className="mt-0.5 text-[12.5px] text-muted">
+              Monitors Ubex delivery status and auto-fulfills Shopify orders. Runs daily at 5:00 PM Bahrain time.
+            </p>
+          </div>
+          <CronStatus />
+        </section>
+      ) : null}
+
 
       {/* Admin only: Shopify webhooks */}
       {session.mode === "supabase" && isAdmin ? (
