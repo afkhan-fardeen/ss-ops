@@ -30,12 +30,26 @@ type PdfState =
 
 type AwbFoundExtra = { tracking: string; orderName: string; source: "db" | "live" };
 
+/** Visible chip label (UX). */
+function prefixChip(store: 1 | 2): string {
+  return store === 1 ? "#MOVE-" : "#GCC-SS";
+}
+
+/** Zoho PO string for invoice lookup. */
+function invoicePo(store: 1 | 2, digits: string): string {
+  return store === 1 ? `MOVE-${digits}` : `GCC-SS${digits}`;
+}
+
+function digitsOnly(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
 
 export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
-  const [orderInput, setOrderInput] = useState("");
+  const [orderDigits, setOrderDigits] = useState("");
   const [store, setStore] = useState<1 | 2>(1);
 
   const [awbState, setAwbState] = useState<PdfState>({ status: "idle" });
@@ -57,18 +71,19 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const trimmed = orderInput.trim();
-    if (!trimmed) return;
+    const digits = digitsOnly(orderDigits);
+    if (!digits) return;
 
     revokeBlobUrls();
     setAwbState({ status: "loading" });
     setAwbExtra(null);
     setInvoiceState({ status: "loading" });
 
-    const params = new URLSearchParams({ orderName: trimmed, store: String(store) });
+    const awbParams = new URLSearchParams({ orderName: digits, store: String(store) });
+    const po = invoicePo(store, digits);
 
     // Update each panel as soon as it settles — don't wait for the other side.
-    void fetch(`/api/awb?${params.toString()}`)
+    void fetch(`/api/awb?${awbParams.toString()}`)
       .then((r) => r.json() as Promise<AwbApiResponse>)
       .then((json) => {
         if (json.ok) {
@@ -91,7 +106,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
         });
       });
 
-    void fetch(`/api/invoice?orderName=${encodeURIComponent(trimmed)}`)
+    void fetch(`/api/invoice?orderName=${encodeURIComponent(po)}`)
       .then(async (r) => {
         if (r.ok) {
           const invoiceNumber = r.headers.get("x-invoice-number") ?? "Invoice";
@@ -133,29 +148,42 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
   const isLoading = awbState.status === "loading" || invoiceState.status === "loading";
   const showResults =
     awbState.status !== "idle" || invoiceState.status !== "idle";
+  const hasDigits = digitsOnly(orderDigits).length > 0;
 
   return (
     <div className="space-y-5">
       {/* Search form */}
       <div className="rounded-card border border-line bg-white p-5 shadow-soft">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:flex-row sm:items-end">
-          <div className="flex-1 space-y-1.5">
+          <div className="min-w-0 flex-1 space-y-1.5">
             <label
               htmlFor="order-input"
               className="block text-[12px] font-medium uppercase tracking-wider text-muted"
             >
               Order number
             </label>
-            <input
-              id="order-input"
-              type="text"
-              value={orderInput}
-              onChange={(e) => setOrderInput(e.target.value)}
-              placeholder="MOVE-252659 or GCC-SS1011"
-              className="w-full rounded-lg border border-line bg-canvas px-3 py-2 font-mono text-sm text-ink placeholder:text-muted/60 focus:outline-none focus:ring-2 focus:ring-awb/40 focus:border-awb transition-colors"
-              disabled={isLoading}
-              autoComplete="off"
-            />
+            <div className="flex min-h-11 overflow-hidden rounded-lg border border-line bg-canvas focus-within:border-awb focus-within:ring-2 focus-within:ring-awb/40">
+              <span
+                aria-hidden
+                className="inline-flex shrink-0 items-center border-r border-line bg-white/70 px-3 font-mono text-base font-medium text-muted"
+              >
+                {prefixChip(store)}
+              </span>
+              <input
+                id="order-input"
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                value={orderDigits}
+                onChange={(e) => setOrderDigits(digitsOnly(e.target.value))}
+                placeholder="252701"
+                className="min-h-11 w-full min-w-0 bg-transparent px-3 font-mono text-base text-ink placeholder:text-muted/60 focus:outline-none disabled:opacity-60"
+                disabled={isLoading}
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+              />
+            </div>
           </div>
 
           {storeCount === 2 && (
@@ -170,7 +198,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
                 id="store-select"
                 value={store}
                 onChange={(e) => setStore(Number(e.target.value) as 1 | 2)}
-                className="rounded-lg border border-line bg-canvas px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-awb/40 focus:border-awb transition-colors"
+                className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 text-base text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40 sm:w-auto"
                 disabled={isLoading}
               >
                 <option value={1}>{STORE_LABELS[1]}</option>
@@ -181,8 +209,8 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
 
           <button
             type="submit"
-            disabled={isLoading || !orderInput.trim()}
-            className="flex items-center gap-2 rounded-lg bg-awb px-5 py-2 text-sm font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isLoading || !hasDigits}
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-awb px-5 text-sm font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {isLoading ? (
               <Loader2 size={15} className="animate-spin" />

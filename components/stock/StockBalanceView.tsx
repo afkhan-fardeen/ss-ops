@@ -384,7 +384,7 @@ export function StockBalanceView({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search product or barcode…"
-            className="w-48 rounded-card border border-line px-2.5 py-1.5 text-[12px] text-ink placeholder:text-muted focus:border-ink focus:outline-none md:w-64"
+            className="min-h-11 w-full rounded-card border border-line px-2.5 py-1.5 text-base text-ink placeholder:text-muted focus:border-ink focus:outline-none sm:w-48 md:w-64"
           />
         </div>
         <div className="flex flex-wrap items-center gap-2">

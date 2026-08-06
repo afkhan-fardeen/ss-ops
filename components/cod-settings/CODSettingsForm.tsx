@@ -104,7 +104,7 @@ export function CODSettingsForm({ initialRecipients }: { initialRecipients: stri
               onChange={(e) => setNewEmail(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addEmail(); } }}
               placeholder="name@example.com"
-              className="h-11 flex-1 bg-transparent px-2 text-[13.5px] text-ink outline-none placeholder:text-muted"
+              className="h-11 min-h-11 flex-1 bg-transparent px-2 text-base text-ink outline-none placeholder:text-muted"
             />
           </div>
           <button

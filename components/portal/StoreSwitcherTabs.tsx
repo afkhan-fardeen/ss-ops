@@ -37,7 +37,7 @@ export function StoreSwitcherTabs({ namespace = "default" }: { namespace?: strin
   }
 
   return (
-    <div className="flex items-center gap-1 rounded-lg border border-line bg-canvas p-1">
+    <div className="flex flex-wrap items-center gap-1 rounded-lg border border-line bg-canvas p-1">
       {STORE_TABS.map((tab) => {
         const active = activeStore === tab.id;
         return (
@@ -45,7 +45,7 @@ export function StoreSwitcherTabs({ namespace = "default" }: { namespace?: strin
             key={tab.id}
             href={buildHref(tab.id)}
             className={[
-              "relative inline-flex h-8 items-center rounded-md px-4 text-[12px] font-medium transition-colors",
+              "relative inline-flex min-h-11 items-center rounded-md px-4 py-2 text-[12px] font-medium transition-colors sm:min-h-0 sm:h-8 sm:py-0",
               active ? "text-ink" : "text-muted hover:text-ink",
             ].join(" ")}
             aria-selected={active}

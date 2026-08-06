@@ -99,13 +99,13 @@ export function RecipientGroup({
             onChange={(e) => setNewEmail(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addEmail(); } }}
             placeholder={placeholder}
-            className="h-10 flex-1 bg-transparent px-2 text-[13px] text-ink outline-none placeholder:text-muted"
+            className="min-h-11 flex-1 bg-transparent px-2 text-base text-ink outline-none placeholder:text-muted"
           />
         </div>
         <button
           type="button"
           onClick={addEmail}
-          className="focus-ring inline-flex h-10 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[13px] font-medium text-ink transition hover:bg-canvas"
+          className="focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[13px] font-medium text-ink transition hover:bg-canvas"
         >
           <Plus size={14} />
           Add

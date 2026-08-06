@@ -97,7 +97,7 @@ export function CreateUserForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={submitState === "saving"}
-            className="w-full rounded-lg border border-line bg-canvas px-3 py-2 text-sm text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
+            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 text-base text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
             placeholder="staff@example.com"
           />
         </div>
@@ -115,7 +115,7 @@ export function CreateUserForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={submitState === "saving"}
-            className="w-full rounded-lg border border-line bg-canvas px-3 py-2 font-mono text-sm text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
+            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 font-mono text-base text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
             placeholder="Min. 8 characters"
           />
         </div>
@@ -130,7 +130,7 @@ export function CreateUserForm() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             disabled={submitState === "saving"}
-            className="w-full rounded-lg border border-line bg-canvas px-3 py-2 text-sm text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
+            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 text-base text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
             placeholder="Display name"
           />
         </div>
@@ -165,7 +165,7 @@ export function CreateUserForm() {
         <button
           type="submit"
           disabled={submitState === "saving" || !email.trim() || password.length < 8}
-          className="flex items-center gap-2 rounded-lg bg-awb px-4 py-2 text-[13px] font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-awb px-4 text-[13px] font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {submitState === "saving" ? (
             <Loader2 size={14} className="animate-spin" />
