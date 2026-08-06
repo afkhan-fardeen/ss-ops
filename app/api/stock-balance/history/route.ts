@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
-import { PortalAuthError, requirePortalAdmin } from "@/lib/auth/require-portal-admin";
+import { PortalAuthError } from "@/lib/auth/require-portal-admin";
+import { requireModuleAccess } from "@/lib/auth/can-access-module";
 import { loadStockRestockHistory } from "@/lib/stock/load-restock-history";
 
 export const dynamic = "force-dynamic";
 
-/** GET /api/stock-balance/history — admin-only restock audit log */
+/** GET /api/stock-balance/history — restock audit log (admin or stock module grant). */
 export async function GET() {
   try {
-    await requirePortalAdmin();
+    await requireModuleAccess("stock");
   } catch (e) {
     if (e instanceof PortalAuthError) {
       return NextResponse.json({ ok: false, error: e.message }, { status: e.status });

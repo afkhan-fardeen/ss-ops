@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { PortalAuthError, requirePortalAdmin } from "@/lib/auth/require-portal-admin";
+import { PortalAuthError } from "@/lib/auth/require-portal-admin";
+import { requireModuleAccess } from "@/lib/auth/can-access-module";
 import { loadStockBalancePreview } from "@/lib/stock/load-stock-balance-preview";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-/** GET /api/stock-balance/preview — full Ubex catalog join (admin only). */
+/** GET /api/stock-balance/preview — Ubex catalog join (admin or stock module grant). */
 export async function GET() {
   try {
-    await requirePortalAdmin();
+    await requireModuleAccess("stock");
   } catch (e) {
     if (e instanceof PortalAuthError) {
       return NextResponse.json({ ok: false, error: e.message }, { status: e.status });

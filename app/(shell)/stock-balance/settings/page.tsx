@@ -1,14 +1,16 @@
-import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { canAccessModule } from "@/lib/auth/can-access-module";
 import { stockBalanceMaxItems } from "@/lib/ubex/inventory";
 
 export const dynamic = "force-dynamic";
 
 export default async function StockBalanceSettingsPage() {
-  if (!(await isPortalAdmin())) {
+  if (!(await canAccessModule("stock"))) {
     return (
       <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
         <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">Stock balance settings are admin-only.</p>
+        <p className="mt-2 text-[13px] text-muted">
+          Stock balance settings are only available to admins or users granted the Stock Balance module.
+        </p>
       </div>
     );
   }

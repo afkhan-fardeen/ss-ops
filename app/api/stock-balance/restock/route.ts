@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { PortalAuthError, requirePortalAdmin } from "@/lib/auth/require-portal-admin";
+import { PortalAuthError } from "@/lib/auth/require-portal-admin";
+import { requireModuleAccess } from "@/lib/auth/can-access-module";
 import { stockBalanceMaxItems } from "@/lib/ubex/inventory";
 import { restockItemToUbex, restockItemsToUbex } from "@/lib/stock/restock-to-ubex";
 
@@ -34,12 +35,12 @@ export const maxDuration = 300;
 
 /**
  * POST /api/stock-balance/restock
- * Admin-only. Sets Shopify on_hand so available matches Ubex sellable. No Ubex writes.
+ * Admin or stock-module grant. Sets Shopify on_hand so available matches Ubex sellable.
  */
 export async function POST(req: Request) {
-  let admin;
+  let session;
   try {
-    admin = await requirePortalAdmin();
+    session = await requireModuleAccess("stock");
   } catch (e) {
     if (e instanceof PortalAuthError) {
       return NextResponse.json({ ok: false, error: e.message }, { status: e.status });
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
   }
 
   const maxItems = stockBalanceMaxItems();
-  const createdBy = admin.userId;
+  const createdBy = session.userId ?? null;
 
   if (isBulkBody(body)) {
     if (body.items.length === 0) {

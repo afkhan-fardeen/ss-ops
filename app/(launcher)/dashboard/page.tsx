@@ -35,18 +35,24 @@ export default async function LauncherPage() {
   const showAdmin = await isPortalAdmin();
   const [name] = await Promise.all([getDisplayName(session)]);
   const greeting = getAstGreeting();
-  const allModules = getPortalModules(showAdmin);
+  // Candidate set always includes stock so grants can surface it.
+  const allModules = getPortalModules(true);
 
-  // Admins always see every module. Non-admins are filtered by allowed_modules (null = all).
-  const allowedModules =
-    showAdmin || session.mode !== "supabase" || !session.userId
-      ? null
-      : await getUserAllowedModules(session.userId);
-
-  const modules =
-    allowedModules === null
-      ? allModules
-      : allModules.filter((m) => allowedModules.includes(m.id));
+  let modules = allModules;
+  if (showAdmin) {
+    // Admins always see every module.
+    modules = allModules;
+  } else if (session.mode !== "supabase" || !session.userId) {
+    // Shared-password sessions: no stock (legacy).
+    modules = getPortalModules(false);
+  } else {
+    // null allowed_modules = full access (all four modules).
+    const allowedModules = await getUserAllowedModules(session.userId);
+    modules =
+      allowedModules === null
+        ? allModules
+        : allModules.filter((m) => allowedModules.includes(m.id));
+  }
 
   const moduleData: LauncherModuleData[] = modules.map((m) => {
     const meta = MODULE_META[m.id] ?? { description: "", href: "/dashboard" };

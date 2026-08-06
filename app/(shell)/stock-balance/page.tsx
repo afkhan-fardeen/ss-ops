@@ -1,16 +1,16 @@
 import { Scale } from "lucide-react";
-import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { canAccessModule } from "@/lib/auth/can-access-module";
 import { StockBalanceLoader } from "@/components/stock/StockBalanceLoader";
 
 export const dynamic = "force-dynamic";
 
 export default async function StockBalancePage() {
-  if (!(await isPortalAdmin())) {
+  if (!(await canAccessModule("stock"))) {
     return (
       <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
         <h1 className="text-lg font-medium text-ink">Access denied</h1>
         <p className="mt-2 text-[13px] text-muted">
-          Stock balance is only available to accounts with the admin role in Supabase.
+          Stock balance is only available to admins or users granted the Stock Balance module.
         </p>
       </div>
     );

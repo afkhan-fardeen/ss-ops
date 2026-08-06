@@ -4,6 +4,7 @@ import { getSupabaseService } from "@/lib/supabase/service";
 import { getAllProfiles } from "@/lib/supabase/profiles";
 import { DashboardHeader } from "@/components/dashboard/DashboardPage";
 import { UserModuleEditor } from "@/components/admin/UserModuleEditor";
+import { CreateUserForm } from "@/components/admin/CreateUserForm";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ export default async function AdminPage() {
       <DashboardHeader
         moduleLabel="Admin"
         title="Admin tools"
-        description="User directory and module access control."
+        description="Create users and control which modules each person can use."
       />
 
       {/* User count */}
@@ -60,6 +61,10 @@ export default async function AdminPage() {
             </p>
           </div>
         </div>
+      </section>
+
+      <section className="animate-fade-up">
+        <CreateUserForm />
       </section>
 
       {/* Module access control */}

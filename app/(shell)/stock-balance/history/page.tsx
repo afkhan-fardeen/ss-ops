@@ -1,5 +1,5 @@
 import { AlertTriangle, History } from "lucide-react";
-import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { canAccessModule } from "@/lib/auth/can-access-module";
 import { StockBalanceHistoryTable } from "@/components/stock/StockBalanceHistoryTable";
 import { loadStockRestockHistory } from "@/lib/stock/load-restock-history";
 
@@ -7,11 +7,13 @@ export const dynamic = "force-dynamic";
 export const revalidate = 30;
 
 export default async function StockBalanceHistoryPage() {
-  if (!(await isPortalAdmin())) {
+  if (!(await canAccessModule("stock"))) {
     return (
       <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
         <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">Stock balance history is admin-only.</p>
+        <p className="mt-2 text-[13px] text-muted">
+          Stock balance history is only available to admins or users granted the Stock Balance module.
+        </p>
       </div>
     );
   }

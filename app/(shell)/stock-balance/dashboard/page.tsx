@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { canAccessModule } from "@/lib/auth/can-access-module";
 import { loadStockRestockActivity } from "@/lib/dashboard/load-stock-restock-activity";
 import { STOCK_ACCENT } from "@/config/modules";
 import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
@@ -11,11 +11,13 @@ import { ModuleDashboardShell, ModuleQuickLinks } from "@/components/portal/Modu
 export const dynamic = "force-dynamic";
 
 export default async function StockBalanceDashboardPage() {
-  if (!(await isPortalAdmin())) {
+  if (!(await canAccessModule("stock"))) {
     return (
       <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
         <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">Stock balance is admin-only.</p>
+        <p className="mt-2 text-[13px] text-muted">
+          Stock balance is only available to admins or users granted the Stock Balance module.
+        </p>
       </div>
     );
   }

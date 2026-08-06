@@ -53,9 +53,18 @@ function moduleToNavItems(module: PortalModule) {
   }));
 }
 
-export function Sidebar({ showAdminLink = false }: { showAdminLink?: boolean }) {
+export function Sidebar({
+  showAdminLink = false,
+  showStock = false,
+}: {
+  showAdminLink?: boolean;
+  showStock?: boolean;
+}) {
   const pathname = usePathname();
-  const modules = useMemo(() => getPortalModules(showAdminLink), [showAdminLink]);
+  const modules = useMemo(
+    () => getPortalModules(showStock || showAdminLink),
+    [showStock, showAdminLink],
+  );
   const settingsItems = useMemo(() => getSettingsNavItems(showAdminLink), [showAdminLink]);
 
   const [collapsed, setCollapsed] = useState(false);
