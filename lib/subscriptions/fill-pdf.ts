@@ -125,7 +125,7 @@ export async function fillSubscriptionPdf(row: SubscriptionRequestRow): Promise<
     lineOffset: 5,
   });
   await drawField(page1, font, formatDate(row.submitted_at), {
-    x: 460,
+    x: 478,
     yTop: 157,
     size: 9,
     lineOffset: 5,
