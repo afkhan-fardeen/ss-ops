@@ -40,13 +40,13 @@ function billingLabel(row: SubscriptionRequestRow): string {
   }
 }
 
-type DrawOpts = { x: number; yTop: number; size?: number; maxWidth?: number };
+type DrawOpts = { x: number; yTop: number; size?: number; maxWidth?: number; lineOffset?: number };
 
 async function drawField(
   page: ReturnType<PDFDocument["getPages"]>[0],
   font: Awaited<ReturnType<PDFDocument["embedFont"]>>,
   text: string,
-  { x, yTop, size = 10, maxWidth = 320 }: DrawOpts,
+  { x, yTop, size = 10, maxWidth = 320, lineOffset = 12 }: DrawOpts,
 ) {
   const value = text.trim();
   if (!value) return;
@@ -59,7 +59,7 @@ async function drawField(
   }
   page.drawText(drawText, {
     x,
-    y: yFromTop(yTop),
+    y: yFromTop(yTop, lineOffset),
     size,
     font,
     color: rgb(0.1, 0.1, 0.1),
@@ -116,9 +116,20 @@ export async function fillSubscriptionPdf(row: SubscriptionRequestRow): Promise<
   const page1 = pages[0]!;
   const page2 = pages[1] ?? pages[0]!;
 
+  // Form No. / Date row label sits at ~y 157–167 (9pt); use smaller offset so values sit on the blanks.
   const refShort = row.reference_number.replace(/^SUB-\d+-/, "SUB-");
-  await drawField(page1, fontBold, refShort, { x: 390, yTop: 157, size: 10 });
-  await drawField(page1, font, formatDate(row.submitted_at), { x: 460, yTop: 157, size: 10 });
+  await drawField(page1, fontBold, refShort, {
+    x: 390,
+    yTop: 157,
+    size: 9,
+    lineOffset: 5,
+  });
+  await drawField(page1, font, formatDate(row.submitted_at), {
+    x: 460,
+    yTop: 157,
+    size: 9,
+    lineOffset: 5,
+  });
 
   await drawField(page1, font, row.subscription_name, { x: 220, yTop: 288 });
   await drawField(page1, font, row.vendor ?? "", { x: 220, yTop: 316 });
