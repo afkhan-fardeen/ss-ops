@@ -6,6 +6,7 @@ import {
 } from "@/lib/subscriptions/db";
 import { regenerateSubscriptionPdf } from "@/lib/subscriptions/fill-pdf";
 import { getAdminActor } from "@/lib/subscriptions/admin-actor";
+import { SUBSCRIPTION_APPROVER_NAME } from "@/lib/subscriptions/constants";
 
 type RouteCtx = { params: Promise<{ id: string }> | { id: string } };
 
@@ -28,7 +29,7 @@ export async function POST(_req: Request, ctx: RouteCtx) {
   const updated = await updateSubscriptionStatus(p.id, {
     status: "approved",
     approved_by: actor.userId,
-    approved_by_name: actor.displayName,
+    approved_by_name: SUBSCRIPTION_APPROVER_NAME,
     approved_at: now,
     rejected_by: null,
     rejected_by_name: null,
@@ -50,7 +51,7 @@ export async function POST(_req: Request, ctx: RouteCtx) {
 
   return NextResponse.json({
     ok: true,
-    approved_by_name: actor.displayName,
+    approved_by_name: SUBSCRIPTION_APPROVER_NAME,
     approved_at: now,
   });
 }

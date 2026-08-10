@@ -16,6 +16,9 @@ export const STATUS_LABELS = {
   rejected: "Rejected",
 } as const;
 
+/** Always shown as the management approver on approved subscription forms. */
+export const SUBSCRIPTION_APPROVER_NAME = "Khaled Tahoun";
+
 export function formatMoney(amount: number, currency: string): string {
   return `${currency} ${amount.toFixed(2)}`;
 }
