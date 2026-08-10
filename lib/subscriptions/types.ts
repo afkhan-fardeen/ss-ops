@@ -65,9 +65,26 @@ export const ENTITY_OPTIONS = [
 
 export const CURRENCY_OPTIONS = ["USD", "BHD", "GBP", "EUR", "AED"] as const;
 
-/** Payment / card options with last 4 for audit — SW = Sense Wellness, SS = Seissense */
+/**
+ * Payment / card options — name + last 4 (SW = Sense Wellness, SS = Seissense).
+ * Stored as `"Name (last4)"` when a card applies, or `"Bank Transfer"`.
+ */
+export const PAYMENT_METHODS = [
+  { name: "Khaled SS", last4: "1195" },
+  { name: "Adeel SS", last4: "8864" },
+  { name: "Hannah SW", last4: "3223" },
+  { name: "SS AMEX", last4: "8015" },
+  { name: "Bank Transfer", last4: null },
+] as const;
+
+export type PaymentMethodOption = (typeof PAYMENT_METHODS)[number];
+
+export function paymentMethodValue(m: PaymentMethodOption): string {
+  return m.last4 ? `${m.name} (${m.last4})` : m.name;
+}
+
 export const PAYMENT_METHOD_OPTIONS = [
-  "Khaled SS Credit SS WLL (1195)",
+  "Khaled SS (1195)",
   "Adeel SS (8864)",
   "Hannah SW (3223)",
   "SS AMEX (8015)",

@@ -3,6 +3,7 @@ import path from "path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { SubscriptionRequestRow } from "./types";
 import { ENTITY_OPTIONS } from "./types";
+import { paymentOptionLabel } from "./constants";
 
 const PAGE_H = 841.92;
 
@@ -180,7 +181,7 @@ export async function fillSubscriptionPdf(row: SubscriptionRequestRow): Promise<
   await drawField(page1, font, row.employee_name, { x: 220, yTop: 668 });
   const deptPos = [row.department, row.job_title].filter(Boolean).join(" — ");
   await drawField(page1, font, deptPos, { x: 220, yTop: 696 });
-  await drawField(page1, font, row.payment_method ?? "", { x: 220, yTop: 724 });
+  await drawField(page1, font, paymentOptionLabel(row.payment_method), { x: 220, yTop: 724 });
 
   await drawField(page2, font, row.employee_name, { x: 220, yTop: 111 });
   await drawField(page2, font, row.department ?? "", { x: 220, yTop: 139 });

@@ -1,7 +1,15 @@
 import { getSupabaseService } from "@/lib/supabase/service";
+import { normalizePaymentMethod } from "./constants";
 import type { PublicSubscriptionPayload, SubscriptionRequestRow, SubscriptionStatus } from "./types";
 
 const BUCKET = "subscription-pdfs";
+
+function normalizeRow(row: SubscriptionRequestRow): SubscriptionRequestRow {
+  return {
+    ...row,
+    payment_method: normalizePaymentMethod(row.payment_method),
+  };
+}
 
 export async function uploadSubscriptionPdf(id: string, bytes: Uint8Array): Promise<string> {
   const supabase = getSupabaseService();
@@ -52,7 +60,7 @@ export async function insertSubscriptionRequest(
     billing_cycle: payload.billing_cycle,
     billing_cycle_other: payload.billing_cycle_other ?? null,
     entity_billed: payload.entity_billed ?? null,
-    payment_method: payload.payment_method ?? null,
+    payment_method: normalizePaymentMethod(payload.payment_method) ?? null,
     start_date: payload.start_date ?? null,
     justification: payload.justification ?? null,
     notes: payload.notes ?? null,
@@ -67,7 +75,7 @@ export async function insertSubscriptionRequest(
     .single();
 
   if (error || !data) throw new Error(error?.message ?? "Insert failed");
-  return data as SubscriptionRequestRow;
+  return normalizeRow(data as SubscriptionRequestRow);
 }
 
 export async function listSubscriptionRequests(
@@ -87,7 +95,7 @@ export async function listSubscriptionRequests(
 
   const { data, error } = await query;
   if (error) return [];
-  return (data ?? []) as SubscriptionRequestRow[];
+  return ((data ?? []) as SubscriptionRequestRow[]).map(normalizeRow);
 }
 
 export async function getSubscriptionRequest(id: string): Promise<SubscriptionRequestRow | null> {
@@ -101,7 +109,7 @@ export async function getSubscriptionRequest(id: string): Promise<SubscriptionRe
     .maybeSingle();
 
   if (error || !data) return null;
-  return data as SubscriptionRequestRow;
+  return normalizeRow(data as SubscriptionRequestRow);
 }
 
 export async function updateSubscriptionStatus(
@@ -119,7 +127,7 @@ export async function updateSubscriptionStatus(
     .single();
 
   if (error || !data) return null;
-  return data as SubscriptionRequestRow;
+  return normalizeRow(data as SubscriptionRequestRow);
 }
 
 export type SubscriptionEditableFields = {

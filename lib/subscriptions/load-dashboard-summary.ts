@@ -1,6 +1,6 @@
 import { listSubscriptionRequests } from "@/lib/subscriptions/db";
 import type { SubscriptionRequestRow } from "@/lib/subscriptions/types";
-import { formatBillingCycle, formatMoney } from "@/lib/subscriptions/constants";
+import { formatBillingCycle, formatMoney, paymentLabel } from "@/lib/subscriptions/constants";
 
 export type SubscriptionDashboardSummary = {
   pending: number;
@@ -107,7 +107,7 @@ export async function loadSubscriptionDashboardSummary(): Promise<SubscriptionDa
         moneyBump(yearlyMoney, row.currency || "USD", amount);
       }
 
-      bump(paymentMap, row.payment_method || "Unspecified");
+      bump(paymentMap, paymentLabel(row.payment_method) || "Unspecified");
       bump(entityMap, row.entity_billed || "Unspecified");
       bump(
         cycleMap,

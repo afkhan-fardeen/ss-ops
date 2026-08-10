@@ -22,7 +22,10 @@ import {
   ENTITY_OPTIONS,
   formatBillingCycle,
   formatMoney,
-  PAYMENT_METHOD_OPTIONS,
+  PAYMENT_METHODS,
+  paymentMethodValue,
+  paymentLabel,
+  paymentLast4,
   STATUS_LABELS,
 } from "@/lib/subscriptions/constants";
 
@@ -313,7 +316,12 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   value={formatBillingCycle(saved.billing_cycle, saved.billing_cycle_other || null)}
                 />
                 <Row label="Entity billed" value={saved.entity_billed || null} />
-                <Row label="Payment / card" value={saved.payment_method || null} />
+                <Row label="Payment" value={paymentLabel(saved.payment_method)} />
+                <Row
+                  label="Card last 4"
+                  value={paymentLast4(saved.payment_method)}
+                  mono
+                />
                 {saved.justification ? (
                   <div>
                     <dt className="text-[11px] uppercase tracking-wider text-muted">
@@ -456,7 +464,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                       />
                     ) : null}
                   </Field>
-                  <Field label="Payment method / card (last 4)" className="sm:col-span-2">
+                  <Field label="Payment method" className="sm:col-span-2">
                     <select
                       value={draft.payment_method}
                       onChange={(e) => setField("payment_method", e.target.value)}
@@ -464,20 +472,18 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                       className={inputClass}
                     >
                       <option value="">Select payment method…</option>
-                      {PAYMENT_METHOD_OPTIONS.map((m) => (
-                        <option key={m} value={m}>
-                          {m}
-                        </option>
-                      ))}
-                      {draft.payment_method &&
-                      !PAYMENT_METHOD_OPTIONS.includes(
-                        draft.payment_method as (typeof PAYMENT_METHOD_OPTIONS)[number],
-                      ) ? (
-                        <option value={draft.payment_method}>
-                          {draft.payment_method} (legacy)
-                        </option>
-                      ) : null}
+                      {PAYMENT_METHODS.map((m) => {
+                        const value = paymentMethodValue(m);
+                        return (
+                          <option key={value} value={value}>
+                            {m.last4 ? `${m.name} — ${m.last4}` : m.name}
+                          </option>
+                        );
+                      })}
                     </select>
+                    <p className="mt-1 text-[11px] text-muted">
+                      Name · card last 4 (SW = Sense Wellness · SS = Seissense)
+                    </p>
                   </Field>
                   <Field label="Business justification" className="sm:col-span-2">
                     <textarea

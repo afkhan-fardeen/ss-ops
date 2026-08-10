@@ -165,10 +165,7 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
       method &&
       !PAYMENT_METHOD_OPTIONS.includes(method as (typeof PAYMENT_METHOD_OPTIONS)[number])
     ) {
-      // Allow keeping a legacy value already stored on this row
-      if (method !== existing.payment_method) {
-        return NextResponse.json({ ok: false, error: "Invalid payment method" }, { status: 400 });
-      }
+      return NextResponse.json({ ok: false, error: "Invalid payment method" }, { status: 400 });
     }
     patch.payment_method = method;
   }

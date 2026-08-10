@@ -7,7 +7,8 @@ import {
   BILLING_CYCLE_LABELS,
   CURRENCY_OPTIONS,
   ENTITY_OPTIONS,
-  PAYMENT_METHOD_OPTIONS,
+  PAYMENT_METHODS,
+  paymentMethodValue,
 } from "@/lib/subscriptions/constants";
 
 type FormState = {
@@ -260,14 +261,17 @@ export function PublicSubscriptionForm() {
               disabled={loading}
             >
               <option value="">Select payment method…</option>
-              {PAYMENT_METHOD_OPTIONS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
+              {PAYMENT_METHODS.map((m) => {
+                const value = paymentMethodValue(m);
+                return (
+                  <option key={value} value={value}>
+                    {m.last4 ? `${m.name} — ${m.last4}` : m.name}
+                  </option>
+                );
+              })}
             </select>
             <p className="mt-1 text-[11px] text-muted">
-              Includes card last 4 · SW = Sense Wellness · SS = Seissense
+              Name · card last 4 · SW = Sense Wellness · SS = Seissense
             </p>
           </Field>
           <Field label="Business justification" className="sm:col-span-2">

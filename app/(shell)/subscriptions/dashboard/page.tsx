@@ -12,6 +12,8 @@ import {
 import {
   formatBillingCycle,
   formatMoney,
+  paymentLabel,
+  paymentLast4,
   STATUS_LABELS,
 } from "@/lib/subscriptions/constants";
 
@@ -137,6 +139,7 @@ export default async function SubscriptionsDashboardPage() {
                 <th className="px-4 py-2.5 font-medium">Employee</th>
                 <th className="hidden px-4 py-2.5 font-medium sm:table-cell">Service</th>
                 <th className="hidden px-4 py-2.5 font-medium lg:table-cell">Payment</th>
+                <th className="hidden px-4 py-2.5 font-medium xl:table-cell">Last 4</th>
                 <th className="px-4 py-2.5 font-medium">Status</th>
                 <th className="hidden px-4 py-2.5 font-medium md:table-cell">Cost</th>
               </tr>
@@ -157,7 +160,10 @@ export default async function SubscriptionsDashboardPage() {
                     {row.subscription_name}
                   </td>
                   <td className="hidden px-4 py-2.5 text-[12px] text-ink lg:table-cell">
-                    {row.payment_method ?? "—"}
+                    {paymentLabel(row.payment_method)}
+                  </td>
+                  <td className="hidden px-4 py-2.5 font-mono text-[12px] tabular-nums text-ink xl:table-cell">
+                    {paymentLast4(row.payment_method) ?? "—"}
                   </td>
                   <td className="px-4 py-2.5">
                     <span
