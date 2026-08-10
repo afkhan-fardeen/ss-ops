@@ -30,7 +30,7 @@ const MODULE_META: Record<string, { description: string; href: string }> = {
   },
   subscriptions: {
     description: "Review employee subscription requests and track active subscriptions.",
-    href: "/subscriptions",
+    href: "/subscriptions/dashboard",
   },
 };
 

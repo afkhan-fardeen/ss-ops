@@ -213,6 +213,7 @@ function subscriptionsModule(): PortalModule {
     adminOnly: true,
     accent: SUBSCRIPTIONS_ACCENT,
     items: [
+      { label: "Dashboard", href: "/subscriptions/dashboard", icon: LayoutDashboard },
       { label: "Requests", href: "/subscriptions", icon: Receipt },
       { label: "Active", href: "/subscriptions/active", icon: History },
     ],
@@ -353,6 +354,13 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     moduleId: "awb",
     moduleLabel: "AWB Lookup",
     accent: AWB_ACCENT,
+  },
+  {
+    path: "/subscriptions/dashboard",
+    title: "Dashboard",
+    moduleId: "subscriptions",
+    moduleLabel: "Subscriptions",
+    accent: SUBSCRIPTIONS_ACCENT,
   },
   {
     path: "/subscriptions",
