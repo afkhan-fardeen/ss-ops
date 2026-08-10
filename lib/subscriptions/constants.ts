@@ -38,6 +38,12 @@ export function paymentLast4(paymentMethod: string | null | undefined): string |
   return m?.[1] ?? null;
 }
 
+/** Payment label without trailing (last4), e.g. "Hannah SW". */
+export function paymentLabel(paymentMethod: string | null | undefined): string {
+  if (!paymentMethod) return "—";
+  return paymentMethod.replace(/\s*\(\d{4}\)\s*$/, "").trim() || paymentMethod;
+}
+
 export function formatPaymentMethod(paymentMethod: string | null | undefined): string {
   if (!paymentMethod) return "—";
   return paymentMethod;

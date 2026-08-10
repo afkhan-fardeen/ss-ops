@@ -3,6 +3,8 @@ import type { SubscriptionRequestRow } from "@/lib/subscriptions/types";
 import {
   formatBillingCycle,
   formatMoney,
+  paymentLabel,
+  paymentLast4,
 } from "@/lib/subscriptions/constants";
 
 export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow[] }) {
@@ -31,6 +33,7 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
               <th className="px-4 py-2.5 font-medium">Amount</th>
               <th className="px-4 py-2.5 font-medium">Cycle</th>
               <th className="px-4 py-2.5 font-medium">Payment</th>
+              <th className="px-4 py-2.5 font-medium">Last 4</th>
               <th className="px-4 py-2.5 font-medium">Approved by</th>
               <th className="px-4 py-2.5 font-medium">Form date</th>
             </tr>
@@ -38,7 +41,7 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-muted">
+                <td colSpan={8} className="px-4 py-8 text-center text-muted">
                   No active subscriptions yet.
                 </td>
               </tr>
@@ -62,7 +65,10 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
                     {formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
                   </td>
                   <td className="px-4 py-3 text-[12px] text-ink">
-                    {row.payment_method ?? "—"}
+                    {paymentLabel(row.payment_method)}
+                  </td>
+                  <td className="px-4 py-3 font-mono tabular-nums text-ink">
+                    {paymentLast4(row.payment_method) ?? "—"}
                   </td>
                   <td className="px-4 py-3">{row.approved_by_name ?? "—"}</td>
                   <td className="px-4 py-3 font-mono text-[11px] text-muted">

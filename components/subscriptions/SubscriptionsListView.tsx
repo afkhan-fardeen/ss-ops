@@ -9,6 +9,8 @@ import type { SubscriptionRequestRow } from "@/lib/subscriptions/types";
 import {
   formatBillingCycle,
   formatMoney,
+  paymentLabel,
+  paymentLast4,
   STATUS_LABELS,
 } from "@/lib/subscriptions/constants";
 
@@ -102,6 +104,7 @@ export function SubscriptionsListView({
               <th className="px-4 py-2.5 font-medium">Cost</th>
               <th className="px-4 py-2.5 font-medium">Cycle</th>
               <th className="px-4 py-2.5 font-medium">Payment</th>
+              <th className="px-4 py-2.5 font-medium">Last 4</th>
               <th className="px-4 py-2.5 font-medium">Status</th>
               <th className="px-4 py-2.5 font-medium">Form date</th>
             </tr>
@@ -109,7 +112,7 @@ export function SubscriptionsListView({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-muted">
+                <td colSpan={9} className="px-4 py-8 text-center text-muted">
                   No requests in this view.
                 </td>
               </tr>
@@ -136,7 +139,10 @@ export function SubscriptionsListView({
                     {formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
                   </td>
                   <td className="px-4 py-3 text-[12px] text-ink">
-                    {row.payment_method ?? "—"}
+                    {paymentLabel(row.payment_method)}
+                  </td>
+                  <td className="px-4 py-3 font-mono tabular-nums text-ink">
+                    {paymentLast4(row.payment_method) ?? "—"}
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge status={row.status} />
