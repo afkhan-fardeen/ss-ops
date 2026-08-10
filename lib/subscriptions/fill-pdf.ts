@@ -123,12 +123,13 @@ export async function fillSubscriptionPdf(row: SubscriptionRequestRow): Promise<
   await drawField(page1, font, row.subscription_name, { x: 220, yTop: 288 });
   await drawField(page1, font, row.vendor ?? "", { x: 220, yTop: 316 });
 
+  // Label sits at y≈337; write answer below it so it doesn't overlap the heading.
   if (row.justification) {
     const lines = wrapJustification(font, row.justification, 300, 10);
     for (let i = 0; i < lines.length; i++) {
       page1.drawText(lines[i]!, {
         x: 220,
-        y: yFromTop(337 + i * 14),
+        y: yFromTop(358 + i * 14),
         size: 10,
         font,
         color: rgb(0.1, 0.1, 0.1),

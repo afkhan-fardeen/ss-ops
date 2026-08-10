@@ -64,3 +64,11 @@ export const ENTITY_OPTIONS = [
 ] as const;
 
 export const CURRENCY_OPTIONS = ["USD", "BHD", "GBP", "EUR", "AED"] as const;
+
+/** Payment method options — SW = Sense Wellness, SS = Seissense */
+export const PAYMENT_METHOD_OPTIONS = [
+  "Credit Card SW WLL",
+  "Credit Card SS WLL",
+  "AMEX SS WLL",
+  "Bank Transfer",
+] as const;

@@ -1,5 +1,5 @@
 import type { PublicSubscriptionPayload, BillingCycle } from "./types";
-import { CURRENCY_OPTIONS, ENTITY_OPTIONS } from "./types";
+import { CURRENCY_OPTIONS, ENTITY_OPTIONS, PAYMENT_METHOD_OPTIONS } from "./types";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -58,6 +58,14 @@ export function parsePublicSubscriptionPayload(
     return { ok: false, error: "Please specify billing frequency" };
   }
 
+  const payment_method = str(b.payment_method);
+  if (
+    payment_method &&
+    !PAYMENT_METHOD_OPTIONS.includes(payment_method as (typeof PAYMENT_METHOD_OPTIONS)[number])
+  ) {
+    return { ok: false, error: "Invalid payment method" };
+  }
+
   return {
     ok: true,
     data: {
@@ -72,7 +80,7 @@ export function parsePublicSubscriptionPayload(
       billing_cycle,
       billing_cycle_other: billing_cycle === "other" ? billing_cycle_other : undefined,
       entity_billed: entity_billed || undefined,
-      payment_method: optStr(b.payment_method),
+      payment_method: payment_method || undefined,
       start_date: optStr(b.start_date),
       justification: optStr(b.justification),
       notes: optStr(b.notes),

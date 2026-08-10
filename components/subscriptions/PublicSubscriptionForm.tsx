@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { Loader2, Send, CheckCircle2 } from "lucide-react";
 import { Input } from "@/components/ui/Input";
-import { BILLING_CYCLE_LABELS, CURRENCY_OPTIONS, ENTITY_OPTIONS } from "@/lib/subscriptions/constants";
+import {
+  BILLING_CYCLE_LABELS,
+  CURRENCY_OPTIONS,
+  ENTITY_OPTIONS,
+  PAYMENT_METHOD_OPTIONS,
+} from "@/lib/subscriptions/constants";
 
 type FormState = {
   employee_name: string;
@@ -248,12 +253,22 @@ export function PublicSubscriptionForm() {
             )}
           </Field>
           <Field label="Payment method requested" className="sm:col-span-2">
-            <Input
+            <select
               value={form.payment_method}
               onChange={(e) => set("payment_method", e.target.value)}
-              placeholder="e.g. Company bank transfer, invoice"
+              className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
               disabled={loading}
-            />
+            >
+              <option value="">Select payment method…</option>
+              {PAYMENT_METHOD_OPTIONS.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-[11px] text-muted">
+              SW = Sense Wellness · SS = Seissense
+            </p>
           </Field>
           <Field label="Business justification" className="sm:col-span-2">
             <textarea

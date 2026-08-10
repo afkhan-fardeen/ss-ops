@@ -1,7 +1,7 @@
-import { ENTITY_OPTIONS, CURRENCY_OPTIONS } from "./types";
+import { ENTITY_OPTIONS, CURRENCY_OPTIONS, PAYMENT_METHOD_OPTIONS } from "./types";
 import type { BillingCycle } from "./types";
 
-export { ENTITY_OPTIONS, CURRENCY_OPTIONS };
+export { ENTITY_OPTIONS, CURRENCY_OPTIONS, PAYMENT_METHOD_OPTIONS };
 
 export const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
   monthly: "Monthly",
