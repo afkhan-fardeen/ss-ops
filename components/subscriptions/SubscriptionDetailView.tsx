@@ -9,16 +9,32 @@ import {
   Download,
   Loader2,
   Printer,
+  Save,
   Trash2,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { SubscriptionRequestRow } from "@/lib/subscriptions/types";
 import {
+  ENTITY_OPTIONS,
   formatBillingCycle,
   formatMoney,
+  PAYMENT_METHOD_OPTIONS,
   STATUS_LABELS,
 } from "@/lib/subscriptions/constants";
+
+function toDateInputValue(iso: string): string {
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "";
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  } catch {
+    return "";
+  }
+}
 
 export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow }) {
   const router = useRouter();
@@ -26,12 +42,28 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
   const [approvedBy, setApprovedBy] = useState(row.approved_by_name);
   const [approvedAt, setApprovedAt] = useState(row.approved_at);
   const [rejectionReason, setRejectionReason] = useState(row.rejection_reason);
-  const [loading, setLoading] = useState<"approve" | "reject" | "delete" | null>(null);
+  const [loading, setLoading] = useState<"approve" | "reject" | "delete" | "save" | null>(
+    null,
+  );
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [rejectInput, setRejectInput] = useState("");
 
-  const pdfUrl = `/api/subscriptions/${row.id}/pdf`;
+  const [submittedAt, setSubmittedAt] = useState(toDateInputValue(row.submitted_at));
+  const [entityBilled, setEntityBilled] = useState(row.entity_billed ?? "");
+  const [paymentMethod, setPaymentMethod] = useState(row.payment_method ?? "");
+  const [pdfKey, setPdfKey] = useState(0);
+
+  const [savedDate, setSavedDate] = useState(toDateInputValue(row.submitted_at));
+  const [savedEntity, setSavedEntity] = useState(row.entity_billed ?? "");
+  const [savedPayment, setSavedPayment] = useState(row.payment_method ?? "");
+
+  const isDirty =
+    submittedAt !== savedDate ||
+    entityBilled !== savedEntity ||
+    paymentMethod !== savedPayment;
+
+  const pdfUrl = `/api/subscriptions/${row.id}/pdf?v=${pdfKey}`;
   const isPending = status === "pending";
 
   async function handleApprove() {
@@ -51,6 +83,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
       setStatus("approved");
       setApprovedBy(json.approved_by_name ?? null);
       setApprovedAt(json.approved_at ?? null);
+      setPdfKey((k) => k + 1);
       toast.success("Request approved");
     } catch {
       toast.error("Network error");
@@ -75,7 +108,46 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
       setStatus("rejected");
       setRejectionReason(rejectInput.trim() || null);
       setShowRejectModal(false);
+      setPdfKey((k) => k + 1);
       toast.success("Request rejected");
+    } catch {
+      toast.error("Network error");
+    } finally {
+      setLoading(null);
+    }
+  }
+
+  async function handleSaveFields() {
+    if (!submittedAt) {
+      toast.error("Date is required");
+      return;
+    }
+    setLoading("save");
+    try {
+      const res = await fetch(`/api/subscriptions/${row.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          submitted_at: submittedAt,
+          entity_billed: entityBilled || null,
+          payment_method: paymentMethod || null,
+        }),
+      });
+      const json = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        row?: SubscriptionRequestRow;
+      };
+      if (!res.ok || !json.ok) {
+        toast.error(json.error ?? "Save failed");
+        return;
+      }
+      setSavedDate(submittedAt);
+      setSavedEntity(entityBilled);
+      setSavedPayment(paymentMethod);
+      setPdfKey((k) => k + 1);
+      toast.success("Updated — PDF regenerated");
+      router.refresh();
     } catch {
       toast.error("Network error");
     } finally {
@@ -152,8 +224,6 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 label="Billing"
                 value={formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
               />
-              <Row label="Entity billed" value={row.entity_billed} />
-              <Row label="Payment method" value={row.payment_method} />
               {row.justification ? (
                 <div>
                   <dt className="text-[11px] uppercase tracking-wider text-muted">Justification</dt>
@@ -161,6 +231,67 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 </div>
               ) : null}
             </dl>
+
+            <div className="mt-5 space-y-3 border-t border-line pt-4">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
+                Editable anytime
+              </p>
+              <label className="block space-y-1.5">
+                <span className="text-[12px] font-medium text-ink">Form date</span>
+                <input
+                  type="date"
+                  value={submittedAt}
+                  onChange={(e) => setSubmittedAt(e.target.value)}
+                  disabled={loading !== null}
+                  className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+                />
+              </label>
+              <label className="block space-y-1.5">
+                <span className="text-[12px] font-medium text-ink">Entity to be billed</span>
+                <select
+                  value={entityBilled}
+                  onChange={(e) => setEntityBilled(e.target.value)}
+                  disabled={loading !== null}
+                  className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+                >
+                  <option value="">Select entity…</option>
+                  {ENTITY_OPTIONS.map((e) => (
+                    <option key={e} value={e}>
+                      {e}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block space-y-1.5">
+                <span className="text-[12px] font-medium text-ink">Payment method / card</span>
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  disabled={loading !== null}
+                  className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+                >
+                  <option value="">Select payment method…</option>
+                  {PAYMENT_METHOD_OPTIONS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                disabled={loading !== null || !isDirty}
+                onClick={handleSaveFields}
+                className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-card bg-subscriptions px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-50 sm:w-auto"
+              >
+                {loading === "save" ? (
+                  <Loader2 size={15} className="animate-spin" />
+                ) : (
+                  <Save size={15} />
+                )}
+                Save changes
+              </button>
+            </div>
 
             {approvedBy && approvedAt ? (
               <p className="mt-4 border-t border-line pt-3 text-[12px] text-muted">
@@ -230,11 +361,12 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
           </div>
         </div>
 
-        <div className="rounded-card border border-line bg-white shadow-soft overflow-hidden">
+        <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
           <div className="border-b border-line px-4 py-2.5 text-[12px] font-medium text-muted">
             Form preview
           </div>
           <iframe
+            key={pdfKey}
             title="Subscription request PDF"
             src={pdfUrl}
             className="h-[min(80vh,720px)] w-full bg-canvas"
@@ -299,7 +431,11 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 onClick={handleDelete}
                 className="inline-flex items-center gap-1.5 rounded-card bg-fulfillment px-4 py-2 text-[13px] font-medium text-white disabled:opacity-60"
               >
-                {loading === "delete" ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                {loading === "delete" ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Trash2 size={14} />
+                )}
                 Delete forever
               </button>
             </div>

@@ -122,6 +122,20 @@ export async function updateSubscriptionStatus(
   return data as SubscriptionRequestRow;
 }
 
+export type SubscriptionEditableFields = {
+  submitted_at?: string;
+  entity_billed?: string | null;
+  payment_method?: string | null;
+};
+
+/** Update fields that remain editable after approval (date, entity, payment/card). */
+export async function updateSubscriptionFields(
+  id: string,
+  fields: SubscriptionEditableFields,
+): Promise<SubscriptionRequestRow | null> {
+  return updateSubscriptionStatus(id, fields);
+}
+
 export async function countPendingSubscriptions(): Promise<number> {
   const supabase = getSupabaseService();
   if (!supabase) return 0;
