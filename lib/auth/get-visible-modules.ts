@@ -4,9 +4,10 @@ import { getUserAllowedModules } from "@/lib/supabase/profiles";
 
 /**
  * Modules the current user may see on the launcher and shell sidebar.
- * - Admin: all four modules
- * - Shared-password session: COD / Fulfillment / AWB (no stock)
- * - Member with allowed_modules = null: all four (full access)
+ * - Admin: all modules
+ * - Shared-password session: COD / Fulfillment / AWB (no stock / subscriptions)
+ * - Member with allowed_modules = null: COD / Fulfillment / AWB
+ *   (stock & subscriptions need an explicit grant)
  * - Member with an array: only those ids
  */
 export async function getVisiblePortalModules(
@@ -22,7 +23,9 @@ export async function getVisiblePortalModules(
   }
 
   const allowed = await getUserAllowedModules(session.userId);
-  if (allowed === null) return allModules;
+  if (allowed === null) {
+    return allModules.filter((m) => m.id !== "stock" && m.id !== "subscriptions");
+  }
   return allModules.filter((m) => allowed.includes(m.id));
 }
 
