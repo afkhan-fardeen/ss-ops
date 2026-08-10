@@ -134,4 +134,25 @@ export async function countPendingSubscriptions(): Promise<number> {
   return count ?? 0;
 }
 
+/** Permanently delete request row and stored PDF (if any). */
+export async function deleteSubscriptionRequest(id: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = getSupabaseService();
+  if (!supabase) return { ok: false, error: "Database not configured" };
+
+  const existing = await getSubscriptionRequest(id);
+  if (!existing) return { ok: false, error: "Not found" };
+
+  const paths = [existing.pdf_storage_path, `${id}.pdf`].filter(
+    (p): p is string => Boolean(p),
+  );
+  const uniquePaths = [...new Set(paths)];
+  if (uniquePaths.length > 0) {
+    await supabase.storage.from(BUCKET).remove(uniquePaths);
+  }
+
+  const { error } = await supabase.from("subscription_requests").delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
 export { BUCKET as SUBSCRIPTION_PDF_BUCKET };

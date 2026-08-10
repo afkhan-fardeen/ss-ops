@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   Check,
   Download,
   Loader2,
   Printer,
+  Trash2,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -19,12 +21,14 @@ import {
 } from "@/lib/subscriptions/constants";
 
 export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow }) {
+  const router = useRouter();
   const [status, setStatus] = useState(row.status);
   const [approvedBy, setApprovedBy] = useState(row.approved_by_name);
   const [approvedAt, setApprovedAt] = useState(row.approved_at);
   const [rejectionReason, setRejectionReason] = useState(row.rejection_reason);
-  const [loading, setLoading] = useState<"approve" | "reject" | null>(null);
+  const [loading, setLoading] = useState<"approve" | "reject" | "delete" | null>(null);
   const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [rejectInput, setRejectInput] = useState("");
 
   const pdfUrl = `/api/subscriptions/${row.id}/pdf`;
@@ -75,6 +79,24 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
     } catch {
       toast.error("Network error");
     } finally {
+      setLoading(null);
+    }
+  }
+
+  async function handleDelete() {
+    setLoading("delete");
+    try {
+      const res = await fetch(`/api/subscriptions/${row.id}`, { method: "DELETE" });
+      const json = (await res.json()) as { ok?: boolean; error?: string };
+      if (!res.ok || !json.ok) {
+        toast.error(json.error ?? "Delete failed");
+        return;
+      }
+      toast.success(`Deleted ${row.reference_number}`);
+      router.push("/subscriptions");
+      router.refresh();
+    } catch {
+      toast.error("Network error");
       setLoading(null);
     }
   }
@@ -196,6 +218,15 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 </button>
               </>
             ) : null}
+            <button
+              type="button"
+              disabled={loading !== null}
+              onClick={() => setShowDeleteModal(true)}
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-4 text-[13px] font-medium text-fulfillment transition hover:bg-fulfillment/5 disabled:opacity-60"
+            >
+              <Trash2 size={15} />
+              Delete permanently
+            </button>
           </div>
         </div>
 
@@ -239,6 +270,37 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
               >
                 {loading === "reject" ? <Loader2 size={14} className="animate-spin" /> : null}
                 Confirm reject
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {showDeleteModal ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
+          <div className="w-full max-w-md rounded-card border border-line bg-white p-5 shadow-pop">
+            <h3 className="text-base font-medium text-ink">Delete permanently?</h3>
+            <p className="mt-1 text-[13px] text-muted">
+              This removes <span className="font-mono text-ink">{row.reference_number}</span> and its
+              PDF forever. This cannot be undone.
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={loading === "delete"}
+                className="rounded-card border border-line px-4 py-2 text-[13px] font-medium text-muted"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={loading === "delete"}
+                onClick={handleDelete}
+                className="inline-flex items-center gap-1.5 rounded-card bg-fulfillment px-4 py-2 text-[13px] font-medium text-white disabled:opacity-60"
+              >
+                {loading === "delete" ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                Delete forever
               </button>
             </div>
           </div>
