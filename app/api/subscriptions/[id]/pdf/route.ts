@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { downloadSubscriptionPdf, getSubscriptionRequest } from "@/lib/subscriptions/db";
 import { fillSubscriptionPdf } from "@/lib/subscriptions/fill-pdf";
-import { requireSubscriptionAdmin } from "@/lib/subscriptions/require-admin";
+import { requireSubscriptionAccess } from "@/lib/subscriptions/require-admin";
 
 type RouteCtx = { params: Promise<{ id: string }> | { id: string } };
 
 export async function GET(_req: NextRequest, ctx: RouteCtx) {
-  const auth = await requireSubscriptionAdmin();
+  const auth = await requireSubscriptionAccess();
   if (!auth.ok) {
     return NextResponse.json({ ok: false, error: "Forbidden" }, { status: auth.status });
   }

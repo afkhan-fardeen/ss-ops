@@ -7,7 +7,8 @@ import { getUserAllowedModules } from "@/lib/supabase/profiles";
 /**
  * Whether the current user may use a given module.
  * - Admins: always true
- * - Members with allowed_modules = null: all modules (full access)
+ * - Members with allowed_modules = null: all modules except stock & subscriptions
+ *   (those require an explicit grant or portal admin)
  * - Members with an array: only listed module ids
  */
 export async function canAccessModule(moduleId: ModuleId): Promise<boolean> {
@@ -21,13 +22,13 @@ export async function canAccessModule(moduleId: ModuleId): Promise<boolean> {
   }
 
   if (session.mode !== "supabase" || !session.userId) {
-    // Shared-password sessions: treat as unrestricted for non-admin modules historically.
-    // Stock and subscriptions require admin — shared sessions do not get those.
+    // Shared-password sessions: COD / Fulfillment / AWB only.
     return moduleId !== "stock" && moduleId !== "subscriptions";
   }
 
   const allowed = await getUserAllowedModules(session.userId);
   if (allowed === null) {
+    // Unrestricted members still need an explicit grant for stock & subscriptions.
     return moduleId !== "stock" && moduleId !== "subscriptions";
   }
   return allowed.includes(moduleId);

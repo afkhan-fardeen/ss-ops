@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { listSubscriptionRequests } from "@/lib/subscriptions/db";
-import { requireSubscriptionAdmin } from "@/lib/subscriptions/require-admin";
+import { requireSubscriptionAccess } from "@/lib/subscriptions/require-admin";
 import type { SubscriptionStatus } from "@/lib/subscriptions/types";
 
 export async function GET(req: NextRequest) {
-  const auth = await requireSubscriptionAdmin();
+  const auth = await requireSubscriptionAccess();
   if (!auth.ok) {
     return NextResponse.json({ ok: false, error: "Forbidden" }, { status: auth.status });
   }

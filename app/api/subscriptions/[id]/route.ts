@@ -3,13 +3,13 @@ import {
   deleteSubscriptionRequest,
   getSubscriptionRequest,
 } from "@/lib/subscriptions/db";
-import { requireSubscriptionAdmin } from "@/lib/subscriptions/require-admin";
+import { requireSubscriptionAccess } from "@/lib/subscriptions/require-admin";
 import { getAdminActor } from "@/lib/subscriptions/admin-actor";
 
 type RouteCtx = { params: Promise<{ id: string }> | { id: string } };
 
 export async function GET(_req: NextRequest, ctx: RouteCtx) {
-  const auth = await requireSubscriptionAdmin();
+  const auth = await requireSubscriptionAccess();
   if (!auth.ok) {
     return NextResponse.json({ ok: false, error: "Forbidden" }, { status: auth.status });
   }

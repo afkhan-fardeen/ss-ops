@@ -1,8 +1,10 @@
-import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/require-session";
 import { getSupabaseService } from "@/lib/supabase/service";
-import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { canAccessModule } from "@/lib/auth/can-access-module";
 
+/**
+ * Actor for subscription approve/reject/delete — any user with subscriptions module access.
+ */
 export async function getAdminActor(): Promise<
   { ok: true; userId: string; displayName: string } | { ok: false; status: 401 | 403 }
 > {
@@ -13,12 +15,17 @@ export async function getAdminActor(): Promise<
     return { ok: false, status: 401 };
   }
 
-  if (!(await isPortalAdmin()) || session.mode !== "supabase" || !session.userId) {
+  if (!(await canAccessModule("subscriptions"))) {
+    return { ok: false, status: 403 };
+  }
+
+  if (session.mode !== "supabase" || !session.userId) {
+    // Shared-password sessions cannot attribute approval to a user.
     return { ok: false, status: 403 };
   }
 
   const supabase = getSupabaseService();
-  let displayName = session.email ?? "Admin";
+  let displayName = session.email ?? "Staff";
   if (supabase) {
     const { data } = await supabase
       .from("profiles")

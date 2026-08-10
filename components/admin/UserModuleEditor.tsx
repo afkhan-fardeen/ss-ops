@@ -9,6 +9,7 @@ const SELECTABLE_MODULES: { id: string; label: string }[] = [
   { id: "fulfillment", label: "Fulfillment" },
   { id: "awb", label: "AWB Lookup" },
   { id: "stock", label: "Stock Balance" },
+  { id: "subscriptions", label: "Subscriptions" },
 ];
 
 type SaveState = "idle" | "saving" | "saved" | "error";

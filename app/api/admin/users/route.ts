@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { createPortalUser } from "@/lib/supabase/profiles";
 
-const ALLOWED_MODULE_IDS = new Set(["cod", "fulfillment", "awb", "stock"]);
+const ALLOWED_MODULE_IDS = new Set(["cod", "fulfillment", "awb", "stock", "subscriptions"]);
 
 /**
  * POST /api/admin/users

@@ -1,12 +1,21 @@
-import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { canAccessModule } from "@/lib/auth/can-access-module";
+import { requireSession } from "@/lib/auth/require-session";
 
-export async function requireSubscriptionAdmin(): Promise<
+/**
+ * Require subscriptions module access (portal admin or explicit module grant).
+ * Full module rights: list, approve, reject, delete, PDF.
+ */
+export async function requireSubscriptionAccess(): Promise<
   { ok: true } | { ok: false; status: 401 | 403 }
 > {
   try {
-    if (await isPortalAdmin()) return { ok: true };
-    return { ok: false, status: 403 };
+    await requireSession();
   } catch {
     return { ok: false, status: 401 };
   }
+
+  if (!(await canAccessModule("subscriptions"))) {
+    return { ok: false, status: 403 };
+  }
+  return { ok: true };
 }
