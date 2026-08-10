@@ -93,7 +93,7 @@ export default async function SubscriptionsDashboardPage() {
       }
     >
       <div className="grid gap-4 lg:grid-cols-2">
-        <BreakdownCard title="Payment / card" rows={summary.byPaymentMethod} />
+        <BreakdownCard title="Payment / card (last 4)" rows={summary.byPaymentMethod} />
         <BreakdownCard title="Entity billed" rows={summary.byEntity} />
         <BreakdownCard title="Top services" rows={summary.topServices} />
         <div className="rounded-card border border-line bg-white p-5 shadow-soft">
@@ -136,6 +136,7 @@ export default async function SubscriptionsDashboardPage() {
                 <th className="px-4 py-2.5 font-medium">Ref</th>
                 <th className="px-4 py-2.5 font-medium">Employee</th>
                 <th className="hidden px-4 py-2.5 font-medium sm:table-cell">Service</th>
+                <th className="hidden px-4 py-2.5 font-medium lg:table-cell">Payment</th>
                 <th className="px-4 py-2.5 font-medium">Status</th>
                 <th className="hidden px-4 py-2.5 font-medium md:table-cell">Cost</th>
               </tr>
@@ -154,6 +155,9 @@ export default async function SubscriptionsDashboardPage() {
                   <td className="px-4 py-2.5 text-ink">{row.employee_name}</td>
                   <td className="hidden px-4 py-2.5 text-muted sm:table-cell">
                     {row.subscription_name}
+                  </td>
+                  <td className="hidden px-4 py-2.5 text-[12px] text-ink lg:table-cell">
+                    {row.payment_method ?? "—"}
                   </td>
                   <td className="px-4 py-2.5">
                     <span

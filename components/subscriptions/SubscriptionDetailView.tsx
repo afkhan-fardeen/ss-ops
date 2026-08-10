@@ -237,7 +237,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 Editable anytime
               </p>
               <label className="block space-y-1.5">
-                <span className="text-[12px] font-medium text-ink">Form date</span>
+                <span className="text-[12px] font-medium text-ink">Form signed date</span>
                 <input
                   type="date"
                   value={submittedAt}
@@ -245,6 +245,9 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   disabled={loading !== null}
                   className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
                 />
+                <span className="block text-[11px] text-muted">
+                  Date the paper form was completed and signed (use original date when backfilling older forms).
+                </span>
               </label>
               <label className="block space-y-1.5">
                 <span className="text-[12px] font-medium text-ink">Entity to be billed</span>
@@ -263,7 +266,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 </select>
               </label>
               <label className="block space-y-1.5">
-                <span className="text-[12px] font-medium text-ink">Payment method / card</span>
+                <span className="text-[12px] font-medium text-ink">Payment method / card (last 4)</span>
                 <select
                   value={paymentMethod}
                   onChange={(e) => setPaymentMethod(e.target.value)}
@@ -276,6 +279,12 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                       {m}
                     </option>
                   ))}
+                  {paymentMethod &&
+                  !PAYMENT_METHOD_OPTIONS.includes(
+                    paymentMethod as (typeof PAYMENT_METHOD_OPTIONS)[number],
+                  ) ? (
+                    <option value={paymentMethod}>{paymentMethod} (legacy)</option>
+                  ) : null}
                 </select>
               </label>
               <button

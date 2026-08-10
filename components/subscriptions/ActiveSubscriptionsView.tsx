@@ -30,14 +30,15 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
               <th className="px-4 py-2.5 font-medium">Subscription</th>
               <th className="px-4 py-2.5 font-medium">Amount</th>
               <th className="px-4 py-2.5 font-medium">Cycle</th>
+              <th className="px-4 py-2.5 font-medium">Payment</th>
               <th className="px-4 py-2.5 font-medium">Approved by</th>
-              <th className="px-4 py-2.5 font-medium">Since</th>
+              <th className="px-4 py-2.5 font-medium">Form date</th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-muted">
+                <td colSpan={7} className="px-4 py-8 text-center text-muted">
                   No active subscriptions yet.
                 </td>
               </tr>
@@ -60,11 +61,12 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
                   <td className="px-4 py-3 text-muted">
                     {formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
                   </td>
+                  <td className="px-4 py-3 text-[12px] text-ink">
+                    {row.payment_method ?? "—"}
+                  </td>
                   <td className="px-4 py-3">{row.approved_by_name ?? "—"}</td>
                   <td className="px-4 py-3 font-mono text-[11px] text-muted">
-                    {row.approved_at
-                      ? new Date(row.approved_at).toLocaleDateString()
-                      : "—"}
+                    {new Date(row.submitted_at).toLocaleDateString()}
                   </td>
                 </tr>
               ))

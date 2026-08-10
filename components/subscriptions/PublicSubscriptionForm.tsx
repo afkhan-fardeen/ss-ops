@@ -267,7 +267,7 @@ export function PublicSubscriptionForm() {
               ))}
             </select>
             <p className="mt-1 text-[11px] text-muted">
-              SW = Sense Wellness · SS = Seissense
+              Includes card last 4 · SW = Sense Wellness · SS = Seissense
             </p>
           </Field>
           <Field label="Business justification" className="sm:col-span-2">

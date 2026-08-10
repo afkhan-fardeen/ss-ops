@@ -65,10 +65,11 @@ export const ENTITY_OPTIONS = [
 
 export const CURRENCY_OPTIONS = ["USD", "BHD", "GBP", "EUR", "AED"] as const;
 
-/** Payment method options — SW = Sense Wellness, SS = Seissense */
+/** Payment / card options with last 4 for audit — SW = Sense Wellness, SS = Seissense */
 export const PAYMENT_METHOD_OPTIONS = [
-  "Credit Card SW WLL",
-  "Credit Card SS WLL",
-  "AMEX SS WLL",
+  "Khaled SS Credit SS WLL (1195)",
+  "Adeel SS (8864)",
+  "Hannah SW (3223)",
+  "SS AMEX (8015)",
   "Bank Transfer",
 ] as const;

@@ -30,3 +30,15 @@ export function formatBillingCycle(
   if (cycle === "other" && other) return other;
   return BILLING_CYCLE_LABELS[cycle] ?? cycle;
 }
+
+/** Last 4 digits from a payment label like "Hannah SW (3223)", or null. */
+export function paymentLast4(paymentMethod: string | null | undefined): string | null {
+  if (!paymentMethod) return null;
+  const m = paymentMethod.match(/\((\d{4})\)\s*$/);
+  return m?.[1] ?? null;
+}
+
+export function formatPaymentMethod(paymentMethod: string | null | undefined): string {
+  if (!paymentMethod) return "—";
+  return paymentMethod;
+}
