@@ -8,14 +8,17 @@ import {
   Check,
   Download,
   Loader2,
+  Pencil,
   Printer,
   Save,
   Trash2,
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { SubscriptionRequestRow } from "@/lib/subscriptions/types";
+import type { BillingCycle, SubscriptionRequestRow } from "@/lib/subscriptions/types";
 import {
+  BILLING_CYCLE_LABELS,
+  CURRENCY_OPTIONS,
   ENTITY_OPTIONS,
   formatBillingCycle,
   formatMoney,
@@ -36,6 +39,42 @@ function toDateInputValue(iso: string): string {
   }
 }
 
+type FormDraft = {
+  submitted_at: string;
+  employee_name: string;
+  employee_email: string;
+  department: string;
+  job_title: string;
+  subscription_name: string;
+  vendor: string;
+  amount: string;
+  currency: string;
+  billing_cycle: BillingCycle;
+  billing_cycle_other: string;
+  entity_billed: string;
+  payment_method: string;
+  justification: string;
+};
+
+function draftFromRow(row: SubscriptionRequestRow): FormDraft {
+  return {
+    submitted_at: toDateInputValue(row.submitted_at),
+    employee_name: row.employee_name,
+    employee_email: row.employee_email,
+    department: row.department ?? "",
+    job_title: row.job_title ?? "",
+    subscription_name: row.subscription_name,
+    vendor: row.vendor ?? "",
+    amount: String(row.amount),
+    currency: row.currency,
+    billing_cycle: row.billing_cycle,
+    billing_cycle_other: row.billing_cycle_other ?? "",
+    entity_billed: row.entity_billed ?? "",
+    payment_method: row.payment_method ?? "",
+    justification: row.justification ?? "",
+  };
+}
+
 export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow }) {
   const router = useRouter();
   const [status, setStatus] = useState(row.status);
@@ -48,23 +87,22 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [rejectInput, setRejectInput] = useState("");
-
-  const [submittedAt, setSubmittedAt] = useState(toDateInputValue(row.submitted_at));
-  const [entityBilled, setEntityBilled] = useState(row.entity_billed ?? "");
-  const [paymentMethod, setPaymentMethod] = useState(row.payment_method ?? "");
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<FormDraft>(() => draftFromRow(row));
+  const [saved, setSaved] = useState<FormDraft>(() => draftFromRow(row));
   const [pdfKey, setPdfKey] = useState(0);
-
-  const [savedDate, setSavedDate] = useState(toDateInputValue(row.submitted_at));
-  const [savedEntity, setSavedEntity] = useState(row.entity_billed ?? "");
-  const [savedPayment, setSavedPayment] = useState(row.payment_method ?? "");
-
-  const isDirty =
-    submittedAt !== savedDate ||
-    entityBilled !== savedEntity ||
-    paymentMethod !== savedPayment;
 
   const pdfUrl = `/api/subscriptions/${row.id}/pdf?v=${pdfKey}`;
   const isPending = status === "pending";
+
+  function setField<K extends keyof FormDraft>(key: K, value: FormDraft[K]) {
+    setDraft((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function cancelEdit() {
+    setDraft(saved);
+    setEditing(false);
+  }
 
   async function handleApprove() {
     setLoading("approve");
@@ -118,19 +156,49 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
   }
 
   async function handleSaveFields() {
-    if (!submittedAt) {
-      toast.error("Date is required");
+    if (!draft.submitted_at) {
+      toast.error("Form signed date is required");
       return;
     }
+    if (!draft.employee_name.trim() || !draft.employee_email.trim()) {
+      toast.error("Employee name and email are required");
+      return;
+    }
+    if (!draft.subscription_name.trim()) {
+      toast.error("Subscription name is required");
+      return;
+    }
+    const amount = parseFloat(draft.amount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast.error("Valid amount is required");
+      return;
+    }
+    if (draft.billing_cycle === "other" && !draft.billing_cycle_other.trim()) {
+      toast.error("Please specify other billing frequency");
+      return;
+    }
+
     setLoading("save");
     try {
       const res = await fetch(`/api/subscriptions/${row.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          submitted_at: submittedAt,
-          entity_billed: entityBilled || null,
-          payment_method: paymentMethod || null,
+          submitted_at: draft.submitted_at,
+          employee_name: draft.employee_name.trim(),
+          employee_email: draft.employee_email.trim(),
+          department: draft.department.trim() || null,
+          job_title: draft.job_title.trim() || null,
+          subscription_name: draft.subscription_name.trim(),
+          vendor: draft.vendor.trim() || null,
+          amount,
+          currency: draft.currency,
+          billing_cycle: draft.billing_cycle,
+          billing_cycle_other:
+            draft.billing_cycle === "other" ? draft.billing_cycle_other.trim() : null,
+          entity_billed: draft.entity_billed || null,
+          payment_method: draft.payment_method || null,
+          justification: draft.justification.trim() || null,
         }),
       });
       const json = (await res.json()) as {
@@ -142,9 +210,10 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
         toast.error(json.error ?? "Save failed");
         return;
       }
-      setSavedDate(submittedAt);
-      setSavedEntity(entityBilled);
-      setSavedPayment(paymentMethod);
+      const next = json.row ? draftFromRow(json.row) : draft;
+      setSaved(next);
+      setDraft(next);
+      setEditing(false);
       setPdfKey((k) => k + 1);
       toast.success("Updated — PDF regenerated");
       router.refresh();
@@ -178,6 +247,8 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
     w?.addEventListener("load", () => w.print());
   }
 
+  const display = editing ? draft : saved;
+
   return (
     <div className="space-y-5">
       <Link
@@ -192,115 +263,257 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
         <div className="space-y-4">
           <div className="rounded-card border border-line bg-white p-5 shadow-soft">
             <div className="flex flex-wrap items-start justify-between gap-2">
-              <div>
+              <div className="min-w-0">
                 <p className="font-mono text-[12px] text-muted">{row.reference_number}</p>
-                <h2 className="mt-1 text-lg font-medium text-ink">{row.subscription_name}</h2>
+                <h2 className="mt-1 text-lg font-medium text-ink">
+                  {display.subscription_name}
+                </h2>
               </div>
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
-                  status === "pending"
-                    ? "bg-gold/10 text-gold"
-                    : status === "approved"
-                      ? "bg-cod-bg text-cod"
-                      : "bg-fulfillment/10 text-fulfillment"
-                }`}
-              >
-                {STATUS_LABELS[status]}
-              </span>
-            </div>
-
-            <dl className="mt-4 space-y-2 text-[13px]">
-              <Row label="Employee" value={row.employee_name} />
-              <Row label="Email" value={row.employee_email} mono />
-              <Row label="Department" value={row.department} />
-              <Row label="Job title" value={row.job_title} />
-              <Row label="Provider" value={row.vendor} />
-              <Row
-                label="Cost"
-                value={formatMoney(Number(row.amount), row.currency)}
-                mono
-              />
-              <Row
-                label="Billing"
-                value={formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
-              />
-              {row.justification ? (
-                <div>
-                  <dt className="text-[11px] uppercase tracking-wider text-muted">Justification</dt>
-                  <dd className="mt-0.5 text-ink">{row.justification}</dd>
-                </div>
-              ) : null}
-            </dl>
-
-            <div className="mt-5 space-y-3 border-t border-line pt-4">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
-                Editable anytime
-              </p>
-              <label className="block space-y-1.5">
-                <span className="text-[12px] font-medium text-ink">Form signed date</span>
-                <input
-                  type="date"
-                  value={submittedAt}
-                  onChange={(e) => setSubmittedAt(e.target.value)}
-                  disabled={loading !== null}
-                  className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
-                />
-                <span className="block text-[11px] text-muted">
-                  Date the paper form was completed and signed (use original date when backfilling older forms).
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                    status === "pending"
+                      ? "bg-gold/10 text-gold"
+                      : status === "approved"
+                        ? "bg-cod-bg text-cod"
+                        : "bg-fulfillment/10 text-fulfillment"
+                  }`}
+                >
+                  {STATUS_LABELS[status]}
                 </span>
-              </label>
-              <label className="block space-y-1.5">
-                <span className="text-[12px] font-medium text-ink">Entity to be billed</span>
-                <select
-                  value={entityBilled}
-                  onChange={(e) => setEntityBilled(e.target.value)}
-                  disabled={loading !== null}
-                  className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
-                >
-                  <option value="">Select entity…</option>
-                  {ENTITY_OPTIONS.map((e) => (
-                    <option key={e} value={e}>
-                      {e}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="block space-y-1.5">
-                <span className="text-[12px] font-medium text-ink">Payment method / card (last 4)</span>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  disabled={loading !== null}
-                  className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
-                >
-                  <option value="">Select payment method…</option>
-                  {PAYMENT_METHOD_OPTIONS.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                  {paymentMethod &&
-                  !PAYMENT_METHOD_OPTIONS.includes(
-                    paymentMethod as (typeof PAYMENT_METHOD_OPTIONS)[number],
-                  ) ? (
-                    <option value={paymentMethod}>{paymentMethod} (legacy)</option>
-                  ) : null}
-                </select>
-              </label>
-              <button
-                type="button"
-                disabled={loading !== null || !isDirty}
-                onClick={handleSaveFields}
-                className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-card bg-subscriptions px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-50 sm:w-auto"
-              >
-                {loading === "save" ? (
-                  <Loader2 size={15} className="animate-spin" />
-                ) : (
-                  <Save size={15} />
-                )}
-                Save changes
-              </button>
+                {!editing ? (
+                  <button
+                    type="button"
+                    disabled={loading !== null}
+                    onClick={() => setEditing(true)}
+                    className="inline-flex items-center gap-1.5 rounded-card border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+                  >
+                    <Pencil size={13} />
+                    Edit
+                  </button>
+                ) : null}
+              </div>
             </div>
+
+            {!editing ? (
+              <dl className="mt-4 space-y-2 text-[13px]">
+                <Row label="Form signed date" value={new Date(saved.submitted_at + "T12:00:00").toLocaleDateString()} />
+                <Row label="Employee" value={saved.employee_name} />
+                <Row label="Email" value={saved.employee_email} mono />
+                <Row label="Department" value={saved.department || null} />
+                <Row label="Job title" value={saved.job_title || null} />
+                <Row label="Provider" value={saved.vendor || null} />
+                <Row
+                  label="Cost"
+                  value={formatMoney(Number(saved.amount), saved.currency)}
+                  mono
+                />
+                <Row
+                  label="Billing"
+                  value={formatBillingCycle(saved.billing_cycle, saved.billing_cycle_other || null)}
+                />
+                <Row label="Entity billed" value={saved.entity_billed || null} />
+                <Row label="Payment / card" value={saved.payment_method || null} />
+                {saved.justification ? (
+                  <div>
+                    <dt className="text-[11px] uppercase tracking-wider text-muted">
+                      Justification
+                    </dt>
+                    <dd className="mt-0.5 text-ink">{saved.justification}</dd>
+                  </div>
+                ) : null}
+              </dl>
+            ) : (
+              <div className="mt-4 space-y-3">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
+                  Edit form details
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Form signed date" required>
+                    <input
+                      type="date"
+                      value={draft.submitted_at}
+                      onChange={(e) => setField("submitted_at", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <Field label="Subscription / service" required>
+                    <input
+                      value={draft.subscription_name}
+                      onChange={(e) => setField("subscription_name", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <Field label="Employee name" required>
+                    <input
+                      value={draft.employee_name}
+                      onChange={(e) => setField("employee_name", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <Field label="Email" required>
+                    <input
+                      type="email"
+                      value={draft.employee_email}
+                      onChange={(e) => setField("employee_email", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <Field label="Department">
+                    <input
+                      value={draft.department}
+                      onChange={(e) => setField("department", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <Field label="Job title">
+                    <input
+                      value={draft.job_title}
+                      onChange={(e) => setField("job_title", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <Field label="Website / provider">
+                    <input
+                      value={draft.vendor}
+                      onChange={(e) => setField("vendor", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <Field label="Entity to be billed">
+                    <select
+                      value={draft.entity_billed}
+                      onChange={(e) => setField("entity_billed", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    >
+                      <option value="">Select entity…</option>
+                      {ENTITY_OPTIONS.map((e) => (
+                        <option key={e} value={e}>
+                          {e}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Amount" required>
+                    <input
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                      value={draft.amount}
+                      onChange={(e) => setField("amount", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    />
+                  </Field>
+                  <Field label="Currency" required>
+                    <select
+                      value={draft.currency}
+                      onChange={(e) => setField("currency", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    >
+                      {CURRENCY_OPTIONS.map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Billing frequency" required className="sm:col-span-2">
+                    <div className="flex flex-wrap gap-2">
+                      {(Object.keys(BILLING_CYCLE_LABELS) as BillingCycle[]).map((key) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => setField("billing_cycle", key)}
+                          disabled={loading !== null}
+                          className={[
+                            "rounded-full px-3 py-1.5 text-[13px] font-medium transition",
+                            draft.billing_cycle === key
+                              ? "bg-subscriptions-bg text-subscriptions"
+                              : "border border-line bg-white text-muted hover:text-ink",
+                          ].join(" ")}
+                        >
+                          {BILLING_CYCLE_LABELS[key]}
+                        </button>
+                      ))}
+                    </div>
+                    {draft.billing_cycle === "other" ? (
+                      <input
+                        className={`${inputClass} mt-2`}
+                        value={draft.billing_cycle_other}
+                        onChange={(e) => setField("billing_cycle_other", e.target.value)}
+                        placeholder="Specify frequency"
+                        disabled={loading !== null}
+                      />
+                    ) : null}
+                  </Field>
+                  <Field label="Payment method / card (last 4)" className="sm:col-span-2">
+                    <select
+                      value={draft.payment_method}
+                      onChange={(e) => setField("payment_method", e.target.value)}
+                      disabled={loading !== null}
+                      className={inputClass}
+                    >
+                      <option value="">Select payment method…</option>
+                      {PAYMENT_METHOD_OPTIONS.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                      {draft.payment_method &&
+                      !PAYMENT_METHOD_OPTIONS.includes(
+                        draft.payment_method as (typeof PAYMENT_METHOD_OPTIONS)[number],
+                      ) ? (
+                        <option value={draft.payment_method}>
+                          {draft.payment_method} (legacy)
+                        </option>
+                      ) : null}
+                    </select>
+                  </Field>
+                  <Field label="Business justification" className="sm:col-span-2">
+                    <textarea
+                      value={draft.justification}
+                      onChange={(e) => setField("justification", e.target.value)}
+                      rows={3}
+                      disabled={loading !== null}
+                      className="min-h-[88px] w-full rounded-card border border-line bg-white px-3 py-2 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+                    />
+                  </Field>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <button
+                    type="button"
+                    disabled={loading !== null}
+                    onClick={handleSaveFields}
+                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-card bg-subscriptions px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+                  >
+                    {loading === "save" ? (
+                      <Loader2 size={15} className="animate-spin" />
+                    ) : (
+                      <Save size={15} />
+                    )}
+                    Save changes
+                  </button>
+                  <button
+                    type="button"
+                    disabled={loading !== null}
+                    onClick={cancelEdit}
+                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-card border border-line bg-white px-4 text-[13px] font-medium text-muted transition hover:bg-canvas disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
 
             {approvedBy && approvedAt ? (
               <p className="mt-4 border-t border-line pt-3 text-[12px] text-muted">
@@ -336,7 +549,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
               <>
                 <button
                   type="button"
-                  disabled={loading !== null}
+                  disabled={loading !== null || editing}
                   onClick={handleApprove}
                   className="inline-flex min-h-11 items-center gap-1.5 rounded-card bg-cod px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
                 >
@@ -349,7 +562,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 </button>
                 <button
                   type="button"
-                  disabled={loading !== null}
+                  disabled={loading !== null || editing}
                   onClick={() => setShowRejectModal(true)}
                   className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-fulfillment/40 bg-fulfillment/5 px-4 text-[13px] font-medium text-fulfillment transition hover:bg-fulfillment/10 disabled:opacity-60"
                 >
@@ -360,7 +573,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
             ) : null}
             <button
               type="button"
-              disabled={loading !== null}
+              disabled={loading !== null || editing}
               onClick={() => setShowDeleteModal(true)}
               className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-4 text-[13px] font-medium text-fulfillment transition hover:bg-fulfillment/5 disabled:opacity-60"
             >
@@ -451,6 +664,31 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+const inputClass =
+  "min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30";
+
+function Field({
+  label,
+  required,
+  className = "",
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={`space-y-1.5 ${className}`}>
+      <label className="block text-[12px] font-medium text-ink">
+        {label}
+        {required ? <span className="text-fulfillment"> *</span> : null}
+      </label>
+      {children}
     </div>
   );
 }

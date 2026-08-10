@@ -124,11 +124,23 @@ export async function updateSubscriptionStatus(
 
 export type SubscriptionEditableFields = {
   submitted_at?: string;
+  employee_name?: string;
+  employee_email?: string;
+  department?: string | null;
+  job_title?: string | null;
+  subscription_name?: string;
+  vendor?: string | null;
+  amount?: number;
+  currency?: string;
+  billing_cycle?: SubscriptionRequestRow["billing_cycle"];
+  billing_cycle_other?: string | null;
   entity_billed?: string | null;
   payment_method?: string | null;
+  justification?: string | null;
+  notes?: string | null;
 };
 
-/** Update fields that remain editable after approval (date, entity, payment/card). */
+/** Update form fields (any status) and optionally regenerate PDF via the API route. */
 export async function updateSubscriptionFields(
   id: string,
   fields: SubscriptionEditableFields,

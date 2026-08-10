@@ -5,13 +5,26 @@ import {
   updateSubscriptionFields,
   updateSubscriptionStatus,
   uploadSubscriptionPdf,
+  type SubscriptionEditableFields,
 } from "@/lib/subscriptions/db";
 import { regenerateSubscriptionPdf } from "@/lib/subscriptions/fill-pdf";
 import { requireSubscriptionAccess } from "@/lib/subscriptions/require-admin";
 import { getAdminActor } from "@/lib/subscriptions/admin-actor";
-import { ENTITY_OPTIONS, PAYMENT_METHOD_OPTIONS } from "@/lib/subscriptions/types";
+import {
+  CURRENCY_OPTIONS,
+  ENTITY_OPTIONS,
+  PAYMENT_METHOD_OPTIONS,
+  type BillingCycle,
+} from "@/lib/subscriptions/types";
 
 type RouteCtx = { params: Promise<{ id: string }> | { id: string } };
+
+const BILLING_CYCLES: BillingCycle[] = ["monthly", "yearly", "one_time", "other"];
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function str(v: unknown): string {
+  return typeof v === "string" ? v.trim() : "";
+}
 
 export async function GET(_req: NextRequest, ctx: RouteCtx) {
   const auth = await requireSubscriptionAccess();
@@ -39,27 +52,19 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
     return NextResponse.json({ ok: false, error: "Not found" }, { status: 404 });
   }
 
-  let body: {
-    submitted_at?: string;
-    entity_billed?: string | null;
-    payment_method?: string | null;
-  };
+  let body: Record<string, unknown>;
   try {
-    body = (await req.json()) as typeof body;
+    body = (await req.json()) as Record<string, unknown>;
   } catch {
     return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
   }
 
-  const patch: {
-    submitted_at?: string;
-    entity_billed?: string | null;
-    payment_method?: string | null;
-  } = {};
+  const patch: SubscriptionEditableFields = {};
 
   if ("submitted_at" in body) {
-    const raw = typeof body.submitted_at === "string" ? body.submitted_at.trim() : "";
+    const raw = str(body.submitted_at);
     if (!raw) {
-      return NextResponse.json({ ok: false, error: "Date is required" }, { status: 400 });
+      return NextResponse.json({ ok: false, error: "Form signed date is required" }, { status: 400 });
     }
     const d = new Date(raw.includes("T") ? raw : `${raw}T12:00:00`);
     if (Number.isNaN(d.getTime())) {
@@ -68,11 +73,86 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
     patch.submitted_at = d.toISOString();
   }
 
+  if ("employee_name" in body) {
+    const name = str(body.employee_name);
+    if (!name) {
+      return NextResponse.json({ ok: false, error: "Employee name is required" }, { status: 400 });
+    }
+    patch.employee_name = name;
+  }
+
+  if ("employee_email" in body) {
+    const email = str(body.employee_email).toLowerCase();
+    if (!email || !EMAIL_RE.test(email)) {
+      return NextResponse.json({ ok: false, error: "Valid email is required" }, { status: 400 });
+    }
+    patch.employee_email = email;
+  }
+
+  if ("department" in body) {
+    patch.department = str(body.department) || null;
+  }
+  if ("job_title" in body) {
+    patch.job_title = str(body.job_title) || null;
+  }
+
+  if ("subscription_name" in body) {
+    const name = str(body.subscription_name);
+    if (!name) {
+      return NextResponse.json({ ok: false, error: "Subscription name is required" }, { status: 400 });
+    }
+    patch.subscription_name = name;
+  }
+
+  if ("vendor" in body) {
+    patch.vendor = str(body.vendor) || null;
+  }
+
+  if ("amount" in body) {
+    const amount =
+      typeof body.amount === "number"
+        ? body.amount
+        : typeof body.amount === "string"
+          ? parseFloat(body.amount)
+          : NaN;
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json({ ok: false, error: "Valid amount is required" }, { status: 400 });
+    }
+    patch.amount = amount;
+  }
+
+  if ("currency" in body) {
+    const currency = str(body.currency).toUpperCase();
+    if (!CURRENCY_OPTIONS.includes(currency as (typeof CURRENCY_OPTIONS)[number])) {
+      return NextResponse.json({ ok: false, error: "Invalid currency" }, { status: 400 });
+    }
+    patch.currency = currency;
+  }
+
+  if ("billing_cycle" in body) {
+    const cycle = str(body.billing_cycle) as BillingCycle;
+    if (!BILLING_CYCLES.includes(cycle)) {
+      return NextResponse.json({ ok: false, error: "Invalid billing cycle" }, { status: 400 });
+    }
+    patch.billing_cycle = cycle;
+    if (cycle === "other") {
+      const other = str(body.billing_cycle_other);
+      if (!other) {
+        return NextResponse.json(
+          { ok: false, error: "Please specify other billing frequency" },
+          { status: 400 },
+        );
+      }
+      patch.billing_cycle_other = other;
+    } else {
+      patch.billing_cycle_other = null;
+    }
+  } else if ("billing_cycle_other" in body) {
+    patch.billing_cycle_other = str(body.billing_cycle_other) || null;
+  }
+
   if ("entity_billed" in body) {
-    const entity =
-      body.entity_billed === null || body.entity_billed === ""
-        ? null
-        : String(body.entity_billed).trim();
+    const entity = str(body.entity_billed) || null;
     if (entity && !ENTITY_OPTIONS.includes(entity as (typeof ENTITY_OPTIONS)[number])) {
       return NextResponse.json({ ok: false, error: "Invalid entity" }, { status: 400 });
     }
@@ -80,17 +160,24 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
   }
 
   if ("payment_method" in body) {
-    const method =
-      body.payment_method === null || body.payment_method === ""
-        ? null
-        : String(body.payment_method).trim();
+    const method = str(body.payment_method) || null;
     if (
       method &&
       !PAYMENT_METHOD_OPTIONS.includes(method as (typeof PAYMENT_METHOD_OPTIONS)[number])
     ) {
-      return NextResponse.json({ ok: false, error: "Invalid payment method" }, { status: 400 });
+      // Allow keeping a legacy value already stored on this row
+      if (method !== existing.payment_method) {
+        return NextResponse.json({ ok: false, error: "Invalid payment method" }, { status: 400 });
+      }
     }
     patch.payment_method = method;
+  }
+
+  if ("justification" in body) {
+    patch.justification = str(body.justification) || null;
+  }
+  if ("notes" in body) {
+    patch.notes = str(body.notes) || null;
   }
 
   if (Object.keys(patch).length === 0) {
