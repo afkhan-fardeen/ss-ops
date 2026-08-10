@@ -3,13 +3,14 @@ import {
   FileSearch,
   History,
   LayoutDashboard,
+  Receipt,
   Settings2,
   Truck,
   Wallet,
   Warehouse,
 } from "lucide-react";
 
-export type ModuleId = "cod" | "fulfillment" | "stock" | "awb";
+export type ModuleId = "cod" | "fulfillment" | "stock" | "awb" | "subscriptions";
 
 export type ModuleNavItem = {
   label: string;
@@ -125,6 +126,19 @@ export const AWB_ACCENT: ModuleAccent = {
   chartStroke: "#235489",
 };
 
+export const SUBSCRIPTIONS_ACCENT: ModuleAccent = {
+  rail: "bg-subscriptions",
+  labelText: "text-subscriptions",
+  labelHover: "hover:bg-subscriptions-bg",
+  activeBg: "bg-subscriptions-bg",
+  activeText: "text-subscriptions",
+  pillBg: "bg-subscriptions-bg",
+  pillText: "text-subscriptions",
+  mobileActive: "text-subscriptions",
+  chartFill: "#6B4FA2",
+  chartStroke: "#543F82",
+};
+
 function codModule(): PortalModule {
   return {
     id: "cod",
@@ -191,9 +205,26 @@ function awbModule(): PortalModule {
   };
 }
 
+function subscriptionsModule(): PortalModule {
+  return {
+    id: "subscriptions",
+    label: "Subscriptions",
+    icon: Receipt,
+    adminOnly: true,
+    accent: SUBSCRIPTIONS_ACCENT,
+    items: [
+      { label: "Requests", href: "/subscriptions", icon: Receipt },
+      { label: "Active", href: "/subscriptions/active", icon: History },
+    ],
+  };
+}
+
 export function getPortalModules(showAdmin: boolean): PortalModule[] {
   const modules = [codModule(), fulfillmentModule(), awbModule()];
-  if (showAdmin) modules.push(stockModule());
+  if (showAdmin) {
+    modules.push(stockModule());
+    modules.push(subscriptionsModule());
+  }
   return modules;
 }
 
@@ -208,6 +239,8 @@ export function modulePathPrefixes(id: ModuleId): string[] {
       return ["/stock-balance"];
     case "awb":
       return ["/awb"];
+    case "subscriptions":
+      return ["/subscriptions"];
     default:
       return [];
   }
@@ -320,6 +353,20 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     moduleId: "awb",
     moduleLabel: "AWB Lookup",
     accent: AWB_ACCENT,
+  },
+  {
+    path: "/subscriptions",
+    title: "Subscription requests",
+    moduleId: "subscriptions",
+    moduleLabel: "Subscriptions",
+    accent: SUBSCRIPTIONS_ACCENT,
+  },
+  {
+    path: "/subscriptions/active",
+    title: "Active subscriptions",
+    moduleId: "subscriptions",
+    moduleLabel: "Subscriptions",
+    accent: SUBSCRIPTIONS_ACCENT,
   },
 ];
 

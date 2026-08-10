@@ -34,6 +34,11 @@ const config: Config = {
           bg: "rgba(46,107,175,0.15)",
           bloom: "#A8C4E8",
         },
+        subscriptions: {
+          DEFAULT: "#6B4FA2",
+          bg: "rgba(107,79,162,0.15)",
+          bloom: "#C4B8E8",
+        },
         gold: "#B8842E",
       },
       fontFamily: {

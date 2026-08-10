@@ -10,6 +10,8 @@ const BORDER: Record<string, string> = {
   cod: "border-l-cod",
   fulfillment: "border-l-fulfillment",
   stock: "border-l-stock",
+  awb: "border-l-awb",
+  subscriptions: "border-l-subscriptions",
 };
 
 export function DashboardPage({ children, moduleId }: Props) {

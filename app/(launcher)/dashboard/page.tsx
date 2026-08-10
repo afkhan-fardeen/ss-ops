@@ -28,6 +28,10 @@ const MODULE_META: Record<string, { description: string; href: string }> = {
     description: "Look up an order number and preview the UBEX Airway Bill PDF.",
     href: "/awb",
   },
+  subscriptions: {
+    description: "Review employee subscription requests and track active subscriptions.",
+    href: "/subscriptions",
+  },
 };
 
 export default async function LauncherPage() {

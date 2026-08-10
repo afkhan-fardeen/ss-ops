@@ -7,10 +7,12 @@ import { createSupabaseMiddlewareClient } from "@/lib/supabase/middleware";
 
 const PUBLIC_PREFIXES = [
   "/login",
+  "/subscriptions/request",
   "/api/auth/login",
   "/api/auth/logout",
   "/api/auth/callback",
   "/api/webhooks",
+  "/api/subscriptions/request",
   "/api/sync",   // cron endpoints — auth handled inside the route via CRON_SECRET
 ];
 

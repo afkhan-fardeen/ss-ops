@@ -22,12 +22,14 @@ export async function canAccessModule(moduleId: ModuleId): Promise<boolean> {
 
   if (session.mode !== "supabase" || !session.userId) {
     // Shared-password sessions: treat as unrestricted for non-admin modules historically.
-    // Stock still requires an explicit grant or admin — shared sessions do not get stock.
-    return moduleId !== "stock";
+    // Stock and subscriptions require admin — shared sessions do not get those.
+    return moduleId !== "stock" && moduleId !== "subscriptions";
   }
 
   const allowed = await getUserAllowedModules(session.userId);
-  if (allowed === null) return true;
+  if (allowed === null) {
+    return moduleId !== "stock" && moduleId !== "subscriptions";
+  }
   return allowed.includes(moduleId);
 }
 
