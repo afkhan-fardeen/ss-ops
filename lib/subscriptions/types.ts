@@ -2,6 +2,8 @@ export type SubscriptionStatus = "pending" | "approved" | "rejected";
 
 export type BillingCycle = "monthly" | "yearly" | "one_time" | "other";
 
+export type SubscriptionType = "employee" | "business";
+
 export type SubscriptionRequestRow = {
   id: string;
   reference_number: string;
@@ -9,6 +11,7 @@ export type SubscriptionRequestRow = {
   created_at: string;
   updated_at: string;
   submitted_at: string;
+  subscription_type: SubscriptionType;
   employee_name: string;
   employee_email: string;
   department: string | null;
@@ -36,6 +39,7 @@ export type SubscriptionRequestRow = {
 };
 
 export type PublicSubscriptionPayload = {
+  subscription_type: SubscriptionType;
   employee_name: string;
   employee_email: string;
   department?: string;

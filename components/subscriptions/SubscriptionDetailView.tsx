@@ -15,18 +15,26 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { BillingCycle, SubscriptionRequestRow } from "@/lib/subscriptions/types";
+import type {
+  BillingCycle,
+  SubscriptionRequestRow,
+  SubscriptionType,
+} from "@/lib/subscriptions/types";
 import {
   BILLING_CYCLE_LABELS,
   CURRENCY_OPTIONS,
   ENTITY_OPTIONS,
   formatBillingCycle,
   formatMoney,
+  formatSubscriptionType,
   PAYMENT_METHODS,
   paymentMethodValue,
   paymentLabel,
   paymentLast4,
+  requesterLabel,
   STATUS_LABELS,
+  SUBSCRIPTION_TYPE_LABELS,
+  SUBSCRIPTION_TYPE_OPTIONS,
 } from "@/lib/subscriptions/constants";
 
 function toDateInputValue(iso: string): string {
@@ -44,6 +52,7 @@ function toDateInputValue(iso: string): string {
 
 type FormDraft = {
   submitted_at: string;
+  subscription_type: SubscriptionType;
   employee_name: string;
   employee_email: string;
   department: string;
@@ -62,6 +71,7 @@ type FormDraft = {
 function draftFromRow(row: SubscriptionRequestRow): FormDraft {
   return {
     submitted_at: toDateInputValue(row.submitted_at),
+    subscription_type: row.subscription_type ?? "employee",
     employee_name: row.employee_name,
     employee_email: row.employee_email,
     department: row.department ?? "",
@@ -188,6 +198,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           submitted_at: draft.submitted_at,
+          subscription_type: draft.subscription_type,
           employee_name: draft.employee_name.trim(),
           employee_email: draft.employee_email.trim(),
           department: draft.department.trim() || null,
@@ -271,8 +282,20 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 <h2 className="mt-1 text-lg font-medium text-ink">
                   {display.subscription_name}
                 </h2>
+                <p className="mt-1 text-[12px] text-muted">
+                  {formatSubscriptionType(display.subscription_type)} subscription
+                </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
+                    display.subscription_type === "business"
+                      ? "bg-subscriptions-bg text-subscriptions"
+                      : "bg-canvas text-muted"
+                  }`}
+                >
+                  {formatSubscriptionType(display.subscription_type)}
+                </span>
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
                     status === "pending"
@@ -301,7 +324,8 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
             {!editing ? (
               <dl className="mt-4 space-y-2 text-[13px]">
                 <Row label="Form signed date" value={new Date(saved.submitted_at + "T12:00:00").toLocaleDateString()} />
-                <Row label="Employee" value={saved.employee_name} />
+                <Row label="Type" value={formatSubscriptionType(saved.subscription_type)} />
+                <Row label={requesterLabel(saved.subscription_type)} value={saved.employee_name} />
                 <Row label="Email" value={saved.employee_email} mono />
                 <Row label="Department" value={saved.department || null} />
                 <Row label="Job title" value={saved.job_title || null} />
@@ -346,7 +370,23 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                       className={inputClass}
                     />
                   </Field>
-                  <Field label="Subscription / service" required>
+                  <Field label="Subscription type" required>
+                    <select
+                      value={draft.subscription_type}
+                      onChange={(e) =>
+                        setField("subscription_type", e.target.value as SubscriptionType)
+                      }
+                      disabled={loading !== null}
+                      className={inputClass}
+                    >
+                      {SUBSCRIPTION_TYPE_OPTIONS.map((type) => (
+                        <option key={type} value={type}>
+                          {SUBSCRIPTION_TYPE_LABELS[type]}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Subscription / service" required className="sm:col-span-2">
                     <input
                       value={draft.subscription_name}
                       onChange={(e) => setField("subscription_name", e.target.value)}
@@ -354,7 +394,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                       className={inputClass}
                     />
                   </Field>
-                  <Field label="Employee name" required>
+                  <Field label={`${requesterLabel(draft.subscription_type)} name`} required>
                     <input
                       value={draft.employee_name}
                       onChange={(e) => setField("employee_name", e.target.value)}

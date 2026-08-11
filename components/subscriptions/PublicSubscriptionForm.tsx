@@ -9,9 +9,12 @@ import {
   ENTITY_OPTIONS,
   PAYMENT_METHODS,
   paymentMethodValue,
+  SUBSCRIPTION_TYPE_LABELS,
 } from "@/lib/subscriptions/constants";
+import type { SubscriptionType } from "@/lib/subscriptions/types";
 
 type FormState = {
+  subscription_type: SubscriptionType | "";
   employee_name: string;
   employee_email: string;
   department: string;
@@ -30,6 +33,7 @@ type FormState = {
 };
 
 const INITIAL: FormState = {
+  subscription_type: "",
   employee_name: "",
   employee_email: "",
   department: "",
@@ -60,6 +64,10 @@ export function PublicSubscriptionForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.subscription_type) {
+      setError("Select Employee or Business subscription type");
+      return;
+    }
     setLoading(true);
     setError("");
 
@@ -162,6 +170,34 @@ export function PublicSubscriptionForm() {
         <h2 className="text-[12px] font-medium uppercase tracking-wider text-muted">
           Subscription details
         </h2>
+        <Field label="Subscription type" required>
+          <div className="grid grid-cols-2 gap-2">
+            {(["employee", "business"] as const).map((type) => {
+              const selected = form.subscription_type === type;
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => set("subscription_type", type)}
+                  className={[
+                    "min-h-11 rounded-card border px-3 text-left text-[13px] transition",
+                    selected
+                      ? "border-subscriptions bg-subscriptions-bg text-subscriptions"
+                      : "border-line bg-white text-ink hover:bg-canvas",
+                  ].join(" ")}
+                >
+                  <span className="font-medium">{SUBSCRIPTION_TYPE_LABELS[type]}</span>
+                  <span className="mt-0.5 block text-[11px] text-muted">
+                    {type === "employee"
+                      ? "License or tool for a specific person"
+                      : "Company / shared subscription"}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </Field>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Subscription / service name" required className="sm:col-span-2">
             <Input

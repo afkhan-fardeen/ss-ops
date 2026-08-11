@@ -12,6 +12,7 @@ import {
 import {
   formatBillingCycle,
   formatMoney,
+  formatSubscriptionType,
   paymentLabel,
   paymentLast4,
   STATUS_LABELS,
@@ -95,10 +96,11 @@ export default async function SubscriptionsDashboardPage() {
       }
     >
       <div className="grid gap-4 lg:grid-cols-2">
+        <BreakdownCard title="Employee vs Business" rows={summary.byType} />
         <BreakdownCard title="Payment / card (last 4)" rows={summary.byPaymentMethod} />
         <BreakdownCard title="Entity billed" rows={summary.byEntity} />
         <BreakdownCard title="Top services" rows={summary.topServices} />
-        <div className="rounded-card border border-line bg-white p-5 shadow-soft">
+        <div className="rounded-card border border-line bg-white p-5 shadow-soft lg:col-span-2">
           <h3 className="text-[13px] font-medium text-ink">Annual spend</h3>
           <p className="mt-1 text-[12px] text-muted">{yearlyHint}</p>
           <p className="mt-3 font-mono text-xl font-medium tabular-nums text-ink">
@@ -136,6 +138,7 @@ export default async function SubscriptionsDashboardPage() {
             <thead>
               <tr className="border-b border-line bg-canvas/60 text-[11px] uppercase tracking-wider text-muted">
                 <th className="px-4 py-2.5 font-medium">Ref</th>
+                <th className="px-4 py-2.5 font-medium">Type</th>
                 <th className="px-4 py-2.5 font-medium">Employee</th>
                 <th className="hidden px-4 py-2.5 font-medium sm:table-cell">Service</th>
                 <th className="hidden px-4 py-2.5 font-medium lg:table-cell">Payment</th>
@@ -154,6 +157,17 @@ export default async function SubscriptionsDashboardPage() {
                     >
                       {row.reference_number}
                     </Link>
+                  </td>
+                  <td className="px-4 py-2.5">
+                    <span
+                      className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                        row.subscription_type === "business"
+                          ? "bg-subscriptions-bg text-subscriptions"
+                          : "bg-canvas text-muted"
+                      }`}
+                    >
+                      {formatSubscriptionType(row.subscription_type)}
+                    </span>
                   </td>
                   <td className="px-4 py-2.5 text-ink">{row.employee_name}</td>
                   <td className="hidden px-4 py-2.5 text-muted sm:table-cell">

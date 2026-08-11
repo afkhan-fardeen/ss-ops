@@ -1,5 +1,6 @@
-import type { PublicSubscriptionPayload, BillingCycle } from "./types";
+import type { PublicSubscriptionPayload, BillingCycle, SubscriptionType } from "./types";
 import { CURRENCY_OPTIONS, ENTITY_OPTIONS, PAYMENT_METHOD_OPTIONS } from "./types";
+import { SUBSCRIPTION_TYPE_OPTIONS } from "./constants";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -16,6 +17,7 @@ export function parsePublicSubscriptionPayload(
     return { ok: false, error: "Rejected" };
   }
 
+  const subscription_type = str(b.subscription_type) as SubscriptionType;
   const employee_name = str(b.employee_name);
   const employee_email = str(b.employee_email).toLowerCase();
   const subscription_name = str(b.subscription_name);
@@ -23,6 +25,9 @@ export function parsePublicSubscriptionPayload(
   const currency = str(b.currency).toUpperCase() || "USD";
   const billing_cycle = str(b.billing_cycle) as BillingCycle;
 
+  if (!SUBSCRIPTION_TYPE_OPTIONS.includes(subscription_type)) {
+    return { ok: false, error: "Select Employee or Business subscription type" };
+  }
   if (!employee_name) return { ok: false, error: "Employee name is required" };
   if (!employee_email || !EMAIL_RE.test(employee_email)) {
     return { ok: false, error: "Valid email is required" };
@@ -69,6 +74,7 @@ export function parsePublicSubscriptionPayload(
   return {
     ok: true,
     data: {
+      subscription_type,
       employee_name,
       employee_email,
       department: optStr(b.department),

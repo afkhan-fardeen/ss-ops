@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Copy, ExternalLink } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import type { SubscriptionRequestRow } from "@/lib/subscriptions/types";
+import type { SubscriptionRequestRow, SubscriptionType } from "@/lib/subscriptions/types";
 import {
   formatBillingCycle,
   formatMoney,
+  formatSubscriptionType,
   paymentLabel,
   paymentLast4,
   STATUS_LABELS,
@@ -21,7 +22,14 @@ const TABS = [
   { key: "all", label: "All" },
 ] as const;
 
+const TYPE_FILTERS = [
+  { key: "all", label: "All types" },
+  { key: "employee", label: "Employee" },
+  { key: "business", label: "Business" },
+] as const;
+
 type TabKey = (typeof TABS)[number]["key"];
+type TypeFilterKey = (typeof TYPE_FILTERS)[number]["key"];
 
 export function SubscriptionsListView({
   rows,
@@ -33,12 +41,25 @@ export function SubscriptionsListView({
   const router = useRouter();
   const searchParams = useSearchParams();
   const active = (searchParams.get("status") as TabKey) || "pending";
+  const typeFilter = (searchParams.get("type") as TypeFilterKey) || "all";
   const [copied, setCopied] = useState(false);
+
+  const filteredRows = useMemo(() => {
+    if (typeFilter === "all") return rows;
+    return rows.filter((row) => row.subscription_type === typeFilter);
+  }, [rows, typeFilter]);
 
   function setTab(key: TabKey) {
     const params = new URLSearchParams(searchParams.toString());
     if (key === "pending") params.delete("status");
     else params.set("status", key);
+    router.push(`/subscriptions?${params.toString()}`);
+  }
+
+  function setTypeFilter(key: TypeFilterKey) {
+    const params = new URLSearchParams(searchParams.toString());
+    if (key === "all") params.delete("type");
+    else params.set("type", key);
     router.push(`/subscriptions?${params.toString()}`);
   }
 
@@ -94,11 +115,30 @@ export function SubscriptionsListView({
         </div>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        {TYPE_FILTERS.map((filter) => (
+          <button
+            key={filter.key}
+            type="button"
+            onClick={() => setTypeFilter(filter.key)}
+            className={[
+              "rounded-full px-3 py-1 text-[11px] font-medium transition",
+              typeFilter === filter.key
+                ? "bg-ink text-white"
+                : "border border-line bg-white text-muted hover:text-ink",
+            ].join(" ")}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+
       <div className="overflow-x-auto rounded-card border border-line bg-white shadow-soft">
-        <table className="w-full min-w-[720px] text-left text-[13px]">
+        <table className="w-full min-w-[820px] text-left text-[13px]">
           <thead>
             <tr className="border-b border-line bg-canvas/60 text-[11px] uppercase tracking-wider text-muted">
               <th className="px-4 py-2.5 font-medium">Reference</th>
+              <th className="px-4 py-2.5 font-medium">Type</th>
               <th className="px-4 py-2.5 font-medium">Employee</th>
               <th className="px-4 py-2.5 font-medium">Subscription</th>
               <th className="px-4 py-2.5 font-medium">Cost</th>
@@ -110,14 +150,14 @@ export function SubscriptionsListView({
             </tr>
           </thead>
           <tbody>
-            {rows.length === 0 ? (
+            {filteredRows.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-muted">
+                <td colSpan={10} className="px-4 py-8 text-center text-muted">
                   No requests in this view.
                 </td>
               </tr>
             ) : (
-              rows.map((row) => (
+              filteredRows.map((row) => (
                 <tr key={row.id} className="border-b border-line last:border-0 hover:bg-canvas/40">
                   <td className="px-4 py-3">
                     <Link
@@ -126,6 +166,9 @@ export function SubscriptionsListView({
                     >
                       {row.reference_number}
                     </Link>
+                  </td>
+                  <td className="px-4 py-3">
+                    <TypeBadge type={row.subscription_type} />
                   </td>
                   <td className="px-4 py-3">
                     <div className="font-medium text-ink">{row.employee_name}</div>
@@ -171,6 +214,18 @@ function StatusBadge({ status }: { status: SubscriptionRequestRow["status"] }) {
       className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${styles[status]}`}
     >
       {STATUS_LABELS[status]}
+    </span>
+  );
+}
+
+function TypeBadge({ type }: { type: SubscriptionType }) {
+  const styles =
+    type === "business"
+      ? "bg-subscriptions-bg text-subscriptions"
+      : "bg-canvas text-muted";
+  return (
+    <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${styles}`}>
+      {formatSubscriptionType(type)}
     </span>
   );
 }

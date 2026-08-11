@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
       created_at: now,
       updated_at: now,
       submitted_at: now,
+      subscription_type: parsed.data.subscription_type,
       employee_name: parsed.data.employee_name,
       employee_email: parsed.data.employee_email,
       department: parsed.data.department ?? null,

@@ -1,6 +1,11 @@
 import { listSubscriptionRequests } from "@/lib/subscriptions/db";
 import type { SubscriptionRequestRow } from "@/lib/subscriptions/types";
-import { formatBillingCycle, formatMoney, paymentLabel } from "@/lib/subscriptions/constants";
+import {
+  formatBillingCycle,
+  formatMoney,
+  formatSubscriptionType,
+  paymentLabel,
+} from "@/lib/subscriptions/constants";
 
 export type SubscriptionDashboardSummary = {
   pending: number;
@@ -15,6 +20,7 @@ export type SubscriptionDashboardSummary = {
   byPaymentMethod: { label: string; value: number }[];
   byEntity: { label: string; value: number }[];
   byBillingCycle: { label: string; value: number }[];
+  byType: { label: string; value: number }[];
   topServices: { label: string; value: number }[];
   recent: SubscriptionRequestRow[];
   submissionsByDay: { label: string; value: number }[];
@@ -73,6 +79,7 @@ export async function loadSubscriptionDashboardSummary(): Promise<SubscriptionDa
   const paymentMap = new Map<string, number>();
   const entityMap = new Map<string, number>();
   const cycleMap = new Map<string, number>();
+  const typeMap = new Map<string, number>();
   const serviceMap = new Map<string, number>();
   const dayMap = new Map<string, number>();
 
@@ -113,6 +120,7 @@ export async function loadSubscriptionDashboardSummary(): Promise<SubscriptionDa
         cycleMap,
         formatBillingCycle(row.billing_cycle, row.billing_cycle_other),
       );
+      bump(typeMap, formatSubscriptionType(row.subscription_type));
       bump(serviceMap, row.subscription_name || "Unknown");
     }
   }
@@ -132,6 +140,7 @@ export async function loadSubscriptionDashboardSummary(): Promise<SubscriptionDa
     byPaymentMethod: topEntries(paymentMap, 8),
     byEntity: topEntries(entityMap, 8),
     byBillingCycle: topEntries(cycleMap, 6),
+    byType: topEntries(typeMap, 4),
     topServices: topEntries(serviceMap, 6),
     recent: rows.slice(0, 8),
     submissionsByDay: [...dayMap.entries()].map(([label, value]) => ({ label, value })),

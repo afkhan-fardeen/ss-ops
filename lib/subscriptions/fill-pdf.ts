@@ -3,7 +3,7 @@ import path from "path";
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import type { SubscriptionRequestRow } from "./types";
 import { ENTITY_OPTIONS } from "./types";
-import { paymentOptionLabel } from "./constants";
+import { formatSubscriptionType, paymentOptionLabel } from "./constants";
 
 const PAGE_H = 841.92;
 
@@ -132,7 +132,8 @@ export async function fillSubscriptionPdf(row: SubscriptionRequestRow): Promise<
     lineOffset: 5,
   });
 
-  await drawField(page1, font, row.subscription_name, { x: 220, yTop: 288 });
+  const serviceLine = `${row.subscription_name} · ${formatSubscriptionType(row.subscription_type)}`;
+  await drawField(page1, font, serviceLine, { x: 220, yTop: 288 });
   await drawField(page1, font, row.vendor ?? "", { x: 220, yTop: 316 });
 
   // Label sits at y≈337; write answer below it so it doesn't overlap the heading.

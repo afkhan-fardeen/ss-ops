@@ -15,7 +15,9 @@ import {
   ENTITY_OPTIONS,
   PAYMENT_METHOD_OPTIONS,
   type BillingCycle,
+  type SubscriptionType,
 } from "@/lib/subscriptions/types";
+import { SUBSCRIPTION_TYPE_OPTIONS } from "@/lib/subscriptions/constants";
 
 type RouteCtx = { params: Promise<{ id: string }> | { id: string } };
 
@@ -71,6 +73,17 @@ export async function PATCH(req: NextRequest, ctx: RouteCtx) {
       return NextResponse.json({ ok: false, error: "Invalid date" }, { status: 400 });
     }
     patch.submitted_at = d.toISOString();
+  }
+
+  if ("subscription_type" in body) {
+    const type = str(body.subscription_type) as SubscriptionType;
+    if (!SUBSCRIPTION_TYPE_OPTIONS.includes(type)) {
+      return NextResponse.json(
+        { ok: false, error: "Invalid subscription type" },
+        { status: 400 },
+      );
+    }
+    patch.subscription_type = type;
   }
 
   if ("employee_name" in body) {

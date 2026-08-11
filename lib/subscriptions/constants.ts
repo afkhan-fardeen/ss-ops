@@ -5,7 +5,7 @@ import {
   PAYMENT_METHODS,
   paymentMethodValue,
 } from "./types";
-import type { BillingCycle } from "./types";
+import type { BillingCycle, SubscriptionType } from "./types";
 
 export {
   ENTITY_OPTIONS,
@@ -27,6 +27,31 @@ export const STATUS_LABELS = {
   approved: "Approved",
   rejected: "Rejected",
 } as const;
+
+export const SUBSCRIPTION_TYPE_OPTIONS: SubscriptionType[] = ["employee", "business"];
+
+export const SUBSCRIPTION_TYPE_LABELS: Record<SubscriptionType, string> = {
+  employee: "Employee",
+  business: "Business",
+};
+
+export function formatSubscriptionType(
+  type: SubscriptionType | null | undefined,
+): string {
+  if (!type) return SUBSCRIPTION_TYPE_LABELS.employee;
+  return SUBSCRIPTION_TYPE_LABELS[type] ?? type;
+}
+
+/** Person field label: Employee for personal tools, Requested by for company subs. */
+export function requesterLabel(type: SubscriptionType | null | undefined): string {
+  return type === "business" ? "Requested by" : "Employee";
+}
+
+export function normalizeSubscriptionType(
+  value: string | null | undefined,
+): SubscriptionType {
+  return value === "business" ? "business" : "employee";
+}
 
 /** Always shown as the management approver on approved subscription forms. */
 export const SUBSCRIPTION_APPROVER_NAME = "Khaled Tahoun";

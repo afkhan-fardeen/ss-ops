@@ -1,5 +1,5 @@
 import { getSupabaseService } from "@/lib/supabase/service";
-import { normalizePaymentMethod } from "./constants";
+import { normalizePaymentMethod, normalizeSubscriptionType } from "./constants";
 import type { PublicSubscriptionPayload, SubscriptionRequestRow, SubscriptionStatus } from "./types";
 
 const BUCKET = "subscription-pdfs";
@@ -7,6 +7,7 @@ const BUCKET = "subscription-pdfs";
 function normalizeRow(row: SubscriptionRequestRow): SubscriptionRequestRow {
   return {
     ...row,
+    subscription_type: normalizeSubscriptionType(row.subscription_type),
     payment_method: normalizePaymentMethod(row.payment_method),
   };
 }
@@ -49,6 +50,7 @@ export async function insertSubscriptionRequest(
     status: "pending" as const,
     submitted_at: now,
     updated_at: now,
+    subscription_type: payload.subscription_type,
     employee_name: payload.employee_name,
     employee_email: payload.employee_email,
     department: payload.department ?? null,
@@ -132,6 +134,7 @@ export async function updateSubscriptionStatus(
 
 export type SubscriptionEditableFields = {
   submitted_at?: string;
+  subscription_type?: SubscriptionRequestRow["subscription_type"];
   employee_name?: string;
   employee_email?: string;
   department?: string | null;
