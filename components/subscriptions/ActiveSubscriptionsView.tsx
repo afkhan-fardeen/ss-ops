@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { SubscriptionRequestRow, SubscriptionType } from "@/lib/subscriptions/types";
 import {
@@ -64,7 +65,7 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
       </div>
 
       <div className="overflow-x-auto rounded-card border border-line bg-white shadow-soft">
-        <table className="w-full min-w-[880px] text-left text-[13px]">
+        <table className="w-full min-w-[940px] text-left text-[13px]">
           <thead>
             <tr className="border-b border-line bg-canvas/60 text-[11px] uppercase tracking-wider text-muted">
               <th className="px-4 py-2.5 font-medium">Type</th>
@@ -76,12 +77,13 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
               <th className="px-4 py-2.5 font-medium">Last 4</th>
               <th className="px-4 py-2.5 font-medium">Approved by</th>
               <th className="px-4 py-2.5 font-medium">Form date</th>
+              <th className="px-4 py-2.5 font-medium">PDF</th>
             </tr>
           </thead>
           <tbody>
             {filteredRows.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-4 py-8 text-center text-muted">
+                <td colSpan={10} className="px-4 py-8 text-center text-muted">
                   No active subscriptions yet.
                 </td>
               </tr>
@@ -118,6 +120,16 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
                   <td className="px-4 py-3">{row.approved_by_name ?? "—"}</td>
                   <td className="px-4 py-3 font-mono text-[11px] text-muted">
                     {new Date(row.submitted_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <a
+                      href={`/api/subscriptions/${row.id}/pdf?download=1`}
+                      className="inline-flex items-center gap-1.5 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas"
+                      title={`Download ${row.reference_number}.pdf`}
+                    >
+                      <Download size={14} />
+                      PDF
+                    </a>
                   </td>
                 </tr>
               ))

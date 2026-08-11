@@ -5,7 +5,7 @@ import { requireSubscriptionAccess } from "@/lib/subscriptions/require-admin";
 
 type RouteCtx = { params: Promise<{ id: string }> | { id: string } };
 
-export async function GET(_req: NextRequest, ctx: RouteCtx) {
+export async function GET(req: NextRequest, ctx: RouteCtx) {
   const auth = await requireSubscriptionAccess();
   if (!auth.ok) {
     return NextResponse.json({ ok: false, error: "Forbidden" }, { status: auth.status });
@@ -32,12 +32,14 @@ export async function GET(_req: NextRequest, ctx: RouteCtx) {
   }
 
   const buffer = bytes instanceof ArrayBuffer ? new Uint8Array(bytes) : bytes;
+  const asDownload = req.nextUrl.searchParams.get("download") === "1";
+  const disposition = asDownload ? "attachment" : "inline";
 
   return new NextResponse(Buffer.from(buffer), {
     status: 200,
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="${row.reference_number}.pdf"`,
+      "Content-Disposition": `${disposition}; filename="${row.reference_number}.pdf"`,
       "Cache-Control": "private, no-cache",
     },
   });
