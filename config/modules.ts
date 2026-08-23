@@ -6,12 +6,19 @@ import {
   LayoutDashboard,
   Receipt,
   Settings2,
+  TrendingUp,
   Truck,
   Wallet,
   Warehouse,
 } from "lucide-react";
 
-export type ModuleId = "cod" | "fulfillment" | "stock" | "awb" | "subscriptions";
+export type ModuleId =
+  | "cod"
+  | "fulfillment"
+  | "stock"
+  | "awb"
+  | "subscriptions"
+  | "stockAnalysis";
 
 export type ModuleNavItem = {
   label: string;
@@ -134,6 +141,19 @@ export const AWB_ACCENT: ModuleAccent = {
   chartStroke: "#235489",
 };
 
+export const STOCK_ANALYSIS_ACCENT: ModuleAccent = {
+  rail: "bg-stock-analysis",
+  labelText: "text-stock-analysis",
+  labelHover: "hover:bg-stock-analysis-bg",
+  activeBg: "bg-stock-analysis-bg",
+  activeText: "text-stock-analysis",
+  pillBg: "bg-stock-analysis-bg",
+  pillText: "text-stock-analysis",
+  mobileActive: "text-stock-analysis",
+  chartFill: "#4A6FA5",
+  chartStroke: "#3A587F",
+};
+
 export const SUBSCRIPTIONS_ACCENT: ModuleAccent = {
   rail: "bg-subscriptions",
   labelText: "text-subscriptions",
@@ -214,6 +234,20 @@ function awbModule(): PortalModule {
   };
 }
 
+function stockAnalysisModule(): PortalModule {
+  return {
+    id: "stockAnalysis",
+    label: "Stock analysis",
+    icon: TrendingUp,
+    adminOnly: true,
+    accent: STOCK_ANALYSIS_ACCENT,
+    items: [
+      { label: "Dashboard", href: "/stock-analysis/dashboard", icon: LayoutDashboard },
+      { label: "Trends", href: "/stock-analysis/trends", icon: TrendingUp },
+    ],
+  };
+}
+
 function subscriptionsModule(): PortalModule {
   return {
     id: "subscriptions",
@@ -233,6 +267,7 @@ export function getPortalModules(showAdmin: boolean): PortalModule[] {
   const modules = [codModule(), fulfillmentModule(), awbModule()];
   if (showAdmin) {
     modules.push(stockModule());
+    modules.push(stockAnalysisModule());
     modules.push(subscriptionsModule());
   }
   return modules;
@@ -247,6 +282,8 @@ export function modulePathPrefixes(id: ModuleId): string[] {
       return ["/fulfillment", "/history"];
     case "stock":
       return ["/stock-balance"];
+    case "stockAnalysis":
+      return ["/stock-analysis"];
     case "awb":
       return ["/awb"];
     case "subscriptions":
@@ -363,6 +400,20 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     moduleId: "stock",
     moduleLabel: "Stock balance",
     accent: STOCK_ACCENT,
+  },
+  {
+    path: "/stock-analysis/dashboard",
+    title: "Dashboard",
+    moduleId: "stockAnalysis",
+    moduleLabel: "Stock analysis",
+    accent: STOCK_ANALYSIS_ACCENT,
+  },
+  {
+    path: "/stock-analysis/trends",
+    title: "Trends",
+    moduleId: "stockAnalysis",
+    moduleLabel: "Stock analysis",
+    accent: STOCK_ANALYSIS_ACCENT,
   },
   {
     path: "/awb",

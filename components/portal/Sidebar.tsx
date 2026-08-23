@@ -235,7 +235,13 @@ export function Sidebar({
               ].join(" ")}
             >
               <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
-              <span>{module.label === "Stock balance" ? "Stock" : module.label}</span>
+              <span>
+                {module.label === "Stock balance"
+                  ? "Stock"
+                  : module.label === "Stock analysis"
+                    ? "Analysis"
+                    : module.label}
+              </span>
             </button>
           );
         })}

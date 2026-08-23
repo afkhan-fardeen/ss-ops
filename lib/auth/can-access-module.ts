@@ -4,10 +4,14 @@ import { isPortalAdmin } from "./is-portal-admin";
 import { PortalAuthError } from "./require-portal-admin";
 import { getUserAllowedModules } from "@/lib/supabase/profiles";
 
+function needsExplicitGrant(moduleId: ModuleId): boolean {
+  return moduleId === "stock" || moduleId === "stockAnalysis" || moduleId === "subscriptions";
+}
+
 /**
  * Whether the current user may use a given module.
  * - Admins: always true
- * - Members with allowed_modules = null: all modules except stock & subscriptions
+ * - Members with allowed_modules = null: all modules except stock, stock analysis & subscriptions
  *   (those require an explicit grant or portal admin)
  * - Members with an array: only listed module ids
  */
@@ -23,13 +27,13 @@ export async function canAccessModule(moduleId: ModuleId): Promise<boolean> {
 
   if (session.mode !== "supabase" || !session.userId) {
     // Shared-password sessions: COD / Fulfillment / AWB only.
-    return moduleId !== "stock" && moduleId !== "subscriptions";
+    return !needsExplicitGrant(moduleId);
   }
 
   const allowed = await getUserAllowedModules(session.userId);
   if (allowed === null) {
     // Unrestricted members still need an explicit grant for stock & subscriptions.
-    return moduleId !== "stock" && moduleId !== "subscriptions";
+    return !needsExplicitGrant(moduleId);
   }
   return allowed.includes(moduleId);
 }

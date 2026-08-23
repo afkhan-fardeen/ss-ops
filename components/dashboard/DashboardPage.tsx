@@ -10,6 +10,7 @@ const BORDER: Record<string, string> = {
   cod: "border-l-cod",
   fulfillment: "border-l-fulfillment",
   stock: "border-l-stock",
+  stockAnalysis: "border-l-stock-analysis",
   awb: "border-l-awb",
   subscriptions: "border-l-subscriptions",
 };

@@ -33,6 +33,10 @@ const config: Config = {
           DEFAULT: "#5C6B73",
           bg: "rgba(92,107,115,0.12)",
         },
+        "stock-analysis": {
+          DEFAULT: "#4A6FA5",
+          bg: "rgba(74,111,165,0.15)",
+        },
         awb: {
           DEFAULT: "#2E6BAF",
           bg: "rgba(46,107,175,0.15)",

@@ -17,6 +17,7 @@ import {
   summarizeStockBalanceRows,
   type StockBalanceRow,
 } from "./build-balance-rows";
+import { buildStoreComparison, recordMismatchSnapshot } from "./record-mismatch-snapshot";
 
 const PAGE_SIZE = 10;
 
@@ -147,8 +148,25 @@ export async function loadStockBalanceCatalog(): Promise<StockBalancePreview> {
 }
 
 /** Mismatch sweep — full catalog, both stores, mismatch-only, no pagination. */
-export async function loadMismatchedStockBalance(): Promise<StockBalancePreview> {
+export async function loadMismatchedStockBalance(
+  capturedBy?: string | null,
+): Promise<StockBalancePreview> {
   const catalog = await loadStockBalanceCatalog();
+  try {
+    await recordMismatchSnapshot({
+      totalItems: catalog.itemCount,
+      matched: catalog.summary.matched,
+      mismatched: catalog.summary.mismatched,
+      unlinked: catalog.summary.unlinked,
+      ambiguous: catalog.summary.ambiguous,
+      skipped: catalog.summary.skipped,
+      storeComparison: buildStoreComparison(catalog.rows),
+      capturedBy,
+    });
+  } catch (e) {
+    console.warn("[stock-mismatch-snapshot] insert threw:", e);
+  }
+
   const rows = catalog.rows.filter((row) => row.mismatch);
   return {
     ...catalog,

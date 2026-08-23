@@ -24,6 +24,10 @@ const MODULE_META: Record<string, { description: string; href: string }> = {
     description: "Compare Ubex inventory with Shopify and restock on hand.",
     href: "/stock-balance/balance",
   },
+  stockAnalysis: {
+    description: "Mismatch trends, catalog composition, and sync health over time.",
+    href: "/stock-analysis/dashboard",
+  },
   awb: {
     description: "Look up an order number and preview the UBEX Airway Bill PDF.",
     href: "/awb",

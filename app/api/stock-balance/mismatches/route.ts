@@ -8,8 +8,10 @@ export const maxDuration = 300;
 
 /** GET /api/stock-balance/mismatches — full-catalog sweep, mismatch rows only. */
 export async function GET() {
+  let capturedBy: string | null = null;
   try {
-    await requireModuleAccess("stock");
+    const session = await requireModuleAccess("stock");
+    capturedBy = session.userId ?? null;
   } catch (e) {
     if (e instanceof PortalAuthError) {
       return NextResponse.json({ ok: false, error: e.message }, { status: e.status });
@@ -18,7 +20,7 @@ export async function GET() {
   }
 
   try {
-    const preview = await loadMismatchedStockBalance();
+    const preview = await loadMismatchedStockBalance(capturedBy);
     return NextResponse.json({ ok: true, ...preview });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Failed to load mismatched stock";
