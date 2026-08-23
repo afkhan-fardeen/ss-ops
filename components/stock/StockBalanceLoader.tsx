@@ -5,22 +5,48 @@ import { Loader2 } from "lucide-react";
 import { useStockBalancePreview } from "@/hooks/useStockBalancePreview";
 import { StockBalanceView } from "@/components/stock/StockBalanceView";
 
+function SweepLoadingState() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 rounded-card border border-line bg-white py-16 shadow-soft">
+      <Loader2 size={28} className="animate-spin-slow text-muted" />
+      <p className="text-[13px] font-medium text-ink">Finding all mismatches…</p>
+      <p className="max-w-sm text-center text-[12px] text-muted">
+        Fetching products from Ubex and matching Shopify by barcode. Large catalogs may take
+        a minute — Ubex limits how fast we can page inventory. You can leave this page; you
+        will get a notification when the refresh finishes.
+      </p>
+    </div>
+  );
+}
+
 export function StockBalanceLoader() {
-  const { preview, loading, error, search, load, refresh } = useStockBalancePreview();
+  const {
+    preview,
+    loading,
+    sweepLoading,
+    error,
+    search,
+    mode,
+    load,
+    refresh,
+    loadMismatches,
+    refreshMismatches,
+    exitSweep,
+  } = useStockBalancePreview();
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
 
   useEffect(() => {
-    if (!preview && !loading && !error) {
+    if (!preview && !loading && !error && !sweepLoading) {
       void load({ page: 1, search: "" });
     }
-  }, [preview, loading, error, load]);
+  }, [preview, loading, error, sweepLoading, load]);
 
   async function handleSearchChange(value: string) {
     await load({ search: value, page: 1, append: false });
   }
 
   async function handleLoadMore() {
-    if (!preview?.hasNextPage) return;
+    if (!preview?.hasNextPage || mode === "sweep") return;
     setLoadMoreLoading(true);
     try {
       await load({
@@ -32,6 +58,10 @@ export function StockBalanceLoader() {
     } finally {
       setLoadMoreLoading(false);
     }
+  }
+
+  if (sweepLoading) {
+    return <SweepLoadingState />;
   }
 
   if (loading && !preview) {
@@ -54,7 +84,7 @@ export function StockBalanceLoader() {
         </div>
         <button
           type="button"
-          onClick={() => void refresh()}
+          onClick={() => void (mode === "sweep" ? refreshMismatches() : refresh())}
           className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas"
         >
           Retry
@@ -77,12 +107,21 @@ export function StockBalanceLoader() {
       page={preview.page}
       hasNextPage={preview.hasNextPage}
       search={preview.search}
+      mode={mode}
       summary={preview.summary}
       refreshLoading={loading}
       loadMoreLoading={loadMoreLoading}
+      sweepLoading={sweepLoading}
       onSearchChange={(v) => void handleSearchChange(v)}
       onLoadMore={() => void handleLoadMore()}
-      onRefresh={() => void refresh({ silent: true })}
+      onFindMismatches={() => void loadMismatches()}
+      onExitSweep={() => void exitSweep()}
+      onRefresh={() =>
+        void (mode === "sweep" ? refreshMismatches() : refresh({ silent: true }))
+      }
+      onAfterSync={
+        mode === "sweep" ? undefined : () => void refresh({ silent: true })
+      }
     />
   );
 }

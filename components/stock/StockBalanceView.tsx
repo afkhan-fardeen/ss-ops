@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, PackagePlus, RefreshCw, X } from "lucide-react";
 import type { StockBalanceRow } from "@/lib/stock/build-balance-rows";
+import type { StockBalanceMode } from "@/lib/stock/load-stock-balance-preview";
 import {
   applyStockBalanceFilters,
   DEFAULT_STOCK_BALANCE_FILTERS,
@@ -26,6 +27,7 @@ type Props = {
   page: number;
   hasNextPage: boolean;
   search: string;
+  mode: StockBalanceMode;
   summary: {
     matched: number;
     unlinked: number;
@@ -35,9 +37,14 @@ type Props = {
   };
   refreshLoading?: boolean;
   loadMoreLoading?: boolean;
+  sweepLoading?: boolean;
   onSearchChange: (value: string) => void;
   onLoadMore: () => void;
+  onFindMismatches: () => void;
+  onExitSweep: () => void;
   onRefresh?: () => void;
+  /** Browse-only: reload current page after a successful sync. Sweep is a no-op. */
+  onAfterSync?: () => void;
 };
 
 const FILTER_CHIPS: Array<{ key: keyof StockBalanceFilterState; label: string }> = [
@@ -97,15 +104,22 @@ export function StockBalanceView({
   page,
   hasNextPage,
   search,
+  mode,
   summary,
   refreshLoading,
   loadMoreLoading,
+  sweepLoading,
   onSearchChange,
   onLoadMore,
+  onFindMismatches,
+  onExitSweep,
   onRefresh,
+  onAfterSync,
 }: Props) {
   const { state: restockState, restockOne, restockBulk, running } = useRestockQueue();
-  const [filters, setFilters] = useState<StockBalanceFilterState>(DEFAULT_STOCK_BALANCE_FILTERS);
+  const [filters, setFilters] = useState<StockBalanceFilterState>(
+    mode === "sweep" ? WEEKLY_RESTOCK_PRESET : DEFAULT_STOCK_BALANCE_FILTERS,
+  );
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [confirmRows, setConfirmRows] = useState<StockBalanceRow[] | null>(null);
@@ -116,11 +130,18 @@ export function StockBalanceView({
   }, [search]);
 
   useEffect(() => {
+    setFilters(mode === "sweep" ? WEEKLY_RESTOCK_PRESET : DEFAULT_STOCK_BALANCE_FILTERS);
+    setSelected(new Set());
+  }, [mode]);
+
+  useEffect(() => {
     const t = setTimeout(() => {
-      if (searchDraft !== search) onSearchChange(searchDraft);
+      if (searchDraft === search) return;
+      if (mode === "sweep" && searchDraft === "") return;
+      onSearchChange(searchDraft);
     }, 300);
     return () => clearTimeout(t);
-  }, [searchDraft, search, onSearchChange]);
+  }, [searchDraft, search, onSearchChange, mode]);
 
   const filtered = useMemo(
     () => applyStockBalanceFilters(rows, filters),
@@ -174,7 +195,7 @@ export function StockBalanceView({
     if (inputs.length === 1) await restockOne(inputs[0]!);
     else await restockBulk(inputs);
     clearSelection();
-    onRefresh?.();
+    onAfterSync?.();
   }
 
   return (
@@ -200,6 +221,11 @@ export function StockBalanceView({
         hasNextPage={hasNextPage}
         onLoadMore={onLoadMore}
         loadMoreLoading={loadMoreLoading}
+        mode={mode}
+        mismatchCount={rows.length}
+        sweepLoading={sweepLoading}
+        onFindMismatches={onFindMismatches}
+        onExitSweep={onExitSweep}
       />
 
       <div className="flex flex-wrap items-center gap-2">
@@ -239,7 +265,7 @@ export function StockBalanceView({
             ) : (
               <RefreshCw size={14} />
             )}
-            Refresh
+            {mode === "sweep" ? "Refresh mismatches" : "Refresh"}
           </button>
         </div>
       </div>
@@ -278,7 +304,9 @@ export function StockBalanceView({
 
       {filtered.length === 0 ? (
         <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-[13px] text-muted shadow-soft">
-          No products in this view. Try another search or clear filters.
+          {mode === "sweep"
+            ? "No mismatches in this filter set. Clear filters to see the full sweep."
+            : "No products in this view. Try another search or clear filters."}
         </p>
       ) : (
         <div className="space-y-2">

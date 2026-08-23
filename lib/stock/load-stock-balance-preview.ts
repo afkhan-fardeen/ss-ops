@@ -1,10 +1,12 @@
 import {
+  fetchUbexInventoryAll,
   fetchUbexInventoryPage,
   fetchUbexStockByIds,
   searchUbexInventory,
   type UbexInventoryItem,
 } from "@/lib/ubex/inventory";
 import {
+  fetchAllShopifyInventoryAtLocation,
   fetchShopifyInventoryByBarcodes,
   getDefaultShopifyLocation,
   type ShopifyLocation,
@@ -18,6 +20,8 @@ import {
 
 const PAGE_SIZE = 10;
 
+export type StockBalanceMode = "browse" | "sweep";
+
 export type StockBalancePreview = {
   rows: StockBalanceRow[];
   location: ShopifyLocation;
@@ -28,6 +32,7 @@ export type StockBalancePreview = {
   page: number;
   hasNextPage: boolean;
   search: string;
+  mode: StockBalanceMode;
   summary: ReturnType<typeof summarizeStockBalanceRows>;
 };
 
@@ -78,6 +83,7 @@ async function buildPreviewFromUbex(
     page,
     hasNextPage: ubexItems.length >= PAGE_SIZE,
     search,
+    mode: "browse",
     summary: summarizeStockBalanceRows(rows),
   };
 }
@@ -101,6 +107,44 @@ export async function searchStockBalance(
   let ubexItems = await searchUbexInventory(q, safePage);
   ubexItems = await enrichUbexStock(ubexItems);
   return buildPreviewFromUbex(ubexItems, safePage, q);
+}
+
+/** Mismatch sweep — full catalog, both stores, mismatch-only, no pagination. */
+export async function loadMismatchedStockBalance(): Promise<StockBalancePreview> {
+  const ubexItems = await fetchUbexInventoryAll();
+  const store2Configured = isStore2Configured();
+  const location = await getDefaultShopifyLocation(1);
+  let locationB: ShopifyLocation | null = null;
+
+  const storeAPromise = fetchAllShopifyInventoryAtLocation(location.id, 1);
+  const storeBPromise = store2Configured
+    ? (async () => {
+        locationB = await getDefaultShopifyLocation(2);
+        return fetchAllShopifyInventoryAtLocation(locationB.id, 2);
+      })()
+    : Promise.resolve(null);
+
+  const [storeAByBarcode, storeBByBarcode] = await Promise.all([
+    storeAPromise,
+    storeBPromise,
+  ]);
+
+  const allRows = buildStockBalanceRows(ubexItems, storeAByBarcode, storeBByBarcode);
+  const rows = allRows.filter((row) => row.mismatch);
+
+  return {
+    rows,
+    location,
+    locationB,
+    store2Configured,
+    fetchedAt: new Date().toISOString(),
+    itemCount: rows.length,
+    page: 1,
+    hasNextPage: false,
+    search: "",
+    mode: "sweep",
+    summary: summarizeStockBalanceRows(rows),
+  };
 }
 
 /** @deprecated Use loadStockBalancePage / searchStockBalance */
