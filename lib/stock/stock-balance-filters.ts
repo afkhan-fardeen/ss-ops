@@ -28,7 +28,11 @@ export function applyStockBalanceFilters(
 ): StockBalanceRow[] {
   return rows.filter((row) => {
     if (filters.quantityMismatchOnly && !isSellableMismatch(row)) return false;
-    if (filters.noCommittedOnly && (row.shopifyCommitted ?? 0) !== 0) return false;
+    if (filters.noCommittedOnly) {
+      const committedA = row.storeA.committed ?? row.shopifyCommitted ?? 0;
+      const committedB = row.storeB?.committed ?? 0;
+      if (committedA !== 0 || committedB !== 0) return false;
+    }
     if (filters.hideUnlinked && row.status === "unlinked") return false;
     if (filters.hideAmbiguous && row.status === "ambiguous") return false;
     return true;

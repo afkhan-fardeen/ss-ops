@@ -29,6 +29,10 @@ const config: Config = {
           bg: "rgba(107,138,62,0.15)",
           bloom: "#F0CE7E",
         },
+        "stock-b": {
+          DEFAULT: "#5C6B73",
+          bg: "rgba(92,107,115,0.12)",
+        },
         awb: {
           DEFAULT: "#2E6BAF",
           bg: "rgba(46,107,175,0.15)",

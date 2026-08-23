@@ -1,52 +1,109 @@
-import { fetchUbexInventoryAll, fetchUbexStockByIds, stockBalanceMaxItems } from "@/lib/ubex/inventory";
 import {
-  fetchAllShopifyInventoryAtLocation,
+  fetchUbexInventoryPage,
+  fetchUbexStockByIds,
+  searchUbexInventory,
+  type UbexInventoryItem,
+} from "@/lib/ubex/inventory";
+import {
+  fetchShopifyInventoryByBarcodes,
   getDefaultShopifyLocation,
   type ShopifyLocation,
 } from "@/lib/shopify/inventory-read";
+import { isStore2Configured } from "@/lib/store2/client";
 import {
   buildStockBalanceRows,
   summarizeStockBalanceRows,
   type StockBalanceRow,
 } from "./build-balance-rows";
 
+const PAGE_SIZE = 10;
+
 export type StockBalancePreview = {
   rows: StockBalanceRow[];
   location: ShopifyLocation;
+  locationB: ShopifyLocation | null;
+  store2Configured: boolean;
   fetchedAt: string;
   itemCount: number;
+  page: number;
+  hasNextPage: boolean;
+  search: string;
   summary: ReturnType<typeof summarizeStockBalanceRows>;
 };
 
-/** Read-only: Ubex list + Shopify inventory join by barcode. No writes. */
-export async function loadStockBalancePreview(): Promise<StockBalancePreview> {
-  const location = await getDefaultShopifyLocation();
-  let ubexItems = await fetchUbexInventoryAll();
-
-  // Fresh get-stock only for smaller catalogs (list already includes available_qty).
-  const ids = ubexItems.map((i) => i.id);
-  const maxItems = stockBalanceMaxItems();
-  const refreshStock = ids.length > 0 && (maxItems !== null ? ids.length <= maxItems : ids.length <= 200);
-  if (refreshStock) {
-    try {
-      const fresh = await fetchUbexStockByIds(ids);
-      ubexItems = ubexItems.map((item) => ({
-        ...item,
-        stock: fresh.get(item.id) ?? item.stock,
-      }));
-    } catch (e) {
-      console.warn("[stock-balance] Ubex get-stock failed, using list stock:", e);
-    }
+async function enrichUbexStock(items: UbexInventoryItem[]): Promise<UbexInventoryItem[]> {
+  if (items.length === 0) return items;
+  try {
+    const fresh = await fetchUbexStockByIds(items.map((i) => i.id));
+    return items.map((item) => ({
+      ...item,
+      stock: fresh.get(item.id) ?? item.stock,
+    }));
+  } catch (e) {
+    console.warn("[stock-balance] Ubex get-stock failed, using list stock:", e);
+    return items;
   }
+}
 
-  const shopifyByBarcode = await fetchAllShopifyInventoryAtLocation(location.id);
-  const rows = buildStockBalanceRows(ubexItems, shopifyByBarcode);
+async function buildPreviewFromUbex(
+  ubexItems: UbexInventoryItem[],
+  page: number,
+  search: string,
+): Promise<StockBalancePreview> {
+  const store2Configured = isStore2Configured();
+  const location = await getDefaultShopifyLocation(1);
+  let locationB: ShopifyLocation | null = null;
+
+  const barcodes = ubexItems.map((i) => i.barcode.trim()).filter(Boolean);
+
+  const storeAPromise = fetchShopifyInventoryByBarcodes(barcodes, location.id, 1);
+  const storeBPromise = store2Configured
+    ? (async () => {
+        locationB = await getDefaultShopifyLocation(2);
+        return fetchShopifyInventoryByBarcodes(barcodes, locationB.id, 2);
+      })()
+    : Promise.resolve(null);
+
+  const [storeAByBarcode, storeBByBarcode] = await Promise.all([storeAPromise, storeBPromise]);
+
+  const rows = buildStockBalanceRows(ubexItems, storeAByBarcode, storeBByBarcode);
 
   return {
     rows,
     location,
+    locationB,
+    store2Configured,
     fetchedAt: new Date().toISOString(),
     itemCount: ubexItems.length,
+    page,
+    hasNextPage: ubexItems.length >= PAGE_SIZE,
+    search,
     summary: summarizeStockBalanceRows(rows),
   };
+}
+
+/** Default browse view — Ubex page N (10 items), both stores by barcode. */
+export async function loadStockBalancePage(page = 1): Promise<StockBalancePreview> {
+  const safePage = Math.max(1, Math.floor(page) || 1);
+  let ubexItems = await fetchUbexInventoryPage(safePage);
+  ubexItems = await enrichUbexStock(ubexItems);
+  return buildPreviewFromUbex(ubexItems, safePage, "");
+}
+
+/** Search view — Ubex ?search= + page. */
+export async function searchStockBalance(
+  query: string,
+  page = 1,
+): Promise<StockBalancePreview> {
+  const q = query.trim();
+  const safePage = Math.max(1, Math.floor(page) || 1);
+  if (!q) return loadStockBalancePage(safePage);
+  let ubexItems = await searchUbexInventory(q, safePage);
+  ubexItems = await enrichUbexStock(ubexItems);
+  return buildPreviewFromUbex(ubexItems, safePage, q);
+}
+
+/** @deprecated Use loadStockBalancePage / searchStockBalance */
+export async function loadStockBalancePreview(): Promise<StockBalancePreview> {
+  return loadStockBalancePage(1);
 }

@@ -1,10 +1,22 @@
+import type { ShopifyStoreId } from "./inventory-read";
+
 type ShopifyEnv = {
   domain: string;
   token: string;
   version: string;
 };
 
-function getEnv(): ShopifyEnv {
+function getEnv(storeId: ShopifyStoreId = 1): ShopifyEnv {
+  if (storeId === 2) {
+    const domain = process.env.SHOPIFY_STORE2_DOMAIN;
+    const token = process.env.SHOPIFY_STORE2_ACCESS_TOKEN;
+    const version = process.env.SHOPIFY_STORE2_API_VERSION ?? "2024-01";
+    if (!domain || !token) {
+      throw new Error("Missing SHOPIFY_STORE2_DOMAIN or SHOPIFY_STORE2_ACCESS_TOKEN");
+    }
+    return { domain, token, version };
+  }
+
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
   const version = process.env.SHOPIFY_API_VERSION ?? "2024-01";
@@ -14,8 +26,12 @@ function getEnv(): ShopifyEnv {
   return { domain, token, version };
 }
 
-async function shopifyGraphql<T>(query: string, variables: Record<string, unknown>): Promise<T> {
-  const { domain, token, version } = getEnv();
+async function shopifyGraphql<T>(
+  query: string,
+  variables: Record<string, unknown>,
+  storeId: ShopifyStoreId = 1,
+): Promise<T> {
+  const { domain, token, version } = getEnv(storeId);
   const url = `https://${domain}/admin/api/${version}/graphql.json`;
   const res = await fetch(url, {
     method: "POST",
@@ -73,24 +89,29 @@ export async function setShopifyOnHand(
   /** Expected current on_hand for compare-and-swap; pass null to skip the check. */
   changeFromQuantity: number | null,
   idempotencyKey: string,
+  storeId: ShopifyStoreId = 1,
 ): Promise<void> {
   const qty = Math.max(0, Math.floor(quantity));
-  const data = await shopifyGraphql<SetOnHandData>(SET_ON_HAND_MUTATION, {
-    input: {
-      name: "on_hand",
-      reason: "correction",
-      quantities: [
-        {
-          inventoryItemId,
-          locationId: locationGid(locationId),
-          quantity: qty,
-          changeFromQuantity:
-            changeFromQuantity === null ? null : Math.max(0, Math.floor(changeFromQuantity)),
-        },
-      ],
+  const data = await shopifyGraphql<SetOnHandData>(
+    SET_ON_HAND_MUTATION,
+    {
+      input: {
+        name: "on_hand",
+        reason: "correction",
+        quantities: [
+          {
+            inventoryItemId,
+            locationId: locationGid(locationId),
+            quantity: qty,
+            changeFromQuantity:
+              changeFromQuantity === null ? null : Math.max(0, Math.floor(changeFromQuantity)),
+          },
+        ],
+      },
+      idempotencyKey,
     },
-    idempotencyKey,
-  });
+    storeId,
+  );
 
   const errors = data.inventorySetQuantities.userErrors;
   if (errors.length > 0) {

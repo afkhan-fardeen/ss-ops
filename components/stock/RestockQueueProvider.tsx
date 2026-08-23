@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import type { StoreInventorySide } from "@/lib/stock/build-balance-rows";
 
 export type RestockRowInput = {
   ubexId: string;
@@ -19,6 +20,9 @@ export type RestockRowInput = {
   shopifyOnHand: number | null;
   shopifyAvailable: number | null;
   shopifyCommitted: number | null;
+  storeA?: StoreInventorySide;
+  storeB?: StoreInventorySide | null;
+  sharedAvailable?: number | null;
 };
 
 export type RestockRowStatus = "idle" | "busy" | "success" | "error";
@@ -36,13 +40,21 @@ type RestockApiResult = {
   idempotent?: boolean;
   error?: string;
   ubexStock?: number;
+  sharedAvailable?: number;
+  stores?: Array<{
+    storeId: 1 | 2;
+    ok: boolean;
+    skipped?: boolean;
+    idempotent?: boolean;
+    error?: string;
+  }>;
   previousOnHand?: number;
   newOnHand?: number;
 };
 
 type Action =
   | { type: "busy"; ubexId: string }
-  | { type: "success"; ubexId: string; skipped?: boolean; idempotent?: boolean }
+  | { type: "success"; ubexId: string }
   | { type: "error"; ubexId: string; message: string }
   | { type: "reset"; ubexId: string };
 
@@ -59,6 +71,21 @@ function reducer(state: RestockRowStateMap, action: Action): RestockRowStateMap 
     default:
       return state;
   }
+}
+
+function summarizeStores(result: RestockApiResult): string {
+  if (!result.stores?.length) {
+    if (result.skipped) return "already in sync";
+    if (result.idempotent) return "already synced today";
+    return `shared → ${result.sharedAvailable ?? result.ubexStock ?? "?"}`;
+  }
+  const parts = result.stores.map((s) => {
+    const label = s.storeId === 1 ? "A" : "B";
+    if (s.skipped) return `${label} skipped`;
+    if (!s.ok) return `${label} failed`;
+    return `${label} ok`;
+  });
+  return parts.join(" · ");
 }
 
 async function apiRestockSingle(input: { ubexId: string; barcode: string }): Promise<RestockApiResult> {
@@ -81,12 +108,10 @@ async function apiRestockBulk(
   return res.json() as Promise<{ ok: boolean; results?: RestockApiResult[]; error?: string }>;
 }
 
-/** Stable id so a running bulk restock's loading toast gets replaced in place by its result. */
 export const RESTOCK_TOAST_ID = "stock-balance-restock";
 
 export type RestockQueueContextValue = {
   state: RestockRowStateMap;
-  /** True while any restockOne/restockBulk call is in flight — mounted at the shell layout so this survives navigating between pages. */
   running: boolean;
   activeCount: number;
   restockOne: (row: RestockRowInput) => Promise<boolean>;
@@ -106,22 +131,15 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
     try {
       const result = await apiRestockSingle({ ubexId: row.ubexId, barcode: row.barcode });
       if (!result.ok) {
-        dispatch({ type: "error", ubexId: row.ubexId, message: result.error ?? "Restock failed" });
-        toast.error(result.error ?? "Restock failed");
+        dispatch({ type: "error", ubexId: row.ubexId, message: result.error ?? "Sync failed" });
+        toast.error(result.error ?? "Sync failed");
         return false;
       }
-      dispatch({
-        type: "success",
-        ubexId: row.ubexId,
-        skipped: result.skipped,
-        idempotent: result.idempotent,
-      });
-      if (result.skipped) toast.info(`${row.productName}: already in sync`);
-      else if (result.idempotent) toast.info(`${row.productName}: already restocked today`);
-      else toast.success(`${row.productName}: available → ${result.ubexStock ?? "?"}`);
+      dispatch({ type: "success", ubexId: row.ubexId });
+      toast.success(`${row.productName}: ${summarizeStores(result)}`);
       return true;
     } catch (e) {
-      const message = e instanceof Error ? e.message : "Restock failed";
+      const message = e instanceof Error ? e.message : "Sync failed";
       dispatch({ type: "error", ubexId: row.ubexId, message });
       toast.error(message);
       return false;
@@ -135,7 +153,7 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
       for (const row of rows) dispatch({ type: "busy", ubexId: row.ubexId });
       setActiveCount((n) => n + rows.length);
 
-      toast.loading(`Restocking ${rows.length} item${rows.length === 1 ? "" : "s"}…`, {
+      toast.loading(`Syncing ${rows.length} item${rows.length === 1 ? "" : "s"}…`, {
         id: RESTOCK_TOAST_ID,
       });
 
@@ -143,7 +161,7 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
         const payload = rows.map((r) => ({ ubexId: r.ubexId, barcode: r.barcode }));
         const res = await apiRestockBulk(payload);
         if (!res.ok || !res.results) {
-          const err = res.error ?? "Bulk restock failed";
+          const err = res.error ?? "Bulk sync failed";
           for (const row of rows) dispatch({ type: "error", ubexId: row.ubexId, message: err });
           toast.error(err, { id: RESTOCK_TOAST_ID });
           return { ok: 0, fail: rows.length };
@@ -171,12 +189,12 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
           id: RESTOCK_TOAST_ID,
           action: { label: "View", onClick: () => router.push("/stock-balance/balance") },
         };
-        if (fail === 0) toast.success(`Restocked ${ok} item${ok === 1 ? "" : "s"}`, toastOpts);
-        else toast.warning(`${ok} restocked, ${fail} failed`, toastOpts);
+        if (fail === 0) toast.success(`Synced ${ok} item${ok === 1 ? "" : "s"}`, toastOpts);
+        else toast.warning(`${ok} synced, ${fail} failed`, toastOpts);
 
         return { ok, fail };
       } catch (e) {
-        const message = e instanceof Error ? e.message : "Bulk restock failed";
+        const message = e instanceof Error ? e.message : "Bulk sync failed";
         for (const row of rows) dispatch({ type: "error", ubexId: row.ubexId, message });
         toast.error(message, { id: RESTOCK_TOAST_ID });
         return { ok: 0, fail: rows.length };

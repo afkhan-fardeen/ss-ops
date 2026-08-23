@@ -83,11 +83,29 @@ function mapRow(row: NonNullable<UbexInventoryListResponse["data"]>[number]): Ub
 
 /** GET /api/v2/inventory?page=N — read-only list (10 items per page in Ubex API). */
 export async function fetchUbexInventoryPage(page: number): Promise<UbexInventoryItem[]> {
+  return fetchUbexInventoryWithQuery(page);
+}
+
+/** GET /api/v2/inventory?search=…&page=N — scoped list by Ubex search term. */
+export async function searchUbexInventory(
+  query: string,
+  page = 1,
+): Promise<UbexInventoryItem[]> {
+  const q = query.trim();
+  if (!q) return fetchUbexInventoryPage(page);
+  return fetchUbexInventoryWithQuery(page, q);
+}
+
+async function fetchUbexInventoryWithQuery(
+  page: number,
+  search?: string,
+): Promise<UbexInventoryItem[]> {
   const max429Retries = 5;
   let lastError = "";
+  const searchPart = search ? `&search=${encodeURIComponent(search)}` : "";
 
   for (let attempt = 1; attempt <= max429Retries; attempt++) {
-    const res = await ubexFetch(`/api/v2/inventory?page=${page}`);
+    const res = await ubexFetch(`/api/v2/inventory?page=${page}${searchPart}`);
     const json = (await res.json()) as UbexInventoryListResponse;
 
     if (res.status === 429 && attempt < max429Retries) {
@@ -112,7 +130,10 @@ export async function fetchUbexInventoryPage(page: number): Promise<UbexInventor
     return out;
   }
 
-  throw new Error(lastError || `Ubex inventory list failed for page ${page}`);
+  throw new Error(
+    lastError ||
+      `Ubex inventory list failed for page ${page}${search ? ` search=${search}` : ""}`,
+  );
 }
 
 export function stockBalanceMaxItems(): number | null {

@@ -1,129 +1,208 @@
 import type { UbexInventoryItem } from "@/lib/ubex/inventory";
 import type { ShopifyVariantInventory } from "@/lib/shopify/inventory-read";
+import { sharedAvailable } from "./stock-balance-target";
 
 export type StockBalanceStatus = "matched" | "unlinked" | "ambiguous" | "skipped";
+
+export type StoreInventorySide = {
+  onHand: number | null;
+  available: number | null;
+  committed: number | null;
+  variantId: string | null;
+  inventoryItemId: string | null;
+  variantLabel: string | null;
+};
 
 export type StockBalanceRow = {
   ubexId: string;
   productName: string;
+  sku: string;
   barcode: string;
   ubexStock: number;
+  storeA: StoreInventorySide;
+  storeB: StoreInventorySide | null;
+  sharedAvailable: number | null;
+  status: StockBalanceStatus;
+  mismatch: boolean;
+  restockable: boolean;
+  /** @deprecated Prefer storeA — kept for transitional UI/scripts */
   shopifyOnHand: number | null;
   shopifyAvailable: number | null;
   shopifyCommitted: number | null;
   delta: number | null;
-  status: StockBalanceStatus;
   shopifyVariantLabel: string | null;
   shopifyVariantId: string | null;
   shopifyInventoryItemId: string | null;
-  restockable: boolean;
 };
 
 function normalizeBarcode(raw: string): string {
   return raw.trim();
 }
 
-function emptyShopifyIds(): {
-  shopifyVariantId: null;
-  shopifyInventoryItemId: null;
-  restockable: false;
-} {
-  return { shopifyVariantId: null, shopifyInventoryItemId: null, restockable: false };
+function emptySide(): StoreInventorySide {
+  return {
+    onHand: null,
+    available: null,
+    committed: null,
+    variantId: null,
+    inventoryItemId: null,
+    variantLabel: null,
+  };
+}
+
+function sideFromVariants(
+  variants: ShopifyVariantInventory[],
+): { side: StoreInventorySide; ambiguous: boolean; unlinked: boolean } {
+  if (variants.length === 0) {
+    return { side: emptySide(), ambiguous: false, unlinked: true };
+  }
+  if (variants.length > 1) {
+    return {
+      side: {
+        ...emptySide(),
+        variantLabel: `${variants.length} variants`,
+      },
+      ambiguous: true,
+      unlinked: false,
+    };
+  }
+  const v = variants[0]!;
+  return {
+    side: {
+      onHand: v.onHand,
+      available: v.available,
+      committed: v.committed,
+      variantId: v.variantId,
+      inventoryItemId: v.inventoryItemId,
+      variantLabel: v.displayName,
+    },
+    ambiguous: false,
+    unlinked: false,
+  };
+}
+
+function legacyFields(storeA: StoreInventorySide, shared: number | null) {
+  return {
+    shopifyOnHand: storeA.onHand,
+    shopifyAvailable: storeA.available,
+    shopifyCommitted: storeA.committed,
+    delta:
+      shared !== null && storeA.available !== null ? shared - storeA.available : null,
+    shopifyVariantLabel: storeA.variantLabel,
+    shopifyVariantId: storeA.variantId,
+    shopifyInventoryItemId: storeA.inventoryItemId,
+  };
 }
 
 export function buildStockBalanceRows(
   ubexItems: UbexInventoryItem[],
-  shopifyByBarcode: Map<string, ShopifyVariantInventory[]>,
+  storeAByBarcode: Map<string, ShopifyVariantInventory[]>,
+  storeBByBarcode: Map<string, ShopifyVariantInventory[]> | null,
 ): StockBalanceRow[] {
   const rows: StockBalanceRow[] = [];
+  const store2Enabled = storeBByBarcode !== null;
 
   for (const item of ubexItems) {
     const barcode = normalizeBarcode(item.barcode);
-    if (!barcode) {
+    const sku = (item.sku ?? "").trim();
+
+    if (!barcode || !item.trackQty) {
+      const storeA = emptySide();
       rows.push({
         ubexId: item.id,
         productName: item.name,
-        barcode: "",
+        sku,
+        barcode: barcode || "",
         ubexStock: item.stock,
-        shopifyOnHand: null,
-        shopifyAvailable: null,
-        shopifyCommitted: null,
-        delta: null,
+        storeA,
+        storeB: store2Enabled ? emptySide() : null,
+        sharedAvailable: null,
         status: "skipped",
-        shopifyVariantLabel: null,
-        ...emptyShopifyIds(),
+        mismatch: false,
+        restockable: false,
+        ...legacyFields(storeA, null),
       });
       continue;
     }
 
-    if (!item.trackQty) {
-      rows.push({
-        ubexId: item.id,
-        productName: item.name,
-        barcode,
-        ubexStock: item.stock,
-        shopifyOnHand: null,
-        shopifyAvailable: null,
-        shopifyCommitted: null,
-        delta: null,
-        status: "skipped",
-        shopifyVariantLabel: null,
-        ...emptyShopifyIds(),
-      });
-      continue;
-    }
+    const a = sideFromVariants(storeAByBarcode.get(barcode) ?? []);
+    const b = store2Enabled
+      ? sideFromVariants(storeBByBarcode!.get(barcode) ?? [])
+      : null;
 
-    const variants = shopifyByBarcode.get(barcode) ?? [];
-    if (variants.length === 0) {
+    if (a.ambiguous || (b?.ambiguous ?? false)) {
       rows.push({
         ubexId: item.id,
         productName: item.name,
+        sku,
         barcode,
         ubexStock: item.stock,
-        shopifyOnHand: null,
-        shopifyAvailable: null,
-        shopifyCommitted: null,
-        delta: null,
-        status: "unlinked",
-        shopifyVariantLabel: null,
-        ...emptyShopifyIds(),
-      });
-      continue;
-    }
-
-    if (variants.length > 1) {
-      rows.push({
-        ubexId: item.id,
-        productName: item.name,
-        barcode,
-        ubexStock: item.stock,
-        shopifyOnHand: null,
-        shopifyAvailable: null,
-        shopifyCommitted: null,
-        delta: null,
+        storeA: a.side,
+        storeB: b ? b.side : null,
+        sharedAvailable: null,
         status: "ambiguous",
-        shopifyVariantLabel: `${variants.length} variants`,
-        ...emptyShopifyIds(),
+        mismatch: false,
+        restockable: false,
+        ...legacyFields(a.side, null),
       });
       continue;
     }
 
-    const v = variants[0]!;
-    const delta = item.stock - v.available;
+    const aLinked = !a.unlinked;
+    const bLinked = b ? !b.unlinked : false;
+
+    if (!aLinked && !bLinked) {
+      rows.push({
+        ubexId: item.id,
+        productName: item.name,
+        sku,
+        barcode,
+        ubexStock: item.stock,
+        storeA: a.side,
+        storeB: store2Enabled ? emptySide() : null,
+        sharedAvailable: null,
+        status: "unlinked",
+        mismatch: false,
+        restockable: false,
+        ...legacyFields(a.side, null),
+      });
+      continue;
+    }
+
+    // Matched on at least one store. Store B may be null (not listed).
+    const storeBSide: StoreInventorySide | null = store2Enabled
+      ? bLinked
+        ? b!.side
+        : null
+      : null;
+
+    const shared = sharedAvailable(
+      item.stock,
+      aLinked ? a.side.committed : 0,
+      storeBSide?.committed ?? 0,
+    );
+
+    const aMismatch =
+      aLinked && a.side.available !== null && a.side.available !== shared;
+    const bMismatch =
+      storeBSide != null &&
+      storeBSide.available !== null &&
+      storeBSide.available !== shared;
+    const mismatch = aMismatch || bMismatch;
+
     rows.push({
       ubexId: item.id,
       productName: item.name,
+      sku,
       barcode,
       ubexStock: item.stock,
-      shopifyOnHand: v.onHand,
-      shopifyAvailable: v.available,
-      shopifyCommitted: v.committed,
-      delta,
+      storeA: aLinked ? a.side : emptySide(),
+      storeB: store2Enabled ? storeBSide : null,
+      sharedAvailable: shared,
       status: "matched",
-      shopifyVariantLabel: v.displayName,
-      shopifyVariantId: v.variantId,
-      shopifyInventoryItemId: v.inventoryItemId,
-      restockable: delta !== 0,
+      mismatch,
+      restockable: mismatch && (aLinked || bLinked),
+      ...legacyFields(aLinked ? a.side : emptySide(), shared),
     });
   }
 
@@ -145,7 +224,7 @@ export function summarizeStockBalanceRows(rows: StockBalanceRow[]): {
   for (const r of rows) {
     if (r.status === "matched") {
       matched++;
-      if (r.delta !== null && r.delta !== 0) mismatched++;
+      if (r.mismatch) mismatched++;
     } else if (r.status === "unlinked") unlinked++;
     else if (r.status === "ambiguous") ambiguous++;
     else if (r.status === "skipped") skipped++;

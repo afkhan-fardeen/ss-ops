@@ -32,14 +32,32 @@ export default async function StockBalanceSettingsPage() {
 
       <dl className="space-y-3 rounded-card border border-line bg-white p-5 text-[13px] shadow-soft">
         <div>
-          <dt className="font-medium text-muted">STOCK_BALANCE_MAX_ITEMS</dt>
+          <dt className="font-medium text-muted">Store A domain</dt>
           <dd className="mt-0.5 font-mono text-ink">
-            {maxItems === null ? "unset (full catalog)" : String(maxItems)}
+            {process.env.SHOPIFY_STORE_DOMAIN?.trim() || "unset"}
           </dd>
         </div>
         <div>
-          <dt className="font-medium text-muted">SHOPIFY_LOCATION_ID</dt>
-          <dd className="mt-0.5 font-mono text-ink">{locationId ?? "unset (default location)"}</dd>
+          <dt className="font-medium text-muted">Store B domain</dt>
+          <dd className="mt-0.5 font-mono text-ink">
+            {process.env.SHOPIFY_STORE2_DOMAIN?.trim() || "unset (Store B disabled)"}
+          </dd>
+        </div>
+        <div>
+          <dt className="font-medium text-muted">SHOPIFY_LOCATION_ID (Store A override)</dt>
+          <dd className="mt-0.5 font-mono text-ink">{locationId ?? "unset (auto-detect)"}</dd>
+        </div>
+        <div>
+          <dt className="font-medium text-muted">STOCK_BALANCE_MAX_ITEMS</dt>
+          <dd className="mt-0.5 font-mono text-ink">
+            {maxItems === null
+              ? "unset (unused for search-driven balance page)"
+              : String(maxItems)}
+          </dd>
+          <p className="mt-1 text-[12px] text-muted">
+            Balance page loads Ubex 10 items at a time (search / load more). This cap still
+            limits bulk sync size when set.
+          </p>
         </div>
         <div>
           <dt className="font-medium text-muted">UBEX_INVENTORY_PAGE_DELAY_MS</dt>

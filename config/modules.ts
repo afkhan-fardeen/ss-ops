@@ -87,6 +87,13 @@ export const STOCK_ACCENT: ModuleAccent = {
   chartStroke: "#546E31",
 };
 
+/** Column accent for Store B inside Stock Balance (not a nav module). */
+export const STOCK_STORE_B_ACCENT = {
+  DEFAULT: "#5C6B73",
+  bg: "rgba(92,107,115,0.12)",
+  text: "#5C6B73",
+} as const;
+
 export const HOME_ACCENT: ModuleAccent = {
   rail: "bg-ink",
   labelText: "text-ink",

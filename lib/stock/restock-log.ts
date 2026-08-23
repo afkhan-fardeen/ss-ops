@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { getSupabaseService } from "@/lib/supabase/service";
+import type { ShopifyStoreId } from "@/lib/shopify/inventory-read";
 
 export type StockRestockLogStatus = "success" | "error" | "skipped";
 
@@ -8,6 +9,7 @@ export type StockRestockLogInsert = {
   barcode: string;
   shopifyInventoryItemId: string;
   locationId: number;
+  storeId?: ShopifyStoreId;
   ubexQty: number;
   previousOnHand?: number | null;
   newOnHand?: number | null;
@@ -40,6 +42,7 @@ export async function logStockRestock(input: StockRestockLogInsert): Promise<voi
     barcode: input.barcode,
     shopify_inventory_item_id: input.shopifyInventoryItemId,
     location_id: input.locationId,
+    store_id: input.storeId ?? 1,
     ubex_qty: input.ubexQty,
     previous_on_hand: input.previousOnHand ?? null,
     new_on_hand: input.newOnHand ?? null,
@@ -55,6 +58,7 @@ export async function claimRestockIdempotency(params: {
   key: string;
   barcode: string;
   locationId: number;
+  storeId?: ShopifyStoreId;
   createdBy?: string | null;
 }): Promise<boolean> {
   const supabase = getSupabaseService();
@@ -63,6 +67,7 @@ export async function claimRestockIdempotency(params: {
     key: params.key,
     barcode: params.barcode,
     location_id: params.locationId,
+    store_id: params.storeId ?? 1,
     created_by: params.createdBy ?? null,
   });
   if (!error) return true;

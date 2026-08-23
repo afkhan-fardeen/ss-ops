@@ -6,6 +6,7 @@ export type StockRestockLogRow = {
   barcode: string;
   shopifyInventoryItemId: string;
   locationId: number;
+  storeId: 1 | 2;
   ubexQty: number;
   previousOnHand: number | null;
   newOnHand: number | null;
@@ -42,6 +43,7 @@ export async function loadStockRestockHistory(): Promise<{
       barcode: string;
       shopify_inventory_item_id: string;
       location_id: number;
+      store_id?: number | null;
       ubex_qty: number;
       previous_on_hand: number | null;
       new_on_hand: number | null;
@@ -72,6 +74,7 @@ export async function loadStockRestockHistory(): Promise<{
       barcode: log.barcode,
       shopifyInventoryItemId: log.shopify_inventory_item_id,
       locationId: log.location_id,
+      storeId: log.store_id === 2 ? 2 : 1,
       ubexQty: log.ubex_qty,
       previousOnHand: log.previous_on_hand,
       newOnHand: log.new_on_hand,

@@ -42,7 +42,7 @@ export default async function StockBalanceDashboardPage() {
     <ModuleDashboardShell
       moduleId="stock"
       title="Stock balance dashboard"
-      description="Refresh Ubex vs Shopify, fix mismatches, and review restock history."
+      description="Search Ubex inventory, compare shared available across Store A and Store B, and sync both stores."
       kpi={
         <>
           <StatCard label="Last successful restock" value={lastLabel} />
@@ -86,7 +86,7 @@ export default async function StockBalanceDashboardPage() {
         href="/stock-balance/balance"
         className="inline-flex rounded-card border border-stock bg-stock px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
       >
-        Open balance table
+        Open stock balance
       </Link>
     </ModuleDashboardShell>
   );
