@@ -324,10 +324,31 @@ export async function syncItemsAcrossStores(
   items: SyncItemInput[],
   createdBy: string | null,
 ): Promise<SyncItemResult[]> {
+  const batchStarted = Date.now();
   const results: SyncItemResult[] = [];
-  for (const item of items) {
-    results.push(await syncItemAcrossStores(item, createdBy));
+  for (let i = 0; i < items.length; i++) {
+    const itemStarted = Date.now();
+    const result = await syncItemAcrossStores(items[i]!, createdBy);
+    results.push(result);
+    console.info(
+      "[sync-shopify-from-ubex] item",
+      i + 1,
+      "/",
+      items.length,
+      "barcode=",
+      items[i]!.barcode,
+      "ok=",
+      result.ok,
+      "ms=",
+      Date.now() - itemStarted,
+    );
   }
+  console.info(
+    "[sync-shopify-from-ubex] batch complete items=",
+    items.length,
+    "ms=",
+    Date.now() - batchStarted,
+  );
   return results;
 }
 

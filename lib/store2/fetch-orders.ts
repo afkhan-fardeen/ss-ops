@@ -11,7 +11,7 @@ import { getStore2Env } from "./client";
 import type { OrdersFilter, FetchOrdersResult } from "@/lib/orders/fetch-orders";
 
 const FIELDS =
-  "id,name,order_number,customer,shipping_address,total_price,currency,financial_status,fulfillment_status,gateway,payment_gateway_names,created_at";
+  "id,name,order_number,customer,shipping_address,total_price,currency,financial_status,fulfillment_status,gateway,payment_gateway_names,created_at,line_items";
 
 async function fetchFromStore2(filter: OrdersFilter): Promise<ShopifyOrder[]> {
   const { domain, token, version } = getStore2Env();
@@ -157,7 +157,12 @@ export async function fetchStore2Orders(filter: OrdersFilter): Promise<FetchOrde
   const all = await fetchFromStore2(filter);
   const ordersScannedInWindow = all.length;
 
-  void upsertS2OrdersCache(all).catch((e) => console.warn("[s2-orders-cache] background upsert:", e));
+  void upsertS2OrdersCache(all)
+    .then(async () => {
+      const { upsertOrdersLineItems } = await import("@/lib/supabase/order-line-items");
+      await upsertOrdersLineItems(all, 2);
+    })
+    .catch((e) => console.warn("[s2-orders-cache] background upsert:", e));
 
   let orders = all;
   if (filter.cod === "only") orders = all.filter(orderLooksLikeCod);

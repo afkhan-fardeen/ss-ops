@@ -13,6 +13,18 @@ export type ShopifyCustomer = {
   last_name?: string | null;
 };
 
+export type ShopifyLineItem = {
+  id: number;
+  product_id?: number | null;
+  variant_id?: number | null;
+  sku?: string | null;
+  barcode?: string | null;
+  title: string;
+  variant_title?: string | null;
+  quantity: number;
+  price?: string | null;
+};
+
 export type ShopifyOrder = {
   id: number;
   name: string;
@@ -27,6 +39,7 @@ export type ShopifyOrder = {
   created_at?: string | null;
   customer?: ShopifyCustomer | null;
   shipping_address?: ShopifyAddress | null;
+  line_items?: ShopifyLineItem[];
 };
 
 export type ShopifyOrdersResponse = { orders: ShopifyOrder[] };

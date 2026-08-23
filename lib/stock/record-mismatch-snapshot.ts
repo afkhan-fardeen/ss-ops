@@ -1,4 +1,8 @@
 import { getSupabaseService } from "@/lib/supabase/service";
+import {
+  buildCommitmentCatalogSummary,
+  type ShortProduct,
+} from "@/lib/analysis/commitment";
 import type { StockBalanceRow } from "./build-balance-rows";
 
 export type StoreComparisonItem = {
@@ -35,6 +39,12 @@ export async function recordMismatchSnapshot(input: {
   ambiguous: number;
   skipped: number;
   storeComparison: StoreComparisonItem[];
+  commitment?: {
+    totalCommitted: number;
+    canBeSent: number;
+    productsShort: number;
+    shortProducts: ShortProduct[];
+  };
   capturedBy?: string | null;
 }): Promise<void> {
   const supabase = getSupabaseService();
@@ -49,8 +59,14 @@ export async function recordMismatchSnapshot(input: {
     ambiguous_count: input.ambiguous,
     skipped_count: input.skipped,
     store_comparison: input.storeComparison,
+    total_committed: input.commitment?.totalCommitted ?? null,
+    can_be_sent: input.commitment?.canBeSent ?? null,
+    products_short: input.commitment?.productsShort ?? null,
+    short_products: input.commitment?.shortProducts ?? [],
   });
   if (error) {
     console.warn("[stock-mismatch-snapshot] insert failed:", error.message);
   }
 }
+
+export { buildCommitmentCatalogSummary };

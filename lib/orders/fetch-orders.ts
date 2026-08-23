@@ -13,7 +13,7 @@ function getEnv(): { domain: string; token: string; version: string } {
 }
 
 const FIELDS =
-  "id,name,order_number,customer,shipping_address,total_price,currency,financial_status,fulfillment_status,gateway,payment_gateway_names,created_at";
+  "id,name,order_number,customer,shipping_address,total_price,currency,financial_status,fulfillment_status,gateway,payment_gateway_names,created_at,line_items";
 
 export type OrdersFilter = {
   createdAtMinIso: string;
@@ -123,7 +123,12 @@ export async function fetchOrders(filter: OrdersFilter): Promise<FetchOrdersResu
   const ordersScannedInWindow = all.length;
 
   // Persist in background so the next request is cache-fast.
-  void upsertOrdersCache(all).catch((e) => console.warn("[orders-cache] background upsert:", e));
+  void upsertOrdersCache(all)
+    .then(async () => {
+      const { upsertOrdersLineItems } = await import("@/lib/supabase/order-line-items");
+      await upsertOrdersLineItems(all, 1);
+    })
+    .catch((e) => console.warn("[orders-cache] background upsert:", e));
 
   let orders = all;
   if (filter.cod === "only") orders = all.filter(orderLooksLikeCod);

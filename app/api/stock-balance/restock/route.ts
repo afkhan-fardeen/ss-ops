@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { PortalAuthError } from "@/lib/auth/require-portal-admin";
 import { requireModuleAccess } from "@/lib/auth/can-access-module";
 import { stockBalanceMaxItems } from "@/lib/ubex/inventory";
-import { restockItemToUbex, restockItemsToUbex } from "@/lib/stock/restock-to-ubex";
+import {
+  syncItemAcrossStores,
+  syncItemsAcrossStores,
+} from "@/lib/stock/sync-shopify-from-ubex";
+
+const BULK_CHUNK_CAP = 20;
 
 type SingleBody = { ubexId: string; barcode: string };
 type BulkBody = { items: SingleBody[] };
@@ -62,6 +67,12 @@ export async function POST(req: Request) {
     if (body.items.length === 0) {
       return NextResponse.json({ ok: false, error: "Empty items array" }, { status: 400 });
     }
+    if (body.items.length > BULK_CHUNK_CAP) {
+      return NextResponse.json(
+        { ok: false, error: `Max ${BULK_CHUNK_CAP} items per bulk restock request` },
+        { status: 400 },
+      );
+    }
     if (maxItems !== null && body.items.length > maxItems) {
       return NextResponse.json(
         { ok: false, error: `Max ${maxItems} items per bulk restock` },
@@ -72,14 +83,14 @@ export async function POST(req: Request) {
       const err = validateItem(item);
       if (err) return NextResponse.json({ ok: false, error: err }, { status: 400 });
     }
-    const results = await restockItemsToUbex(body.items, createdBy);
+    const results = await syncItemsAcrossStores(body.items, createdBy);
     return NextResponse.json({ ok: true, results });
   }
 
   if (isSingleBody(body)) {
     const err = validateItem(body);
     if (err) return NextResponse.json({ ok: false, error: err }, { status: 400 });
-    const result = await restockItemToUbex(body, createdBy);
+    const result = await syncItemAcrossStores(body, createdBy);
     if (!result.ok) {
       const { ok: _ok, ...rest } = result;
       return NextResponse.json({ ok: false, ...rest }, { status: 422 });

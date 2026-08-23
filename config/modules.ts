@@ -241,10 +241,7 @@ function stockAnalysisModule(): PortalModule {
     icon: TrendingUp,
     adminOnly: true,
     accent: STOCK_ANALYSIS_ACCENT,
-    items: [
-      { label: "Dashboard", href: "/stock-analysis/dashboard", icon: LayoutDashboard },
-      { label: "Trends", href: "/stock-analysis/trends", icon: TrendingUp },
-    ],
+    items: [{ label: "Dashboard", href: "/stock-analysis/dashboard", icon: LayoutDashboard }],
   };
 }
 
@@ -404,13 +401,6 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
   {
     path: "/stock-analysis/dashboard",
     title: "Dashboard",
-    moduleId: "stockAnalysis",
-    moduleLabel: "Stock analysis",
-    accent: STOCK_ANALYSIS_ACCENT,
-  },
-  {
-    path: "/stock-analysis/trends",
-    title: "Trends",
     moduleId: "stockAnalysis",
     moduleLabel: "Stock analysis",
     accent: STOCK_ANALYSIS_ACCENT,

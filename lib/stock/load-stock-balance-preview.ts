@@ -17,7 +17,7 @@ import {
   summarizeStockBalanceRows,
   type StockBalanceRow,
 } from "./build-balance-rows";
-import { buildStoreComparison, recordMismatchSnapshot } from "./record-mismatch-snapshot";
+import { buildStoreComparison, buildCommitmentCatalogSummary, recordMismatchSnapshot } from "./record-mismatch-snapshot";
 
 const PAGE_SIZE = 10;
 
@@ -152,6 +152,7 @@ export async function loadMismatchedStockBalance(
   capturedBy?: string | null,
 ): Promise<StockBalancePreview> {
   const catalog = await loadStockBalanceCatalog();
+  const commitment = buildCommitmentCatalogSummary(catalog.rows);
   try {
     await recordMismatchSnapshot({
       totalItems: catalog.itemCount,
@@ -161,6 +162,7 @@ export async function loadMismatchedStockBalance(
       ambiguous: catalog.summary.ambiguous,
       skipped: catalog.summary.skipped,
       storeComparison: buildStoreComparison(catalog.rows),
+      commitment,
       capturedBy,
     });
   } catch (e) {

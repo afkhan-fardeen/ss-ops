@@ -5,6 +5,7 @@ import {
   deleteOrderCache,
   upsertOrderCache,
 } from "@/lib/supabase/orders-cache";
+import { upsertOrderLineItems } from "@/lib/supabase/order-line-items";
 
 /**
  * Shopify webhook handler. One route handles every supported topic via the `[topic]` segment:
@@ -84,6 +85,7 @@ export async function POST(
 async function handleOrdersUpsert(raw: string): Promise<void> {
   const order = JSON.parse(raw) as ShopifyOrder & { created_at?: string };
   await upsertOrderCache(order);
+  await upsertOrderLineItems(order, 1);
 }
 
 async function handleOrdersCancelled(raw: string): Promise<void> {
@@ -119,5 +121,8 @@ async function handleFulfillmentSync(raw: string): Promise<void> {
   );
   if (!res.ok) return;
   const { order } = (await res.json()) as { order: ShopifyOrder & { created_at?: string } };
-  if (order) await upsertOrderCache(order);
+  if (order) {
+    await upsertOrderCache(order);
+    await upsertOrderLineItems(order, 1);
+  }
 }

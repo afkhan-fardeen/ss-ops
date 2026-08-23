@@ -3,12 +3,10 @@ import { canAccessModule } from "@/lib/auth/can-access-module";
 import { STOCK_ANALYSIS_ACCENT } from "@/config/modules";
 import { loadStockAnalysisSummary } from "@/lib/dashboard/load-stock-analysis-summary";
 import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
-import { ActivityStackedChart } from "@/components/dashboard/ActivityStackedChart";
 import { ChartCard } from "@/components/dashboard/ChartCard";
-import { CompositionBreakdown } from "@/components/dashboard/CompositionBreakdown";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ModuleDashboardShell, ModuleQuickLinks } from "@/components/portal/ModuleDashboardShell";
-import { StoreComparisonList } from "@/components/stock-analysis/StoreComparisonList";
+import { ProductSearchCard } from "@/components/stock-analysis/ProductSearchCard";
 
 export const dynamic = "force-dynamic";
 
@@ -39,58 +37,53 @@ export default async function StockAnalysisDashboardPage() {
   const summary = await loadStockAnalysisSummary();
   const latest = summary.latest;
 
-  const statusChart = summary.dailyStatus.map((d) => ({
-    label: d.label,
-    success: d.success,
-    error: d.error,
+  const bestSellerChart = summary.bestSellers30d.map((p) => ({
+    label: p.title.length > 28 ? `${p.title.slice(0, 26)}…` : p.title,
+    value: p.unitsSold,
   }));
 
   return (
     <ModuleDashboardShell
       moduleId="stockAnalysis"
-      title="Stock analysis dashboard"
-      description="Catalog health over time from mismatch sweeps and Shopify sync outcomes. No live catalog fetch."
+      title="Stock analysis"
+      description="Read-only inventory commitment and sales visibility across both stores. No sync actions here."
       kpi={
         <>
           <StatCard
-            label="SKUs tracked"
-            value={latest ? String(latest.totalItems) : "—"}
-            hint={latest ? "Latest sweep" : "Run Find all mismatches"}
+            label="Total committed"
+            value={latest?.totalCommitted != null ? String(latest.totalCommitted) : "—"}
+            hint={latest ? sweepAgeHint(latest.capturedAt) : "Run Find all mismatches on Balance"}
           />
           <StatCard
-            label="Mismatched right now"
-            value={latest ? String(latest.mismatched) : "—"}
-            hint={latest ? sweepAgeHint(latest.capturedAt) : "No sweep yet"}
+            label="Can be fulfilled now"
+            value={latest?.canBeSent != null ? String(latest.canBeSent) : "—"}
+            hint="Units coverable by Ubex stock today"
           />
           <StatCard
-            label="Clean sync rate (14d)"
-            value={summary.cleanSyncRate14d == null ? "—" : `${summary.cleanSyncRate14d}%`}
-            hint="Success / (success + error)"
+            label="Products short"
+            value={latest?.productsShort != null ? String(latest.productsShort) : "—"}
+            hint="Backorder risk (committed &gt; Ubex)"
           />
           <StatCard
-            label="Sync errors (14d)"
-            value={String(summary.syncErrors14d)}
+            label="Units sold (14d)"
+            value={String(summary.unitsSold14d)}
+            hint={
+              summary.unitsSold14d === 0
+                ? "Run backfill-order-line-items if empty"
+                : "Both stores combined"
+            }
           />
         </>
       }
       charts={
-        <>
-          <ChartCard title="Mismatch trend" description="One bar per sweep, not per day">
-            <ActivityBarChart
-              data={summary.trend.map((p) => ({ label: p.label, value: p.value }))}
-              fill={STOCK_ANALYSIS_ACCENT.chartFill}
-              valueLabel="Mismatches"
-              emptyMessage='Run "Find all mismatches" on the Balance page to start tracking this trend.'
-            />
-          </ChartCard>
-          <ChartCard title="Sync outcomes (14d)" description="Combined-store success vs error per day">
-            <ActivityStackedChart
-              data={statusChart}
-              successFill={STOCK_ANALYSIS_ACCENT.chartFill}
-              emptyMessage="No sync activity in the last 14 days."
-            />
-          </ChartCard>
-        </>
+        <ChartCard title="Best sellers (30d)" description="Top products by units sold">
+          <ActivityBarChart
+            data={bestSellerChart}
+            fill={STOCK_ANALYSIS_ACCENT.chartFill}
+            valueLabel="Units sold"
+            emptyMessage="No sales data yet — run scripts/backfill-order-line-items.ts after migration 018."
+          />
+        </ChartCard>
       }
     >
       {summary.error ? (
@@ -99,91 +92,51 @@ export default async function StockAnalysisDashboardPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-          <h2 className="text-[13px] font-medium text-ink">Catalog composition</h2>
-          <p className="mt-0.5 text-[12px] text-muted">From the latest mismatch sweep</p>
-          <div className="mt-3">
-            <CompositionBreakdown
-              segments={
-                latest
-                  ? [
-                      { label: "Matched", count: latest.composition.matched },
-                      { label: "Unlinked", count: latest.composition.unlinked },
-                      { label: "Ambiguous", count: latest.composition.ambiguous },
-                      { label: "Skipped", count: latest.composition.skipped },
-                    ]
-                  : []
-              }
-              emptyMessage='Run "Find all mismatches" on the Balance page to capture composition.'
-            />
-          </div>
-        </div>
+      <ProductSearchCard />
 
-        <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-          <h2 className="text-[13px] font-medium text-ink">Store comparison — shared SKUs</h2>
-          <p className="mt-0.5 text-[12px] text-muted">
-            Top 10 by combined committed (Store A olive · Store B slate)
-          </p>
-          <div className="mt-3">
-            {latest ? (
-              <StoreComparisonList items={latest.storeComparison} />
-            ) : (
-              <p className="text-[13px] text-muted">
-                Run &quot;Find all mismatches&quot; on the Balance page to capture store comparison.
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-          <h2 className="text-[13px] font-medium text-ink">Products needing attention</h2>
-          <p className="mt-2 text-[13px] text-ink">
+      <div className="mt-4 rounded-card border border-line bg-white p-4 shadow-soft">
+        <h2 className="text-[13px] font-medium text-ink">Currently short</h2>
+        <p className="mt-0.5 text-[12px] text-muted">
+          Products where committed orders exceed Ubex stock — visibility only
+        </p>
+        {!latest?.shortProducts.length ? (
+          <p className="mt-3 text-[13px] text-muted">
             {latest
-              ? `${latest.composition.ambiguous} ambiguous, ${latest.composition.unlinked} unlinked`
-              : "No sweep yet"}
+              ? "No short products in the latest sweep."
+              : 'Run "Find all mismatches" on the Balance page to capture commitment totals.'}
           </p>
-          <Link
-            href="/stock-balance/errors"
-            className="mt-3 inline-flex text-[13px] font-medium text-stock-analysis hover:underline"
-          >
-            View all in Errors
-          </Link>
-        </div>
-
-        <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-          <h2 className="text-[13px] font-medium text-ink">Repeat errors (14d)</h2>
-          <p className="mt-0.5 text-[12px] text-muted">Barcodes that failed more than once</p>
-          {summary.repeatOffenders.length === 0 ? (
-            <p className="mt-3 text-[13px] text-muted">No repeat sync failures in this window.</p>
-          ) : (
-            <ul className="mt-3 space-y-1.5">
-              {summary.repeatOffenders.map((row) => (
-                <li
-                  key={row.barcode}
-                  className="flex items-center justify-between gap-3 text-[13px]"
-                >
-                  <span className="min-w-0 truncate font-mono text-ink">{row.barcode}</span>
-                  <span className="shrink-0 font-mono tabular-nums text-muted">
-                    {row.errorCount} errors
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        ) : (
+          <ul className="mt-3 divide-y divide-line">
+            {latest.shortProducts.map((row) => (
+              <li key={row.barcode} className="flex items-center justify-between gap-3 py-2 text-[13px]">
+                <div className="min-w-0">
+                  <p className="truncate text-ink">{row.productName}</p>
+                  <p className="font-mono text-[11px] text-muted">{row.barcode}</p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="font-mono tabular-nums text-[#C25151]">{row.shortBy} short</p>
+                  <Link
+                    href={`/stock-balance/balance?search=${encodeURIComponent(row.barcode)}`}
+                    className="text-[12px] font-medium text-stock-analysis hover:underline"
+                  >
+                    Open in Balance
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      <ModuleQuickLinks
-        moduleId="stockAnalysis"
-        links={[
-          { label: "Balance", href: "/stock-balance/balance", description: "Fix mismatches now" },
-          { label: "Errors", href: "/stock-balance/errors", description: "Current problems" },
-          { label: "Trends", href: "/stock-analysis/trends", description: "Deeper history" },
-        ]}
-      />
+      <div className="mt-4">
+        <ModuleQuickLinks
+          moduleId="stockAnalysis"
+          links={[
+            { label: "Balance", href: "/stock-balance/balance", description: "Fix stock and sync" },
+            { label: "Errors", href: "/stock-balance/errors", description: "Current sync problems" },
+          ]}
+        />
+      </div>
     </ModuleDashboardShell>
   );
 }
