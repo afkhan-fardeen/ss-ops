@@ -37,5 +37,8 @@ export function targetShopifyOnHand(
 
 /** Row needs sync when shared-pool math disagrees with either store. */
 export function isSellableMismatch(row: StockBalanceRow): boolean {
-  return row.status === "matched" && row.mismatch;
+  return (
+    row.mismatch &&
+    (row.status === "matched" || row.status === "store-b-not-listed")
+  );
 }

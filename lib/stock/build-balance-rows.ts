@@ -2,7 +2,12 @@ import type { UbexInventoryItem } from "@/lib/ubex/inventory";
 import type { ShopifyVariantInventory } from "@/lib/shopify/inventory-read";
 import { sharedAvailable } from "./stock-balance-target";
 
-export type StockBalanceStatus = "matched" | "unlinked" | "ambiguous" | "skipped";
+export type StockBalanceStatus =
+  | "matched"
+  | "unlinked"
+  | "ambiguous"
+  | "skipped"
+  | "store-b-not-listed";
 
 export type StoreInventorySide = {
   onHand: number | null;
@@ -12,6 +17,8 @@ export type StoreInventorySide = {
   inventoryItemId: string | null;
   variantLabel: string | null;
 };
+
+export type MatchingVariant = { store: "A" | "B"; label: string };
 
 export type StockBalanceRow = {
   ubexId: string;
@@ -25,6 +32,8 @@ export type StockBalanceRow = {
   status: StockBalanceStatus;
   mismatch: boolean;
   restockable: boolean;
+  skipReason?: "no-barcode" | "not-tracking";
+  matchingVariants?: MatchingVariant[];
   /** @deprecated Prefer storeA — kept for transitional UI/scripts */
   shopifyOnHand: number | null;
   shopifyAvailable: number | null;
@@ -48,6 +57,16 @@ function emptySide(): StoreInventorySide {
     inventoryItemId: null,
     variantLabel: null,
   };
+}
+
+function matchingFrom(
+  store: "A" | "B",
+  variants: ShopifyVariantInventory[],
+): MatchingVariant[] {
+  return variants.map((v) => ({
+    store,
+    label: v.displayName || v.barcode,
+  }));
 }
 
 function sideFromVariants(
@@ -120,17 +139,22 @@ export function buildStockBalanceRows(
         status: "skipped",
         mismatch: false,
         restockable: false,
+        skipReason: !barcode ? "no-barcode" : "not-tracking",
         ...legacyFields(storeA, null),
       });
       continue;
     }
 
-    const a = sideFromVariants(storeAByBarcode.get(barcode) ?? []);
-    const b = store2Enabled
-      ? sideFromVariants(storeBByBarcode!.get(barcode) ?? [])
-      : null;
+    const aVariants = storeAByBarcode.get(barcode) ?? [];
+    const bVariants = store2Enabled ? storeBByBarcode!.get(barcode) ?? [] : [];
+    const a = sideFromVariants(aVariants);
+    const b = store2Enabled ? sideFromVariants(bVariants) : null;
 
     if (a.ambiguous || (b?.ambiguous ?? false)) {
+      const matchingVariants = [
+        ...(a.ambiguous ? matchingFrom("A", aVariants) : []),
+        ...(b?.ambiguous ? matchingFrom("B", bVariants) : []),
+      ];
       rows.push({
         ubexId: item.id,
         productName: item.name,
@@ -143,6 +167,7 @@ export function buildStockBalanceRows(
         status: "ambiguous",
         mismatch: false,
         restockable: false,
+        matchingVariants,
         ...legacyFields(a.side, null),
       });
       continue;
@@ -169,7 +194,6 @@ export function buildStockBalanceRows(
       continue;
     }
 
-    // Matched on at least one store. Store B may be null (not listed).
     const storeBSide: StoreInventorySide | null = store2Enabled
       ? bLinked
         ? b!.side
@@ -189,6 +213,7 @@ export function buildStockBalanceRows(
       storeBSide.available !== null &&
       storeBSide.available !== shared;
     const mismatch = aMismatch || bMismatch;
+    const notListedOnB = store2Enabled && aLinked && !bLinked;
 
     rows.push({
       ubexId: item.id,
@@ -199,7 +224,7 @@ export function buildStockBalanceRows(
       storeA: aLinked ? a.side : emptySide(),
       storeB: store2Enabled ? storeBSide : null,
       sharedAvailable: shared,
-      status: "matched",
+      status: notListedOnB ? "store-b-not-listed" : "matched",
       mismatch,
       restockable: mismatch && (aLinked || bLinked),
       ...legacyFields(aLinked ? a.side : emptySide(), shared),
@@ -222,10 +247,9 @@ export function summarizeStockBalanceRows(rows: StockBalanceRow[]): {
   let skipped = 0;
   let mismatched = 0;
   for (const r of rows) {
-    if (r.status === "matched") {
-      matched++;
-      if (r.mismatch) mismatched++;
-    } else if (r.status === "unlinked") unlinked++;
+    if (r.mismatch) mismatched++;
+    if (r.status === "matched" || r.status === "store-b-not-listed") matched++;
+    else if (r.status === "unlinked") unlinked++;
     else if (r.status === "ambiguous") ambiguous++;
     else if (r.status === "skipped") skipped++;
   }

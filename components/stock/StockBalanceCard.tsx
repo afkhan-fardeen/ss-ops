@@ -16,6 +16,7 @@ function pillFor(row: StockBalanceRow): { tone: StatusTone; label: string } {
   if (row.status === "unlinked") return { tone: "amber", label: "Unlinked" };
   if (row.status === "skipped") return { tone: "neutral", label: "Skipped" };
   if (row.mismatch) return { tone: "amber", label: "Needs sync" };
+  if (row.status === "store-b-not-listed") return { tone: "neutral", label: "Not on Store B" };
   return { tone: "green", label: "Synced" };
 }
 
@@ -83,14 +84,15 @@ export function StockBalanceCard({
 }) {
   const pill = pillFor(row);
   const busy = restockStatus === "busy";
-  const canSelect = row.restockable && row.status === "matched";
+  const syncable =
+    row.status === "matched" || row.status === "store-b-not-listed";
+  const canSelect = row.restockable && syncable;
 
-  const targetA =
-    row.status === "matched"
-      ? targetShopifyOnHandForStore(row.ubexStock, row.storeB?.committed ?? 0)
-      : null;
+  const targetA = syncable
+    ? targetShopifyOnHandForStore(row.ubexStock, row.storeB?.committed ?? 0)
+    : null;
   const targetB =
-    row.status === "matched" && row.storeB
+    syncable && row.storeB
       ? targetShopifyOnHandForStore(row.ubexStock, row.storeA.committed ?? 0)
       : null;
 
@@ -155,7 +157,10 @@ export function StockBalanceCard({
                   title="Store B"
                   accentClass="bg-stock-b-bg/60"
                   side={row.storeB}
-                  notListed={row.storeB === null && row.status === "matched"}
+                  notListed={
+                    row.storeB === null &&
+                    (row.status === "matched" || row.status === "store-b-not-listed")
+                  }
                 />
               ) : (
                 <StoreColumn

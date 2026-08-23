@@ -1,5 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import {
+  AlertTriangle,
   FileSearch,
   History,
   LayoutDashboard,
@@ -196,6 +197,7 @@ function stockModule(): PortalModule {
         icon: Warehouse,
         aliases: ["/stock-balance"],
       },
+      { label: "Errors", href: "/stock-balance/errors", icon: AlertTriangle },
       { label: "History", href: "/stock-balance/history", icon: History },
       { label: "Settings", href: "/stock-balance/settings", icon: Settings2 },
     ],
@@ -337,6 +339,13 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
   {
     path: "/stock-balance",
     title: "Balance",
+    moduleId: "stock",
+    moduleLabel: "Stock balance",
+    accent: STOCK_ACCENT,
+  },
+  {
+    path: "/stock-balance/errors",
+    title: "Errors",
     moduleId: "stock",
     moduleLabel: "Stock balance",
     accent: STOCK_ACCENT,

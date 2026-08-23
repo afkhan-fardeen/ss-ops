@@ -13,6 +13,7 @@ import {
   type ModuleNavItem,
   type NavSectionId,
 } from "@/config/modules";
+import { StockErrorsNavBadge } from "@/components/stock/StockErrorsCountProvider";
 
 export type NavCollapsibleItem = {
   label: string;
@@ -73,6 +74,7 @@ function NavChildLink({
       ) : null}
       <Icon size={16} strokeWidth={2} />
       <span className="flex-1">{item.label}</span>
+      <StockErrorsNavBadge href={item.href} />
     </Link>
   );
 }
@@ -174,7 +176,8 @@ export function NavCollapsibleSection({
                   ].join(" ")}
                 >
                   <item.icon size={15} />
-                  {item.label}
+                  <span className="flex-1">{item.label}</span>
+                  <StockErrorsNavBadge href={item.href} />
                 </Link>
               ))}
             </nav>

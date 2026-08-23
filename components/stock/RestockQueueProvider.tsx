@@ -30,6 +30,7 @@ export type RestockRowStatus = "idle" | "busy" | "success" | "error";
 export type RestockRowState = {
   status: RestockRowStatus;
   message?: string;
+  productName: string;
 };
 
 export type RestockRowStateMap = Record<string, RestockRowState>;
@@ -53,21 +54,40 @@ type RestockApiResult = {
 };
 
 type Action =
-  | { type: "busy"; ubexId: string }
-  | { type: "success"; ubexId: string }
-  | { type: "error"; ubexId: string; message: string }
+  | { type: "busy"; ubexId: string; productName: string }
+  | { type: "success"; ubexId: string; productName: string }
+  | { type: "error"; ubexId: string; message: string; productName: string }
   | { type: "reset"; ubexId: string };
 
 function reducer(state: RestockRowStateMap, action: Action): RestockRowStateMap {
   switch (action.type) {
     case "busy":
-      return { ...state, [action.ubexId]: { status: "busy" } };
+      return {
+        ...state,
+        [action.ubexId]: { status: "busy", productName: action.productName },
+      };
     case "success":
-      return { ...state, [action.ubexId]: { status: "success" } };
+      return {
+        ...state,
+        [action.ubexId]: { status: "success", productName: action.productName },
+      };
     case "error":
-      return { ...state, [action.ubexId]: { status: "error", message: action.message } };
+      return {
+        ...state,
+        [action.ubexId]: {
+          status: "error",
+          message: action.message,
+          productName: action.productName,
+        },
+      };
     case "reset":
-      return { ...state, [action.ubexId]: { status: "idle" } };
+      return {
+        ...state,
+        [action.ubexId]: {
+          status: "idle",
+          productName: state[action.ubexId]?.productName ?? "",
+        },
+      };
     default:
       return state;
   }
@@ -126,21 +146,26 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
   const [activeCount, setActiveCount] = useState(0);
 
   const restockOne = useCallback(async (row: RestockRowInput): Promise<boolean> => {
-    dispatch({ type: "busy", ubexId: row.ubexId });
+    dispatch({ type: "busy", ubexId: row.ubexId, productName: row.productName });
     setActiveCount((n) => n + 1);
     try {
       const result = await apiRestockSingle({ ubexId: row.ubexId, barcode: row.barcode });
       if (!result.ok) {
-        dispatch({ type: "error", ubexId: row.ubexId, message: result.error ?? "Sync failed" });
+        dispatch({
+          type: "error",
+          ubexId: row.ubexId,
+          message: result.error ?? "Sync failed",
+          productName: row.productName,
+        });
         toast.error(result.error ?? "Sync failed");
         return false;
       }
-      dispatch({ type: "success", ubexId: row.ubexId });
+      dispatch({ type: "success", ubexId: row.ubexId, productName: row.productName });
       toast.success(`${row.productName}: ${summarizeStores(result)}`);
       return true;
     } catch (e) {
       const message = e instanceof Error ? e.message : "Sync failed";
-      dispatch({ type: "error", ubexId: row.ubexId, message });
+      dispatch({ type: "error", ubexId: row.ubexId, message, productName: row.productName });
       toast.error(message);
       return false;
     } finally {
@@ -150,7 +175,9 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
 
   const restockBulk = useCallback(
     async (rows: RestockRowInput[]): Promise<{ ok: number; fail: number }> => {
-      for (const row of rows) dispatch({ type: "busy", ubexId: row.ubexId });
+      for (const row of rows) {
+        dispatch({ type: "busy", ubexId: row.ubexId, productName: row.productName });
+      }
       setActiveCount((n) => n + rows.length);
 
       toast.loading(`Syncing ${rows.length} item${rows.length === 1 ? "" : "s"}…`, {
@@ -162,7 +189,14 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
         const res = await apiRestockBulk(payload);
         if (!res.ok || !res.results) {
           const err = res.error ?? "Bulk sync failed";
-          for (const row of rows) dispatch({ type: "error", ubexId: row.ubexId, message: err });
+          for (const row of rows) {
+            dispatch({
+              type: "error",
+              ubexId: row.ubexId,
+              message: err,
+              productName: row.productName,
+            });
+          }
           toast.error(err, { id: RESTOCK_TOAST_ID });
           return { ok: 0, fail: rows.length };
         }
@@ -173,13 +207,14 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
           const row = rows[i]!;
           const result = res.results[i];
           if (result?.ok) {
-            dispatch({ type: "success", ubexId: row.ubexId });
+            dispatch({ type: "success", ubexId: row.ubexId, productName: row.productName });
             ok++;
           } else {
             dispatch({
               type: "error",
               ubexId: row.ubexId,
               message: result?.error ?? "Failed",
+              productName: row.productName,
             });
             fail++;
           }
@@ -195,7 +230,14 @@ export function RestockQueueProvider({ children }: { children: ReactNode }) {
         return { ok, fail };
       } catch (e) {
         const message = e instanceof Error ? e.message : "Bulk sync failed";
-        for (const row of rows) dispatch({ type: "error", ubexId: row.ubexId, message });
+        for (const row of rows) {
+          dispatch({
+            type: "error",
+            ubexId: row.ubexId,
+            message,
+            productName: row.productName,
+          });
+        }
         toast.error(message, { id: RESTOCK_TOAST_ID });
         return { ok: 0, fail: rows.length };
       } finally {

@@ -12,6 +12,7 @@ import {
   type ModuleId,
   type PortalModule,
 } from "@/config/modules";
+import { StockErrorsNavBadge } from "@/components/stock/StockErrorsCountProvider";
 
 type Props = {
   open: boolean;
@@ -61,7 +62,8 @@ export function MobileModuleSheet({ open, module, onClose }: Props) {
                 ].join(" ")}
               >
                 <Icon size={16} />
-                {item.label}
+                <span className="flex-1">{item.label}</span>
+                <StockErrorsNavBadge href={item.href} />
               </Link>
             );
           })}

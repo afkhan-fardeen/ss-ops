@@ -109,8 +109,8 @@ export async function searchStockBalance(
   return buildPreviewFromUbex(ubexItems, safePage, q);
 }
 
-/** Mismatch sweep — full catalog, both stores, mismatch-only, no pagination. */
-export async function loadMismatchedStockBalance(): Promise<StockBalancePreview> {
+/** Full Ubex catalog joined to both stores — no row filter. */
+export async function loadStockBalanceCatalog(): Promise<StockBalancePreview> {
   const ubexItems = await fetchUbexInventoryAll();
   const store2Configured = isStore2Configured();
   const location = await getDefaultShopifyLocation(1);
@@ -129,8 +129,7 @@ export async function loadMismatchedStockBalance(): Promise<StockBalancePreview>
     storeBPromise,
   ]);
 
-  const allRows = buildStockBalanceRows(ubexItems, storeAByBarcode, storeBByBarcode);
-  const rows = allRows.filter((row) => row.mismatch);
+  const rows = buildStockBalanceRows(ubexItems, storeAByBarcode, storeBByBarcode);
 
   return {
     rows,
@@ -142,6 +141,19 @@ export async function loadMismatchedStockBalance(): Promise<StockBalancePreview>
     page: 1,
     hasNextPage: false,
     search: "",
+    mode: "browse",
+    summary: summarizeStockBalanceRows(rows),
+  };
+}
+
+/** Mismatch sweep — full catalog, both stores, mismatch-only, no pagination. */
+export async function loadMismatchedStockBalance(): Promise<StockBalancePreview> {
+  const catalog = await loadStockBalanceCatalog();
+  const rows = catalog.rows.filter((row) => row.mismatch);
+  return {
+    ...catalog,
+    rows,
+    itemCount: rows.length,
     mode: "sweep",
     summary: summarizeStockBalanceRows(rows),
   };
