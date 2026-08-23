@@ -8,6 +8,8 @@ export type UbexInventoryItem = {
   stock: number;
   sku: string;
   trackQty: boolean;
+  size: string | null;
+  color: string | null;
 };
 
 type UbexInventoryListResponse = {
@@ -22,6 +24,8 @@ type UbexInventoryListResponse = {
     available_qty?: number;
     sku?: string;
     track_qty?: boolean;
+    size?: string;
+    color?: string;
   }>;
 };
 
@@ -78,8 +82,12 @@ function mapRow(row: NonNullable<UbexInventoryListResponse["data"]>[number]): Ub
     stock: resolveUbexQuantity(row.stock, row.available_qty),
     sku: (row.sku ?? "").trim(),
     trackQty: row.track_qty !== false,
+    size: (row.size ?? "").trim() || null,
+    color: (row.color ?? "").trim() || null,
   };
 }
+
+export const UBEX_INVENTORY_PAGE_SIZE = PAGE_SIZE;
 
 /** GET /api/v2/inventory?page=N — read-only list (10 items per page in Ubex API). */
 export async function fetchUbexInventoryPage(page: number): Promise<UbexInventoryItem[]> {

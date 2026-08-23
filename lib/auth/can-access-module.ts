@@ -5,14 +5,19 @@ import { PortalAuthError } from "./require-portal-admin";
 import { getUserAllowedModules } from "@/lib/supabase/profiles";
 
 function needsExplicitGrant(moduleId: ModuleId): boolean {
-  return moduleId === "stock" || moduleId === "stockAnalysis" || moduleId === "subscriptions";
+  return (
+    moduleId === "stock" ||
+    moduleId === "stockAnalysis" ||
+    moduleId === "ubexInventory" ||
+    moduleId === "subscriptions"
+  );
 }
 
 /**
  * Whether the current user may use a given module.
  * - Admins: always true
- * - Members with allowed_modules = null: all modules except stock, stock analysis & subscriptions
- *   (those require an explicit grant or portal admin)
+ * - Members with allowed_modules = null: all modules except stock, stock analysis,
+ *   ubex inventory & subscriptions (those require an explicit grant or portal admin)
  * - Members with an array: only listed module ids
  */
 export async function canAccessModule(moduleId: ModuleId): Promise<boolean> {

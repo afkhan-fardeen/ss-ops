@@ -8,6 +8,7 @@ const ALLOWED_MODULE_IDS = new Set([
   "awb",
   "stock",
   "stockAnalysis",
+  "ubexInventory",
   "subscriptions",
 ]);
 

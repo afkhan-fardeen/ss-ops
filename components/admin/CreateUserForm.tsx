@@ -10,6 +10,7 @@ const SELECTABLE_MODULES: { id: string; label: string }[] = [
   { id: "awb", label: "AWB Lookup" },
   { id: "stock", label: "Stock Balance" },
   { id: "stockAnalysis", label: "Stock Analysis" },
+  { id: "ubexInventory", label: "Ubex Inventory" },
   { id: "subscriptions", label: "Subscriptions" },
 ];
 

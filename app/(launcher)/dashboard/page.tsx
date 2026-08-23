@@ -28,6 +28,10 @@ const MODULE_META: Record<string, { description: string; href: string }> = {
     description: "Mismatch trends, catalog composition, and sync health over time.",
     href: "/stock-analysis/dashboard",
   },
+  ubexInventory: {
+    description: "Browse Ubex stock by product name.",
+    href: "/ubex-inventory",
+  },
   awb: {
     description: "Look up an order number and preview the UBEX Airway Bill PDF.",
     href: "/awb",

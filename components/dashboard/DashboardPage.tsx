@@ -11,6 +11,7 @@ const BORDER: Record<string, string> = {
   fulfillment: "border-l-fulfillment",
   stock: "border-l-stock",
   stockAnalysis: "border-l-stock-analysis",
+  ubexInventory: "border-l-ubex-inventory",
   awb: "border-l-awb",
   subscriptions: "border-l-subscriptions",
 };

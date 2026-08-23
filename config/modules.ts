@@ -4,6 +4,7 @@ import {
   FileSearch,
   History,
   LayoutDashboard,
+  Package,
   Receipt,
   Settings2,
   TrendingUp,
@@ -18,7 +19,8 @@ export type ModuleId =
   | "stock"
   | "awb"
   | "subscriptions"
-  | "stockAnalysis";
+  | "stockAnalysis"
+  | "ubexInventory";
 
 export type ModuleNavItem = {
   label: string;
@@ -154,6 +156,19 @@ export const STOCK_ANALYSIS_ACCENT: ModuleAccent = {
   chartStroke: "#3A587F",
 };
 
+export const UBEX_INVENTORY_ACCENT: ModuleAccent = {
+  rail: "bg-ubex-inventory",
+  labelText: "text-ubex-inventory",
+  labelHover: "hover:bg-ubex-inventory-bg",
+  activeBg: "bg-ubex-inventory-bg",
+  activeText: "text-ubex-inventory",
+  pillBg: "bg-ubex-inventory-bg",
+  pillText: "text-ubex-inventory",
+  mobileActive: "text-ubex-inventory",
+  chartFill: "#4A6FA5",
+  chartStroke: "#3A587F",
+};
+
 export const SUBSCRIPTIONS_ACCENT: ModuleAccent = {
   rail: "bg-subscriptions",
   labelText: "text-subscriptions",
@@ -234,6 +249,17 @@ function awbModule(): PortalModule {
   };
 }
 
+function ubexInventoryModule(): PortalModule {
+  return {
+    id: "ubexInventory",
+    label: "Ubex Inventory",
+    icon: Package,
+    adminOnly: true,
+    accent: UBEX_INVENTORY_ACCENT,
+    items: [{ label: "Inventory", href: "/ubex-inventory", icon: Package }],
+  };
+}
+
 function stockAnalysisModule(): PortalModule {
   return {
     id: "stockAnalysis",
@@ -265,6 +291,7 @@ export function getPortalModules(showAdmin: boolean): PortalModule[] {
   if (showAdmin) {
     modules.push(stockModule());
     modules.push(stockAnalysisModule());
+    modules.push(ubexInventoryModule());
     modules.push(subscriptionsModule());
   }
   return modules;
@@ -281,6 +308,8 @@ export function modulePathPrefixes(id: ModuleId): string[] {
       return ["/stock-balance"];
     case "stockAnalysis":
       return ["/stock-analysis"];
+    case "ubexInventory":
+      return ["/ubex-inventory"];
     case "awb":
       return ["/awb"];
     case "subscriptions":
@@ -404,6 +433,13 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     moduleId: "stockAnalysis",
     moduleLabel: "Stock analysis",
     accent: STOCK_ANALYSIS_ACCENT,
+  },
+  {
+    path: "/ubex-inventory",
+    title: "Inventory",
+    moduleId: "ubexInventory",
+    moduleLabel: "Ubex Inventory",
+    accent: UBEX_INVENTORY_ACCENT,
   },
   {
     path: "/awb",
