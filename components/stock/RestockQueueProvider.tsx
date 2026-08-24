@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { STORE_LABELS } from "@/lib/stores/labels";
 import type { StoreInventorySide } from "@/lib/stock/build-balance-rows";
 
 export type RestockRowInput = {
@@ -100,7 +101,7 @@ function summarizeStores(result: RestockApiResult): string {
     return `shared → ${result.sharedAvailable ?? result.ubexStock ?? "?"}`;
   }
   const parts = result.stores.map((s) => {
-    const label = s.storeId === 1 ? "A" : "B";
+    const label = s.storeId === 1 ? STORE_LABELS[1] : STORE_LABELS[2];
     if (s.skipped) return `${label} skipped`;
     if (!s.ok) return `${label} failed`;
     return `${label} ok`;

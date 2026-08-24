@@ -25,6 +25,8 @@ export type StockBalanceRow = {
   productName: string;
   sku: string;
   barcode: string;
+  size: string | null;
+  color: string | null;
   ubexStock: number;
   storeA: StoreInventorySide;
   storeB: StoreInventorySide | null;
@@ -132,6 +134,8 @@ export function buildStockBalanceRows(
         productName: item.name,
         sku,
         barcode: barcode || "",
+        size: item.size,
+        color: item.color,
         ubexStock: item.stock,
         storeA,
         storeB: store2Enabled ? emptySide() : null,
@@ -160,6 +164,8 @@ export function buildStockBalanceRows(
         productName: item.name,
         sku,
         barcode,
+        size: item.size,
+        color: item.color,
         ubexStock: item.stock,
         storeA: a.side,
         storeB: b ? b.side : null,
@@ -182,6 +188,8 @@ export function buildStockBalanceRows(
         productName: item.name,
         sku,
         barcode,
+        size: item.size,
+        color: item.color,
         ubexStock: item.stock,
         storeA: a.side,
         storeB: store2Enabled ? emptySide() : null,
@@ -220,6 +228,8 @@ export function buildStockBalanceRows(
       productName: item.name,
       sku,
       barcode,
+      size: item.size,
+      color: item.color,
       ubexStock: item.stock,
       storeA: aLinked ? a.side : emptySide(),
       storeB: store2Enabled ? storeBSide : null,

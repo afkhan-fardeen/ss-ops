@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { StatusPill } from "@/components/portal/StatusPill";
+import { STORE_LABELS } from "@/lib/stores/labels";
 import type { StockRestockLogRow } from "@/lib/stock/load-restock-history";
 
 function fmtWhen(iso: string): string {
@@ -42,8 +43,8 @@ export function StockBalanceHistoryTable({ rows }: { rows: StockRestockLogRow[] 
         {(
           [
             { key: "all", label: "All stores" },
-            { key: 1, label: "Store A" },
-            { key: 2, label: "Store B" },
+            { key: 1, label: STORE_LABELS[1] },
+            { key: 2, label: STORE_LABELS[2] },
           ] as const
         ).map((f) => (
           <button
@@ -95,7 +96,7 @@ export function StockBalanceHistoryTable({ rows }: { rows: StockRestockLogRow[] 
                         row.storeId === 1 ? "bg-stock" : "bg-stock-b",
                       ].join(" ")}
                     />
-                    {row.storeId === 1 ? "A" : "B"}
+                    {row.storeId === 1 ? STORE_LABELS[1] : STORE_LABELS[2]}
                   </span>
                 </td>
                 <td className="px-3 py-2.5 font-mono text-[12px]">{row.barcode || "—"}</td>

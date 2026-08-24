@@ -1,13 +1,11 @@
 import {
   fetchUbexInventoryAll,
   fetchUbexInventoryPage,
-  fetchUbexStockByIds,
   searchUbexInventory,
   type UbexInventoryItem,
 } from "@/lib/ubex/inventory";
 import {
   fetchAllShopifyInventoryAtLocation,
-  fetchShopifyInventoryByBarcodes,
   getDefaultShopifyLocation,
   type ShopifyLocation,
 } from "@/lib/shopify/inventory-read";
@@ -17,6 +15,7 @@ import {
   summarizeStockBalanceRows,
   type StockBalanceRow,
 } from "./build-balance-rows";
+import { enrichUbexStock, joinUbexItemsToShopify } from "./join-ubex-shopify";
 import { buildStoreComparison, buildCommitmentCatalogSummary, recordMismatchSnapshot } from "./record-mismatch-snapshot";
 
 const PAGE_SIZE = 10;
@@ -37,55 +36,25 @@ export type StockBalancePreview = {
   summary: ReturnType<typeof summarizeStockBalanceRows>;
 };
 
-async function enrichUbexStock(items: UbexInventoryItem[]): Promise<UbexInventoryItem[]> {
-  if (items.length === 0) return items;
-  try {
-    const fresh = await fetchUbexStockByIds(items.map((i) => i.id));
-    return items.map((item) => ({
-      ...item,
-      stock: fresh.get(item.id) ?? item.stock,
-    }));
-  } catch (e) {
-    console.warn("[stock-balance] Ubex get-stock failed, using list stock:", e);
-    return items;
-  }
-}
-
 async function buildPreviewFromUbex(
   ubexItems: UbexInventoryItem[],
   page: number,
   search: string,
 ): Promise<StockBalancePreview> {
-  const store2Configured = isStore2Configured();
-  const location = await getDefaultShopifyLocation(1);
-  let locationB: ShopifyLocation | null = null;
-
-  const barcodes = ubexItems.map((i) => i.barcode.trim()).filter(Boolean);
-
-  const storeAPromise = fetchShopifyInventoryByBarcodes(barcodes, location.id, 1);
-  const storeBPromise = store2Configured
-    ? (async () => {
-        locationB = await getDefaultShopifyLocation(2);
-        return fetchShopifyInventoryByBarcodes(barcodes, locationB.id, 2);
-      })()
-    : Promise.resolve(null);
-
-  const [storeAByBarcode, storeBByBarcode] = await Promise.all([storeAPromise, storeBPromise]);
-
-  const rows = buildStockBalanceRows(ubexItems, storeAByBarcode, storeBByBarcode);
+  const joined = await joinUbexItemsToShopify(ubexItems);
 
   return {
-    rows,
-    location,
-    locationB,
-    store2Configured,
+    rows: joined.rows,
+    location: joined.location,
+    locationB: joined.locationB,
+    store2Configured: joined.store2Configured,
     fetchedAt: new Date().toISOString(),
     itemCount: ubexItems.length,
     page,
     hasNextPage: ubexItems.length >= PAGE_SIZE,
     search,
     mode: "browse",
-    summary: summarizeStockBalanceRows(rows),
+    summary: summarizeStockBalanceRows(joined.rows),
   };
 }
 

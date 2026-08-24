@@ -12,7 +12,8 @@ import {
   type StockBalanceFilterState,
 } from "@/lib/stock/stock-balance-filters";
 import { targetShopifyOnHandForStore } from "@/lib/stock/stock-balance-target";
-import { StockBalanceCard } from "@/components/stock/StockBalanceCard";
+import { STORE_LABELS } from "@/lib/stores/labels";
+import { StockBalanceDetail, StockBalanceTile } from "@/components/stock/StockBalanceCard";
 import { StockBalanceSearchBar } from "@/components/stock/StockBalanceSearchBar";
 import { useRestockQueue, type RestockRowInput } from "@/hooks/useRestockQueue";
 
@@ -121,7 +122,7 @@ export function StockBalanceView({
     mode === "sweep" ? WEEKLY_RESTOCK_PRESET : DEFAULT_STOCK_BALANCE_FILTERS,
   );
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [confirmRows, setConfirmRows] = useState<StockBalanceRow[] | null>(null);
   const [searchDraft, setSearchDraft] = useState(search);
 
@@ -158,12 +159,7 @@ export function StockBalanceView({
   }
 
   function toggleExpand(id: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    setActiveId((cur) => (cur === id ? null : id));
   }
 
   function toggleSelect(id: string) {
@@ -202,10 +198,10 @@ export function StockBalanceView({
     <div className="space-y-4">
       <div className="rounded-card border border-line border-l-4 border-l-stock bg-white p-4 shadow-soft">
         <p className="text-[12px] text-muted">
-          Shared Ubex pool · Store A ({locationName})
+          Shared Ubex pool · {STORE_LABELS[1]} ({locationName})
           {store2Configured
-            ? ` · Store B (${locationBName ?? "auto"})`
-            : " · Store B not configured"}
+            ? ` · ${STORE_LABELS[2]} (${locationBName ?? "auto"})`
+            : ` · ${STORE_LABELS[2]} not configured`}
         </p>
         <p className="mt-1 text-[13px] text-ink">
           {itemCount} loaded · {summary.mismatched} need sync · fetched{" "}
@@ -309,22 +305,35 @@ export function StockBalanceView({
             : "No products in this view. Try another search or clear filters."}
         </p>
       ) : (
-        <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((row) => (
-            <StockBalanceCard
+            <StockBalanceTile
               key={row.ubexId}
               row={row}
               store2Configured={store2Configured}
-              expanded={expanded.has(row.ubexId)}
-              selected={selected.has(row.ubexId)}
+              selected={activeId === row.ubexId}
               restockStatus={restockState[row.ubexId]?.status ?? "idle"}
-              onToggleExpand={() => toggleExpand(row.ubexId)}
-              onToggleSelect={() => toggleSelect(row.ubexId)}
-              onSync={() => setConfirmRows([row])}
+              onSelect={() => toggleExpand(row.ubexId)}
             />
           ))}
         </div>
       )}
+      {activeId
+        ? (() => {
+            const row = filtered.find((r) => r.ubexId === activeId);
+            if (!row) return null;
+            return (
+              <StockBalanceDetail
+                row={row}
+                store2Configured={store2Configured}
+                selected={selected.has(row.ubexId)}
+                restockStatus={restockState[row.ubexId]?.status ?? "idle"}
+                onToggleSelect={() => toggleSelect(row.ubexId)}
+                onSync={() => setConfirmRows([row])}
+              />
+            );
+          })()
+        : null}
 
       {confirmRows ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 sm:items-center">
@@ -358,14 +367,14 @@ export function StockBalanceView({
                   <li key={r.ubexId} className="rounded-card border border-line px-3 py-2">
                     <p className="font-medium text-ink">{r.productName}</p>
                     <p className="font-mono text-muted">
-                      Ubex {r.ubexStock} · shared {r.sharedAvailable ?? "—"}
+                      Ubex {r.ubexStock} · available to sell {r.sharedAvailable ?? "—"}
                     </p>
                     <p className="font-mono text-muted">
-                      A on-hand {r.storeA.onHand ?? "—"} → {targetA}
+                      {STORE_LABELS[1]} on-hand {r.storeA.onHand ?? "—"} → {targetA}
                       {targetB !== null
-                        ? ` · B ${r.storeB?.onHand ?? "—"} → ${targetB}`
+                        ? ` · ${STORE_LABELS[2]} ${r.storeB?.onHand ?? "—"} → ${targetB}`
                         : store2Configured
-                          ? " · B not listed"
+                          ? ` · ${STORE_LABELS[2]} not listed`
                           : ""}
                     </p>
                   </li>

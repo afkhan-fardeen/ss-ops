@@ -17,7 +17,7 @@ export default async function StockBalancePage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <div className="mx-auto max-w-7xl space-y-5">
       <header className="animate-fade-up">
         <div className="flex items-center gap-3">
           <div className="grid h-10 w-10 place-items-center rounded-card bg-canvas text-ink">

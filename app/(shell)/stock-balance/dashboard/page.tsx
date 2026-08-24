@@ -42,7 +42,7 @@ export default async function StockBalanceDashboardPage() {
     <ModuleDashboardShell
       moduleId="stock"
       title="Stock balance dashboard"
-      description="Search Ubex inventory, compare shared available across Store A and Store B, and sync both stores."
+      description="Search Ubex inventory, compare available-to-sell across International Store and Seissense GCC Store, and sync both stores."
       kpi={
         <>
           <StatCard label="Last successful restock" value={lastLabel} />

@@ -5,6 +5,7 @@ import { Loader2, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { spring } from "@/lib/motion";
+import { STORE_LABELS } from "@/lib/stores/labels";
 import { useRestockQueue } from "@/hooks/useRestockQueue";
 import { useStockErrorsCount } from "@/components/stock/StockErrorsCountProvider";
 import { StockErrorCard } from "@/components/stock/StockErrorCard";
@@ -21,7 +22,7 @@ const TABS: Array<{ id: TabId; label: string }> = [
   { id: "unlinked", label: "Unlinked" },
   { id: "ambiguous", label: "Ambiguous" },
   { id: "skipped", label: "Skipped" },
-  { id: "store-b-not-listed", label: "Store B not listed" },
+  { id: "store-b-not-listed", label: `${STORE_LABELS[2]} not listed` },
   { id: "sync-failed", label: "Sync failures" },
 ];
 

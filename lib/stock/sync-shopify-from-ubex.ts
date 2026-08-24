@@ -7,6 +7,7 @@ import {
   type ShopifyVariantInventory,
 } from "@/lib/shopify/inventory-read";
 import { isStore2Configured } from "@/lib/store2/client";
+import { STORE_LABELS } from "@/lib/stores/labels";
 import {
   claimRestockIdempotency,
   logStockRestock,
@@ -292,7 +293,7 @@ export async function syncItemAcrossStores(
         ok: true,
         skipped: true,
         error: bRes.error.includes("no Shopify variant")
-          ? "Not listed on Store B"
+          ? `Not listed on ${STORE_LABELS[2]}`
           : bRes.error,
       });
     }

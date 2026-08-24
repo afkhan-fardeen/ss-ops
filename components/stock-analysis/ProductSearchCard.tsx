@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { STORE_LABELS } from "@/lib/stores/labels";
 
 type SalesWindow = "7" | "30" | "90" | "all-time";
 
@@ -119,7 +120,7 @@ export function ProductSearchCard() {
                 <dd className="font-mono tabular-nums text-ink">{product.ubexStock}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted">Store A</dt>
+                <dt className="text-muted">{STORE_LABELS[1]}</dt>
                 <dd className="font-mono tabular-nums text-ink">
                   on hand {product.storeA.onHand ?? "—"} · available {product.storeA.available ?? "—"} ·
                   committed {product.storeA.committed ?? "—"}
@@ -127,7 +128,7 @@ export function ProductSearchCard() {
               </div>
               {product.storeB ? (
                 <div className="flex justify-between gap-4">
-                  <dt className="text-muted">Store B</dt>
+                  <dt className="text-muted">{STORE_LABELS[2]}</dt>
                   <dd className="font-mono tabular-nums text-ink">
                     on hand {product.storeB.onHand ?? "—"} · available {product.storeB.available ?? "—"} ·
                     committed {product.storeB.committed ?? "—"}
@@ -181,7 +182,7 @@ export function ProductSearchCard() {
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">By store</dt>
                 <dd className="font-mono tabular-nums text-ink">
-                  A {product.sales.storeA} · B {product.sales.storeB}
+                  {STORE_LABELS[1]} {product.sales.storeA} · {STORE_LABELS[2]} {product.sales.storeB}
                 </dd>
               </div>
               {product.sales.rank != null ? (

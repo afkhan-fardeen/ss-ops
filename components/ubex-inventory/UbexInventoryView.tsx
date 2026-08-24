@@ -2,34 +2,33 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Loader2, Search } from "lucide-react";
-import { groupUbexItemsByName, type UbexProductGroup } from "@/lib/ubex/group-by-name";
-import type { UbexInventoryItem } from "@/lib/ubex/inventory";
-import { UbexProductCard } from "./UbexProductCard";
+import {
+  mergeUbexPoolProducts,
+  type UbexPoolProduct,
+} from "@/lib/ubex/group-balance-rows-by-name";
+import { UbexProductDetail, UbexProductTile } from "./UbexProductCard";
 
 type SearchResponse = {
   ok: boolean;
   error?: string;
-  products?: UbexProductGroup[];
+  products?: UbexPoolProduct[];
   page?: number;
   hasNextPage?: boolean;
-  itemCount?: number;
+  store2Configured?: boolean;
   variantCount?: number;
 };
-
-function flattenVariants(products: UbexProductGroup[]): UbexInventoryItem[] {
-  return products.flatMap((p) => p.variants);
-}
 
 export function UbexInventoryView() {
   const [query, setQuery] = useState("");
   const [debounced, setDebounced] = useState("");
-  const [products, setProducts] = useState<UbexProductGroup[]>([]);
+  const [products, setProducts] = useState<UbexPoolProduct[]>([]);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [store2Configured, setStore2Configured] = useState(true);
   const [loading, setLoading] = useState(true);
   const [loadMoreLoading, setLoadMoreLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [activeName, setActiveName] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(query.trim()), 350);
@@ -47,18 +46,15 @@ export function UbexInventoryView() {
     const incoming = json.products ?? [];
     setHasNextPage(Boolean(json.hasNextPage));
     setPage(nextPage);
-    setProducts((prev) => {
-      if (!append) return incoming;
-      const merged = flattenVariants(prev).concat(flattenVariants(incoming));
-      return groupUbexItemsByName(merged);
-    });
+    setStore2Configured(Boolean(json.store2Configured));
+    setProducts((prev) => (append ? mergeUbexPoolProducts(prev, incoming) : incoming));
   }, []);
 
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    setExpanded(new Set());
+    setActiveName(null);
     void fetchPage(debounced, 1, false)
       .catch((e) => {
         if (!cancelled) {
@@ -87,19 +83,11 @@ export function UbexInventoryView() {
     }
   };
 
-  const toggle = (name: string) => {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
-  };
-
   const variantCount = useMemo(
     () => products.reduce((sum, p) => sum + p.variantCount, 0),
     [products],
   );
+  const active = products.find((p) => p.name === activeName) ?? null;
 
   return (
     <div className="space-y-3">
@@ -140,16 +128,23 @@ export function UbexInventoryView() {
         </p>
       ) : null}
 
-      <div className="space-y-2">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <UbexProductCard
+          <UbexProductTile
             key={product.name}
             product={product}
-            expanded={expanded.has(product.name)}
-            onToggle={() => toggle(product.name)}
+            selected={activeName === product.name}
+            store2Configured={store2Configured}
+            onSelect={() =>
+              setActiveName((cur) => (cur === product.name ? null : product.name))
+            }
           />
         ))}
       </div>
+
+      {active ? (
+        <UbexProductDetail product={active} store2Configured={store2Configured} />
+      ) : null}
 
       {hasNextPage ? (
         <div className="flex justify-center pt-1">

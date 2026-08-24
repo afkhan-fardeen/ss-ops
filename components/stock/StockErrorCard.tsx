@@ -3,6 +3,7 @@
 import { Loader2, PackagePlus } from "lucide-react";
 import { StatusPill, type StatusTone } from "@/components/portal/StatusPill";
 import type { StockErrorCard as StockErrorCardData } from "@/lib/stock/load-stock-errors";
+import { STORE_LABELS } from "@/lib/stores/labels";
 import type { RestockRowStatus } from "@/hooks/useRestockQueue";
 
 function pillFor(card: StockErrorCardData): { tone: StatusTone; label: string } {
@@ -14,7 +15,7 @@ function pillFor(card: StockErrorCardData): { tone: StatusTone; label: string } 
     case "skipped":
       return { tone: "neutral", label: "Skipped" };
     case "store-b-not-listed":
-      return { tone: "neutral", label: "Not on Store B" };
+      return { tone: "neutral", label: `Not on ${STORE_LABELS[2]}` };
     case "sync-failed":
       return { tone: "red", label: "Sync failed" };
   }
@@ -24,7 +25,7 @@ function explanation(card: StockErrorCardData): { body: string; cause: string } 
   switch (card.category) {
     case "unlinked":
       return {
-        body: "No Shopify variant found with this barcode in Store A or Store B.",
+        body: `No Shopify variant found with this barcode in ${STORE_LABELS[1]} or ${STORE_LABELS[2]}.`,
         cause:
           "Likely cause: the barcode may be missing, mistyped, or the product hasn't been added to Shopify yet.",
       };
@@ -33,8 +34,13 @@ function explanation(card: StockErrorCardData): { body: string; cause: string } 
       const stores = Array.from(
         new Set((card.matchingVariants ?? []).map((v) => v.store)),
       );
+      const storeNames = stores.map((s) => (s === "B" ? STORE_LABELS[2] : STORE_LABELS[1]));
       const storeLabel =
-        stores.length === 1 ? `Store ${stores[0]}` : stores.length > 1 ? "both stores" : "Shopify";
+        storeNames.length === 1
+          ? storeNames[0]!
+          : storeNames.length > 1
+            ? "both stores"
+            : "Shopify";
       return {
         body: `This barcode matches ${n} different Shopify variant${n === 1 ? "" : "s"} in ${storeLabel}.`,
         cause:
@@ -54,9 +60,9 @@ function explanation(card: StockErrorCardData): { body: string; cause: string } 
       };
     case "store-b-not-listed":
       return {
-        body: "This barcode is listed on Store A but not on Store B.",
+        body: `This barcode is listed on ${STORE_LABELS[1]} but not on ${STORE_LABELS[2]}.`,
         cause:
-          "Likely cause: the product hasn't been added to the Store B catalog, or its barcode is missing there.",
+          `Likely cause: the product hasn't been added to the ${STORE_LABELS[2]} catalog, or its barcode is missing there.`,
       };
     case "sync-failed":
       return {
