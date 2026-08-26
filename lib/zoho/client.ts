@@ -59,10 +59,12 @@ async function refreshAccessToken(): Promise<string> {
     access_token?: string;
     expires_in?: number;
     error?: string;
+    error_description?: string;
   };
 
   if (!res.ok || !json.access_token) {
-    throw new Error(`Zoho token refresh failed: ${json.error ?? res.status}`);
+    const detail = json.error_description ?? json.error ?? String(res.status);
+    throw new Error(`Zoho token refresh failed: ${detail}`);
   }
 
   const expiresIn = json.expires_in ?? 3600;

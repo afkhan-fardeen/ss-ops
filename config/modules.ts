@@ -1,7 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 import {
   AlertTriangle,
+  Barcode,
   FileSearch,
+  GitCompare,
   History,
   LayoutDashboard,
   Package,
@@ -20,7 +22,8 @@ export type ModuleId =
   | "awb"
   | "subscriptions"
   | "stockAnalysis"
-  | "ubexInventory";
+  | "ubexInventory"
+  | "zohoBooks";
 
 export type ModuleNavItem = {
   label: string;
@@ -182,6 +185,19 @@ export const SUBSCRIPTIONS_ACCENT: ModuleAccent = {
   chartStroke: "#543F82",
 };
 
+export const ZOHO_BOOKS_ACCENT: ModuleAccent = {
+  rail: "bg-zoho-books",
+  labelText: "text-zoho-books",
+  labelHover: "hover:bg-zoho-books-bg",
+  activeBg: "bg-zoho-books-bg",
+  activeText: "text-zoho-books",
+  pillBg: "bg-zoho-books-bg",
+  pillText: "text-zoho-books",
+  mobileActive: "text-zoho-books",
+  chartFill: "#8A6D3B",
+  chartStroke: "#6E5730",
+};
+
 function codModule(): PortalModule {
   return {
     id: "cod",
@@ -286,6 +302,20 @@ function subscriptionsModule(): PortalModule {
   };
 }
 
+function zohoBooksModule(): PortalModule {
+  return {
+    id: "zohoBooks",
+    label: "Zoho Books",
+    icon: Receipt,
+    adminOnly: true,
+    accent: ZOHO_BOOKS_ACCENT,
+    items: [
+      { label: "Barcode Sync", href: "/zoho-books/barcode-sync", icon: Barcode },
+      { label: "Barcode Compare", href: "/zoho-books/barcode-compare", icon: GitCompare },
+    ],
+  };
+}
+
 export function getPortalModules(showAdmin: boolean): PortalModule[] {
   const modules = [codModule(), fulfillmentModule(), awbModule()];
   if (showAdmin) {
@@ -293,6 +323,7 @@ export function getPortalModules(showAdmin: boolean): PortalModule[] {
     modules.push(stockAnalysisModule());
     modules.push(ubexInventoryModule());
     modules.push(subscriptionsModule());
+    modules.push(zohoBooksModule());
   }
   return modules;
 }
@@ -314,6 +345,8 @@ export function modulePathPrefixes(id: ModuleId): string[] {
       return ["/awb"];
     case "subscriptions":
       return ["/subscriptions"];
+    case "zohoBooks":
+      return ["/zoho-books"];
     default:
       return [];
   }
@@ -468,6 +501,20 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     moduleId: "subscriptions",
     moduleLabel: "Subscriptions",
     accent: SUBSCRIPTIONS_ACCENT,
+  },
+  {
+    path: "/zoho-books/barcode-sync",
+    title: "Barcode Sync",
+    moduleId: "zohoBooks",
+    moduleLabel: "Zoho Books",
+    accent: ZOHO_BOOKS_ACCENT,
+  },
+  {
+    path: "/zoho-books/barcode-compare",
+    title: "Barcode Compare",
+    moduleId: "zohoBooks",
+    moduleLabel: "Zoho Books",
+    accent: ZOHO_BOOKS_ACCENT,
   },
 ];
 

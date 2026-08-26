@@ -14,6 +14,7 @@ const BORDER: Record<string, string> = {
   ubexInventory: "border-l-ubex-inventory",
   awb: "border-l-awb",
   subscriptions: "border-l-subscriptions",
+  zohoBooks: "border-l-zoho-books",
 };
 
 export function DashboardPage({ children, moduleId }: Props) {

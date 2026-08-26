@@ -51,6 +51,10 @@ const config: Config = {
           bg: "rgba(107,79,162,0.15)",
           bloom: "#C4B8E8",
         },
+        "zoho-books": {
+          DEFAULT: "#8A6D3B",
+          bg: "rgba(138,109,59,0.15)",
+        },
         gold: "#B8842E",
       },
       fontFamily: {

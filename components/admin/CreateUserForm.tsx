@@ -12,6 +12,7 @@ const SELECTABLE_MODULES: { id: string; label: string }[] = [
   { id: "stockAnalysis", label: "Stock Analysis" },
   { id: "ubexInventory", label: "Ubex Inventory" },
   { id: "subscriptions", label: "Subscriptions" },
+  { id: "zohoBooks", label: "Zoho Books" },
 ];
 
 type SubmitState = "idle" | "saving" | "saved" | "error";

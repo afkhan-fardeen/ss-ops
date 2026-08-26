@@ -270,6 +270,7 @@ query AllVariantsInventory($locationId: ID!, $cursor: String) {
     }
     nodes {
       id
+      sku
       barcode
       displayName
       inventoryItem {
@@ -281,6 +282,21 @@ query AllVariantsInventory($locationId: ID!, $cursor: String) {
           }
         }
       }
+    }
+  }
+}
+`;
+
+const ALL_VARIANTS_SKU_QUERY = `
+query AllVariantsSkuBarcode($cursor: String) {
+  productVariants(first: 250, after: $cursor) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    nodes {
+      sku
+      barcode
     }
   }
 }
@@ -347,6 +363,59 @@ export async function fetchAllShopifyInventoryAtLocation(
       const list = out.get(variant.barcode) ?? [];
       list.push(variant);
       out.set(variant.barcode, list);
+    }
+
+    hasNext = data.productVariants.pageInfo.hasNextPage;
+    cursor = data.productVariants.pageInfo.endCursor;
+  }
+
+  return out;
+}
+
+function normalizeSku(sku: string): string {
+  return sku.trim();
+}
+
+type SkuBarcodeQueryData = {
+  productVariants: {
+    pageInfo: { hasNextPage: boolean; endCursor: string | null };
+    nodes: Array<{ sku: string | null; barcode: string | null }>;
+  };
+};
+
+/**
+ * Paginate all Shopify variants and build SKU → barcode map for Zoho barcode sync.
+ * Includes variants with SKU even when barcode is empty (empty barcode excluded from map values).
+ */
+export async function fetchShopifySkuBarcodeMap(
+  _locationId: number,
+  storeId: ShopifyStoreId = 1,
+): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  let cursor: string | null = null;
+  let hasNext = true;
+
+  while (hasNext) {
+    const data: SkuBarcodeQueryData = await shopifyGraphql(
+      ALL_VARIANTS_SKU_QUERY,
+      { cursor },
+      storeId,
+    );
+
+    for (const node of data.productVariants.nodes) {
+      const sku = normalizeSku(node.sku ?? "");
+      if (!sku) continue;
+      const bc = normalizeBarcode(node.barcode ?? "");
+      if (!bc) continue;
+
+      const existing = out.get(sku);
+      if (existing && existing !== bc) {
+        console.warn(
+          `[shopify-inventory] store ${storeId} duplicate SKU ${sku} with different barcodes: ${existing} vs ${bc}`,
+        );
+        continue;
+      }
+      out.set(sku, bc);
     }
 
     hasNext = data.productVariants.pageInfo.hasNextPage;

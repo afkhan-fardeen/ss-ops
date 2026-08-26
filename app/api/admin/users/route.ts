@@ -10,6 +10,7 @@ const ALLOWED_MODULE_IDS = new Set([
   "stockAnalysis",
   "ubexInventory",
   "subscriptions",
+  "zohoBooks",
 ]);
 
 /**
