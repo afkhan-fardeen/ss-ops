@@ -39,17 +39,6 @@ export type UbexCacheRow = {
   refreshed_at: string;
 };
 
-export type UbexInventoryCacheRow = {
-  barcode: string;
-  ubex_id: string;
-  sku: string;
-  name: string;
-  size: string | null;
-  color: string | null;
-  stock: number;
-  refreshed_at: string;
-};
-
 export type PushIdempotencyRow = {
   key: string;
   shopify_order_id: number;

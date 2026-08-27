@@ -1,10 +1,9 @@
-import { GitCompare } from "lucide-react";
+import { Receipt } from "lucide-react";
 import { canAccessModule } from "@/lib/auth/can-access-module";
-import { BarcodeCompareView } from "@/components/zoho-books/BarcodeCompareView";
 
 export const dynamic = "force-dynamic";
 
-export default async function ZohoBarcodeComparePage() {
+export default async function ZohoBooksPage() {
   if (!(await canAccessModule("zohoBooks"))) {
     return (
       <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
@@ -17,23 +16,18 @@ export default async function ZohoBarcodeComparePage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="mx-auto max-w-7xl">
       <header className="animate-fade-up">
         <div className="flex items-center gap-3">
           <div className="grid h-10 w-10 place-items-center rounded-card bg-zoho-books-bg text-zoho-books">
-            <GitCompare size={20} />
+            <Receipt size={20} />
           </div>
           <div>
-            <h1 className="text-xl font-medium text-ink">Barcode Compare</h1>
-            <p className="mt-0.5 text-[13px] text-muted">
-              Match Zoho Ubex Barcode values to Ubex inventory barcodes from a saved catalog.
-              Read-only — no data is changed.
-            </p>
+            <h1 className="text-xl font-medium text-ink">Zoho Books</h1>
+            <p className="mt-0.5 text-[13px] text-muted">No tools in this module yet.</p>
           </div>
         </div>
       </header>
-
-      <BarcodeCompareView />
     </div>
   );
 }

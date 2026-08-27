@@ -1,9 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   AlertTriangle,
-  Barcode,
   FileSearch,
-  GitCompare,
   History,
   LayoutDashboard,
   Package,
@@ -309,10 +307,7 @@ function zohoBooksModule(): PortalModule {
     icon: Receipt,
     adminOnly: true,
     accent: ZOHO_BOOKS_ACCENT,
-    items: [
-      { label: "Barcode Sync", href: "/zoho-books/barcode-sync", icon: Barcode },
-      { label: "Barcode Compare", href: "/zoho-books/barcode-compare", icon: GitCompare },
-    ],
+    items: [],
   };
 }
 
@@ -503,15 +498,8 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     accent: SUBSCRIPTIONS_ACCENT,
   },
   {
-    path: "/zoho-books/barcode-sync",
-    title: "Barcode Sync",
-    moduleId: "zohoBooks",
-    moduleLabel: "Zoho Books",
-    accent: ZOHO_BOOKS_ACCENT,
-  },
-  {
-    path: "/zoho-books/barcode-compare",
-    title: "Barcode Compare",
+    path: "/zoho-books",
+    title: "Zoho Books",
     moduleId: "zohoBooks",
     moduleLabel: "Zoho Books",
     accent: ZOHO_BOOKS_ACCENT,
@@ -563,7 +551,12 @@ export function getModuleOpenKey(id: ModuleId): string {
 }
 
 export function moduleDashboardHref(module: PortalModule): string {
-  return module.items.find((i) => i.label === "Dashboard")?.href ?? module.items[0]!.href;
+  return (
+    module.items.find((i) => i.label === "Dashboard")?.href ??
+    module.items[0]?.href ??
+    modulePathPrefixes(module.id)[0] ??
+    HOME_HREF
+  );
 }
 
 const SETTINGS_PATHS = ["/account", "/admin"];

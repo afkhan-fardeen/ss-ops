@@ -41,8 +41,8 @@ const MODULE_META: Record<string, { description: string; href: string }> = {
     href: "/subscriptions/dashboard",
   },
   zohoBooks: {
-    description: "Fill Ubex Barcode on Zoho items from matching Shopify SKUs.",
-    href: "/zoho-books/barcode-sync",
+    description: "Zoho Books tools.",
+    href: "/zoho-books",
   },
 };
 
