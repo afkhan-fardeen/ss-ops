@@ -19,8 +19,6 @@ const STOCK_BALANCE_TOAST_ID = "stock-balance-preview";
 type LoadOptions = {
   search?: string;
   page?: number;
-  /** Append rows to existing list (load more). */
-  append?: boolean;
   silent?: boolean;
 };
 
@@ -31,10 +29,10 @@ export type StockBalancePreviewContextValue = {
   error: string | null;
   search: string;
   mode: StockBalanceMode;
-  /** Replace or append a page of browse/search results. */
+  /** Load one page of browse/search results (browse mode only). */
   load: (opts?: LoadOptions) => Promise<void>;
-  /** Reload current search at page 1 (browse mode only). */
-  refresh: (opts?: { silent?: boolean }) => Promise<void>;
+  /** Reload the current search at the given page (defaults to page 1). */
+  refresh: (opts?: { silent?: boolean; page?: number }) => Promise<void>;
   /** Restore cached sweep or fetch mismatches. */
   loadMismatches: (opts?: { force?: boolean }) => Promise<void>;
   /** Re-run the full catalog sweep. */
@@ -85,7 +83,6 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
   const load = useCallback(async (opts?: LoadOptions) => {
     const q = opts?.search ?? search;
     const page = opts?.page ?? 1;
-    const append = opts?.append ?? false;
     const silent = opts?.silent ?? false;
 
     setMode("browse");
@@ -106,28 +103,7 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
         throw new Error(json.error ?? `HTTP ${res.status}`);
       }
 
-      const next = parsePreview(json);
-      setPreview((prev) => {
-        if (!append || !prev || page <= 1 || prev.mode === "sweep") return next;
-        const seen = new Set(prev.rows.map((r) => r.ubexId));
-        const mergedRows = [...prev.rows];
-        for (const row of next.rows) {
-          if (!seen.has(row.ubexId)) mergedRows.push(row);
-        }
-        return {
-          ...next,
-          rows: mergedRows,
-          itemCount: mergedRows.length,
-          summary: {
-            ...next.summary,
-            mismatched: mergedRows.filter((r) => r.mismatch).length,
-            matched: mergedRows.filter((r) => r.status === "matched").length,
-            unlinked: mergedRows.filter((r) => r.status === "unlinked").length,
-            ambiguous: mergedRows.filter((r) => r.status === "ambiguous").length,
-            skipped: mergedRows.filter((r) => r.status === "skipped").length,
-          },
-        };
-      });
+      setPreview(parsePreview(json));
     } catch (e) {
       const message = e instanceof Error ? e.message : "Failed to load stock balance";
       setError(message);
@@ -138,8 +114,8 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
   }, [search]);
 
   const refresh = useCallback(
-    async (opts?: { silent?: boolean }) => {
-      await load({ search, page: 1, append: false, silent: opts?.silent });
+    async (opts?: { silent?: boolean; page?: number }) => {
+      await load({ search, page: opts?.page ?? 1, silent: opts?.silent });
     },
     [load, search],
   );
@@ -194,7 +170,7 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
   }, [loadMismatches]);
 
   const exitSweep = useCallback(async () => {
-    await load({ search: "", page: 1, append: false });
+    await load({ search: "", page: 1 });
   }, [load]);
 
   const value = useMemo(

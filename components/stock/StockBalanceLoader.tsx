@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
+import { useUrlViewState } from "@/hooks/useUrlViewState";
 import { useStockBalancePreview } from "@/hooks/useStockBalancePreview";
 import { StockBalanceView } from "@/components/stock/StockBalanceView";
 
@@ -25,7 +26,6 @@ export function StockBalanceLoader() {
     loading,
     sweepLoading,
     error,
-    search,
     mode,
     load,
     refresh,
@@ -33,31 +33,27 @@ export function StockBalanceLoader() {
     refreshMismatches,
     exitSweep,
   } = useStockBalancePreview();
-  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
+  const { searchParams, updateUrl } = useUrlViewState();
 
   useEffect(() => {
     if (!preview && !loading && !error && !sweepLoading) {
-      void load({ page: 1, search: "" });
+      const initialSearch = searchParams.get("q") ?? "";
+      const initialPage = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1);
+      void load({ search: initialSearch, page: initialPage });
     }
-  }, [preview, loading, error, sweepLoading, load]);
+    // Restore only on first mount — the handlers below own subsequent navigation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSearchChange(value: string) {
-    await load({ search: value, page: 1, append: false });
+    updateUrl({ search: value, page: 1 });
+    await load({ search: value, page: 1 });
   }
 
-  async function handleLoadMore() {
-    if (!preview?.hasNextPage || mode === "sweep") return;
-    setLoadMoreLoading(true);
-    try {
-      await load({
-        search: preview.search || search,
-        page: preview.page + 1,
-        append: true,
-        silent: true,
-      });
-    } finally {
-      setLoadMoreLoading(false);
-    }
+  async function goToPage(page: number) {
+    if (page < 1 || mode === "sweep") return;
+    updateUrl({ page });
+    await load({ search: preview?.search, page });
   }
 
   if (sweepLoading) {
@@ -110,17 +106,20 @@ export function StockBalanceLoader() {
       mode={mode}
       summary={preview.summary}
       refreshLoading={loading}
-      loadMoreLoading={loadMoreLoading}
       sweepLoading={sweepLoading}
       onSearchChange={(v) => void handleSearchChange(v)}
-      onLoadMore={() => void handleLoadMore()}
+      onPrevPage={() => void goToPage(preview.page - 1)}
+      onNextPage={() => void goToPage(preview.page + 1)}
       onFindMismatches={() => void loadMismatches()}
-      onExitSweep={() => void exitSweep()}
+      onExitSweep={() => {
+        updateUrl({ search: "", page: 1 });
+        void exitSweep();
+      }}
       onRefresh={() =>
-        void (mode === "sweep" ? refreshMismatches() : refresh({ silent: true }))
+        void (mode === "sweep" ? refreshMismatches() : refresh({ silent: true, page: preview.page }))
       }
       onAfterSync={
-        mode === "sweep" ? undefined : () => void refresh({ silent: true })
+        mode === "sweep" ? undefined : () => void refresh({ silent: true, page: preview.page })
       }
     />
   );

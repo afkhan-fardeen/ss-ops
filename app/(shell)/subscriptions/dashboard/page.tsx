@@ -5,6 +5,7 @@ import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ModuleDashboardShell, ModuleQuickLinks } from "@/components/portal/ModuleDashboardShell";
+import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { SubscriptionPipelineChart } from "@/components/subscriptions/SubscriptionPipelineChart";
 import { SubscriptionSpendBreakdown } from "@/components/subscriptions/SubscriptionSpendBreakdown";
 import { SubscriptionSpendPanel } from "@/components/subscriptions/SubscriptionSpendPanel";
@@ -38,12 +39,7 @@ function ageLabel(submittedAt: string): string {
 export default async function SubscriptionsDashboardPage() {
   if (!(await canAccessModule("subscriptions"))) {
     return (
-      <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">
-          You need the Subscriptions module grant to view this dashboard.
-        </p>
-      </div>
+      <ModuleAccessDenied description="You need the Subscriptions module grant to view this dashboard." />
     );
   }
 

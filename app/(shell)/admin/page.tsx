@@ -8,6 +8,7 @@ import {
   getRecentPortalLogins,
 } from "@/lib/supabase/portal-login-log";
 import { DashboardHeader } from "@/components/dashboard/DashboardPage";
+import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { UserModuleEditor } from "@/components/admin/UserModuleEditor";
 import { CreateUserForm } from "@/components/admin/CreateUserForm";
 
@@ -34,12 +35,7 @@ function modulesSummary(allowed: string[] | null): string {
 export default async function AdminPage() {
   if (!(await isPortalAdmin())) {
     return (
-      <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">
-          Admin is only available to accounts with the admin role in Supabase.
-        </p>
-      </div>
+      <ModuleAccessDenied description="Admin is only available to accounts with the admin role in Supabase." />
     );
   }
 

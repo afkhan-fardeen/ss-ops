@@ -99,5 +99,5 @@ body {
 .focus-ring:focus { outline: none; }
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #F6F4EE, 0 0 0 4px rgba(184, 132, 46, 0.45);
+  box-shadow: 0 0 0 2px #FAFAF9, 0 0 0 4px rgba(184, 132, 46, 0.45);
 }

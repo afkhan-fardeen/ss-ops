@@ -9,7 +9,7 @@ import { bucketStatusRows, type DailyStatusSplit } from "@/lib/dashboard/bucket-
 const LOOKBACK_DAYS = 14;
 const STUCK_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000;
 
-export type UbexConnectivity = { configured: boolean; ok: boolean; error?: string };
+type UbexConnectivity = { configured: boolean; ok: boolean; error?: string };
 
 export type Connectivity = {
   store1: StoreConnectionStatus;

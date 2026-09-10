@@ -10,19 +10,24 @@ const config: Config = {
     extend: {
       colors: {
         // Seissense Ops design system — see design-plan.md
-        canvas: "#F6F4EE",
-        ink: "#1E1D1A",
-        muted: "rgba(30,29,26,0.55)",
-        line: "rgba(30,29,26,0.15)",
+        canvas: "#FAFAF9",
+        ink: "#1A1A1A",
+        muted: "rgba(26,26,26,0.55)",
+        line: "rgba(26,26,26,0.10)",
+        // Three domain colors instead of one-per-module (was 8 distinct hues —
+        // see docs/design-plan.md drift note). Orders: cod/fulfillment/awb share
+        // teal-green. Inventory: stock/stock-analysis/ubex-inventory share olive.
+        // Finance: subscriptions/zoho-books share purple. Icon + label carry the
+        // individual module identity within a domain, not color.
         cod: {
           DEFAULT: "#2F9E7F",
           bg: "rgba(47,158,127,0.15)",
           bloom: "#9FDCCB",
         },
         fulfillment: {
-          DEFAULT: "#C4553A",
-          bg: "rgba(196,85,58,0.15)",
-          bloom: "#F0AE96",
+          DEFAULT: "#2F9E7F",
+          bg: "rgba(47,158,127,0.15)",
+          bloom: "#9FDCCB",
         },
         stock: {
           DEFAULT: "#6B8A3E",
@@ -34,17 +39,17 @@ const config: Config = {
           bg: "rgba(92,107,115,0.12)",
         },
         "stock-analysis": {
-          DEFAULT: "#4A6FA5",
-          bg: "rgba(74,111,165,0.15)",
+          DEFAULT: "#6B8A3E",
+          bg: "rgba(107,138,62,0.15)",
         },
         "ubex-inventory": {
-          DEFAULT: "#4A6FA5",
-          bg: "rgba(74,111,165,0.15)",
+          DEFAULT: "#6B8A3E",
+          bg: "rgba(107,138,62,0.15)",
         },
         awb: {
-          DEFAULT: "#2E6BAF",
-          bg: "rgba(46,107,175,0.15)",
-          bloom: "#A8C4E8",
+          DEFAULT: "#2F9E7F",
+          bg: "rgba(47,158,127,0.15)",
+          bloom: "#9FDCCB",
         },
         subscriptions: {
           DEFAULT: "#6B4FA2",
@@ -52,8 +57,8 @@ const config: Config = {
           bloom: "#C4B8E8",
         },
         "zoho-books": {
-          DEFAULT: "#8A6D3B",
-          bg: "rgba(138,109,59,0.15)",
+          DEFAULT: "#6B4FA2",
+          bg: "rgba(107,79,162,0.15)",
         },
         gold: "#B8842E",
       },
@@ -77,13 +82,14 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       borderRadius: {
-        card: "20px",
+        card: "12px",
       },
       backdropBlur: {
         glass: "28px",
       },
       boxShadow: {
-        soft: "0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03)",
+        // Flat at rest — the border does the work. Shadow is reserved for hover/pop.
+        soft: "0 1px 2px rgba(15, 23, 42, 0.02)",
         pop: "0 10px 30px -12px rgba(15, 23, 42, 0.20), 0 4px 10px -6px rgba(15, 23, 42, 0.10)",
         glass: "0 8px 30px rgba(120,100,60,0.12)",
       },

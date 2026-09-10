@@ -53,7 +53,7 @@ export default async function CodSettingsPage() {
     <div className="mx-auto max-w-2xl space-y-8">
       <header>
         <p className="text-[11px] font-medium uppercase tracking-wider text-cod/80">COD</p>
-        <h1 className="mt-1 text-xl font-medium text-ink">COD Settings</h1>
+        <h1 className="mt-1 text-xl font-medium text-ink">Recipients</h1>
         <p className="mt-1 text-[13px] text-muted">
           Manage email recipients for the COD list and Seissense Ops Bot notifications.
         </p>

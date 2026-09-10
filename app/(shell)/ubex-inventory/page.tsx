@@ -1,5 +1,6 @@
 import { Package } from "lucide-react";
 import { canAccessModule } from "@/lib/auth/can-access-module";
+import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { UbexInventoryView } from "@/components/ubex-inventory/UbexInventoryView";
 
 export const dynamic = "force-dynamic";
@@ -7,12 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function UbexInventoryPage() {
   if (!(await canAccessModule("ubexInventory"))) {
     return (
-      <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">
-          Ubex inventory is only available to admins or users granted the Ubex Inventory module.
-        </p>
-      </div>
+      <ModuleAccessDenied description="Ubex inventory is only available to admins or users granted the Ubex Inventory module." />
     );
   }
 

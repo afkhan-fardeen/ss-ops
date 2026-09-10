@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Clock, CheckCircle, Send, AlertCircle } from "lucide-react";
+import { useUrlViewState } from "@/hooks/useUrlViewState";
 import type { OrderRow } from "@/lib/orders/build-order-rows";
 import { UbexStatusLine } from "@/components/cod-list/UbexStatusLine";
 import type { InitialLogEntry, RowStateMap } from "@/hooks/useRowPushQueue";
@@ -10,6 +11,12 @@ import { FulfillmentTable } from "./FulfillmentTable";
 import { FulfillmentFooter } from "./FulfillmentFooter";
 
 type FilterKey = "all" | "cod" | "paid" | "waiting" | "matched" | "fulfilled" | "error";
+
+const FILTER_KEYS: FilterKey[] = ["all", "cod", "paid", "waiting", "matched", "fulfilled", "error"];
+
+function isFilterKey(value: string | null): value is FilterKey {
+  return FILTER_KEYS.includes(value as FilterKey);
+}
 
 const FILTER_LABELS: { key: FilterKey; label: string }[] = [
   { key: "all",       label: "All" },
@@ -49,11 +56,11 @@ function StatCard({
   onClick: () => void;
 }) {
   const colors = {
-    amber:   { bg: "bg-[rgba(240,183,67,0.10)]",   text: "text-[#C9920D]", border: "border-[rgba(240,183,67,0.35)]",  num: "text-[#C9920D]" },
-    blue:    { bg: "bg-[rgba(59,130,246,0.08)]",   text: "text-[#2563EB]", border: "border-[rgba(59,130,246,0.30)]",  num: "text-[#2563EB]" },
-    green:   { bg: "bg-[rgba(76,175,80,0.10)]",    text: "text-[#2E7D32]", border: "border-[rgba(76,175,80,0.30)]",   num: "text-[#2E7D32]" },
-    red:     { bg: "bg-[rgba(194,81,81,0.10)]",    text: "text-[#C25151]", border: "border-[rgba(194,81,81,0.30)]",   num: "text-[#C25151]" },
-    neutral: { bg: "bg-canvas",                 text: "text-muted", border: "border-line",                num: "text-ink" },
+    amber:   { iconBg: "bg-[rgba(240,183,67,0.12)]", iconText: "text-[#C9920D]", num: "text-[#C9920D]", ring: "ring-[#C9920D]" },
+    blue:    { iconBg: "bg-[rgba(59,130,246,0.10)]",  iconText: "text-[#2563EB]", num: "text-[#2563EB]", ring: "ring-[#2563EB]" },
+    green:   { iconBg: "bg-[rgba(76,175,80,0.12)]",   iconText: "text-[#2E7D32]", num: "text-[#2E7D32]", ring: "ring-[#2E7D32]" },
+    red:     { iconBg: "bg-[rgba(194,81,81,0.12)]",   iconText: "text-[#C25151]", num: "text-[#C25151]", ring: "ring-[#C25151]" },
+    neutral: { iconBg: "bg-canvas",                   iconText: "text-muted",     num: "text-ink",       ring: "ring-ink" },
   };
   const c = colors[color];
   return (
@@ -61,15 +68,16 @@ function StatCard({
       type="button"
       onClick={onClick}
       className={[
-        "flex flex-1 cursor-pointer items-center gap-3 rounded-card border p-4 text-left transition",
-        active ? `${c.bg} ${c.border} shadow-[0_0_0_2px_currentColor] shadow-[color:var(--tw-shadow-color)]` : `${c.bg} ${c.border} hover:shadow-soft`,
+        "flex flex-1 items-center gap-3 rounded-card border border-line bg-white p-4 text-left transition",
+        active ? `${c.ring} ring-2 shadow-soft` : "hover:shadow-soft",
       ].join(" ")}
-      style={active ? { boxShadow: `0 0 0 2px ${c.border.replace("border-", "")}` } : undefined}
     >
-      <Icon size={18} className={c.text} strokeWidth={2} />
+      <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full ${c.iconBg}`}>
+        <Icon size={16} className={c.iconText} strokeWidth={2} />
+      </span>
       <div>
         <p className={`text-xl font-medium tabular-nums ${c.num}`}>{count}</p>
-        <p className={`text-[11px] font-medium ${c.text}`}>{label}</p>
+        <p className="text-[11px] font-medium text-muted">{label}</p>
       </div>
     </button>
   );
@@ -96,7 +104,16 @@ export function FulfillmentView({
   pushEndpoint?: string;
 }) {
   const { stateMap, pushOne, fulfilAll } = useRowPushQueue<OrderRow>(rows, initialLogs, pushEndpoint);
-  const [filter, setFilter] = useState<FilterKey>("all");
+  const { searchParams, updateUrl } = useUrlViewState();
+  const [filter, setFilterState] = useState<FilterKey>(() => {
+    const param = searchParams.get("filter");
+    return isFilterKey(param) ? param : "all";
+  });
+
+  function setFilter(next: FilterKey) {
+    setFilterState(next);
+    updateUrl({ filter: next === "all" ? null : next });
+  }
 
   const filteredRows = useMemo(() => applyFilter(rows, filter, stateMap), [rows, filter, stateMap]);
 

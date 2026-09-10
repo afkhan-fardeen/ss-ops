@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
 
 export function StockBalanceSearchBar({
   value,
@@ -8,8 +8,8 @@ export function StockBalanceSearchBar({
   loading,
   page,
   hasNextPage,
-  onLoadMore,
-  loadMoreLoading,
+  onPrevPage,
+  onNextPage,
   mode,
   mismatchCount,
   sweepLoading,
@@ -21,8 +21,8 @@ export function StockBalanceSearchBar({
   loading: boolean;
   page: number;
   hasNextPage: boolean;
-  onLoadMore: () => void;
-  loadMoreLoading?: boolean;
+  onPrevPage: () => void;
+  onNextPage: () => void;
   mode: "browse" | "sweep";
   mismatchCount: number;
   sweepLoading?: boolean;
@@ -79,18 +79,29 @@ export function StockBalanceSearchBar({
         </p>
       ) : (
         <div className="flex flex-wrap items-center justify-between gap-2 text-[12px] text-muted">
-          <span>Showing page {page}</span>
-          {hasNextPage ? (
+          <span>Page {page}</span>
+          <div className="flex items-center gap-1.5">
             <button
               type="button"
-              disabled={loadMoreLoading || loading}
-              onClick={onLoadMore}
-              className="inline-flex items-center gap-1.5 rounded-card border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+              disabled={loading || page <= 1}
+              onClick={onPrevPage}
+              aria-label="Previous page"
+              className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {loadMoreLoading ? <Loader2 size={13} className="animate-spin" /> : null}
-              Load 10 more
+              <ChevronLeft size={14} />
+              Prev
             </button>
-          ) : null}
+            <button
+              type="button"
+              disabled={loading || !hasNextPage}
+              onClick={onNextPage}
+              aria-label="Next page"
+              className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Next
+              <ChevronRight size={14} />
+            </button>
+          </div>
         </div>
       )}
     </div>

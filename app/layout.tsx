@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
 import { jakarta, jetbrainsMono, sora } from "./fonts";
 import { MotionProviders } from "@/components/motion/MotionProviders";
-import { MeshBackground } from "@/components/motion/MeshBackground";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -28,10 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${sora.variable} ${jakarta.variable} ${jetbrainsMono.variable} font-sans antialiased relative min-h-screen bg-canvas`}
       >
-        <MeshBackground />
-        <div className="relative z-10 min-h-screen">
-          <MotionProviders>{children}</MotionProviders>
-        </div>
+        <MotionProviders>{children}</MotionProviders>
         <Toaster position="top-right" richColors closeButton />
       </body>
     </html>

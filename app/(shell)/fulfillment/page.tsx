@@ -67,20 +67,13 @@ async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
   const ubexTokenConfigured = Boolean(getUbexToken());
 
   // For Store 2, use its fulfillment window env var, fallback to the global one.
-  const windowEnvVar =
+  const windowDays =
     storeId === 2
       ? (process.env.FULFILLMENT_STORE2_WINDOW_DAYS ?? process.env.FULFILLMENT_WINDOW_DAYS)
-      : process.env.FULFILLMENT_WINDOW_DAYS;
-  const origWindowDays = process.env.FULFILLMENT_WINDOW_DAYS;
-  if (storeId === 2 && windowEnvVar) {
-    process.env.FULFILLMENT_WINDOW_DAYS = windowEnvVar;
-  }
+      : undefined;
 
   try {
-    const win = getFulfillmentWindow();
-    if (storeId === 2 && origWindowDays !== undefined) {
-      process.env.FULFILLMENT_WINDOW_DAYS = origWindowDays;
-    }
+    const win = getFulfillmentWindow(new Date(), windowDays);
 
     windowLabel = `${win.label} · ${new Date(win.createdAtMinIso).toUTCString()} → ${new Date(win.createdAtMaxIso).toUTCString()}`;
 
@@ -125,9 +118,6 @@ async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
       })
       .filter((x): x is InitialLogEntry => Boolean(x));
   } catch (e) {
-    if (storeId === 2 && origWindowDays !== undefined) {
-      process.env.FULFILLMENT_WINDOW_DAYS = origWindowDays;
-    }
     error = e instanceof Error ? e.message : "Failed to load fulfillment queue";
   }
 

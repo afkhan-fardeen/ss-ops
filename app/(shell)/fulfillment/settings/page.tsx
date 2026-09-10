@@ -12,7 +12,7 @@ export default function FulfillmentSettingsPage() {
         <p className="text-[11px] font-medium uppercase tracking-wider text-fulfillment">
           Fulfillment
         </p>
-        <h1 className="mt-1 text-xl font-medium text-ink">Settings</h1>
+        <h1 className="mt-1 text-xl font-medium text-ink">Config</h1>
         <p className="mt-2 text-[13px] text-muted">
           These values are set in Vercel environment variables. Contact an admin to change them.
         </p>

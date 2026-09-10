@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { loadFulfillmentActivity } from "@/lib/dashboard/load-fulfillment-activity";
 import { FULFILLMENT_ACCENT } from "@/config/modules";
 import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
@@ -75,12 +74,6 @@ export default async function FulfillmentDashboardPage() {
           { label: "Settings", href: "/fulfillment/settings", description: "Tracking options" },
         ]}
       />
-      <Link
-        href="/fulfillment/list"
-        className="inline-flex rounded-card border border-fulfillment bg-fulfillment px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
-      >
-        Open fulfillment list
-      </Link>
     </ModuleDashboardShell>
   );
 }

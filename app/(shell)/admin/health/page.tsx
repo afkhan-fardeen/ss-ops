@@ -1,5 +1,6 @@
 import { AlertTriangle, CheckCircle2, XCircle, Circle } from "lucide-react";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
+import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { DashboardHeader } from "@/components/dashboard/DashboardPage";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { StatCard } from "@/components/dashboard/StatCard";
@@ -159,12 +160,7 @@ function ConfigChecklist({ checks }: { checks: ConfigCheck[] }) {
 export default async function SystemHealthPage() {
   if (!(await isPortalAdmin())) {
     return (
-      <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">
-          System Health is only available to accounts with the admin role in Supabase.
-        </p>
-      </div>
+      <ModuleAccessDenied description="System Health is only available to accounts with the admin role in Supabase." />
     );
   }
 

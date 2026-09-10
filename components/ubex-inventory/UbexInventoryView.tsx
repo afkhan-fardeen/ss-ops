@@ -1,11 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Loader2, Search } from "lucide-react";
-import {
-  mergeUbexPoolProducts,
-  type UbexPoolProduct,
-} from "@/lib/ubex/group-balance-rows-by-name";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
+import { useUrlViewState } from "@/hooks/useUrlViewState";
+import type { UbexPoolProduct } from "@/lib/ubex/group-balance-rows-by-name";
 import { UbexProductDetail, UbexProductTile } from "./UbexProductCard";
 
 type SearchResponse = {
@@ -19,14 +17,17 @@ type SearchResponse = {
 };
 
 export function UbexInventoryView() {
-  const [query, setQuery] = useState("");
-  const [debounced, setDebounced] = useState("");
+  const { searchParams, updateUrl } = useUrlViewState();
+  const [initialSearch] = useState(() => searchParams.get("q") ?? "");
+  const [query, setQuery] = useState(initialSearch);
+  const [debounced, setDebounced] = useState(initialSearch);
   const [products, setProducts] = useState<UbexPoolProduct[]>([]);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() =>
+    Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1),
+  );
   const [hasNextPage, setHasNextPage] = useState(false);
   const [store2Configured, setStore2Configured] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [loadMoreLoading, setLoadMoreLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeName, setActiveName] = useState<string | null>(null);
 
@@ -35,19 +36,30 @@ export function UbexInventoryView() {
     return () => clearTimeout(t);
   }, [query]);
 
-  const fetchPage = useCallback(async (q: string, nextPage: number, append: boolean) => {
-    const params = new URLSearchParams({ page: String(nextPage) });
+  // A search change always starts back at page 1 — skip the very first run (that's the
+  // restored-from-URL value, not a user edit).
+  const isFirstDebounce = useRef(true);
+  useEffect(() => {
+    if (isFirstDebounce.current) {
+      isFirstDebounce.current = false;
+      return;
+    }
+    updateUrl({ search: debounced, page: 1 });
+    setPage(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debounced]);
+
+  const fetchPage = useCallback(async (q: string, targetPage: number) => {
+    const params = new URLSearchParams({ page: String(targetPage) });
     if (q) params.set("q", q);
     const res = await fetch(`/api/ubex-inventory/search?${params.toString()}`);
     const json = (await res.json()) as SearchResponse;
     if (!json.ok) {
       throw new Error(json.error ?? `Server returned ${res.status}`);
     }
-    const incoming = json.products ?? [];
     setHasNextPage(Boolean(json.hasNextPage));
-    setPage(nextPage);
     setStore2Configured(Boolean(json.store2Configured));
-    setProducts((prev) => (append ? mergeUbexPoolProducts(prev, incoming) : incoming));
+    setProducts(json.products ?? []);
   }, []);
 
   useEffect(() => {
@@ -55,7 +67,7 @@ export function UbexInventoryView() {
     setLoading(true);
     setError(null);
     setActiveName(null);
-    void fetchPage(debounced, 1, false)
+    void fetchPage(debounced, page)
       .catch((e) => {
         if (!cancelled) {
           setProducts([]);
@@ -69,19 +81,13 @@ export function UbexInventoryView() {
     return () => {
       cancelled = true;
     };
-  }, [debounced, fetchPage]);
+  }, [debounced, page, fetchPage]);
 
-  const onLoadMore = async () => {
-    setLoadMoreLoading(true);
-    setError(null);
-    try {
-      await fetchPage(debounced, page + 1, true);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load more");
-    } finally {
-      setLoadMoreLoading(false);
-    }
-  };
+  function goToPage(next: number) {
+    if (next < 1) return;
+    updateUrl({ page: next });
+    setPage(next);
+  }
 
   const variantCount = useMemo(
     () => products.reduce((sum, p) => sum + p.variantCount, 0),
@@ -93,7 +99,7 @@ export function UbexInventoryView() {
     <div className="space-y-3">
       <p className="text-[12px] text-muted">
         {products.length} product{products.length === 1 ? "" : "s"} · {variantCount} variant
-        {variantCount === 1 ? "" : "s"} loaded
+        {variantCount === 1 ? "" : "s"} on this page
       </p>
 
       <div className="relative">
@@ -146,19 +152,31 @@ export function UbexInventoryView() {
         <UbexProductDetail product={active} store2Configured={store2Configured} />
       ) : null}
 
-      {hasNextPage ? (
-        <div className="flex justify-center pt-1">
+      {(page > 1 || hasNextPage) && (
+        <div className="flex items-center justify-center gap-1.5 pt-1">
           <button
             type="button"
-            disabled={loadMoreLoading || loading}
-            onClick={() => void onLoadMore()}
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+            disabled={loading || page <= 1}
+            onClick={() => goToPage(page - 1)}
+            aria-label="Previous page"
+            className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
           >
-            {loadMoreLoading ? <Loader2 size={13} className="animate-spin" /> : null}
-            Load more
+            <ChevronLeft size={14} />
+            Prev
+          </button>
+          <span className="px-2 text-[12px] text-muted">Page {page}</span>
+          <button
+            type="button"
+            disabled={loading || !hasNextPage}
+            onClick={() => goToPage(page + 1)}
+            aria-label="Next page"
+            className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next
+            <ChevronRight size={14} />
           </button>
         </div>
-      ) : null}
+      )}
     </div>
   );
 }

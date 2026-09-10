@@ -175,7 +175,7 @@ export function useRowPushQueue<R extends PushableRow>(
       }
       return false;
     },
-    [],
+    [pushEndpoint],
   );
 
   const fulfilAll = useCallback(

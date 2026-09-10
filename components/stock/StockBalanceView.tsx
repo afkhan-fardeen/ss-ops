@@ -37,10 +37,10 @@ type Props = {
     mismatched: number;
   };
   refreshLoading?: boolean;
-  loadMoreLoading?: boolean;
   sweepLoading?: boolean;
   onSearchChange: (value: string) => void;
-  onLoadMore: () => void;
+  onPrevPage: () => void;
+  onNextPage: () => void;
   onFindMismatches: () => void;
   onExitSweep: () => void;
   onRefresh?: () => void;
@@ -108,10 +108,10 @@ export function StockBalanceView({
   mode,
   summary,
   refreshLoading,
-  loadMoreLoading,
   sweepLoading,
   onSearchChange,
-  onLoadMore,
+  onPrevPage,
+  onNextPage,
   onFindMismatches,
   onExitSweep,
   onRefresh,
@@ -204,19 +204,19 @@ export function StockBalanceView({
             : ` · ${STORE_LABELS[2]} not configured`}
         </p>
         <p className="mt-1 text-[13px] text-ink">
-          {itemCount} loaded · {summary.mismatched} need sync · fetched{" "}
-          {new Date(fetchedAt).toLocaleString()}
+          {itemCount} {mode === "sweep" ? "loaded" : "on this page"} · {summary.mismatched} need
+          sync · fetched {new Date(fetchedAt).toLocaleString()}
         </p>
       </div>
 
       <StockBalanceSearchBar
         value={searchDraft}
         onChange={setSearchDraft}
-        loading={Boolean(refreshLoading) && !loadMoreLoading}
+        loading={Boolean(refreshLoading)}
         page={page}
         hasNextPage={hasNextPage}
-        onLoadMore={onLoadMore}
-        loadMoreLoading={loadMoreLoading}
+        onPrevPage={onPrevPage}
+        onNextPage={onNextPage}
         mode={mode}
         mismatchCount={rows.length}
         sweepLoading={sweepLoading}

@@ -72,18 +72,8 @@ export const COD_ACCENT: ModuleAccent = {
   chartStroke: "#237A63",
 };
 
-export const FULFILLMENT_ACCENT: ModuleAccent = {
-  rail: "bg-fulfillment",
-  labelText: "text-fulfillment",
-  labelHover: "hover:bg-fulfillment-bg",
-  activeBg: "bg-fulfillment-bg",
-  activeText: "text-fulfillment",
-  pillBg: "bg-fulfillment-bg",
-  pillText: "text-fulfillment",
-  mobileActive: "text-fulfillment",
-  chartFill: "#C4553A",
-  chartStroke: "#9C4230",
-};
+// Orders & Delivery domain — shares COD's color (see tailwind.config.ts note).
+export const FULFILLMENT_ACCENT: ModuleAccent = COD_ACCENT;
 
 export const STOCK_ACCENT: ModuleAccent = {
   rail: "bg-stock",
@@ -107,8 +97,8 @@ export const HOME_ACCENT: ModuleAccent = {
   pillBg: "bg-canvas",
   pillText: "text-ink",
   mobileActive: "text-ink",
-  chartFill: "#1E1D1A",
-  chartStroke: "#1E1D1A",
+  chartFill: "#1A1A1A",
+  chartStroke: "#1A1A1A",
 };
 
 export const SETTINGS_ACCENT: ModuleAccent = {
@@ -124,44 +114,12 @@ export const SETTINGS_ACCENT: ModuleAccent = {
   chartStroke: "#8F6623",
 };
 
-const AWB_ACCENT: ModuleAccent = {
-  rail: "bg-awb",
-  labelText: "text-awb",
-  labelHover: "hover:bg-awb-bg",
-  activeBg: "bg-awb-bg",
-  activeText: "text-awb",
-  pillBg: "bg-awb-bg",
-  pillText: "text-awb",
-  mobileActive: "text-awb",
-  chartFill: "#2E6BAF",
-  chartStroke: "#235489",
-};
+// Orders & Delivery domain — shares COD's color.
+const AWB_ACCENT: ModuleAccent = COD_ACCENT;
 
-export const STOCK_ANALYSIS_ACCENT: ModuleAccent = {
-  rail: "bg-stock-analysis",
-  labelText: "text-stock-analysis",
-  labelHover: "hover:bg-stock-analysis-bg",
-  activeBg: "bg-stock-analysis-bg",
-  activeText: "text-stock-analysis",
-  pillBg: "bg-stock-analysis-bg",
-  pillText: "text-stock-analysis",
-  mobileActive: "text-stock-analysis",
-  chartFill: "#4A6FA5",
-  chartStroke: "#3A587F",
-};
-
-const UBEX_INVENTORY_ACCENT: ModuleAccent = {
-  rail: "bg-ubex-inventory",
-  labelText: "text-ubex-inventory",
-  labelHover: "hover:bg-ubex-inventory-bg",
-  activeBg: "bg-ubex-inventory-bg",
-  activeText: "text-ubex-inventory",
-  pillBg: "bg-ubex-inventory-bg",
-  pillText: "text-ubex-inventory",
-  mobileActive: "text-ubex-inventory",
-  chartFill: "#4A6FA5",
-  chartStroke: "#3A587F",
-};
+// Inventory domain — shares Stock Balance's color.
+export const STOCK_ANALYSIS_ACCENT: ModuleAccent = STOCK_ACCENT;
+const UBEX_INVENTORY_ACCENT: ModuleAccent = STOCK_ACCENT;
 
 export const SUBSCRIPTIONS_ACCENT: ModuleAccent = {
   rail: "bg-subscriptions",
@@ -176,18 +134,8 @@ export const SUBSCRIPTIONS_ACCENT: ModuleAccent = {
   chartStroke: "#543F82",
 };
 
-const ZOHO_BOOKS_ACCENT: ModuleAccent = {
-  rail: "bg-zoho-books",
-  labelText: "text-zoho-books",
-  labelHover: "hover:bg-zoho-books-bg",
-  activeBg: "bg-zoho-books-bg",
-  activeText: "text-zoho-books",
-  pillBg: "bg-zoho-books-bg",
-  pillText: "text-zoho-books",
-  mobileActive: "text-zoho-books",
-  chartFill: "#8A6D3B",
-  chartStroke: "#6E5730",
-};
+// Finance domain — shares Subscriptions' color.
+const ZOHO_BOOKS_ACCENT: ModuleAccent = SUBSCRIPTIONS_ACCENT;
 
 function codModule(): PortalModule {
   return {
@@ -199,7 +147,7 @@ function codModule(): PortalModule {
       { label: "Dashboard", href: "/cod/dashboard", icon: LayoutDashboard },
       { label: "COD List", href: "/cod/list", icon: Wallet, aliases: ["/cod-list"] },
       { label: "History", href: "/cod/history", icon: History, aliases: ["/cod-history"] },
-      { label: "Settings", href: "/cod/settings", icon: Settings2, aliases: ["/cod-settings"] },
+      { label: "Recipients", href: "/cod/settings", icon: Settings2, aliases: ["/cod-settings"] },
     ],
   };
 }
@@ -219,7 +167,7 @@ function fulfillmentModule(): PortalModule {
         aliases: ["/fulfillment"],
       },
       { label: "History", href: "/fulfillment/history", icon: History, aliases: ["/history"] },
-      { label: "Settings", href: "/fulfillment/settings", icon: Settings2 },
+      { label: "Config", href: "/fulfillment/settings", icon: Settings2 },
     ],
   };
 }
@@ -241,7 +189,7 @@ function stockModule(): PortalModule {
       },
       { label: "Errors", href: "/stock-balance/errors", icon: AlertTriangle },
       { label: "History", href: "/stock-balance/history", icon: History },
-      { label: "Settings", href: "/stock-balance/settings", icon: Settings2 },
+      { label: "Config", href: "/stock-balance/settings", icon: Settings2 },
     ],
   };
 }

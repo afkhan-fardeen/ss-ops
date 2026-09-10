@@ -1,4 +1,5 @@
 import { canAccessModule } from "@/lib/auth/can-access-module";
+import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { stockBalanceMaxItems } from "@/lib/ubex/inventory";
 
 export const dynamic = "force-dynamic";
@@ -6,12 +7,7 @@ export const dynamic = "force-dynamic";
 export default async function StockBalanceSettingsPage() {
   if (!(await canAccessModule("stock"))) {
     return (
-      <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">
-          Stock balance settings are only available to admins or users granted the Stock Balance module.
-        </p>
-      </div>
+      <ModuleAccessDenied description="Stock balance settings are only available to admins or users granted the Stock Balance module." />
     );
   }
 
@@ -24,7 +20,7 @@ export default async function StockBalanceSettingsPage() {
         <p className="text-[11px] font-medium uppercase tracking-wider text-stock/80">
           Stock balance
         </p>
-        <h1 className="mt-1 text-xl font-medium text-ink">Settings</h1>
+        <h1 className="mt-1 text-xl font-medium text-ink">Config</h1>
         <p className="mt-2 text-[13px] text-muted">
           Runtime options are configured in Vercel environment variables.
         </p>

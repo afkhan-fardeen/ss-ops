@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { headers } from "next/headers";
 import { canAccessModule } from "@/lib/auth/can-access-module";
 import { DashboardHeader } from "@/components/dashboard/DashboardPage";
+import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { SubscriptionsListView } from "@/components/subscriptions/SubscriptionsListView";
 import { listSubscriptionRequests } from "@/lib/subscriptions/db";
 import type { SubscriptionStatus } from "@/lib/subscriptions/types";
@@ -16,14 +17,7 @@ export default async function SubscriptionsPage({
   searchParams?: SearchParams | Promise<SearchParams>;
 }) {
   if (!(await canAccessModule("subscriptions"))) {
-    return (
-      <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">
-          You need the Subscriptions module grant to view requests.
-        </p>
-      </div>
-    );
+    return <ModuleAccessDenied description="You need the Subscriptions module grant to view requests." />;
   }
 
   const sp = await Promise.resolve(searchParams ?? {});

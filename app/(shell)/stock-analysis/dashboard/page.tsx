@@ -6,6 +6,7 @@ import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { ModuleDashboardShell, ModuleQuickLinks } from "@/components/portal/ModuleDashboardShell";
+import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { ProductSearchCard } from "@/components/stock-analysis/ProductSearchCard";
 
 export const dynamic = "force-dynamic";
@@ -25,12 +26,7 @@ function sweepAgeHint(iso: string): string {
 export default async function StockAnalysisDashboardPage() {
   if (!(await canAccessModule("stockAnalysis"))) {
     return (
-      <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
-        <h1 className="text-lg font-medium text-ink">Access denied</h1>
-        <p className="mt-2 text-[13px] text-muted">
-          Stock analysis is only available to admins or users granted the Stock Analysis module.
-        </p>
-      </div>
+      <ModuleAccessDenied description="Stock analysis is only available to admins or users granted the Stock Analysis module." />
     );
   }
 

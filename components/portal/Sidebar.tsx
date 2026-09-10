@@ -103,8 +103,6 @@ export function Sidebar({
   const width = collapsed ? WIDTH_COLLAPSED : WIDTH_EXPANDED;
   const homeActive = pathname === HOME_HREF;
   const settingsActive = isPathInSettings(pathname);
-  // The launcher already handles switching between top-level modules, so the
-  // shell sidebar only surfaces the module you're currently inside — not all three.
   const activeModule = modules.find((m) => isPathInModule(pathname, m.id));
 
   const settingsNavItems = settingsItems.map((item) => ({
@@ -136,21 +134,21 @@ export function Sidebar({
             collapsed={collapsed}
           />
 
-          {activeModule ? (
-            <NavCollapsibleSection
-              key={activeModule.id}
-              sectionId={activeModule.id}
-              label={activeModule.label}
-              icon={activeModule.icon}
-              accent={activeModule.accent}
-              homeHref={moduleDashboardHref(activeModule)}
-              items={moduleToNavItems(activeModule)}
-              collapsed={collapsed}
-              isActive={(p) => isPathInModule(p, activeModule.id)}
-              forceOpen
-            />
-          ) : (
-            modules.map((module) => (
+          {modules.map((module) =>
+            activeModule?.id === module.id ? (
+              <NavCollapsibleSection
+                key={module.id}
+                sectionId={module.id}
+                label={module.label}
+                icon={module.icon}
+                accent={module.accent}
+                homeHref={moduleDashboardHref(module)}
+                items={moduleToNavItems(module)}
+                collapsed={collapsed}
+                isActive={(p) => isPathInModule(p, module.id)}
+                forceOpen
+              />
+            ) : (
               <NavHomeLink
                 key={module.id}
                 href={moduleDashboardHref(module)}
@@ -160,7 +158,7 @@ export function Sidebar({
                 active={false}
                 collapsed={collapsed}
               />
-            ))
+            ),
           )}
 
           <NavCollapsibleSection
