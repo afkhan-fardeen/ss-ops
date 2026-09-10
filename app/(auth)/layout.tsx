@@ -1,9 +1,9 @@
-import { MeshBackground } from "@/components/motion/MeshBackground";
+import { TechBackground } from "@/components/motion/TechBackground";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <MeshBackground />
+      <TechBackground />
       {children}
     </>
   );

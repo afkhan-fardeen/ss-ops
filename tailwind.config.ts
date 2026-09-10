@@ -82,7 +82,7 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       borderRadius: {
-        card: "12px",
+        card: "6px",
       },
       backdropBlur: {
         glass: "28px",

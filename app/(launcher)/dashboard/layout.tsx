@@ -1,16 +1,16 @@
-import { MeshBackground } from "@/components/motion/MeshBackground";
+import { TechBackground } from "@/components/motion/TechBackground";
 
 /**
  * Launcher layout — deliberately minimal. No Sidebar, no Topbar. The launcher is a
  * full-screen moment (design-plan.md Section 1), structurally separate from the
  * (shell) route group so there is zero sidebar/topbar markup to strip out.
- * Renders the drifting mesh background — module workbench pages ((shell) layout)
+ * Renders the tech-grid background — module workbench pages ((shell) layout)
  * deliberately stay flat instead, per design-plan.md Section 1.
  */
 export default function LauncherLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative min-h-screen">
-      <MeshBackground />
+      <TechBackground />
       <div className="relative">{children}</div>
     </div>
   );

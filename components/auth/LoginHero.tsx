@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { LoginForm } from "@/components/auth/LoginForm";
-import { LoginAurora } from "@/components/auth/LoginAurora";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { stagger, staggerItem } from "@/lib/motion";
 
@@ -22,7 +21,6 @@ export function LoginHero({
 }) {
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-16">
-      <LoginAurora />
       <motion.div
         variants={stagger}
         initial="hidden"
