@@ -53,17 +53,3 @@ export function FilterChipSkeleton({ count = 5 }: { count?: number }) {
     </div>
   );
 }
-
-export function StripSkeleton() {
-  return (
-    <div className="flex flex-wrap items-center gap-3 rounded-card border border-line bg-white px-4 py-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div
-          key={i}
-          className="h-5 animate-pulse rounded bg-line"
-          style={{ width: `${72 + (i % 3) * 24}px` }}
-        />
-      ))}
-    </div>
-  );
-}

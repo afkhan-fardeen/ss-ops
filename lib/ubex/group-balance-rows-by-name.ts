@@ -1,6 +1,6 @@
 import type { StockBalanceRow, StockBalanceStatus } from "@/lib/stock/build-balance-rows";
 
-export type UbexPoolVariant = {
+type UbexPoolVariant = {
   ubexId: string;
   barcode: string;
   sku: string;

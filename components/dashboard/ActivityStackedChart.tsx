@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 
-export type StackedChartPoint = {
+type StackedChartPoint = {
   label: string;
   success: number;
   error: number;

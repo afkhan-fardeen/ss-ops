@@ -5,8 +5,6 @@ import { RestockQueueContext } from "@/components/stock/RestockQueueProvider";
 
 export type {
   RestockRowInput,
-  RestockRowState,
-  RestockRowStateMap,
   RestockRowStatus,
 } from "@/components/stock/RestockQueueProvider";
 

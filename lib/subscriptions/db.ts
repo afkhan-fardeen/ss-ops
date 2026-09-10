@@ -159,18 +159,6 @@ export async function updateSubscriptionFields(
   return updateSubscriptionStatus(id, fields);
 }
 
-export async function countPendingSubscriptions(): Promise<number> {
-  const supabase = getSupabaseService();
-  if (!supabase) return 0;
-
-  const { count } = await supabase
-    .from("subscription_requests")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "pending");
-
-  return count ?? 0;
-}
-
 /** Permanently delete request row and stored PDF (if any). */
 export async function deleteSubscriptionRequest(id: string): Promise<{ ok: true } | { ok: false; error: string }> {
   const supabase = getSupabaseService();
@@ -191,5 +179,3 @@ export async function deleteSubscriptionRequest(id: string): Promise<{ ok: true 
   if (error) return { ok: false, error: error.message };
   return { ok: true };
 }
-
-export { BUCKET as SUBSCRIPTION_PDF_BUCKET };

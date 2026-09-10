@@ -55,8 +55,11 @@ async function shopifyFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export async function getOpenFulfillmentOrders(orderId: number): Promise<ShopifyFulfillmentOrder[]> {
-  const data = await shopifyFetch<FulfillmentOrdersResponse>(`/orders/${orderId}/fulfillment_orders.json`);
+async function getOpenFulfillmentOrdersVia(
+  fetchFn: <T>(path: string, init?: RequestInit) => Promise<T>,
+  orderId: number,
+): Promise<ShopifyFulfillmentOrder[]> {
+  const data = await fetchFn<FulfillmentOrdersResponse>(`/orders/${orderId}/fulfillment_orders.json`);
   const all = data.fulfillment_orders ?? [];
   return all.filter((fo) => {
     const s = (fo.status ?? "").toLowerCase();
@@ -77,8 +80,17 @@ export type CreateFulfillmentResult =
   | { ok: true; fulfillmentId: number; idempotent?: boolean }
   | { ok: false; error: string };
 
-export async function createFulfillment(input: CreateFulfillmentInput): Promise<CreateFulfillmentResult> {
-  const { company, notifyCustomer } = getEnv();
+/**
+ * Shared fulfillment-push logic for any store. `fetchFn`/`company`/`notifyCustomer` carry the
+ * store-specific Shopify client + settings; `storeId` scopes idempotency/log rows (see lib/fulfillment/log.ts).
+ */
+export async function createFulfillmentForStore(
+  fetchFn: <T>(path: string, init?: RequestInit) => Promise<T>,
+  env: { company: string; notifyCustomer: boolean },
+  storeId: number,
+  input: CreateFulfillmentInput,
+): Promise<CreateFulfillmentResult> {
+  const { company, notifyCustomer } = env;
   const trackingNumber = input.trackingNumber.trim();
   if (!trackingNumber) return { ok: false, error: "Tracking number is required" };
 
@@ -89,10 +101,11 @@ export async function createFulfillment(input: CreateFulfillmentInput): Promise<
     key,
     shopifyOrderId: input.orderId,
     createdBy: input.createdBy ?? null,
+    storeId,
   });
 
   if (!reserved) {
-    const prev = await findLastSuccessForKey(input.orderId, trackingNumber);
+    const prev = await findLastSuccessForKey(input.orderId, trackingNumber, storeId);
     if (prev && prev.shopify_fulfillment_id) {
       return { ok: true, fulfillmentId: prev.shopify_fulfillment_id, idempotent: true };
     }
@@ -102,7 +115,7 @@ export async function createFulfillment(input: CreateFulfillmentInput): Promise<
   }
 
   try {
-    const fulfillmentOrders = await getOpenFulfillmentOrders(input.orderId);
+    const fulfillmentOrders = await getOpenFulfillmentOrdersVia(fetchFn, input.orderId);
     if (fulfillmentOrders.length === 0) {
       const err = "No open fulfillment orders (already fulfilled or closed)";
       await logFulfillment({
@@ -114,6 +127,7 @@ export async function createFulfillment(input: CreateFulfillmentInput): Promise<
         status: "error",
         error: err,
         createdBy: input.createdBy ?? null,
+        storeId,
       });
       await releaseIdempotency(key);
       return { ok: false, error: err };
@@ -134,7 +148,7 @@ export async function createFulfillment(input: CreateFulfillmentInput): Promise<
       },
     };
 
-    const data = await shopifyFetch<FulfillmentResponse>(`/fulfillments.json`, {
+    const data = await fetchFn<FulfillmentResponse>(`/fulfillments.json`, {
       method: "POST",
       body: JSON.stringify(payload),
     });
@@ -150,6 +164,7 @@ export async function createFulfillment(input: CreateFulfillmentInput): Promise<
       requestPayload: payload,
       responsePayload: data,
       createdBy: input.createdBy ?? null,
+      storeId,
     });
 
     return { ok: true, fulfillmentId: data.fulfillment.id };
@@ -164,8 +179,13 @@ export async function createFulfillment(input: CreateFulfillmentInput): Promise<
       status: "error",
       error: message,
       createdBy: input.createdBy ?? null,
+      storeId,
     });
     await releaseIdempotency(key);
     return { ok: false, error: message };
   }
+}
+
+export async function createFulfillment(input: CreateFulfillmentInput): Promise<CreateFulfillmentResult> {
+  return createFulfillmentForStore(shopifyFetch, getEnv(), 1, input);
 }

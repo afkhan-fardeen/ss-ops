@@ -43,6 +43,3 @@ export async function fetchShipmentListPage(page: number): Promise<UbexListPage>
   const apiMessage = rows.length === 0 && msgLooksDisabled(json.msg) ? json.msg : undefined;
   return { rows, apiMessage };
 }
-
-/** Default v2 list page size is 50; we infer last page when we get fewer than this. */
-export const UBEX_LIST_PAGE_SIZE = 50;

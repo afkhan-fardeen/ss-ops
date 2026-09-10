@@ -1,4 +1,5 @@
-import { Users, ShieldCheck, Clock, History } from "lucide-react";
+import Link from "next/link";
+import { Users, ShieldCheck, Clock, History, Activity } from "lucide-react";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { getSupabaseService } from "@/lib/supabase/service";
 import { getAllProfiles } from "@/lib/supabase/profiles";
@@ -59,11 +60,20 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <DashboardHeader
-        moduleLabel="Admin"
-        title="Admin tools"
-        description="Create users, control module access, and review login activity."
-      />
+      <div className="flex items-start justify-between gap-4">
+        <DashboardHeader
+          moduleLabel="Admin"
+          title="Admin tools"
+          description="Create users, control module access, and review login activity."
+        />
+        <Link
+          href="/admin/health"
+          className="focus-ring mt-1 inline-flex shrink-0 items-center gap-1.5 rounded-card border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-canvas"
+        >
+          <Activity size={13} />
+          System health
+        </Link>
+      </div>
 
       {/* User count */}
       <section className="animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft">

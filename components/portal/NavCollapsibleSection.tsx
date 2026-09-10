@@ -14,8 +14,9 @@ import {
   type NavSectionId,
 } from "@/config/modules";
 import { StockErrorsNavBadge } from "@/components/stock/StockErrorsCountProvider";
+import { readPersistedBoolean, writePersistedBoolean } from "@/lib/browser/persisted-boolean";
 
-export type NavCollapsibleItem = {
+type NavCollapsibleItem = {
   label: string;
   href: string;
   icon: LucideIcon;
@@ -36,12 +37,7 @@ type Props = {
 };
 
 function readStoredOpen(sectionId: NavSectionId, defaultOpen: boolean): boolean {
-  try {
-    const v = window.localStorage.getItem(getNavOpenKey(sectionId));
-    if (v === "0") return false;
-    if (v === "1") return true;
-  } catch { /* ignore */ }
-  return defaultOpen;
+  return readPersistedBoolean(getNavOpenKey(sectionId), defaultOpen);
 }
 
 function NavChildLink({
@@ -123,9 +119,7 @@ export function NavCollapsibleSection({
   const persistOpen = useCallback(
     (next: boolean) => {
       setOpen(next);
-      try {
-        window.localStorage.setItem(getNavOpenKey(sectionId), next ? "1" : "0");
-      } catch { /* ignore */ }
+      writePersistedBoolean(getNavOpenKey(sectionId), next);
     },
     [sectionId],
   );

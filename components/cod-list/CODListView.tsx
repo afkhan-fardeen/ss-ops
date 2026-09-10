@@ -31,7 +31,7 @@ export function CODListView({
         apiMessage={ubexApiMessage}
         error={ubexError}
       />
-      <CODTable rows={rows} ordersScannedInWindow={ordersScannedInWindow} />
+      <CODTable rows={rows} />
     </div>
   );
 }

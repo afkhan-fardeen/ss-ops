@@ -19,8 +19,3 @@ export function getSupabaseEnv(): SupabaseEnv | null {
 export function isSupabaseConfigured(): boolean {
   return getSupabaseEnv() !== null;
 }
-
-export function isSupabaseServiceConfigured(): boolean {
-  const env = getSupabaseEnv();
-  return Boolean(env && env.serviceKey);
-}

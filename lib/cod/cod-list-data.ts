@@ -14,6 +14,7 @@ import {
   normalizeCodListSearchParams,
   type CodListSearchParamsInput,
 } from "@/lib/cod/cod-list-params";
+import { windowsForKeys, orderFallsInAnyWindow, dedupeByOrderId } from "@/lib/cod/window-utils";
 
 const MAX_PICK = 14;
 
@@ -61,29 +62,6 @@ export function parseCodListDateParam(params: CodListSearchParamsInput | undefin
 function resolveDateKeys(dateKeys: string[] | null): string[] {
   if (dateKeys == null) return [getCollectionWindow().dateKey];
   return dateKeys;
-}
-
-function windowsForKeys(keys: string[]): CollectionWindow[] {
-  return keys.map((k) => getWindowForDateKey(k));
-}
-
-function orderFallsInAnyWindow(createdAtIso: string | null | undefined, windows: CollectionWindow[]): boolean {
-  if (!createdAtIso) return false;
-  const t = Date.parse(createdAtIso);
-  if (Number.isNaN(t)) return false;
-  return windows.some((w) => {
-    const a = Date.parse(w.createdAtMinIso);
-    const b = Date.parse(w.createdAtMaxIso);
-    return t >= a && t < b;
-  });
-}
-
-function dedupeByOrderId(orders: ShopifyOrder[]): ShopifyOrder[] {
-  const m = new Map<number, ShopifyOrder>();
-  for (const o of orders) {
-    m.set(o.id, o);
-  }
-  return [...m.values()];
 }
 
 export type LoadCodListDataResult = {

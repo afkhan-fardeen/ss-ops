@@ -27,7 +27,7 @@ function ordinalDay(d: number): string {
   return `${d}th`;
 }
 
-export function sheetTitleFromDate(d = new Date()): string {
+function sheetTitleFromDate(d = new Date()): string {
   return `${ordinalDay(d.getDate())} ${d.toLocaleString("en-GB", { month: "long" })} ${d.getFullYear()}`;
 }
 

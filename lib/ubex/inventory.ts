@@ -193,13 +193,6 @@ export async function fetchUbexInventoryAll(
   return maxItems === null ? out : out.slice(0, maxItems);
 }
 
-/** @deprecated alias — use fetchUbexInventoryAll */
-export async function fetchUbexInventoryUpTo(
-  maxItems: number | null = stockBalanceMaxItems(),
-): Promise<UbexInventoryItem[]> {
-  return fetchUbexInventoryAll(maxItems);
-}
-
 /** GET /api/v2/inventory/get-stock?ids[]=… — read-only fresh quantities for ids. */
 export async function fetchUbexStockByIds(ids: string[]): Promise<Map<string, number>> {
   const unique = [...new Set(ids.map((id) => id.trim()).filter(Boolean))];

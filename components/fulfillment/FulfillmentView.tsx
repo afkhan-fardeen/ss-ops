@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Clock, CheckCircle, Send, AlertCircle } from "lucide-react";
 import type { OrderRow } from "@/lib/orders/build-order-rows";
 import { UbexStatusLine } from "@/components/cod-list/UbexStatusLine";
-import type { InitialLogEntry, RowState, RowStateMap, RowStatus } from "@/hooks/useRowPushQueue";
+import type { InitialLogEntry, RowStateMap } from "@/hooks/useRowPushQueue";
 import { useRowPushQueue } from "@/hooks/useRowPushQueue";
 import { FulfillmentTable } from "./FulfillmentTable";
 import { FulfillmentFooter } from "./FulfillmentFooter";
@@ -214,5 +214,3 @@ export function FulfillmentView({
     </div>
   );
 }
-
-export type { RowState, RowStatus };

@@ -14,7 +14,7 @@ import type {
   StockBalancePreview,
 } from "@/lib/stock/load-stock-balance-preview";
 
-export const STOCK_BALANCE_TOAST_ID = "stock-balance-preview";
+const STOCK_BALANCE_TOAST_ID = "stock-balance-preview";
 
 type LoadOptions = {
   search?: string;

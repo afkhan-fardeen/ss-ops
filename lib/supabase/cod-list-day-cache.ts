@@ -4,7 +4,7 @@ import { getSupabaseService } from "./service";
 const SCHEMA_VERSION = 1;
 const TTL_MS = 24 * 60 * 60 * 1000;
 
-export function codListShopifyCacheEnabled(): boolean {
+function codListShopifyCacheEnabled(): boolean {
   return process.env.COD_LIST_SHOPIFY_CACHE !== "0";
 }
 
@@ -70,5 +70,3 @@ export async function upsertCodListDayCacheSlices(
   const { error } = await supabase.from("cod_list_day_cache").upsert(rows, { onConflict: "date_key" });
   if (error) console.warn("[cod-list-day-cache] upsert failed:", error.message);
 }
-
-export { SCHEMA_VERSION as COD_LIST_CACHE_SCHEMA_VERSION };

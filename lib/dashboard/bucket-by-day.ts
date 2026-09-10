@@ -33,21 +33,6 @@ export function emptyDailyStatus(days: number): DailyStatusSplit[] {
   return lastNDays(days).map((b) => ({ ...b, success: 0, error: 0 }));
 }
 
-export function bucketTimestamps(
-  timestamps: string[],
-  days: number,
-): DailyCount[] {
-  const buckets = emptyDailyCounts(days);
-  const start = buckets[0]!.date;
-  for (const ts of timestamps) {
-    const date = ts.slice(0, 10);
-    if (date < start) continue;
-    const row = buckets.find((b) => b.date === date);
-    if (row) row.count += 1;
-  }
-  return buckets;
-}
-
 export function bucketStatusRows(
   rows: { at: string; status: string }[],
   days: number,

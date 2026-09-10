@@ -24,17 +24,6 @@ export function sharedAvailable(
   );
 }
 
-/**
- * @deprecated Single-store legacy: on_hand = ubex + committed so available ≈ ubex.
- * Prefer targetShopifyOnHandForStore for shared-pool syncs.
- */
-export function targetShopifyOnHand(
-  ubexStock: number,
-  committed: number | null,
-): number {
-  return Math.max(0, Math.floor(ubexStock + (committed ?? 0)));
-}
-
 /** Row needs sync when shared-pool math disagrees with either store. */
 export function isSellableMismatch(row: StockBalanceRow): boolean {
   return (

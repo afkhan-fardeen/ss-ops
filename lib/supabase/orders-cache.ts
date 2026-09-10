@@ -4,7 +4,7 @@ import { getSupabaseService } from "./service";
 import type { ShopifyOrderCacheRow } from "./types";
 
 /** Flatten a Shopify order payload to the shopify_orders_cache row shape. */
-export function shopifyOrderToCacheRow(
+function shopifyOrderToCacheRow(
   o: ShopifyOrder & { created_at?: string | null },
 ): Omit<ShopifyOrderCacheRow, "last_synced_at"> {
   return {
@@ -27,7 +27,7 @@ export function shopifyOrderToCacheRow(
 }
 
 /** Round-trip a cache row back to the in-app ShopifyOrder shape. */
-export function cacheRowToShopifyOrder(row: ShopifyOrderCacheRow): ShopifyOrder {
+function cacheRowToShopifyOrder(row: ShopifyOrderCacheRow): ShopifyOrder {
   if (row.raw && typeof row.raw === "object") {
     return row.raw as ShopifyOrder;
   }
@@ -54,15 +54,18 @@ export type OrdersCacheFilter = {
   cod?: "any" | "only" | "exclude";
 };
 
+export type OrdersCacheTable = "shopify_orders_cache" | "shopify_orders_cache_s2";
+
 /** Read cached orders. Returns `null` (not empty) when Supabase is not configured so the caller can fall back. */
 export async function readOrdersFromCache(
   filter: OrdersCacheFilter,
+  table: OrdersCacheTable = "shopify_orders_cache",
 ): Promise<{ orders: ShopifyOrder[]; ordersScannedInWindow: number } | null> {
   const supabase = getSupabaseService();
   if (!supabase) return null;
 
   let query = supabase
-    .from("shopify_orders_cache")
+    .from(table)
     .select("*")
     .gte("created_at", filter.createdAtMinIso)
     .lt("created_at", filter.createdAtMaxIso);
@@ -73,26 +76,40 @@ export async function readOrdersFromCache(
   if (filter.cod === "only") query = query.eq("is_cod", true);
   else if (filter.cod === "exclude") query = query.eq("is_cod", false);
 
-  const { data, error } = await query.order("created_at", { ascending: false });
+  // Safety valve: a date range large enough to pull an unbounded number of full
+  // (raw JSON included) rows should fail loud via the caller's Shopify fallback
+  // rather than pull an unbounded payload into memory.
+  const CACHE_ROW_CAP = 10_000;
+  const { data, error } = await query
+    .order("created_at", { ascending: false })
+    .limit(CACHE_ROW_CAP + 1);
   if (error || !data) return null;
+  if (data.length > CACHE_ROW_CAP) {
+    console.warn(`[orders-cache:${table}] window exceeds ${CACHE_ROW_CAP} rows; forcing live fallback`);
+    return null;
+  }
 
   const orders = (data as ShopifyOrderCacheRow[]).map(cacheRowToShopifyOrder);
   return { orders, ordersScannedInWindow: orders.length };
 }
 
-export async function upsertOrderCache(order: ShopifyOrder & { created_at?: string | null }): Promise<void> {
+export async function upsertOrderCache(
+  order: ShopifyOrder & { created_at?: string | null },
+  table: OrdersCacheTable = "shopify_orders_cache",
+): Promise<void> {
   const supabase = getSupabaseService();
   if (!supabase) return;
   const row = {
     ...shopifyOrderToCacheRow(order),
     last_synced_at: new Date().toISOString(),
   };
-  const { error } = await supabase.from("shopify_orders_cache").upsert(row, { onConflict: "id" });
-  if (error) console.warn("[orders-cache] upsert failed:", error.message);
+  const { error } = await supabase.from(table).upsert(row, { onConflict: "id" });
+  if (error) console.warn(`[orders-cache:${table}] upsert failed:`, error.message);
 }
 
 export async function upsertOrdersCache(
   orders: Array<ShopifyOrder & { created_at?: string | null }>,
+  table: OrdersCacheTable = "shopify_orders_cache",
 ): Promise<void> {
   const supabase = getSupabaseService();
   if (!supabase || orders.length === 0) return;
@@ -100,27 +117,31 @@ export async function upsertOrdersCache(
     ...shopifyOrderToCacheRow(o),
     last_synced_at: new Date().toISOString(),
   }));
-  const { error } = await supabase.from("shopify_orders_cache").upsert(rows, { onConflict: "id" });
-  if (error) console.warn("[orders-cache] bulk upsert failed:", error.message);
+  const { error } = await supabase.from(table).upsert(rows, { onConflict: "id" });
+  if (error) console.warn(`[orders-cache:${table}] bulk upsert failed:`, error.message);
 }
 
 /** Delete a single cached order (orders/cancelled webhook). */
-export async function deleteOrderCache(orderId: number): Promise<void> {
+export async function deleteOrderCache(
+  orderId: number,
+  table: OrdersCacheTable = "shopify_orders_cache",
+): Promise<void> {
   const supabase = getSupabaseService();
   if (!supabase) return;
-  const { error } = await supabase.from("shopify_orders_cache").delete().eq("id", orderId);
-  if (error) console.warn("[orders-cache] delete failed:", error.message);
+  const { error } = await supabase.from(table).delete().eq("id", orderId);
+  if (error) console.warn(`[orders-cache:${table}] delete failed:`, error.message);
 }
 
 /** Freshness check: is the cache younger than `maxAgeSeconds`? */
 export async function isOrdersCacheFresh(
   windowMinIso: string,
   maxAgeSeconds: number,
+  table: OrdersCacheTable = "shopify_orders_cache",
 ): Promise<boolean> {
   const supabase = getSupabaseService();
   if (!supabase) return false;
   const { data, error } = await supabase
-    .from("shopify_orders_cache")
+    .from(table)
     .select("last_synced_at")
     .gte("created_at", windowMinIso)
     .order("last_synced_at", { ascending: false })

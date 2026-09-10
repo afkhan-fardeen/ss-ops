@@ -1,12 +1,13 @@
 "use client";
 
-import { Check, Copy, ExternalLink, Loader2, Send, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { Check, ExternalLink, Loader2, Send, AlertCircle } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { OrderRow } from "@/lib/orders/build-order-rows";
 import { StatusPill, type StatusTone } from "@/components/portal/StatusPill";
 import type { RowState, RowStateMap, RowStatus } from "@/hooks/useRowPushQueue";
 import { easeOut, rowExit } from "@/lib/motion";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { formatOrderDate } from "@/lib/datetime/format-order-date";
 
 const statusLabel: Record<RowStatus, string> = {
   pending: "Waiting for Ubex",
@@ -21,30 +22,6 @@ const statusTone: Record<RowStatus, StatusTone> = {
   fulfilled: "green",
   error: "red",
 };
-
-function CopyButton({ value }: { value: string }) {
-  const [copied, setCopied] = useState(false);
-  if (!value) return null;
-  function copy(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    navigator.clipboard.writeText(value).then(
-      () => { setCopied(true); setTimeout(() => setCopied(false), 1400); },
-      () => {},
-    );
-  }
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-muted transition hover:bg-canvas hover:text-ink"
-      title={copied ? "Copied" : "Copy"}
-      aria-label="Copy"
-    >
-      {copied ? <Check size={12} /> : <Copy size={12} />}
-    </button>
-  );
-}
 
 function PushButton({ row, state, onPush }: { row: OrderRow; state: RowState | undefined; onPush: (row: OrderRow) => Promise<boolean> }) {
   const status: RowStatus = state?.status ?? "pending";
@@ -120,9 +97,7 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
           {rows.map((r, i) => {
             const state = stateMap[r.orderName];
             const status: RowStatus = state?.status ?? "pending";
-            const orderDateFmt = r.orderDate
-              ? new Date(r.orderDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
-              : "—";
+            const orderDateFmt = formatOrderDate(r.orderDate);
             return (
               <motion.tr
                 key={r.orderName}

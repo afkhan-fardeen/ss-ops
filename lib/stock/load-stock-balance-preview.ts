@@ -147,8 +147,3 @@ export async function loadMismatchedStockBalance(
     summary: summarizeStockBalanceRows(rows),
   };
 }
-
-/** @deprecated Use loadStockBalancePage / searchStockBalance */
-export async function loadStockBalancePreview(): Promise<StockBalancePreview> {
-  return loadStockBalancePage(1);
-}

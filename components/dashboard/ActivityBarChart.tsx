@@ -10,7 +10,7 @@ import {
   YAxis,
 } from "recharts";
 
-export type BarChartPoint = {
+type BarChartPoint = {
   label: string;
   value: number;
 };

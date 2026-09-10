@@ -1,36 +1,11 @@
 "use client";
 
-import { Check, Copy } from "lucide-react";
-import { useState } from "react";
 import type { CodRow } from "@/lib/cod/build-rows";
 import { StatusPill } from "@/components/portal/StatusPill";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { formatOrderDate } from "@/lib/datetime/format-order-date";
 
-function CopyButton({ value }: { value: string }) {
-  const [copied, setCopied] = useState(false);
-  if (!value) return null;
-  function copy(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
-    navigator.clipboard.writeText(value).then(
-      () => { setCopied(true); setTimeout(() => setCopied(false), 1400); },
-      () => {},
-    );
-  }
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-muted transition hover:bg-canvas hover:text-ink"
-      title={copied ? "Copied" : "Copy"}
-      aria-label="Copy"
-    >
-      {copied ? <Check size={12} /> : <Copy size={12} />}
-    </button>
-  );
-}
-
-export function CODTable({ rows, ordersScannedInWindow: _n }: { rows: CodRow[]; ordersScannedInWindow: number }) {
-  void _n;
+export function CODTable({ rows }: { rows: CodRow[] }) {
   if (rows.length === 0) {
     return (
       <div className="animate-fade-up space-y-3 rounded-card border border-line bg-white p-8 shadow-soft">
@@ -62,9 +37,7 @@ export function CODTable({ rows, ordersScannedInWindow: _n }: { rows: CodRow[]; 
         <tbody>
           {rows.map((r, i) => {
             const hasUbex = Boolean(r.ubexId);
-            const orderDateFmt = r.orderDate
-              ? new Date(r.orderDate).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })
-              : "—";
+            const orderDateFmt = formatOrderDate(r.orderDate);
             return (
               <tr
                 key={r.orderName}

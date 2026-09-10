@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { getSupabaseService } from "@/lib/supabase/service";
 import type { ShopifyStoreId } from "@/lib/shopify/inventory-read";
 
-export type StockRestockLogStatus = "success" | "error" | "skipped";
+type StockRestockLogStatus = "success" | "error" | "skipped";
 
 export type StockRestockLogInsert = {
   ubexId: string;
@@ -19,7 +19,7 @@ export type StockRestockLogInsert = {
   createdBy?: string | null;
 };
 
-export function todayUtcDate(): string {
+function todayUtcDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
 

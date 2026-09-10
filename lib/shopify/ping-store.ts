@@ -43,7 +43,7 @@ async function pingShopify(
 }
 
 /** Ping Store 1 (main store). */
-export async function pingStore1(): Promise<StoreConnectionStatus> {
+async function pingStore1(): Promise<StoreConnectionStatus> {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
   const version = process.env.SHOPIFY_API_VERSION ?? "2024-01";
@@ -54,7 +54,7 @@ export async function pingStore1(): Promise<StoreConnectionStatus> {
 }
 
 /** Ping Store 2. Returns configured=false immediately if env vars are absent. */
-export async function pingStore2(): Promise<StoreConnectionStatus> {
+async function pingStore2(): Promise<StoreConnectionStatus> {
   const domain = process.env.SHOPIFY_STORE2_DOMAIN;
   const token = process.env.SHOPIFY_STORE2_ACCESS_TOKEN;
   const version = process.env.SHOPIFY_STORE2_API_VERSION ?? "2024-01";

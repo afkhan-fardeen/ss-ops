@@ -26,6 +26,7 @@ import {
   NavHomeLink,
 } from "@/components/portal/NavCollapsibleSection";
 import { mobileModuleActive, MobileModuleSheet, MobileSettingsSheet } from "@/components/portal/MobileModuleSheet";
+import { readPersistedBoolean, writePersistedBoolean } from "@/lib/browser/persisted-boolean";
 
 const STORAGE_KEY = "portal.sidebar.collapsed";
 const WIDTH_EXPANDED = 248;
@@ -73,9 +74,7 @@ export function Sidebar({
   const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
 
   useEffect(() => {
-    try {
-      setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1");
-    } catch { /* ignore */ }
+    setCollapsed(readPersistedBoolean(STORAGE_KEY, false));
   }, []);
 
   useEffect(() => {
@@ -85,9 +84,7 @@ export function Sidebar({
 
   useEffect(() => {
     applySidebarWidth(collapsed);
-    try {
-      window.localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0");
-    } catch { /* ignore */ }
+    writePersistedBoolean(STORAGE_KEY, collapsed);
   }, [collapsed]);
 
   useEffect(() => {

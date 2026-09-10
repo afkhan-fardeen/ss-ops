@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, createHmac, timingSafeEqual } from "node:crypto";
 import { SESSION_COOKIE_NAME } from "./constants";
 
 export { SESSION_COOKIE_NAME };
@@ -50,8 +50,4 @@ export function sessionCookieOptions(maxAgeSec: number) {
     path: "/" as const,
     maxAge: maxAgeSec,
   };
-}
-
-export function randomCsrfToken(): string {
-  return randomBytes(32).toString("hex");
 }

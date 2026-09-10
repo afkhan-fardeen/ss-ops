@@ -4,7 +4,7 @@ export type CodListSearchParamsInput = {
   dates?: string | string[];
 };
 
-export function normalizeQueryParam(
+function normalizeQueryParam(
   value: string | string[] | undefined,
 ): string | undefined {
   if (value == null) return undefined;

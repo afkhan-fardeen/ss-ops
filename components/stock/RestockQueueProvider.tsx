@@ -28,13 +28,13 @@ export type RestockRowInput = {
 
 export type RestockRowStatus = "idle" | "busy" | "success" | "error";
 
-export type RestockRowState = {
+type RestockRowState = {
   status: RestockRowStatus;
   message?: string;
   productName: string;
 };
 
-export type RestockRowStateMap = Record<string, RestockRowState>;
+type RestockRowStateMap = Record<string, RestockRowState>;
 
 type RestockApiResult = {
   ok: boolean;
@@ -153,7 +153,7 @@ function chunkRows<T>(rows: T[], size: number): T[][] {
   return chunks;
 }
 
-export const RESTOCK_TOAST_ID = "stock-balance-restock";
+const RESTOCK_TOAST_ID = "stock-balance-restock";
 
 export type RestockQueueContextValue = {
   state: RestockRowStateMap;

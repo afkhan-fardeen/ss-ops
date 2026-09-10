@@ -1,5 +1,3 @@
-import { SESSION_COOKIE_NAME } from "./constants";
-
 type Payload = { exp: number; v: 1 };
 
 function base64UrlToString(b64url: string): string {
@@ -64,5 +62,3 @@ export async function verifySessionTokenEdge(token: string, secret: string): Pro
   if (parsed.exp <= Date.now()) return false;
   return true;
 }
-
-export { SESSION_COOKIE_NAME };

@@ -5,7 +5,7 @@
  */
 const DEFAULT_TEMPLATE = "https://ubex.co/tracking/{id}";
 
-export function buildTrackingUrl(trackingId: string): string {
+function buildTrackingUrl(trackingId: string): string {
   if (!trackingId) return "";
   const template = (process.env.UBEX_TRACKING_URL_TEMPLATE ?? DEFAULT_TEMPLATE).trim() || DEFAULT_TEMPLATE;
   if (template.includes("{id}")) return template.replace("{id}", encodeURIComponent(trackingId));

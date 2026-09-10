@@ -98,13 +98,6 @@ export const STOCK_ACCENT: ModuleAccent = {
   chartStroke: "#546E31",
 };
 
-/** Column accent for Store B inside Stock Balance (not a nav module). */
-export const STOCK_STORE_B_ACCENT = {
-  DEFAULT: "#5C6B73",
-  bg: "rgba(92,107,115,0.12)",
-  text: "#5C6B73",
-} as const;
-
 export const HOME_ACCENT: ModuleAccent = {
   rail: "bg-ink",
   labelText: "text-ink",
@@ -131,7 +124,7 @@ export const SETTINGS_ACCENT: ModuleAccent = {
   chartStroke: "#8F6623",
 };
 
-export const AWB_ACCENT: ModuleAccent = {
+const AWB_ACCENT: ModuleAccent = {
   rail: "bg-awb",
   labelText: "text-awb",
   labelHover: "hover:bg-awb-bg",
@@ -157,7 +150,7 @@ export const STOCK_ANALYSIS_ACCENT: ModuleAccent = {
   chartStroke: "#3A587F",
 };
 
-export const UBEX_INVENTORY_ACCENT: ModuleAccent = {
+const UBEX_INVENTORY_ACCENT: ModuleAccent = {
   rail: "bg-ubex-inventory",
   labelText: "text-ubex-inventory",
   labelHover: "hover:bg-ubex-inventory-bg",
@@ -183,7 +176,7 @@ export const SUBSCRIPTIONS_ACCENT: ModuleAccent = {
   chartStroke: "#543F82",
 };
 
-export const ZOHO_BOOKS_ACCENT: ModuleAccent = {
+const ZOHO_BOOKS_ACCENT: ModuleAccent = {
   rail: "bg-zoho-books",
   labelText: "text-zoho-books",
   labelHover: "hover:bg-zoho-books-bg",
@@ -324,7 +317,7 @@ export function getPortalModules(showAdmin: boolean): PortalModule[] {
 }
 
 /** Path prefixes that belong to a module (includes legacy aliases). */
-export function modulePathPrefixes(id: ModuleId): string[] {
+function modulePathPrefixes(id: ModuleId): string[] {
   switch (id) {
     case "cod":
       return ["/cod", "/cod-list", "/cod-settings", "/cod-history"];
@@ -543,11 +536,6 @@ const OPEN_STORAGE_PREFIX = "portal.nav.open.";
 
 export function getNavOpenKey(id: NavSectionId): string {
   return `${OPEN_STORAGE_PREFIX}${id}`;
-}
-
-/** @deprecated Use getNavOpenKey */
-export function getModuleOpenKey(id: ModuleId): string {
-  return getNavOpenKey(id);
 }
 
 export function moduleDashboardHref(module: PortalModule): string {

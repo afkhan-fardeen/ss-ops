@@ -23,8 +23,3 @@ export function getSupabaseService(): SupabaseClient | null {
   });
   return cached;
 }
-
-/** Test hook: reset the cached client (useful when env changes in dev). */
-export function resetSupabaseServiceCache(): void {
-  cached = undefined;
-}

@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 
-export type PipelineChartPoint = {
+type PipelineChartPoint = {
   label: string;
   submitted: number;
   approved: number;

@@ -1,8 +1,15 @@
 import type { ShopifyOrder, ShopifyOrdersResponse } from "@/lib/shopify/types";
 import { orderLooksLikeCod } from "@/lib/shopify/fetch-cod-orders";
-import { isOrdersCacheFresh, readOrdersFromCache, upsertOrdersCache } from "@/lib/supabase/orders-cache";
+import {
+  isOrdersCacheFresh,
+  readOrdersFromCache,
+  upsertOrdersCache,
+  type OrdersCacheTable,
+} from "@/lib/supabase/orders-cache";
 
-function getEnv(): { domain: string; token: string; version: string } {
+export type ShopifyEnv = { domain: string; token: string; version: string };
+
+function getEnv(): ShopifyEnv {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_ADMIN_ACCESS_TOKEN;
   const version = process.env.SHOPIFY_API_VERSION ?? "2024-01";
@@ -43,8 +50,8 @@ export type FetchOrdersResult = {
   source: "cache" | "shopify";
 };
 
-async function fetchFromShopify(filter: OrdersFilter): Promise<ShopifyOrder[]> {
-  const { domain, token, version } = getEnv();
+async function fetchFromShopify(env: ShopifyEnv, filter: OrdersFilter): Promise<ShopifyOrder[]> {
+  const { domain, token, version } = env;
   const all: ShopifyOrder[] = [];
   let sinceId: string | undefined;
 
@@ -89,10 +96,15 @@ async function fetchFromShopify(filter: OrdersFilter): Promise<ShopifyOrder[]> {
 }
 
 /**
- * Generalised Shopify order fetcher used by both /cod-list and /fulfillment. Consults the Supabase
- * `shopify_orders_cache` when fresh (Phase D) and falls back to the Shopify Admin API otherwise.
+ * Generalised Shopify order fetcher shared by Store 1 and Store 2 (see lib/store2/fetch-orders.ts).
+ * Consults the given Supabase cache table when fresh and falls back to the Shopify Admin API otherwise.
  */
-export async function fetchOrders(filter: OrdersFilter): Promise<FetchOrdersResult> {
+export async function fetchOrdersForStore(
+  env: ShopifyEnv,
+  cacheTable: OrdersCacheTable,
+  storeId: 1 | 2,
+  filter: OrdersFilter,
+): Promise<FetchOrdersResult> {
   const strategy = filter.cacheStrategy ?? "prefer-cache";
   const maxAge = filter.maxCacheAgeSeconds ?? 300;
 
@@ -107,9 +119,9 @@ export async function fetchOrders(filter: OrdersFilter): Promise<FetchOrdersResu
     const fresh =
       strategy === "cache-only"
         ? true
-        : await isOrdersCacheFresh(filter.createdAtMinIso, maxAge).catch(() => false);
+        : await isOrdersCacheFresh(filter.createdAtMinIso, maxAge, cacheTable).catch(() => false);
     if (fresh) {
-      const cached = await readOrdersFromCache(cacheFilter).catch(() => null);
+      const cached = await readOrdersFromCache(cacheFilter, cacheTable).catch(() => null);
       if (cached) {
         return { orders: cached.orders, ordersScannedInWindow: cached.ordersScannedInWindow, source: "cache" };
       }
@@ -119,20 +131,28 @@ export async function fetchOrders(filter: OrdersFilter): Promise<FetchOrdersResu
     }
   }
 
-  const all = await fetchFromShopify(filter);
+  const all = await fetchFromShopify(env, filter);
   const ordersScannedInWindow = all.length;
 
   // Persist in background so the next request is cache-fast.
-  void upsertOrdersCache(all)
+  void upsertOrdersCache(all, cacheTable)
     .then(async () => {
       const { upsertOrdersLineItems } = await import("@/lib/supabase/order-line-items");
-      await upsertOrdersLineItems(all, 1);
+      await upsertOrdersLineItems(all, storeId);
     })
-    .catch((e) => console.warn("[orders-cache] background upsert:", e));
+    .catch((e) => console.warn(`[orders-cache:${cacheTable}] background upsert:`, e));
 
   let orders = all;
   if (filter.cod === "only") orders = all.filter(orderLooksLikeCod);
   else if (filter.cod === "exclude") orders = all.filter((o) => !orderLooksLikeCod(o));
 
   return { orders, ordersScannedInWindow, source: "shopify" };
+}
+
+/**
+ * Generalised Shopify order fetcher used by both /cod-list and /fulfillment. Consults the Supabase
+ * `shopify_orders_cache` when fresh (Phase D) and falls back to the Shopify Admin API otherwise.
+ */
+export async function fetchOrders(filter: OrdersFilter): Promise<FetchOrdersResult> {
+  return fetchOrdersForStore(getEnv(), "shopify_orders_cache", 1, filter);
 }

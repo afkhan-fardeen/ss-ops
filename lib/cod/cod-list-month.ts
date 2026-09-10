@@ -16,7 +16,7 @@ function bahrainYmd(d: Date): { y: number; m: number; day: number } {
   return { y, m: m - 1, day };
 }
 
-export function getBahrainTodayDateKey(now = new Date()): string {
+function getBahrainTodayDateKey(now = new Date()): string {
   return getCollectionWindow(now).dateKey;
 }
 
@@ -46,7 +46,7 @@ export function parseCodListMonthParam(month?: string): ParseMonthResult {
 }
 
 /** All collection close `dateKey`s for a calendar month (Bahrain YYYY-MM-DD). */
-export function getCollectionDateKeysForMonth(month: string): string[] {
+function getCollectionDateKeysForMonth(month: string): string[] {
   const [y, m] = month.split("-").map(Number);
   const daysInMonth = new Date(y, m, 0).getDate();
   const keys: string[] = [];
@@ -57,7 +57,7 @@ export function getCollectionDateKeysForMonth(month: string): string[] {
 }
 
 /** Drop close dates after today (for current month export). */
-export function filterDateKeysNotAfterToday(keys: string[], now = new Date()): string[] {
+function filterDateKeysNotAfterToday(keys: string[], now = new Date()): string[] {
   const today = getBahrainTodayDateKey(now);
   return keys.filter((k) => k <= today);
 }

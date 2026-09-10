@@ -10,11 +10,3 @@ export const STORE2_FX_RATES: Record<string, number> = {
   AED: 0.10,
   BHD: 1.00,
 };
-
-/** Convert an amount in `currency` to BHD using the static rates.
- *  Returns null if the currency is unknown. */
-export function toBhd(amount: number, currency: string): number | null {
-  const rate = STORE2_FX_RATES[currency.toUpperCase()];
-  if (rate == null) return null;
-  return amount * rate;
-}

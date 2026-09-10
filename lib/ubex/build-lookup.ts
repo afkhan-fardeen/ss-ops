@@ -86,11 +86,6 @@ async function enrichLookupFromSupabaseCache(lookup: UbexLookup): Promise<UbexLo
   return lookup;
 }
 
-/** Invalidate the TTL cache (called after we mutate Ubex state, e.g. a fulfillment). */
-export function invalidateUbexLookup(): void {
-  CACHE.clear();
-}
-
 /**
  * Build a Ubex lookup (full ref + last-4 digits) for matching Shopify orders to Ubex trackings.
  *
@@ -259,12 +254,4 @@ export async function buildUbexLookup(options: BuildUbexLookupOptions = {}): Pro
   }
 
   return enrichLookupFromSupabaseCache(value);
-}
-
-/**
- * Back-compat: returns only the legacy full-ref map (used by routes that haven't adopted the richer lookup yet).
- */
-export async function buildUbexReferenceToTrackingMap(): Promise<Map<string, string>> {
-  const lookup = await buildUbexLookup();
-  return lookup.refToTracking;
 }

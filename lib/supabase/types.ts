@@ -39,7 +39,7 @@ export type UbexCacheRow = {
   refreshed_at: string;
 };
 
-export type PushIdempotencyRow = {
+type PushIdempotencyRow = {
   key: string;
   shopify_order_id: number;
   created_by: string | null;
@@ -48,7 +48,7 @@ export type PushIdempotencyRow = {
   store_id: number;
 };
 
-export type CronRunLogRow = {
+type CronRunLogRow = {
   id: number;
   endpoint: string;
   dry_run: boolean;
@@ -62,7 +62,7 @@ export type CronRunLogRow = {
   completed_at: string | null;
 };
 
-export type OrderUbexLinksRow = {
+type OrderUbexLinksRow = {
   shopify_order_id: number;
   shopify_order_name: string;
   ubex_tracking: string;

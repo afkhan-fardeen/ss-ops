@@ -21,7 +21,7 @@ export type SyncItemInput = {
   barcode: string;
 };
 
-export type StoreSyncResult = {
+type StoreSyncResult = {
   storeId: ShopifyStoreId;
   ok: boolean;
   skipped?: boolean;
@@ -214,10 +214,15 @@ async function writeStoreOnHand(params: {
   };
 }
 
-/** Sync one SKU to Shopify from Ubex across configured stores (shared-pool formula). */
+/**
+ * Sync one SKU to Shopify from Ubex across configured stores (shared-pool formula).
+ * `prefetchedStock` lets a bulk caller supply Ubex quantities fetched in one batched
+ * request up front, instead of every item re-querying Ubex individually.
+ */
 export async function syncItemAcrossStores(
   input: SyncItemInput,
   createdBy: string | null,
+  prefetchedStock?: Map<string, number>,
 ): Promise<SyncItemResult> {
   const ubexId = normalizeUbexId(input.ubexId);
   const barcode = normalizeBarcode(input.barcode);
@@ -227,7 +232,7 @@ export async function syncItemAcrossStores(
     return { ...base, error: "Missing ubexId or barcode" };
   }
 
-  const freshUbex = await fetchUbexStockByIds([ubexId]);
+  const freshUbex = prefetchedStock ?? (await fetchUbexStockByIds([ubexId]));
   const ubexStock = freshUbex.get(ubexId);
   if (ubexStock === undefined) {
     return { ...base, error: "Ubex quantity not found for id" };
@@ -299,7 +304,6 @@ export async function syncItemAcrossStores(
     }
   }
 
-  const ok = stores.some((s) => s.ok && !s.error) || stores.every((s) => s.ok);
   const hardFail = stores.length > 0 && stores.every((s) => !s.ok);
 
   return {
@@ -313,37 +317,49 @@ export async function syncItemAcrossStores(
   };
 }
 
-/** @deprecated Use syncItemAcrossStores */
-export async function restockItemToUbex(
-  input: SyncItemInput,
-  createdBy: string | null,
-): Promise<SyncItemResult> {
-  return syncItemAcrossStores(input, createdBy);
-}
+const SYNC_CONCURRENCY = 5;
 
 export async function syncItemsAcrossStores(
   items: SyncItemInput[],
   createdBy: string | null,
 ): Promise<SyncItemResult[]> {
   const batchStarted = Date.now();
-  const results: SyncItemResult[] = [];
-  for (let i = 0; i < items.length; i++) {
-    const itemStarted = Date.now();
-    const result = await syncItemAcrossStores(items[i]!, createdBy);
-    results.push(result);
-    console.info(
-      "[sync-shopify-from-ubex] item",
-      i + 1,
-      "/",
-      items.length,
-      "barcode=",
-      items[i]!.barcode,
-      "ok=",
-      result.ok,
-      "ms=",
-      Date.now() - itemStarted,
-    );
+
+  // One batched Ubex lookup for the whole run (fetchUbexStockByIds already
+  // chunks internally at 50 ids/request) instead of one Ubex call per item.
+  const prefetchedStock = await fetchUbexStockByIds(items.map((i) => i.ubexId));
+
+  const results: SyncItemResult[] = new Array(items.length);
+  let cursor = 0;
+  let completed = 0;
+
+  async function worker() {
+    while (cursor < items.length) {
+      const index = cursor++;
+      const item = items[index]!;
+      const itemStarted = Date.now();
+      const result = await syncItemAcrossStores(item, createdBy, prefetchedStock);
+      results[index] = result;
+      completed++;
+      console.info(
+        "[sync-shopify-from-ubex] item",
+        completed,
+        "/",
+        items.length,
+        "barcode=",
+        item.barcode,
+        "ok=",
+        result.ok,
+        "ms=",
+        Date.now() - itemStarted,
+      );
+    }
   }
+
+  await Promise.all(
+    Array.from({ length: Math.min(SYNC_CONCURRENCY, items.length) }, () => worker()),
+  );
+
   console.info(
     "[sync-shopify-from-ubex] batch complete items=",
     items.length,
@@ -351,12 +367,4 @@ export async function syncItemsAcrossStores(
     Date.now() - batchStarted,
   );
   return results;
-}
-
-/** @deprecated Use syncItemsAcrossStores */
-export async function restockItemsToUbex(
-  items: SyncItemInput[],
-  createdBy: string | null,
-): Promise<SyncItemResult[]> {
-  return syncItemsAcrossStores(items, createdBy);
 }

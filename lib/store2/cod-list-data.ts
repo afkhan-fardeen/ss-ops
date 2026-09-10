@@ -7,37 +7,18 @@
  */
 
 import type { ShopifyOrder } from "@/lib/shopify/types";
-import { getCollectionWindow, getWindowForDateKey, type CollectionWindow } from "@/lib/datetime/collection-window";
+import type { CollectionWindow } from "@/lib/datetime/collection-window";
+import { getCollectionWindow, getWindowForDateKey } from "@/lib/datetime/collection-window";
 import { buildCodRows } from "@/lib/cod/build-rows";
 import { buildUbexLookup, shopifyLast4Set, type UbexLookup } from "@/lib/ubex/build-lookup";
 import { applyUbexRowFallbacks } from "@/lib/ubex/apply-row-fallbacks";
 import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 import { parseCodListDateParam } from "@/lib/cod/cod-list-data";
 import type { CodListSearchParamsInput } from "@/lib/cod/cod-list-params";
+import { windowsForKeys, orderFallsInAnyWindow, dedupeByOrderId } from "@/lib/cod/window-utils";
 import { fetchStore2Orders } from "./fetch-orders";
 import { STORE2_FX_RATES } from "./currency";
 import { orderLooksLikeCod } from "@/lib/shopify/fetch-cod-orders";
-
-function dedupeByOrderId(orders: ShopifyOrder[]): ShopifyOrder[] {
-  const m = new Map<number, ShopifyOrder>();
-  for (const o of orders) m.set(o.id, o);
-  return [...m.values()];
-}
-
-function orderFallsInAnyWindow(createdAtIso: string | null | undefined, windows: CollectionWindow[]): boolean {
-  if (!createdAtIso) return false;
-  const t = Date.parse(createdAtIso);
-  if (Number.isNaN(t)) return false;
-  return windows.some((w) => {
-    const a = Date.parse(w.createdAtMinIso);
-    const b = Date.parse(w.createdAtMaxIso);
-    return t >= a && t < b;
-  });
-}
-
-function windowsForKeys(keys: string[]): CollectionWindow[] {
-  return keys.map((k) => getWindowForDateKey(k));
-}
 
 export type LoadStore2CodListDataResult =
   | {

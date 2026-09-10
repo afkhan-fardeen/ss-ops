@@ -103,7 +103,7 @@ function reducer(state: RowStateMap, action: Action): RowStateMap {
   }
 }
 
-export function deriveInitial<R extends PushableRow>(
+function deriveInitial<R extends PushableRow>(
   rows: R[],
   logs?: InitialLogEntry[],
 ): RowStateMap {

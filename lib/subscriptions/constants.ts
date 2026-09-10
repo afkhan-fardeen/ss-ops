@@ -7,13 +7,7 @@ import {
 } from "./types";
 import type { BillingCycle, SubscriptionType } from "./types";
 
-export {
-  ENTITY_OPTIONS,
-  CURRENCY_OPTIONS,
-  PAYMENT_METHOD_OPTIONS,
-  PAYMENT_METHODS,
-  paymentMethodValue,
-};
+export { ENTITY_OPTIONS, CURRENCY_OPTIONS, PAYMENT_METHODS, paymentMethodValue };
 
 export const BILLING_CYCLE_LABELS: Record<BillingCycle, string> = {
   monthly: "Monthly",
@@ -93,10 +87,6 @@ export function paymentOptionLabel(paymentMethod: string | null | undefined): st
   return last4 ? `${name} — ${last4}` : name;
 }
 
-export function formatPaymentMethod(paymentMethod: string | null | undefined): string {
-  return paymentOptionLabel(paymentMethod);
-}
-
 /** Map old / free-text payment strings onto the current option values. */
 export function normalizePaymentMethod(
   value: string | null | undefined,
@@ -134,9 +124,4 @@ export function normalizePaymentMethod(
   if (/bank\s*transfer/i.test(trimmed)) return "Bank Transfer";
 
   return trimmed;
-}
-
-export function isKnownPaymentMethod(value: string | null | undefined): boolean {
-  const n = normalizePaymentMethod(value);
-  return !!n && PAYMENT_METHOD_OPTIONS.includes(n as (typeof PAYMENT_METHOD_OPTIONS)[number]);
 }

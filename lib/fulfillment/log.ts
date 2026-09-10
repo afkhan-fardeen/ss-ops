@@ -19,7 +19,7 @@ export type FulfillmentLogInsert = {
 };
 
 /** Today's UTC date in YYYY-MM-DD. Used inside the idempotency key so retries next day get a fresh attempt. */
-export function todayUtcDate(): string {
+function todayUtcDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
@@ -96,21 +96,6 @@ export async function findLastSuccessForKey(
     .eq("ubex_tracking", tracking)
     .eq("status", "success")
     .eq("store_id", storeId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  if (error || !data) return null;
-  return data as FulfillmentLogRow;
-}
-
-/** Latest log row for a given order (success or error). Used by the UI to show last-push status. */
-export async function getLastLogForOrder(shopifyOrderId: number): Promise<FulfillmentLogRow | null> {
-  const supabase = getSupabaseService();
-  if (!supabase) return null;
-  const { data, error } = await supabase
-    .from("fulfillment_log")
-    .select("*")
-    .eq("shopify_order_id", shopifyOrderId)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

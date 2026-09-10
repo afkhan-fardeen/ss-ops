@@ -17,7 +17,3 @@ export function getAuthMode(): AuthMode {
   if (raw === "shared") return "shared";
   return isSupabaseConfigured() ? "supabase" : "shared";
 }
-
-export function isSupabaseAuthMode(): boolean {
-  return getAuthMode() === "supabase";
-}

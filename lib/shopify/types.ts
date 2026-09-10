@@ -1,4 +1,4 @@
-export type ShopifyAddress = {
+type ShopifyAddress = {
   address1?: string | null;
   address2?: string | null;
   city?: string | null;
@@ -8,7 +8,7 @@ export type ShopifyAddress = {
   zip?: string | null;
 };
 
-export type ShopifyCustomer = {
+type ShopifyCustomer = {
   first_name?: string | null;
   last_name?: string | null;
 };

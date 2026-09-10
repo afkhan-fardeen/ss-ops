@@ -21,10 +21,6 @@ function getZohoEnv(): ZohoEnv | null {
   return { clientId, clientSecret, refreshToken, orgId };
 }
 
-export function isZohoConfigured(): boolean {
-  return getZohoEnv() !== null;
-}
-
 /** Module-level access token cache. Shared across all requests in this process. */
 let tokenCache: { accessToken: string; expiresAt: number } | null = null;
 

@@ -64,7 +64,7 @@ function dayKey(d: Date): string {
 }
 
 /** Monthly burn contribution; yearly÷12; one-time/other → 0. */
-export function toMonthlyEquivalent(amount: number, cycle: BillingCycle): number {
+function toMonthlyEquivalent(amount: number, cycle: BillingCycle): number {
   if (!Number.isFinite(amount) || amount <= 0) return 0;
   if (cycle === "monthly") return amount;
   if (cycle === "yearly") return amount / 12;
@@ -72,7 +72,7 @@ export function toMonthlyEquivalent(amount: number, cycle: BillingCycle): number
 }
 
 /** Annualized run-rate; monthly×12 + yearly; one-time/other → 0. */
-export function toAnnualized(amount: number, cycle: BillingCycle): number {
+function toAnnualized(amount: number, cycle: BillingCycle): number {
   if (!Number.isFinite(amount) || amount <= 0) return 0;
   if (cycle === "monthly") return amount * 12;
   if (cycle === "yearly") return amount;
