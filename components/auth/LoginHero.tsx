@@ -31,8 +31,8 @@ export function LoginHero({
       >
         <motion.div variants={staggerItem} className="mb-8 flex flex-col items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.svg" alt="Seissense Ops" className="h-11 w-auto brightness-0 invert" />
-          <div className="flex items-center gap-2 text-[13px] text-white/60">
+          <img src="/logo.svg" alt="Seissense Ops" className="h-11 w-auto" />
+          <div className="flex items-center gap-2 text-[13px] text-muted">
             <span className="relative inline-flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4CAF50] opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#4CAF50]" />
@@ -49,7 +49,7 @@ export function LoginHero({
           </GlassCard>
         </motion.div>
 
-        <motion.p variants={staggerItem} className="mt-8 font-mono text-[11px] text-white/40">
+        <motion.p variants={staggerItem} className="mt-8 font-mono text-[11px] text-muted">
           Internal use only · Seissense Operations
         </motion.p>
       </motion.div>

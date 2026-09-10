@@ -103,7 +103,6 @@ export function Sidebar({
   const width = collapsed ? WIDTH_COLLAPSED : WIDTH_EXPANDED;
   const homeActive = pathname === HOME_HREF;
   const settingsActive = isPathInSettings(pathname);
-  const activeModule = modules.find((m) => isPathInModule(pathname, m.id));
 
   const settingsNavItems = settingsItems.map((item) => ({
     label: item.label,
@@ -134,32 +133,20 @@ export function Sidebar({
             collapsed={collapsed}
           />
 
-          {modules.map((module) =>
-            activeModule?.id === module.id ? (
-              <NavCollapsibleSection
-                key={module.id}
-                sectionId={module.id}
-                label={module.label}
-                icon={module.icon}
-                accent={module.accent}
-                homeHref={moduleDashboardHref(module)}
-                items={moduleToNavItems(module)}
-                collapsed={collapsed}
-                isActive={(p) => isPathInModule(p, module.id)}
-                forceOpen
-              />
-            ) : (
-              <NavHomeLink
-                key={module.id}
-                href={moduleDashboardHref(module)}
-                label={module.label}
-                icon={module.icon}
-                accent={module.accent}
-                active={false}
-                collapsed={collapsed}
-              />
-            ),
-          )}
+          {modules.map((module) => (
+            <NavCollapsibleSection
+              key={module.id}
+              sectionId={module.id}
+              label={module.label}
+              icon={module.icon}
+              accent={module.accent}
+              homeHref={moduleDashboardHref(module)}
+              items={moduleToNavItems(module)}
+              collapsed={collapsed}
+              isActive={(p) => isPathInModule(p, module.id)}
+              defaultOpen={false}
+            />
+          ))}
 
           <NavCollapsibleSection
             sectionId="settings"

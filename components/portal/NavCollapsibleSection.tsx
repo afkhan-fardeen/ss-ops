@@ -34,6 +34,8 @@ type Props = {
   isActive?: (pathname: string) => boolean;
   /** Skip the collapse/expand toggle and always render items expanded — used when this is the only section shown (current module in context). */
   forceOpen?: boolean;
+  /** Open state to fall back to when there's no stored preference and the section isn't active. Defaults to true (existing Settings/Account behavior). */
+  defaultOpen?: boolean;
 };
 
 function readStoredOpen(sectionId: NavSectionId, defaultOpen: boolean): boolean {
@@ -85,6 +87,7 @@ export function NavCollapsibleSection({
   collapsed,
   isActive: isActiveProp,
   forceOpen = false,
+  defaultOpen = true,
 }: Props) {
   const pathname = usePathname();
   const panelId = useId();
@@ -101,9 +104,9 @@ export function NavCollapsibleSection({
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
-    const shouldOpen = sectionActive || readStoredOpen(sectionId, true);
+    const shouldOpen = sectionActive || readStoredOpen(sectionId, defaultOpen);
     setOpen(shouldOpen);
-  }, [pathname, sectionId, sectionActive]);
+  }, [pathname, sectionId, sectionActive, defaultOpen]);
 
   useEffect(() => {
     if (!popoverOpen) return;

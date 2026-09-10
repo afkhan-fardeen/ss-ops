@@ -12,10 +12,10 @@ const STRENGTH: Record<BlobId, number> = {
 };
 
 /**
- * Full-bleed dark hero background for the login screen — three large, saturated,
- * slow-drifting gradient blobs plus a film-grain overlay. Deliberately more dramatic
- * than the everyday app's MeshBackground: this is the one "wow" moment before the
- * flat, fast workbench takes over.
+ * Full-bleed bright hero background for the login screen — three large, saturated,
+ * slow-drifting gradient blobs on a light base, plus a film-grain overlay.
+ * Deliberately more dramatic than the everyday app's MeshBackground: this is the
+ * one "wow" moment before the flat, fast workbench takes over.
  */
 export function LoginAurora() {
   const refs = useRef<Partial<Record<BlobId, HTMLDivElement>>>({});
@@ -40,7 +40,7 @@ export function LoginAurora() {
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#0A0A0B]" aria-hidden="true">
+    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#FAFAF9]" aria-hidden="true">
       <div
         ref={(el) => {
           refs.current.teal = el ?? undefined;
