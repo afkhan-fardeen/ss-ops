@@ -63,60 +63,12 @@ body {
 }
 
 /*
- * Tech background (TechBackground component) — crisp fine grid, no blur or color
- * wash. Used behind the login screen and the launcher instead of a gradient/blob
- * treatment. A thin accent-colored line sweeps down on a slow loop; a handful of
- * small "node" dots pulse at fixed grid points like status indicators.
+ * Tech background (TechBackground component) — crisp static fine grid, no blur,
+ * no motion, no gradient. Used behind the login screen and the launcher.
  */
 .tech-grid-layer {
   position: absolute;
   inset: 0;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M40 0H0V40' fill='none' stroke='rgba(26,26,26,0.07)' stroke-width='1'/%3E%3C/svg%3E");
-}
-
-.tech-scanline {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: -2px;
-  height: 2px;
-  opacity: 0;
-  animation: techScan 9s linear infinite;
-}
-
-@keyframes techScan {
-  0%   { top: -2px; opacity: 0; }
-  4%   { opacity: 0.55; }
-  92%  { opacity: 0.55; }
-  100% { top: 100%; opacity: 0; }
-}
-
-.tech-node {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  border-radius: 9999px;
-}
-
-.tech-node::after {
-  content: "";
-  position: absolute;
-  inset: -7px;
-  border-radius: 9999px;
-  border: 1px solid currentColor;
-  animation: techNodePulse 3.2s ease-out infinite;
-  animation-delay: var(--node-delay, 0s);
-}
-
-@keyframes techNodePulse {
-  0%   { transform: scale(0.6); opacity: 0.55; }
-  100% { transform: scale(1.8); opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .tech-scanline,
-  .tech-node::after {
-    animation: none;
-  }
 }
 
