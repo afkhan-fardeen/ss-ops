@@ -1,8 +1,9 @@
-/** Store 2 COD list data loader.
- *  Mirrors lib/cod/cod-list-data.ts but:
+/** Store 2 (GCC) COD list data loader — the only COD pipeline; Store 1 no longer takes COD orders.
  *  - Uses fetchStore2Orders instead of fetchCodOrders
- *  - Uses STORE2_FX_RATES instead of getRates()
- *  - No cod_list_day_cache writes (Store 2 always goes live)
+ *  - Always fetches live from Shopify (no order cache): COD is money-in-transit
+ *    data, and a stale/incomplete cache silently drops orders from the list.
+ *  - FX rates are derived from live GBP-based rates (getRates), cross-converted
+ *    to AED since the GCC store's own currency is AED (not GBP).
  *  - upsertOrderUbexLinks with { storeId: 2 }
  */
 
@@ -16,8 +17,11 @@ import { upsertOrderUbexLinks } from "@/lib/supabase/order-ubex-links";
 import { parseCodListDateParam, type CodListSearchParamsInput } from "@/lib/cod/cod-list-params";
 import { windowsForKeys, orderFallsInAnyWindow, dedupeByOrderId } from "@/lib/cod/window-utils";
 import { fetchStore2Orders } from "./fetch-orders";
-import { STORE2_FX_RATES } from "./currency";
 import { orderLooksLikeCod } from "@/lib/shopify/fetch-cod-orders";
+import { getRates } from "@/lib/fx/getRates";
+import { getCurrencyForCountry } from "@/lib/currency";
+
+const BASE_CURRENCY = "AED";
 
 export type LoadStore2CodListDataResult =
   | {
@@ -27,7 +31,7 @@ export type LoadStore2CodListDataResult =
       singleWindow: CollectionWindow | null;
       codOrders: ShopifyOrder[];
       rows: ReturnType<typeof buildCodRows>;
-      ratesView: { rates: Record<string, number>; fetchedAt: string; stale: boolean; source: string };
+      ratesView: { base: string; rates: Record<string, number>; fetchedAt: string; stale: boolean; source: string };
       ubexLookup: UbexLookup | undefined;
       ordersScannedInWindow: number;
       shouldUpsertUbexLinks: boolean;
@@ -35,6 +39,18 @@ export type LoadStore2CodListDataResult =
       rangeEndIso: string;
     }
   | { ok: false; error: string };
+
+/** Cross-convert GBP-based rates ("1 GBP = X <ccy>") to AED-based ("1 AED = X <ccy>"). */
+function toAedBasedRates(gbpRates: Record<string, number>): Record<string, number> | null {
+  const aedPerGbp = gbpRates[BASE_CURRENCY];
+  if (typeof aedPerGbp !== "number" || aedPerGbp <= 0) return null;
+  const out: Record<string, number> = { [BASE_CURRENCY]: 1 };
+  for (const [ccy, rate] of Object.entries(gbpRates)) {
+    if (ccy === BASE_CURRENCY) continue;
+    out[ccy] = rate / aedPerGbp;
+  }
+  return out;
+}
 
 async function loadInner(dateKeys: string[]): Promise<LoadStore2CodListDataResult> {
   if (dateKeys.length === 0) return { ok: false, error: "No dates selected." };
@@ -52,7 +68,7 @@ async function loadInner(dateKeys: string[]): Promise<LoadStore2CodListDataResul
   const { orders: allOrders } = await fetchStore2Orders({
     createdAtMinIso: globalMin,
     createdAtMaxIso: globalMax,
-    cacheStrategy: "prefer-cache",
+    cacheStrategy: "live",
   });
 
   // Client-side COD filter + window filter (same logic as Store 1)
@@ -63,12 +79,24 @@ async function loadInner(dateKeys: string[]): Promise<LoadStore2CodListDataResul
   const ordersScannedInWindow = codOrders.length;
   const needed = shopifyLast4Set(codOrders);
 
-  const ubexResult = await buildUbexLookup({ needed, skipDetailFetches: true }).catch((e) => {
-    console.warn("[store2-ubex] lookup failed:", e);
-    return undefined as UbexLookup | undefined;
-  });
+  const destinationCurrencies = codOrders
+    .map((o) => getCurrencyForCountry(o.shipping_address?.country_code).currency)
+    .filter((c): c is string => Boolean(c));
 
-  let rows = buildCodRows(codOrders, STORE2_FX_RATES, ubexResult);
+  const [ubexResult, ratesResult] = await Promise.all([
+    buildUbexLookup({ needed, skipDetailFetches: true }).catch((e) => {
+      console.warn("[store2-ubex] lookup failed:", e);
+      return undefined as UbexLookup | undefined;
+    }),
+    getRates(destinationCurrencies),
+  ]);
+
+  const aedRates = toAedBasedRates(ratesResult.rates);
+  if (!aedRates) {
+    return { ok: false, error: "AED exchange rate unavailable — cannot compute collection amounts." };
+  }
+
+  let rows = buildCodRows(codOrders, aedRates, ubexResult);
   rows = await applyUbexRowFallbacks(rows, codOrders.map((o) => o.id));
 
   const shouldUpsertUbexLinks = rows.some((r) => r.ubexId && !r.alreadyFulfilled);
@@ -90,10 +118,11 @@ async function loadInner(dateKeys: string[]): Promise<LoadStore2CodListDataResul
     codOrders,
     rows,
     ratesView: {
-      rates: STORE2_FX_RATES,
-      fetchedAt: new Date().toISOString(),
-      stale: false,
-      source: "static",
+      base: BASE_CURRENCY,
+      rates: aedRates,
+      fetchedAt: ratesResult.fetchedAt,
+      stale: ratesResult.stale,
+      source: ratesResult.source,
     },
     ubexLookup: ubexResult,
     ordersScannedInWindow,

@@ -61,7 +61,7 @@ export function CODTable({ rows }: { rows: CodRow[] }) {
                     </span>
                   ) : <span className="text-muted">—</span>}
                 </td>
-                <td className="px-3 py-3 font-mono text-[12px]">{r.outstandingGbp}</td>
+                <td className="px-3 py-3 font-mono text-[12px]">{r.outstanding}</td>
                 <td className="px-3 py-3 font-mono text-[12px]" title={r.currencyWarning}>
                   {r.toCollect}
                   {r.currencyWarning ? <span className="ml-1 text-[#C25151]">!</span> : null}

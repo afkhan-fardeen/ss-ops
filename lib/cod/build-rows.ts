@@ -1,5 +1,5 @@
 import { getCurrencyForCountry } from "@/lib/currency";
-import { formatMoneyGbp } from "@/lib/utils";
+import { formatMoneyAed } from "@/lib/utils";
 import type { ShopifyOrder } from "@/lib/shopify/types";
 import { formatShippingAddress } from "@/lib/shopify/fetch-cod-orders";
 import { ubexTrackingForShopifyOrder, type UbexLookup } from "@/lib/ubex/build-lookup";
@@ -13,7 +13,7 @@ export type CodRow = {
   ubexId: string;
   trackingUrl: string;
   paymentMethod: string;
-  outstandingGbp: string;
+  outstanding: string;
   toCollect: string;
   customerName: string;
   shippingAddress: string;
@@ -34,9 +34,9 @@ export function buildCodRows(
 
     if (currencyResult.currency) {
       const rate = rates[currencyResult.currency];
-      const gbp = Number.parseFloat(o.total_price);
-      if (typeof rate === "number" && !Number.isNaN(gbp)) {
-        const foreign = Math.round(gbp * rate);
+      const baseAmount = Number.parseFloat(o.total_price);
+      if (typeof rate === "number" && !Number.isNaN(baseAmount)) {
+        const foreign = Math.round(baseAmount * rate);
         toCollect = `${foreign} ${currencyResult.currency}`;
       } else {
         toCollect = "—";
@@ -66,7 +66,7 @@ export function buildCodRows(
       ubexId,
       trackingUrl,
       paymentMethod: "Cash on Delivery (COD)",
-      outstandingGbp: formatMoneyGbp(o.total_price),
+      outstanding: formatMoneyAed(o.total_price),
       toCollect,
       customerName,
       shippingAddress: formatShippingAddress(o.shipping_address) || "—",

@@ -9,12 +9,15 @@ function formatTime(iso: string): string {
 }
 
 export function RatesStrip(props: {
+  base: string;
   rates: Record<string, number>;
   fetchedAt: string;
   stale: boolean;
   source: string;
 }) {
-  const keys = Object.keys(props.rates).sort();
+  const keys = Object.keys(props.rates)
+    .filter((ccy) => ccy !== props.base)
+    .sort();
   return (
     <section className="flex h-full min-h-0 animate-fade-up flex-col rounded-card border border-line bg-white p-4 shadow-soft md:p-5">
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
@@ -37,7 +40,7 @@ export function RatesStrip(props: {
               key={ccy}
               className="shrink-0 snap-start whitespace-nowrap rounded-full border border-line bg-white px-3 py-1 font-mono text-[12px] text-ink"
             >
-              1 GBP = <span className="font-medium">{v.toFixed(4)}</span> {ccy}
+              1 {props.base} = <span className="font-medium">{v.toFixed(4)}</span> {ccy}
             </span>
           );
         })}
