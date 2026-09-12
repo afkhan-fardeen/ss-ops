@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { BarChart3, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { canAccessModule } from "@/lib/auth/can-access-module";
-import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import {
   loadDailySalesReport,
   loadSalesHistory,
@@ -14,6 +13,7 @@ import {
 } from "@/lib/datetime/collection-window";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
+import { OrdersProductsPanel } from "@/components/sales-report/OrdersProductsPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -42,34 +42,41 @@ function shiftDateKey(dateKey: string, deltaDays: number): string {
   return bahrainDateKeyForInstant(shifted.toISOString());
 }
 
-function StoreDetail({ summary }: { summary: StoreSalesSummary }) {
+function StoreSummaryCard({ summary }: { summary: StoreSalesSummary }) {
   return (
-    <div className="space-y-3">
-      <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-        <p className="text-[13px] font-medium text-ink">{summary.store}</p>
-        <div className="mt-3 grid grid-cols-2 gap-3">
-          <div>
-            <p className="text-[11px] uppercase tracking-wider text-muted">Orders</p>
-            <p className="mt-0.5 text-[17px] font-semibold text-ink">{summary.orderCount}</p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wider text-muted">Units sold</p>
-            <p className="mt-0.5 text-[17px] font-semibold text-ink">{summary.unitsSold}</p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wider text-muted">Total sales</p>
-            <p className="mt-0.5 text-[17px] font-semibold text-ink">
-              {formatMoney(summary.totalSales, summary.currency)}
-            </p>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-wider text-muted">Discounts</p>
-            <p className="mt-0.5 text-[17px] font-semibold text-ink">
-              {formatMoney(summary.totalDiscounts, summary.currency)}
-            </p>
-          </div>
+    <div className="rounded-card border border-line bg-white p-4 shadow-soft">
+      <p className="text-[13px] font-medium text-ink">{summary.store}</p>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div>
+          <p className="text-[11px] uppercase tracking-wider text-muted">Orders</p>
+          <p className="mt-0.5 text-[17px] font-semibold text-ink">{summary.orderCount}</p>
+        </div>
+        <div>
+          <p className="text-[11px] uppercase tracking-wider text-muted">Units sold</p>
+          <p className="mt-0.5 text-[17px] font-semibold text-ink">{summary.unitsSold}</p>
+        </div>
+        <div>
+          <p className="text-[11px] uppercase tracking-wider text-muted">Total sales</p>
+          <p className="mt-0.5 text-[17px] font-semibold text-ink">
+            {formatMoney(summary.totalSales, summary.currency)}
+          </p>
+        </div>
+        <div>
+          <p className="text-[11px] uppercase tracking-wider text-muted">Discounts</p>
+          <p className="mt-0.5 text-[17px] font-semibold text-ink">
+            {formatMoney(summary.totalDiscounts, summary.currency)}
+          </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+/** Full breakdown — top products and orders shown separately. Logged-in staff only. */
+function StoreDetailFull({ summary }: { summary: StoreSalesSummary }) {
+  return (
+    <div className="space-y-3">
+      <StoreSummaryCard summary={summary} />
 
       <div className="rounded-card border border-line bg-white p-4 shadow-soft">
         <p className="text-[12px] font-medium text-ink">Top products</p>
@@ -122,16 +129,30 @@ function StoreDetail({ summary }: { summary: StoreSalesSummary }) {
   );
 }
 
+/** Simplified breakdown — orders/products merged into one panel via a dropdown. Public view. */
+function StoreDetailSimple({ summary }: { summary: StoreSalesSummary }) {
+  return (
+    <div className="space-y-3">
+      <StoreSummaryCard summary={summary} />
+      <OrdersProductsPanel
+        orders={summary.orders}
+        topProducts={summary.topProducts}
+        currency={summary.currency}
+      />
+    </div>
+  );
+}
+
 export default async function SalesReportPage({
   searchParams,
 }: {
   searchParams?: Promise<{ day?: string }> | { day?: string };
 }) {
-  if (!(await canAccessModule("salesReport"))) {
-    return (
-      <ModuleAccessDenied description="Sales Report is only available to admins or users granted the module." />
-    );
-  }
+  // Soft check only — this page is intentionally public (see middleware.ts
+  // PUBLIC_EXACT_PATHS), so an anonymous or unauthorized visitor still sees
+  // the report, just the simplified view without history and with orders/
+  // products merged into one dropdown-driven panel.
+  const hasFullAccess = await canAccessModule("salesReport").catch(() => false);
 
   const resolved = (await searchParams) ?? {};
   const requestedKey = resolved.day && DATE_KEY_RE.test(resolved.day) ? resolved.day : null;
@@ -140,7 +161,7 @@ export default async function SalesReportPage({
 
   const [report, history] = await Promise.all([
     loadDailySalesReport(day),
-    loadSalesHistory(14),
+    hasFullAccess ? loadSalesHistory(14) : Promise.resolve(null),
   ]);
 
   const prevKey = shiftDateKey(day.dateKey, -1);
@@ -195,39 +216,47 @@ export default async function SalesReportPage({
           </a>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          {report.stores.map((s) => (
-            <StoreDetail key={s.store} summary={s} />
-          ))}
+          {report.stores.map((s) =>
+            hasFullAccess ? (
+              <StoreDetailFull key={s.store} summary={s} />
+            ) : (
+              <StoreDetailSimple key={s.store} summary={s} />
+            ),
+          )}
         </div>
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-[13px] font-medium uppercase tracking-wider text-muted">
-          Last 14 days
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {history[0]?.stores.map((_, storeIdx) => {
-            const storeName = history[0]!.stores[storeIdx]!.store;
-            const data = history.map((h) => ({
-              label: h.label,
-              value: Math.round(h.stores[storeIdx]!.totalSales),
-            }));
-            return (
-              <ChartCard key={storeName} title={storeName} description="Total sales per day">
-                <ActivityBarChart data={data} fill="#6B4FA2" valueLabel="Sales" />
-              </ChartCard>
-            );
-          })}
-        </div>
-      </section>
+      {hasFullAccess && history ? (
+        <section className="space-y-3">
+          <h2 className="text-[13px] font-medium uppercase tracking-wider text-muted">
+            Last 14 days
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {history[0]?.stores.map((_, storeIdx) => {
+              const storeName = history[0]!.stores[storeIdx]!.store;
+              const data = history!.map((h) => ({
+                label: h.label,
+                value: Math.round(h.stores[storeIdx]!.totalSales),
+              }));
+              return (
+                <ChartCard key={storeName} title={storeName} description="Total sales per day">
+                  <ActivityBarChart data={data} fill="#6B4FA2" valueLabel="Sales" />
+                </ChartCard>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
-      <p className="text-center text-[11px] text-muted">
-        Manage report recipients in{" "}
-        <Link href="/sales-report/settings" className="underline hover:text-ink">
-          Sales Report settings
-        </Link>
-        .
-      </p>
+      {hasFullAccess ? (
+        <p className="text-center text-[11px] text-muted">
+          Manage report recipients in{" "}
+          <Link href="/sales-report/settings" className="underline hover:text-ink">
+            Sales Report settings
+          </Link>
+          .
+        </p>
+      ) : null}
     </div>
   );
 }

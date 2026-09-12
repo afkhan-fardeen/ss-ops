@@ -16,7 +16,16 @@ const PUBLIC_PREFIXES = [
   "/api/sync",   // cron endpoints — auth handled inside the route via CRON_SECRET
 ];
 
+/**
+ * Exact-path (not prefix) exemptions — the daily sales report is meant to be
+ * viewable/downloadable via the emailed link with no login, but everything
+ * else under /sales-report/* (settings, recipients) must stay protected, so
+ * this can't be a startsWith() prefix like the list above.
+ */
+const PUBLIC_EXACT_PATHS = ["/sales-report", "/api/sales-report/download"];
+
 function isPublic(pathname: string) {
+  if (PUBLIC_EXACT_PATHS.includes(pathname)) return true;
   return PUBLIC_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 }
 

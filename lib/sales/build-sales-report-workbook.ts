@@ -87,21 +87,42 @@ function addStoreSheet(wb: ExcelJS.Workbook, dayLabel: string, summary: StoreSal
     row.getCell(3).numFmt = "0.00";
     row.getCell(4).numFmt = "0.00";
   });
+}
 
-  if (summary.topProducts.length > 0) {
-    const spacerRow = headerRowIdx + summary.orders.length + 2;
-    const topHeader = ws.getRow(spacerRow);
-    topHeader.getCell(1).value = "Top products";
-    topHeader.getCell(1).font = { bold: true, name: "Calibri", size: 11 };
-    summary.topProducts.forEach((p, i) => {
-      const row = ws.getRow(spacerRow + 1 + i);
-      row.getCell(1).value = p.name;
-      row.getCell(1).font = { name: "Calibri", size: 10 };
-      row.getCell(2).value = `${p.unitsSold} units`;
-      row.getCell(2).font = { name: "Calibri", size: 10 };
-      row.getCell(2).alignment = { horizontal: "right" };
+function addProductsSheet(wb: ExcelJS.Workbook, dayLabel: string, summary: StoreSalesSummary) {
+  const ws = wb.addWorksheet(`${summary.store} — Products`.slice(0, 31), {
+    views: [{ state: "frozen", ySplit: 2 }],
+  });
+  ws.columns = [{ width: 40 }, { width: 16 }, { width: 16 }];
+
+  ws.mergeCells("A1:C1");
+  const titleCell = ws.getCell("A1");
+  titleCell.value = `${summary.store} — Top products — ${dayLabel}`;
+  titleCell.font = { bold: true, size: 14, name: "Calibri", color: { argb: "FF111111" } };
+  ws.getRow(1).height = 26;
+
+  const headerRow = ws.getRow(2);
+  headerRow.height = 22;
+  ["Product", "Units sold", "Sales"].forEach((h, i) => {
+    const cell = headerRow.getCell(i + 1);
+    cell.value = h;
+    cell.font = { bold: true, name: "Calibri", size: 11, color: { argb: HEADER_FG } };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: HEADER_BG } };
+    cell.alignment = { vertical: "middle", horizontal: i === 0 ? "left" : "right" };
+    applyThinBorder(cell);
+  });
+
+  summary.topProducts.forEach((p, i) => {
+    const row = ws.addRow([p.name, p.unitsSold, p.salesAmount]);
+    const isAlt = i % 2 === 1;
+    row.eachCell({ includeEmpty: true }, (cell, col) => {
+      cell.font = { name: "Calibri", size: 10 };
+      cell.alignment = { vertical: "middle", horizontal: col === 1 ? "left" : "right" };
+      if (isAlt) cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ALT_ROW_BG } };
+      applyThinBorder(cell);
     });
-  }
+    row.getCell(3).numFmt = "0.00";
+  });
 }
 
 export async function buildSalesReportWorkbook(report: DailySalesReport): Promise<ExcelJS.Workbook> {
@@ -110,6 +131,9 @@ export async function buildSalesReportWorkbook(report: DailySalesReport): Promis
   wb.created = new Date();
   for (const store of report.stores) {
     addStoreSheet(wb, report.day.label, store);
+  }
+  for (const store of report.stores) {
+    if (store.topProducts.length > 0) addProductsSheet(wb, report.day.label, store);
   }
   return wb;
 }
