@@ -261,7 +261,10 @@ function salesReportModule(): PortalModule {
     icon: BarChart3,
     adminOnly: true,
     accent: SUBSCRIPTIONS_ACCENT,
-    items: [{ label: "Daily sales", href: "/sales-report", icon: BarChart3 }],
+    items: [
+      { label: "Daily sales", href: "/sales-report", icon: BarChart3 },
+      { label: "Settings", href: "/sales-report/settings", icon: Settings2 },
+    ],
   };
 }
 
@@ -462,8 +465,8 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     accent: ZOHO_BOOKS_ACCENT,
   },
   {
-    path: "/sales-report",
-    title: "Daily sales",
+    path: "/sales-report/settings",
+    title: "Settings",
     moduleId: "salesReport",
     moduleLabel: "Sales Report",
     accent: SUBSCRIPTIONS_ACCENT,

@@ -1,10 +1,7 @@
-import { unstable_noStore as noStore } from "next/cache";
 import Link from "next/link";
-import { BarChart3, ChevronLeft, ChevronRight, Mail } from "lucide-react";
+import { BarChart3, ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { canAccessModule } from "@/lib/auth/can-access-module";
 import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
-import { getSupabaseService } from "@/lib/supabase/service";
-import { RecipientGroup } from "@/components/cod-settings/RecipientGroup";
 import {
   loadDailySalesReport,
   loadSalesHistory,
@@ -15,26 +12,12 @@ import {
   getBahrainCalendarDay,
   getBahrainCalendarDayForKey,
 } from "@/lib/datetime/collection-window";
-import { SendSalesReportButton } from "@/components/sales-report/SendSalesReportButton";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
 
 export const dynamic = "force-dynamic";
 
 const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
-
-async function loadRecipients(): Promise<string[]> {
-  noStore();
-  const supabase = getSupabaseService();
-  if (!supabase) return [];
-  const { data } = await supabase
-    .from("cod_settings")
-    .select("value")
-    .eq("key", "sales_report_emails")
-    .maybeSingle();
-  const raw = (data as { value: string } | null)?.value ?? "";
-  return raw.split(",").map((e) => e.trim()).filter(Boolean);
-}
 
 function formatMoney(amount: number, currency: string): string {
   try {
@@ -155,10 +138,9 @@ export default async function SalesReportPage({
   const day = requestedKey ? getBahrainCalendarDayForKey(requestedKey) : getBahrainCalendarDay(-1);
   const todayKey = getBahrainCalendarDay(0).dateKey;
 
-  const [report, history, recipients] = await Promise.all([
+  const [report, history] = await Promise.all([
     loadDailySalesReport(day),
     loadSalesHistory(14),
-    loadRecipients(),
   ]);
 
   const prevKey = shiftDateKey(day.dateKey, -1);
@@ -204,7 +186,13 @@ export default async function SalesReportPage({
               </span>
             )}
           </div>
-          <SendSalesReportButton dayKey={day.dateKey} />
+          <a
+            href={`/api/sales-report/download?day=${day.dateKey}`}
+            className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-[12px] font-medium text-white shadow-soft transition hover:bg-ink/90"
+          >
+            <Download size={13} />
+            Download Excel
+          </a>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {report.stores.map((s) => (
@@ -233,24 +221,13 @@ export default async function SalesReportPage({
         </div>
       </section>
 
-      <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Mail size={15} className="text-muted" />
-          <h2 className="text-[13px] font-medium uppercase tracking-wider text-muted">
-            Report recipients
-          </h2>
-        </div>
-        <p className="text-[13px] text-muted">
-          Sent automatically every morning for the previous day, with a link back to this page.
-          Empty list means the scheduled report is skipped.
-        </p>
-        <RecipientGroup
-          settingKey="sales_report_emails"
-          initialRecipients={recipients}
-          placeholder="finance@example.com"
-          saveLabel="Save recipients"
-        />
-      </section>
+      <p className="text-center text-[11px] text-muted">
+        Manage report recipients in{" "}
+        <Link href="/sales-report/settings" className="underline hover:text-ink">
+          Sales Report settings
+        </Link>
+        .
+      </p>
     </div>
   );
 }
