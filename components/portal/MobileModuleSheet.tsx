@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X, type LucideIcon } from "lucide-react";
 import {
-  HOME_ACCENT,
   HOME_HREF,
   isNavItemActive,
   isPathInModule,
@@ -35,7 +34,7 @@ export function MobileModuleSheet({ open, module, onClose }: Props) {
       />
       <div className="absolute inset-x-0 bottom-0 max-h-[70vh] overflow-y-auto rounded-t-2xl border border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <p className={`text-[13px] font-medium ${module.accent.activeText}`}>{module.label}</p>
+          <p className="text-[13px] font-medium text-ink">{module.label}</p>
           <button
             type="button"
             onClick={onClose}
@@ -55,12 +54,16 @@ export function MobileModuleSheet({ open, module, onClose }: Props) {
                 href={item.href}
                 onClick={onClose}
                 className={[
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium",
-                  active
-                    ? `${module.accent.activeBg} ${module.accent.activeText}`
-                    : "text-muted hover:bg-canvas",
+                  "relative flex items-center gap-3 rounded-lg py-2.5 pl-4 pr-3 text-[13px] font-medium",
+                  active ? "bg-canvas text-ink" : "text-muted hover:bg-canvas",
                 ].join(" ")}
               >
+                {active ? (
+                  <span
+                    className={`absolute inset-y-1.5 left-0 w-[3px] rounded-r ${module.accent.rail}`}
+                    aria-hidden
+                  />
+                ) : null}
                 <Icon size={16} />
                 <span className="flex-1">{item.label}</span>
                 <StockErrorsNavBadge href={item.href} />
@@ -72,7 +75,7 @@ export function MobileModuleSheet({ open, module, onClose }: Props) {
           <Link
             href={HOME_HREF}
             onClick={onClose}
-            className={`block rounded-lg px-3 py-2 text-[12px] font-medium ${HOME_ACCENT.labelText} hover:bg-canvas`}
+            className="block rounded-lg px-3 py-2 text-[12px] font-medium text-muted hover:bg-canvas hover:text-ink"
           >
             Home dashboard
           </Link>
@@ -104,7 +107,7 @@ export function MobileSettingsSheet({ open, items, title = "Settings", onClose }
       />
       <div className="absolute inset-x-0 bottom-0 max-h-[50vh] overflow-y-auto rounded-t-2xl border border-line bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(15,23,42,0.12)]">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
-          <p className={`text-[13px] font-medium ${SETTINGS_ACCENT.activeText}`}>{title}</p>
+          <p className="text-[13px] font-medium text-ink">{title}</p>
           <button
             type="button"
             onClick={onClose}
@@ -124,12 +127,16 @@ export function MobileSettingsSheet({ open, items, title = "Settings", onClose }
                 href={item.href}
                 onClick={onClose}
                 className={[
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium",
-                  active
-                    ? `${SETTINGS_ACCENT.activeBg} ${SETTINGS_ACCENT.activeText}`
-                    : "text-muted hover:bg-canvas",
+                  "relative flex items-center gap-3 rounded-lg py-2.5 pl-4 pr-3 text-[13px] font-medium",
+                  active ? "bg-canvas text-ink" : "text-muted hover:bg-canvas",
                 ].join(" ")}
               >
+                {active ? (
+                  <span
+                    className={`absolute inset-y-1.5 left-0 w-[3px] rounded-r ${SETTINGS_ACCENT.rail}`}
+                    aria-hidden
+                  />
+                ) : null}
                 <Icon size={16} />
                 {item.label}
               </Link>

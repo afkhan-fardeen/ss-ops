@@ -194,7 +194,7 @@ export function Sidebar({
           href={HOME_HREF}
           className={[
             "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
-            homeActive ? HOME_ACCENT.mobileActive : HOME_ACCENT.labelText,
+            homeActive ? "text-ink" : "text-muted",
           ].join(" ")}
         >
           <Home size={20} strokeWidth={homeActive ? 2.2 : 1.8} />
@@ -213,7 +213,7 @@ export function Sidebar({
               }}
               className={[
                 "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
-                active ? module.accent.mobileActive : module.accent.labelText,
+                active ? "text-ink" : "text-muted",
               ].join(" ")}
             >
               <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
@@ -235,7 +235,7 @@ export function Sidebar({
           }}
           className={[
             "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
-            settingsActive ? SETTINGS_ACCENT.mobileActive : SETTINGS_ACCENT.labelText,
+            settingsActive ? "text-ink" : "text-muted",
           ].join(" ")}
         >
           <Settings2 size={20} strokeWidth={settingsActive ? 2.2 : 1.8} />
