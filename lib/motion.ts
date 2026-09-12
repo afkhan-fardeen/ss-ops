@@ -18,11 +18,5 @@ export const staggerItem = {
   show: { opacity: 1, y: 0, transition: easeOut },
 };
 
-/** Slower stagger with a brief lead-in — used once, for the login hero's entrance. */
-export const heroSequence = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
-};
-
 /** Row exit — used when a table row leaves as the result of a state change (e.g. fulfillment push succeeding). */
 export const rowExit = { opacity: 0, x: 40, height: 0 };
