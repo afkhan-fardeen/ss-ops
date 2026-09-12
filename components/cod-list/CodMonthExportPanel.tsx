@@ -21,58 +21,46 @@ export function CodMonthExportPanel() {
 
   return (
     <>
-      <section className="rounded-card border border-line border-l-4 border-l-cod bg-white/95 p-5 shadow-soft backdrop-blur-[2px]">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] font-medium uppercase tracking-wider text-cod">
-              Monthly export
+      <section className="flex flex-col gap-3 rounded-card border border-line bg-white/95 px-5 py-3.5 shadow-soft backdrop-blur-[2px] sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <CalendarRange size={16} className="shrink-0 text-muted" />
+          <div className="min-w-0">
+            <p className="text-[13px] font-medium text-ink">
+              Full month export
+              <span className="font-normal text-muted"> · {summaryLabel} · {dayCount} day{dayCount === 1 ? "" : "s"}</span>
             </p>
-            <h2 className="mt-1 flex items-center gap-2 text-[16px] font-medium text-ink">
-              <CalendarRange size={18} className="shrink-0 text-cod" />
-              Full month COD list
-            </h2>
-            <p className="mt-1 text-[12px] text-muted">
-              {summaryLabel} · {dayCount} collection day{dayCount === 1 ? "" : "s"} · does not change
-              the table above
-            </p>
-            <p className="mt-1 text-[11px] text-muted">
-              Uses the same Bahrain 14:00 windows as daily selection. May take longer for a full month.
-            </p>
-          </div>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[200px]">
-            <label htmlFor="cod-month-select" className="text-[11px] font-medium uppercase tracking-wider text-muted">
-              Month
-            </label>
-            <select
-              id="cod-month-select"
-              value={month}
-              onChange={(e) => setMonth(e.target.value)}
-              className="focus-ring w-full rounded-lg border border-line bg-white px-3 py-2 text-[13px] font-medium text-ink"
-            >
-              {monthOptions.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
+            <p className="text-[11px] text-muted">Separate from the table above — doesn&apos;t change your day selection.</p>
           </div>
         </div>
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <select
+            id="cod-month-select"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            aria-label="Export month"
+            className="focus-ring rounded-lg border border-line bg-white px-2.5 py-1.5 text-[12.5px] font-medium text-ink"
+          >
+            {monthOptions.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
           <button
             type="button"
             onClick={() => flow.open("download")}
-            className="focus-ring inline-flex items-center gap-2 rounded-card border border-cod bg-cod px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+            className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[12.5px] font-medium text-ink transition hover:bg-canvas"
           >
-            <Download size={15} />
-            Download Excel
+            <Download size={14} className="text-muted" />
+            Download month
           </button>
           <button
             type="button"
             onClick={() => flow.open("email")}
-            className="focus-ring inline-flex items-center gap-2 rounded-card border border-line bg-white px-4 py-2 text-[13px] font-medium text-ink transition hover:bg-canvas"
+            className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[12.5px] font-medium text-ink transition hover:bg-canvas"
           >
-            <Mail size={15} className="text-muted" />
-            Email Ubex
+            <Mail size={14} className="text-muted" />
+            Email month
           </button>
         </div>
       </section>

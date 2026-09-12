@@ -122,8 +122,8 @@ async function CodListContent({ searchParams }: { searchParams?: { date?: string
 
   return (
     <Fragment key={data.dateKeys.join(",")}>
-      <div className="grid min-h-0 animate-fade-in auto-rows-[minmax(0,1fr)] gap-4 lg:grid-cols-2 lg:items-stretch">
-        <div className="flex min-h-[12rem] min-w-0 flex-col lg:min-h-0">
+      <div className="grid min-h-0 animate-fade-in auto-rows-[minmax(0,1fr)] gap-4 lg:grid-cols-3 lg:items-stretch">
+        <div className="flex min-h-[12rem] min-w-0 flex-col lg:col-span-2 lg:min-h-0">
           <CodListCollectionPanel
             titleLine={titleLine}
             subLine={subLine}
@@ -199,8 +199,8 @@ async function Store2CodListContent({ searchParams }: { searchParams?: { date?: 
 
   return (
     <Fragment key={`s2-${data.dateKeys.join(",")}`}>
-      <div className="grid min-h-0 animate-fade-in auto-rows-[minmax(0,1fr)] gap-4 lg:grid-cols-2 lg:items-stretch">
-        <div className="flex min-h-[12rem] min-w-0 flex-col lg:min-h-0">
+      <div className="grid min-h-0 animate-fade-in auto-rows-[minmax(0,1fr)] gap-4 lg:grid-cols-3 lg:items-stretch">
+        <div className="flex min-h-[12rem] min-w-0 flex-col lg:col-span-2 lg:min-h-0">
           <CodListCollectionPanel
             titleLine={titleLine}
             subLine={subLine}

@@ -26,16 +26,16 @@ export function RatesStrip(props: {
             Updated <span className="font-mono">{formatTime(props.fetchedAt)}</span>
           </span>
         </div>
-        <span className="font-mono text-[10px] uppercase tracking-wider text-muted">{props.source}</span>
+        <span className="text-[11px] text-muted">{props.source}</span>
       </div>
-      <div className="-mx-1 mt-3 flex min-h-0 flex-1 snap-x gap-2 overflow-x-auto overflow-y-auto px-1 pb-1 sm:flex-wrap sm:content-start sm:overflow-visible">
+      <div className="-mx-1 mt-3 flex min-h-0 flex-1 items-start snap-x gap-2 overflow-x-auto overflow-y-auto px-1 pb-1 sm:flex-wrap sm:content-start sm:overflow-visible">
         {keys.map((ccy) => {
           const v = props.rates[ccy];
           if (typeof v !== "number") return null;
           return (
             <span
               key={ccy}
-              className="snap-start whitespace-nowrap rounded-full border border-line bg-white px-3 py-1 font-mono text-[12px] text-ink"
+              className="shrink-0 snap-start whitespace-nowrap rounded-full border border-line bg-white px-3 py-1 font-mono text-[12px] text-ink"
             >
               1 GBP = <span className="font-medium">{v.toFixed(4)}</span> {ccy}
             </span>
