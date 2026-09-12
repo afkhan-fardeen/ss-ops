@@ -23,7 +23,6 @@ export type LauncherModuleData = {
 export type LauncherSection = {
   id: string;
   label: string;
-  dotColor: string;
   modules: LauncherModuleData[];
 };
 
@@ -32,12 +31,9 @@ export function LauncherModules({ sections }: { sections: LauncherSection[] }) {
     <motion.div initial="hidden" animate="show" variants={stagger} className="w-full space-y-9">
       {sections.map((section) => (
         <div key={section.id}>
-          <div className="mb-3.5 flex items-center gap-2 px-0.5">
-            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${section.dotColor}`} />
-            <h2 className="text-[11px] font-semibold uppercase tracking-wider text-muted">
-              {section.label}
-            </h2>
-          </div>
+          <h2 className="mb-3.5 px-0.5 text-[11px] font-semibold uppercase tracking-wider text-muted">
+            {section.label}
+          </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {section.modules.map((m) => (
               <motion.div key={m.id} variants={staggerItem}>

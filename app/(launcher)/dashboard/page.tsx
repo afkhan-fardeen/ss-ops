@@ -13,6 +13,8 @@ import {
 import { UbexIndicator } from "@/components/portal/UbexIndicator";
 import { AstClock } from "@/components/portal/AstClock";
 import { SignOutButton } from "@/components/account/SignOutButton";
+import { CommandPalette } from "@/components/portal/CommandPalette";
+import { DashboardSearchTrigger } from "@/components/launcher/DashboardSearchTrigger";
 
 export const dynamic = "force-dynamic";
 
@@ -41,7 +43,7 @@ const MODULE_META: Record<string, { description: string; href: string; domain: D
   },
   stockAnalysis: {
     description: "Mismatch trends, catalog composition, and sync health over time.",
-    href: "/stock-analysis/dashboard",
+    href: "/stock-analysis/dashboard#currently-short",
     domain: "inventory",
   },
   ubexInventory: {
@@ -51,7 +53,7 @@ const MODULE_META: Record<string, { description: string; href: string; domain: D
   },
   subscriptions: {
     description: "Review employee subscription requests and track active subscriptions.",
-    href: "/subscriptions/dashboard",
+    href: "/subscriptions?status=pending",
     domain: "finance",
   },
   zohoBooks: {
@@ -66,11 +68,6 @@ const DOMAIN_LABEL: Record<Domain, string> = {
   orders: "Orders & Delivery",
   inventory: "Inventory",
   finance: "Finance",
-};
-const DOMAIN_DOT: Record<Domain, string> = {
-  orders: "bg-cod",
-  inventory: "bg-stock",
-  finance: "bg-subscriptions",
 };
 
 export default async function LauncherPage() {
@@ -112,7 +109,6 @@ export default async function LauncherPage() {
     (d) => ({
       id: d,
       label: DOMAIN_LABEL[d],
-      dotColor: DOMAIN_DOT[d],
       modules: domainCards[d],
     }),
   );
@@ -120,7 +116,6 @@ export default async function LauncherPage() {
   sections.push({
     id: "account",
     label: "Account",
-    dotColor: "bg-gold",
     modules: [
       {
         id: "settings",
@@ -135,8 +130,11 @@ export default async function LauncherPage() {
     ],
   });
 
+  const allowedModuleIds = modules.map((m) => m.id);
+
   return (
     <div className="relative flex min-h-screen flex-col items-center overflow-x-hidden px-6 py-6 sm:px-10 sm:py-8">
+      <CommandPalette allowedModuleIds={allowedModuleIds} showAdminLink={showAdmin} />
       <div className="flex w-full max-w-5xl flex-wrap items-center justify-between gap-y-2">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo.svg" alt="Seissense Ops" className="h-6 w-auto object-contain sm:h-7" />
@@ -147,13 +145,13 @@ export default async function LauncherPage() {
         </div>
       </div>
 
-      <div className="w-full max-w-5xl flex-1 py-10 sm:py-14">
-        <h1 className="font-display text-[26px] font-medium text-ink sm:text-[32px]">
+      <div className="w-full max-w-5xl flex-1 py-7 sm:py-9">
+        <h1 className="font-display text-[22px] font-medium text-ink sm:text-[26px]">
           {name ? `${greeting}, ${name}` : "Welcome"}
         </h1>
-        <p className="mt-1.5 text-[14px] text-muted sm:text-[15px]">Pick a module to get started.</p>
+        <DashboardSearchTrigger />
 
-        <div className="mt-9 sm:mt-11">
+        <div className="mt-8 sm:mt-9">
           <LauncherModules sections={sections} />
         </div>
       </div>

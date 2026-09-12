@@ -7,6 +7,7 @@ import {
 import { PortalStockBalanceShell } from "@/components/portal/PortalStockBalanceShell";
 import { Sidebar } from "@/components/portal/Sidebar";
 import { Topbar } from "@/components/portal/Topbar";
+import { CommandPalette } from "@/components/portal/CommandPalette";
 import { StockErrorsCountProvider } from "@/components/stock/StockErrorsCountProvider";
 
 // On desktop: restore sidebar width from localStorage.
@@ -30,6 +31,7 @@ export default async function PortalLayout({ children }: { children: React.React
     <StockErrorsCountProvider>
       <div className="overflow-x-hidden">
         <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
+        <CommandPalette allowedModuleIds={allowedModuleIds} showAdminLink={showAdminLink} />
         <Sidebar
           showAdminLink={showAdminLink}
           allowedModuleIds={allowedModuleIds}

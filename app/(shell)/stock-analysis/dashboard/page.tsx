@@ -90,7 +90,7 @@ export default async function StockAnalysisDashboardPage() {
 
       <ProductSearchCard />
 
-      <div className="mt-4 rounded-card border border-line bg-white p-4 shadow-soft">
+      <div id="currently-short" className="mt-4 rounded-card border border-line bg-white p-4 shadow-soft scroll-mt-20">
         <h2 className="text-[13px] font-medium text-ink">Currently short</h2>
         <p className="mt-0.5 text-[12px] text-muted">
           Products where committed orders exceed Ubex stock — visibility only

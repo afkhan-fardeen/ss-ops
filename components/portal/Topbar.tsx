@@ -2,8 +2,10 @@
 
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
+import { Search } from "lucide-react";
 import { CodListFloatingActions } from "@/components/cod-list/CodListFloatingActions";
 import { isCodListPath, resolveRouteMeta } from "@/config/modules";
+import { openCommandPalette } from "@/components/portal/CommandPalette";
 import { AstClock } from "./AstClock";
 import { UbexIndicator } from "./UbexIndicator";
 import { RestockStatusIndicator } from "./RestockStatusIndicator";
@@ -35,6 +37,15 @@ export function Topbar() {
         ) : null}
       </div>
       <div className="flex shrink-0 items-center gap-3">
+        <button
+          type="button"
+          onClick={openCommandPalette}
+          className="focus-ring hidden items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[12px] text-muted transition hover:bg-canvas hover:text-ink sm:flex"
+        >
+          <Search size={13} />
+          <span>Jump to…</span>
+          <kbd className="rounded border border-line px-1 text-[10px] font-medium">⌘K</kbd>
+        </button>
         <RestockStatusIndicator />
         <UbexIndicator />
         <AstClock />
