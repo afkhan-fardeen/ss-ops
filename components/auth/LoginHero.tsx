@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import { LoginForm } from "@/components/auth/LoginForm";
+import { CornerBrackets } from "@/components/auth/CornerBrackets";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { stagger, staggerItem } from "@/lib/motion";
+import { heroSequence, staggerItem } from "@/lib/motion";
 
 /**
  * Login screen composition — the one deliberately dramatic "moment" in the portal.
@@ -22,12 +23,12 @@ export function LoginHero({
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-4 py-16">
       <motion.div
-        variants={stagger}
+        variants={heroSequence}
         initial="hidden"
         animate="show"
         className="relative z-10 flex w-full flex-col items-center"
       >
-        <motion.div variants={staggerItem} className="mb-8 flex flex-col items-center gap-4">
+        <motion.div variants={staggerItem} className="mb-8 flex flex-col items-center gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.svg" alt="Seissense Ops" className="h-11 w-auto" />
           <div className="flex items-center gap-2 text-[13px] text-muted">
@@ -37,9 +38,16 @@ export function LoginHero({
             </span>
             Internal operations portal
           </div>
+          <p
+            className="typewriter font-mono text-[11px] text-muted"
+            style={{ "--tw-chars": 25 } as React.CSSProperties}
+          >
+            UBEX · SHOPIFY · SUPABASE
+          </p>
         </motion.div>
 
-        <motion.div variants={staggerItem} className="w-full max-w-md">
+        <motion.div variants={staggerItem} className="relative w-full max-w-md">
+          <CornerBrackets />
           <GlassCard className="p-8">
             <h1 className="font-display text-2xl font-medium text-ink">Sign in</h1>
             <p className="mt-1.5 text-[13px] text-muted">{description}</p>
