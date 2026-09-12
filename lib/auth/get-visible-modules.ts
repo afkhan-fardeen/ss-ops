@@ -30,7 +30,8 @@ export async function getVisiblePortalModules(
         m.id !== "stockAnalysis" &&
         m.id !== "ubexInventory" &&
         m.id !== "subscriptions" &&
-        m.id !== "zohoBooks",
+        m.id !== "zohoBooks" &&
+        m.id !== "salesReport",
     );
   }
   return allModules.filter((m) => allowed.includes(m.id));

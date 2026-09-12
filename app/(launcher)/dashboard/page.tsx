@@ -61,6 +61,11 @@ const MODULE_META: Record<string, { description: string; href: string; domain: D
     href: "/zoho-books",
     domain: "finance",
   },
+  salesReport: {
+    description: "Daily order counts and sales totals for both stores.",
+    href: "/sales-report",
+    domain: "finance",
+  },
 };
 
 const DOMAIN_ORDER: Domain[] = ["orders", "inventory", "finance"];

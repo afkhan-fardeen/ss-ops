@@ -120,3 +120,34 @@ export function getLastNWindows(n = 14, now = new Date()): CollectionWindow[] {
 export function shortWindowLabel(w: CollectionWindow): string {
   return shortLabel(new Date(w.createdAtMaxIso));
 }
+
+export type BahrainCalendarDay = {
+  /** Human-readable label, e.g. "Thu 24 Apr 2026" */
+  label: string;
+  /** YYYY-MM-DD in Bahrain time */
+  dateKey: string;
+  startIso: string;
+  endIso: string;
+};
+
+/**
+ * A plain midnight-to-midnight Bahrain calendar day — distinct from
+ * `CollectionWindow`'s 14:00 cutoff, which is specific to COD collection
+ * logistics. `offsetDays` 0 = today, -1 = yesterday, etc.
+ */
+export function getBahrainCalendarDay(offsetDays = 0, now = new Date()): BahrainCalendarDay {
+  const { y, m, day } = bahrainYmd(now);
+  const shifted = addDays(y, m, day, offsetDays);
+  const next = addDays(shifted.y, shifted.m, shifted.d, 1);
+  const start = bahrainInstant(shifted.y, shifted.m, shifted.d, 0, 0);
+  const end = bahrainInstant(next.y, next.m, next.d, 0, 0);
+  const label = start.toLocaleDateString("en-GB", {
+    timeZone: TZ,
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  const dateKey = `${shifted.y}-${String(shifted.m + 1).padStart(2, "0")}-${String(shifted.d).padStart(2, "0")}`;
+  return { label, dateKey, startIso: start.toISOString(), endIso: end.toISOString() };
+}

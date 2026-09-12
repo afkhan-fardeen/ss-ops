@@ -31,7 +31,9 @@ export type ShopifyOrder = {
   /** Numeric order number (without #); useful matching Ubex shipment_reference. */
   order_number?: number | null;
   total_price: string;
+  total_discounts?: string | null;
   currency: string;
+  cancelled_at?: string | null;
   financial_status?: string | null;
   gateway?: string | null;
   payment_gateway_names?: string[];

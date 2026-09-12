@@ -6,6 +6,7 @@ const ALLOWED_KEYS = [
   "email_recipients",          // daily COD list email
   "fulfillment_notify_emails", // notify when cron fulfills orders
   "error_notify_emails",       // notify on cron errors
+  "sales_report_emails",       // daily sales report (both stores)
 ] as const;
 
 type AllowedKey = (typeof ALLOWED_KEYS)[number];

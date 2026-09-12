@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   AlertTriangle,
+  BarChart3,
   FileSearch,
   History,
   LayoutDashboard,
@@ -21,7 +22,8 @@ export type ModuleId =
   | "subscriptions"
   | "stockAnalysis"
   | "ubexInventory"
-  | "zohoBooks";
+  | "zohoBooks"
+  | "salesReport";
 
 export type ModuleNavItem = {
   label: string;
@@ -252,6 +254,17 @@ function zohoBooksModule(): PortalModule {
   };
 }
 
+function salesReportModule(): PortalModule {
+  return {
+    id: "salesReport",
+    label: "Sales Report",
+    icon: BarChart3,
+    adminOnly: true,
+    accent: SUBSCRIPTIONS_ACCENT,
+    items: [{ label: "Daily sales", href: "/sales-report", icon: BarChart3 }],
+  };
+}
+
 export function getPortalModules(showAdmin: boolean): PortalModule[] {
   const modules = [codModule(), fulfillmentModule(), awbModule()];
   if (showAdmin) {
@@ -260,6 +273,7 @@ export function getPortalModules(showAdmin: boolean): PortalModule[] {
     modules.push(ubexInventoryModule());
     modules.push(subscriptionsModule());
     modules.push(zohoBooksModule());
+    modules.push(salesReportModule());
   }
   return modules;
 }
@@ -283,6 +297,8 @@ function modulePathPrefixes(id: ModuleId): string[] {
       return ["/subscriptions"];
     case "zohoBooks":
       return ["/zoho-books"];
+    case "salesReport":
+      return ["/sales-report"];
     default:
       return [];
   }
@@ -444,6 +460,13 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     moduleId: "zohoBooks",
     moduleLabel: "Zoho Books",
     accent: ZOHO_BOOKS_ACCENT,
+  },
+  {
+    path: "/sales-report",
+    title: "Daily sales",
+    moduleId: "salesReport",
+    moduleLabel: "Sales Report",
+    accent: SUBSCRIPTIONS_ACCENT,
   },
 ];
 

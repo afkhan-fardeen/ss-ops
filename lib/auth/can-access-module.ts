@@ -10,7 +10,8 @@ function needsExplicitGrant(moduleId: ModuleId): boolean {
     moduleId === "stockAnalysis" ||
     moduleId === "ubexInventory" ||
     moduleId === "subscriptions" ||
-    moduleId === "zohoBooks"
+    moduleId === "zohoBooks" ||
+    moduleId === "salesReport"
   );
 }
 
