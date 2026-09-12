@@ -23,7 +23,7 @@ export async function getDisplayName(session: PortalSession): Promise<string | n
         .eq("id", session.userId)
         .maybeSingle();
       const fullName = (data as { full_name: string | null } | null)?.full_name;
-      if (fullName) return fullName.split(" ")[0];
+      if (fullName && !fullName.includes("@")) return fullName.split(" ")[0];
     }
   }
 
