@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { getBahrainCalendarDay } from "@/lib/datetime/collection-window";
 import { loadDailySalesReport } from "@/lib/sales/daily-sales-report";
 import { sendDailySalesEmail } from "@/lib/email/send-daily-sales-email";
+import { resolvePortalBaseUrl } from "@/lib/portal-url";
 
 /**
  * POST /api/sync/daily-sales-report
@@ -34,13 +36,14 @@ export async function POST(req: NextRequest) {
   const offsetParam = req.nextUrl.searchParams.get("offset");
   const offsetDays = offsetParam !== null ? Number.parseInt(offsetParam, 10) : -1;
 
-  const report = await loadDailySalesReport(Number.isFinite(offsetDays) ? offsetDays : -1);
+  const day = getBahrainCalendarDay(Number.isFinite(offsetDays) ? offsetDays : -1);
+  const report = await loadDailySalesReport(day);
 
   if (dryRun) {
     return NextResponse.json({ ok: true, dry_run: true, report });
   }
 
-  const emailResult = await sendDailySalesEmail(report);
+  const emailResult = await sendDailySalesEmail(report, resolvePortalBaseUrl(req));
   return NextResponse.json({ ok: emailResult.ok, dry_run: false, report, email: emailResult });
 }
 

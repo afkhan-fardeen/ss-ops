@@ -151,3 +151,31 @@ export function getBahrainCalendarDay(offsetDays = 0, now = new Date()): Bahrain
   const dateKey = `${shifted.y}-${String(shifted.m + 1).padStart(2, "0")}-${String(shifted.d).padStart(2, "0")}`;
   return { label, dateKey, startIso: start.toISOString(), endIso: end.toISOString() };
 }
+
+/** Same as `getBahrainCalendarDay`, but for an explicit "YYYY-MM-DD" Bahrain date (e.g. from a URL param). */
+export function getBahrainCalendarDayForKey(dateKey: string): BahrainCalendarDay {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const next = addDays(y, m - 1, d, 1);
+  const start = bahrainInstant(y, m - 1, d, 0, 0);
+  const end = bahrainInstant(next.y, next.m, next.d, 0, 0);
+  const label = start.toLocaleDateString("en-GB", {
+    timeZone: TZ,
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  return { label, dateKey, startIso: start.toISOString(), endIso: end.toISOString() };
+}
+
+/** Which Bahrain calendar day ("YYYY-MM-DD") a given instant falls on. */
+export function bahrainDateKeyForInstant(iso: string): string {
+  const { y, m, day } = bahrainYmd(new Date(iso));
+  return `${y}-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+/** Compact label for a Bahrain calendar day: "12 Sep". */
+export function shortBahrainDayLabel(dateKey: string): string {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return shortLabel(bahrainInstant(y, m - 1, d, 12, 0));
+}

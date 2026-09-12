@@ -53,6 +53,7 @@ function htmlWrap(title: string, content: string): string {
   td { padding:8px 0; border-bottom:1px solid #F2F2F2; color:#333; }
   td:last-child { text-align:right; font-weight:600; color:#111; }
   tr:last-child td { border-bottom:none; }
+  .cta { display:block; margin:0 0 22px; padding:12px 16px; background:#111; color:#fff !important; text-decoration:none; text-align:center; border-radius:8px; font-size:13px; font-weight:600; }
   .footer { padding:16px 32px; border-top:1px solid #EBEBEB; font-size:11px; color:#aaa; }
 </style>
 </head>
@@ -65,8 +66,8 @@ function htmlWrap(title: string, content: string): string {
 </body></html>`;
 }
 
-function buildContent(report: DailySalesReport): string {
-  return report.stores
+function buildContent(report: DailySalesReport, reportUrl: string): string {
+  const stores = report.stores
     .map(
       (s) => `
       <div class="store">
@@ -80,10 +81,12 @@ function buildContent(report: DailySalesReport): string {
       </div>`,
     )
     .join("");
+  return `<a class="cta" href="${reportUrl}">View full report — order list, top products, history</a>${stores}`;
 }
 
 export async function sendDailySalesEmail(
   report: DailySalesReport,
+  portalBaseUrl: string,
 ): Promise<{ ok: boolean; sent: boolean; recipients: number; error?: string }> {
   const recipients = await getSalesReportRecipients();
   if (recipients.length === 0) return { ok: true, sent: false, recipients: 0 };
@@ -92,12 +95,13 @@ export async function sendDailySalesEmail(
   if (!transporter) return { ok: false, sent: false, recipients: 0, error: "Email is not configured (GMAIL_USER / GMAIL_APP_PASSWORD)." };
 
   const subject = `Daily sales report — ${report.day.label}`;
+  const reportUrl = `${portalBaseUrl}/sales-report?day=${report.day.dateKey}`;
   try {
     await transporter.sendMail({
       from: `Seissense Ops <${process.env.GMAIL_USER}>`,
       to: recipients.join(", "),
       subject,
-      html: htmlWrap(subject, buildContent(report)),
+      html: htmlWrap(subject, buildContent(report, reportUrl)),
     });
     return { ok: true, sent: true, recipients: recipients.length };
   } catch (e) {

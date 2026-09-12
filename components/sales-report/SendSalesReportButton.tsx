@@ -4,13 +4,13 @@ import { useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 
-export function SendSalesReportButton({ offsetDays }: { offsetDays: number }) {
+export function SendSalesReportButton({ dayKey }: { dayKey: string }) {
   const [sending, setSending] = useState(false);
 
   async function send() {
     setSending(true);
     try {
-      const res = await fetch(`/api/sales-report/send?offset=${offsetDays}`, { method: "POST" });
+      const res = await fetch(`/api/sales-report/send?day=${dayKey}`, { method: "POST" });
       const data = (await res.json()) as {
         ok?: boolean;
         email?: { sent?: boolean; recipients?: number; error?: string };
