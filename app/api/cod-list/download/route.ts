@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireSession } from "@/lib/auth/require-session";
-import { loadCodListData } from "@/lib/cod/cod-list-data";
-import { loadCodListByMonth } from "@/lib/cod/load-cod-list-by-month";
+import { loadStore2CodListData } from "@/lib/store2/cod-list-data";
 import { buildCodWorkbook, codFilenameForDateKeys } from "@/lib/excel";
 
 export async function GET(req: Request) {
@@ -12,13 +11,10 @@ export async function GET(req: Request) {
   }
 
   const u = new URL(req.url);
-  const month = u.searchParams.get("month")?.trim();
-  const data = month
-    ? await loadCodListByMonth(month)
-    : await loadCodListData({
-        dates: u.searchParams.get("dates") ?? undefined,
-        date: u.searchParams.get("date") ?? undefined,
-      });
+  const data = await loadStore2CodListData({
+    dates: u.searchParams.get("dates") ?? undefined,
+    date: u.searchParams.get("date") ?? undefined,
+  });
 
   if (!data.ok) {
     return NextResponse.json({ error: data.error }, { status: 400 });

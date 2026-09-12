@@ -32,21 +32,19 @@ function StepRow({ label, state }: { label: string; state: "wait" | "active" | "
   );
 }
 
-/** Shared download/email modal shell for both the day-window and month-range COD export flows. */
+/** Download/email modal shell for the COD list export flow. */
 export function CodExportModal({
   flow,
   title,
   description,
   summary,
   confirmLabel,
-  extraProgressNote,
 }: {
   flow: CodExportFlow;
   title: string;
   description: string;
   summary: ReactNode;
   confirmLabel: string;
-  extraProgressNote?: string;
 }) {
   const titleId = useId();
   const { active, mounted, step, errorMsg, showSummary, busy, close, confirm } = flow;
@@ -120,7 +118,6 @@ export function CodExportModal({
           </>
         ) : (
           <div className="space-y-3">
-            {extraProgressNote ? <p className="text-[12px] text-muted">{extraProgressNote}</p> : null}
             <StepRow label="Preparing" state={progressRowState(step, 0)} />
             <StepRow
               label={active === "email" ? "Sending to server" : "Loading data and building file"}
