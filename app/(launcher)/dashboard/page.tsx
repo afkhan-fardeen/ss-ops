@@ -2,6 +2,7 @@ import { Settings2 } from "lucide-react";
 import { requireSession } from "@/lib/auth/require-session";
 import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { getAstGreeting, getDisplayName } from "@/lib/dashboard/get-display-name";
+import { loadLauncherStats, type LauncherStats } from "@/lib/dashboard/load-launcher-stats";
 import { SETTINGS_ACCENT } from "@/config/modules";
 import { getVisiblePortalModules } from "@/lib/auth/get-visible-modules";
 import {
@@ -75,9 +76,16 @@ const DOMAIN_DOT: Record<Domain, string> = {
 export default async function LauncherPage() {
   const session = await requireSession();
   const showAdmin = await isPortalAdmin();
-  const [name] = await Promise.all([getDisplayName(session)]);
+  const [name, stats] = await Promise.all([getDisplayName(session), loadLauncherStats()]);
   const greeting = getAstGreeting();
   const modules = await getVisiblePortalModules(session, showAdmin);
+  const statByModule: Partial<Record<string, LauncherStats[keyof LauncherStats]>> = {
+    cod: stats.cod,
+    fulfillment: stats.fulfillment,
+    stock: stats.stock,
+    stockAnalysis: stats.stockAnalysis,
+    subscriptions: stats.subscriptions,
+  };
 
   const domainCards: Record<Domain, LauncherModuleData[]> = {
     orders: [],
@@ -96,6 +104,7 @@ export default async function LauncherPage() {
       icon: <Icon size={22} strokeWidth={1.8} />,
       iconBg: m.accent.activeBg,
       iconText: m.accent.activeText,
+      stat: statByModule[m.id],
     });
   }
 

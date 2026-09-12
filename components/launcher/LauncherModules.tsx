@@ -14,6 +14,8 @@ export type LauncherModuleData = {
   icon: React.ReactNode;
   iconBg: string;
   iconText: string;
+  /** Optional live quick-glance number shown as a footer stat (e.g. "12 in today's window"). */
+  stat?: { value: string; label: string } | null;
   /** Optional secondary action rendered below the primary card content (e.g. Admin tools). */
   secondaryLink?: { label: string; href: string };
 };
@@ -62,10 +64,16 @@ function ModuleCard({ module: m }: { module: LauncherModuleData }) {
             className="mt-1 text-muted transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-ink"
           />
         </div>
-        <div>
+        <div className="flex-1">
           <h3 className="font-display text-[15px] font-medium text-ink">{m.label}</h3>
           <p className="mt-1 text-[13px] leading-relaxed text-muted">{m.description}</p>
         </div>
+        {m.stat ? (
+          <div className="flex items-baseline gap-1.5 border-t border-line pt-3">
+            <span className={`font-display text-lg font-semibold ${m.iconText}`}>{m.stat.value}</span>
+            <span className="text-[12px] text-muted">{m.stat.label}</span>
+          </div>
+        ) : null}
       </Link>
       {m.secondaryLink ? (
         <Link
