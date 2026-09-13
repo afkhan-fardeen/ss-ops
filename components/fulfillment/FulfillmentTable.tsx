@@ -136,7 +136,7 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
                     </div>
                   ) : <span className="text-muted">—</span>}
                 </td>
-                <td className="px-3 py-3 font-mono text-[12px]">{r.totalGbp}</td>
+                <td className="px-3 py-3 font-mono text-[12px]">{r.total}</td>
                 <td className="px-3 py-3 text-[12px]">
                   <span className={[
                     "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",

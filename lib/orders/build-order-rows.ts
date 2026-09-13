@@ -1,4 +1,4 @@
-import { formatMoneyGbp } from "@/lib/utils";
+import { formatMoney } from "@/lib/utils";
 import type { ShopifyOrder } from "@/lib/shopify/types";
 import { formatShippingAddress, orderLooksLikeCod } from "@/lib/shopify/fetch-cod-orders";
 import { ubexTrackingForShopifyOrder, type UbexLookup } from "@/lib/ubex/build-lookup";
@@ -13,7 +13,7 @@ export type OrderRow = {
   trackingUrl: string;
   isCod: boolean;
   paymentLabel: string;
-  totalGbp: string;
+  total: string;
   customerName: string;
   shippingAddress: string;
   shippingCountry: string;
@@ -59,7 +59,7 @@ export function buildOrderRows(
       trackingUrl,
       isCod: cod,
       paymentLabel,
-      totalGbp: formatMoneyGbp(o.total_price),
+      total: formatMoney(o.total_price, o.currency),
       customerName,
       shippingAddress: formatShippingAddress(o.shipping_address) || "—",
       shippingCountry: (o.shipping_address?.country_code ?? "—").toUpperCase(),

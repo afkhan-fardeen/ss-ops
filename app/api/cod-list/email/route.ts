@@ -23,11 +23,11 @@ export async function POST(req: Request) {
   }
 
   try {
-    const totalGbp = data.codOrders.reduce((s, o) => s + Number.parseFloat(o.total_price || "0"), 0);
+    const total = data.codOrders.reduce((s, o) => s + Number.parseFloat(o.total_price || "0"), 0);
     const result = await sendCodListEmail({
       rows: data.rows,
       orderCount: data.codOrders.length,
-      totalGbp,
+      total,
       windowStart: data.rangeStartIso,
       windowEnd: data.rangeEndIso,
       sentByEmail: session.email ?? null,

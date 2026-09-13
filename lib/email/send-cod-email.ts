@@ -57,7 +57,7 @@ async function logEmail(params: {
 export async function sendCodListEmail(params: {
   rows: CodRow[];
   orderCount: number;
-  totalGbp: number;
+  total: number;
   windowStart?: string;
   windowEnd?: string;
   sentByEmail?: string | null;
@@ -79,7 +79,7 @@ export async function sendCodListEmail(params: {
   const filename = params.attachmentFilename ?? codFilenameFromDate();
   const dateLine = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
   const subject = `COD List — Seissense — ${params.subjectLabel ?? dateLine}`;
-  const body = `COD list attached.\n\nOrders: ${params.orderCount}\nTotal (GBP): £${params.totalGbp.toFixed(2)}\n`;
+  const body = `COD list attached.\n\nOrders: ${params.orderCount}\nTotal (AED): ${params.total.toFixed(2)}\n`;
 
   try {
     await transporter.sendMail({

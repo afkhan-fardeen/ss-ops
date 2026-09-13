@@ -1,17 +1,14 @@
-export function formatMoneyGbp(amount: string): string {
+/** Formats a raw amount in whatever currency the order/order-line actually carries. */
+export function formatMoney(amount: string, currency: string): string {
   const n = Number.parseFloat(amount);
-  if (Number.isNaN(n)) return "£0.00";
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "GBP",
-  }).format(n);
+  if (Number.isNaN(n)) return `${currency} 0.00`;
+  try {
+    return new Intl.NumberFormat("en-GB", { style: "currency", currency }).format(n);
+  } catch {
+    return `${currency} ${n.toFixed(2)}`;
+  }
 }
 
 export function formatMoneyAed(amount: string): string {
-  const n = Number.parseFloat(amount);
-  if (Number.isNaN(n)) return "AED 0.00";
-  return new Intl.NumberFormat("en-AE", {
-    style: "currency",
-    currency: "AED",
-  }).format(n);
+  return formatMoney(amount, "AED");
 }
