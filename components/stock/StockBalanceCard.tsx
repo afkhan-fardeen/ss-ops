@@ -66,68 +66,71 @@ function StoreColumn({
   );
 }
 
-export function StockBalanceTile({
+/** One row in the stock balance table — click anywhere on it to open the detail modal. */
+export function StockBalanceTableRow({
   row,
   store2Configured,
+  selectable,
   selected,
   restockStatus,
   onSelect,
+  onToggleSelect,
 }: {
   row: StockBalanceRow;
   store2Configured: boolean;
+  selectable: boolean;
   selected: boolean;
   restockStatus: RestockRowStatus;
   onSelect: () => void;
+  onToggleSelect: () => void;
 }) {
   const pill = pillFor(row);
+  const busy = restockStatus === "busy";
 
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-pressed={selected}
+    <tr
       className={[
-        "flex min-h-[200px] flex-col justify-between rounded-card border bg-white p-4 text-left shadow-soft transition",
-        selected ? "border-stock ring-2 ring-stock/20" : "border-line hover:bg-canvas/40",
-        restockStatus === "busy" ? "opacity-70" : "",
+        "cursor-pointer border-b border-line text-[13px] transition last:border-0 hover:bg-canvas/60",
+        busy ? "opacity-60" : "",
       ].join(" ")}
+      onClick={onSelect}
     >
-      <div className="min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <p className="line-clamp-2 font-medium text-ink">{row.productName}</p>
-          <StatusPill tone={pill.tone}>{pill.label}</StatusPill>
-        </div>
+      {selectable ? (
+        <td className="w-8 px-3 py-3" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={selected}
+            onChange={onToggleSelect}
+            className="h-4 w-4 accent-stock"
+            aria-label={`Select ${row.productName}`}
+          />
+        </td>
+      ) : (
+        <td className="w-8 px-3 py-3" />
+      )}
+      <td className="min-w-[220px] px-3 py-3">
+        <p className="line-clamp-1 font-medium text-ink">{row.productName}</p>
         <p className="mt-0.5 font-mono text-[11px] text-muted">
-          SKU {row.sku || "—"} · {row.barcode || "no barcode"}
+          {row.sku || "—"} · {row.barcode || "no barcode"}
         </p>
-      </div>
-      <dl className="mt-3 space-y-1 text-[12px]">
-        <div className="flex justify-between gap-2">
-          <dt className="text-muted">Ubex</dt>
-          <dd className="font-mono tabular-nums text-ink">{row.ubexStock}</dd>
-        </div>
-        <div className="flex justify-between gap-2">
-          <dt className="truncate text-muted">{STORE_LABELS[1]}</dt>
-          <dd className="shrink-0 font-mono tabular-nums text-ink">
-            {fmt(row.storeA.committed)} committed
-          </dd>
-        </div>
-        {store2Configured ? (
-          <div className="flex justify-between gap-2">
-            <dt className="truncate text-muted">{STORE_LABELS[2]}</dt>
-            <dd className="shrink-0 font-mono tabular-nums text-ink">
-              {fmt(row.storeB?.committed)} committed
-            </dd>
-          </div>
-        ) : null}
-        <div className="flex justify-between gap-2 border-t border-line pt-1">
-          <dt className="text-ink">Available to sell</dt>
-          <dd className="font-mono text-[15px] font-medium tabular-nums text-ink">
-            {fmt(row.sharedAvailable)}
-          </dd>
-        </div>
-      </dl>
-    </button>
+      </td>
+      <td className="px-3 py-3 text-right font-mono tabular-nums text-ink">{row.ubexStock}</td>
+      <td className="px-3 py-3 text-right font-mono tabular-nums text-ink">
+        {fmt(row.storeA.committed)}
+      </td>
+      {store2Configured ? (
+        <td className="px-3 py-3 text-right font-mono tabular-nums text-ink">
+          {fmt(row.storeB?.committed)}
+        </td>
+      ) : null}
+      <td className="px-3 py-3 text-right font-mono text-[13px] font-medium tabular-nums text-ink">
+        {fmt(row.sharedAvailable)}
+      </td>
+      <td className="px-3 py-3">
+        <StatusPill tone={pill.tone}>{pill.label}</StatusPill>
+      </td>
+      <td className="w-8 px-3 py-3 text-muted">{busy ? <Loader2 size={14} className="animate-spin" /> : null}</td>
+    </tr>
   );
 }
 
@@ -158,7 +161,7 @@ export function StockBalanceDetail({
       : null;
 
   return (
-    <div className="rounded-card border border-line bg-white p-4 shadow-soft">
+    <div>
       <div className="flex items-start gap-3">
         {canSelect ? (
           <input

@@ -32,14 +32,22 @@ export function StockBalanceLoader() {
     loadMismatches,
     refreshMismatches,
     exitSweep,
+    mismatchCount,
   } = useStockBalancePreview();
   const { searchParams, updateUrl } = useUrlViewState();
 
   useEffect(() => {
     if (!preview && !loading && !error && !sweepLoading) {
+      // Land on the mismatch queue by default — that's the daily task. Only
+      // start in browse mode if the URL explicitly asks for a search/page
+      // (e.g. a bookmarked or shared link into the full catalog).
       const initialSearch = searchParams.get("q") ?? "";
       const initialPage = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1);
-      void load({ search: initialSearch, page: initialPage });
+      if (searchParams.get("view") === "all") {
+        void load({ search: initialSearch, page: initialPage });
+      } else {
+        void loadMismatches();
+      }
     }
     // Restore only on first mount — the handlers below own subsequent navigation.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,14 +113,18 @@ export function StockBalanceLoader() {
       search={preview.search}
       mode={mode}
       summary={preview.summary}
+      mismatchCount={mismatchCount}
       refreshLoading={loading}
       sweepLoading={sweepLoading}
       onSearchChange={(v) => void handleSearchChange(v)}
       onPrevPage={() => void goToPage(preview.page - 1)}
       onNextPage={() => void goToPage(preview.page + 1)}
-      onFindMismatches={() => void loadMismatches()}
+      onFindMismatches={() => {
+        updateUrl({ view: null, search: null, page: null });
+        void loadMismatches();
+      }}
       onExitSweep={() => {
-        updateUrl({ search: "", page: 1 });
+        updateUrl({ view: "all", search: "", page: 1 });
         void exitSweep();
       }}
       onRefresh={() =>

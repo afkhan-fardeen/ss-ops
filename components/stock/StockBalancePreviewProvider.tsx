@@ -39,6 +39,8 @@ export type StockBalancePreviewContextValue = {
   refreshMismatches: () => Promise<void>;
   /** Leave sweep and load browse page 1. */
   exitSweep: () => Promise<void>;
+  /** Count from the last completed sweep, kept even after switching to browse — for the tab badge. */
+  mismatchCount: number | null;
 };
 
 export const StockBalancePreviewContext =
@@ -78,6 +80,7 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [mode, setMode] = useState<StockBalanceMode>("browse");
+  const [mismatchCount, setMismatchCount] = useState<number | null>(null);
   const sweepCacheRef = useRef<StockBalancePreview | null>(null);
 
   const load = useCallback(async (opts?: LoadOptions) => {
@@ -127,6 +130,7 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
       setMode("sweep");
       setError(null);
       setPreview(sweepCacheRef.current);
+      setMismatchCount(sweepCacheRef.current.rows.length);
       return;
     }
 
@@ -146,6 +150,7 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
       sweepCacheRef.current = next;
       setPreview(next);
       const n = next.rows.length;
+      setMismatchCount(n);
       toast.success(
         `Mismatch sweep ready — ${n} mismatch${n === 1 ? "" : "es"}`,
         { id: STOCK_BALANCE_TOAST_ID, duration: 8_000 },
@@ -186,6 +191,7 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
       loadMismatches,
       refreshMismatches,
       exitSweep,
+      mismatchCount,
     }),
     [
       preview,
@@ -199,6 +205,7 @@ export function StockBalancePreviewProvider({ children }: { children: ReactNode 
       loadMismatches,
       refreshMismatches,
       exitSweep,
+      mismatchCount,
     ],
   );
 

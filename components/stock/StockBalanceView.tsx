@@ -13,7 +13,7 @@ import {
 } from "@/lib/stock/stock-balance-filters";
 import { targetShopifyOnHandForStore } from "@/lib/stock/stock-balance-target";
 import { STORE_LABELS } from "@/lib/stores/labels";
-import { StockBalanceDetail, StockBalanceTile } from "@/components/stock/StockBalanceCard";
+import { StockBalanceDetail, StockBalanceTableRow } from "@/components/stock/StockBalanceCard";
 import { StockBalanceSearchBar } from "@/components/stock/StockBalanceSearchBar";
 import { useRestockQueue, type RestockRowInput } from "@/hooks/useRestockQueue";
 
@@ -36,6 +36,7 @@ type Props = {
     skipped: number;
     mismatched: number;
   };
+  mismatchCount: number | null;
   refreshLoading?: boolean;
   sweepLoading?: boolean;
   onSearchChange: (value: string) => void;
@@ -95,6 +96,29 @@ function FilterChip({
   );
 }
 
+function ModeTab({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "rounded-lg px-3 py-2 text-[13px] font-medium transition",
+        active ? "bg-white text-ink shadow-soft" : "text-muted hover:text-ink",
+      ].join(" ")}
+    >
+      {label}
+    </button>
+  );
+}
+
 export function StockBalanceView({
   rows,
   locationName,
@@ -107,6 +131,7 @@ export function StockBalanceView({
   search,
   mode,
   summary,
+  mismatchCount,
   refreshLoading,
   sweepLoading,
   onSearchChange,
@@ -125,6 +150,7 @@ export function StockBalanceView({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [confirmRows, setConfirmRows] = useState<StockBalanceRow[] | null>(null);
   const [searchDraft, setSearchDraft] = useState(search);
+  const [sweepQuery, setSweepQuery] = useState("");
 
   useEffect(() => {
     setSearchDraft(search);
@@ -133,33 +159,41 @@ export function StockBalanceView({
   useEffect(() => {
     setFilters(mode === "sweep" ? WEEKLY_RESTOCK_PRESET : DEFAULT_STOCK_BALANCE_FILTERS);
     setSelected(new Set());
+    setSweepQuery("");
   }, [mode]);
 
   useEffect(() => {
+    if (mode !== "browse") return;
     const t = setTimeout(() => {
       if (searchDraft === search) return;
-      if (mode === "sweep" && searchDraft === "") return;
       onSearchChange(searchDraft);
     }, 300);
     return () => clearTimeout(t);
   }, [searchDraft, search, onSearchChange, mode]);
 
-  const filtered = useMemo(
-    () => applyStockBalanceFilters(rows, filters),
-    [rows, filters],
-  );
+  const filtered = useMemo(() => {
+    let list = applyStockBalanceFilters(rows, filters);
+    if (mode === "sweep" && sweepQuery.trim()) {
+      const q = sweepQuery.trim().toLowerCase();
+      list = list.filter(
+        (r) =>
+          r.productName.toLowerCase().includes(q) ||
+          r.sku.toLowerCase().includes(q) ||
+          r.barcode.toLowerCase().includes(q),
+      );
+    }
+    return list;
+  }, [rows, filters, mode, sweepQuery]);
 
   const restockable = useMemo(
     () => filtered.filter((r) => r.restockable),
     [filtered],
   );
 
+  const activeRow = activeId ? filtered.find((r) => r.ubexId === activeId) ?? null : null;
+
   function toggleFilter(key: keyof StockBalanceFilterState) {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
-  }
-
-  function toggleExpand(id: string) {
-    setActiveId((cur) => (cur === id ? null : id));
   }
 
   function toggleSelect(id: string) {
@@ -209,19 +243,39 @@ export function StockBalanceView({
         </p>
       </div>
 
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-canvas p-1">
+          <ModeTab
+            active={mode === "sweep"}
+            label={`Needs attention${mismatchCount !== null ? ` (${mismatchCount})` : ""}`}
+            onClick={onFindMismatches}
+          />
+          <ModeTab active={mode === "browse"} label="All products" onClick={onExitSweep} />
+        </div>
+        <button
+          type="button"
+          disabled={refreshLoading || running}
+          onClick={() => onRefresh?.()}
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+        >
+          {refreshLoading ? (
+            <Loader2 size={14} className="animate-spin" />
+          ) : (
+            <RefreshCw size={14} />
+          )}
+          {mode === "sweep" ? "Refresh mismatches" : "Refresh"}
+        </button>
+      </div>
+
       <StockBalanceSearchBar
-        value={searchDraft}
-        onChange={setSearchDraft}
+        value={mode === "sweep" ? sweepQuery : searchDraft}
+        onChange={mode === "sweep" ? setSweepQuery : setSearchDraft}
         loading={Boolean(refreshLoading)}
         page={page}
         hasNextPage={hasNextPage}
         onPrevPage={onPrevPage}
         onNextPage={onNextPage}
         mode={mode}
-        mismatchCount={rows.length}
-        sweepLoading={sweepLoading}
-        onFindMismatches={onFindMismatches}
-        onExitSweep={onExitSweep}
       />
 
       <div className="flex flex-wrap items-center gap-2">
@@ -249,21 +303,6 @@ export function StockBalanceView({
             Clear filters
           </button>
         ) : null}
-        <div className="ml-auto flex flex-wrap gap-2">
-          <button
-            type="button"
-            disabled={refreshLoading || running}
-            onClick={() => onRefresh?.()}
-            className="inline-flex min-h-9 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
-          >
-            {refreshLoading ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <RefreshCw size={14} />
-            )}
-            {mode === "sweep" ? "Refresh mismatches" : "Refresh"}
-          </button>
-        </div>
       </div>
 
       {restockable.length > 0 ? (
@@ -305,35 +344,75 @@ export function StockBalanceView({
             : "No products in this view. Try another search or clear filters."}
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((row) => (
-            <StockBalanceTile
-              key={row.ubexId}
-              row={row}
-              store2Configured={store2Configured}
-              selected={activeId === row.ubexId}
-              restockStatus={restockState[row.ubexId]?.status ?? "idle"}
-              onSelect={() => toggleExpand(row.ubexId)}
-            />
-          ))}
+        <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
+          <div className="max-h-[65vh] overflow-auto">
+            <table className="w-full min-w-[760px] border-collapse text-left">
+              <thead className="sticky top-0 z-10 bg-canvas text-[10px] font-medium uppercase tracking-wider text-muted">
+                <tr className="border-b border-line">
+                  <th className="w-8 px-3 py-3" />
+                  <th className="px-3 py-3">Product</th>
+                  <th className="px-3 py-3 text-right">Ubex</th>
+                  <th className="px-3 py-3 text-right">{STORE_LABELS[1]} committed</th>
+                  {store2Configured ? (
+                    <th className="px-3 py-3 text-right">{STORE_LABELS[2]} committed</th>
+                  ) : null}
+                  <th className="px-3 py-3 text-right">Available</th>
+                  <th className="px-3 py-3">Status</th>
+                  <th className="w-8 px-3 py-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((row) => (
+                  <StockBalanceTableRow
+                    key={row.ubexId}
+                    row={row}
+                    store2Configured={store2Configured}
+                    selectable={row.restockable}
+                    selected={selected.has(row.ubexId)}
+                    restockStatus={restockState[row.ubexId]?.status ?? "idle"}
+                    onSelect={() => setActiveId(row.ubexId)}
+                    onToggleSelect={() => toggleSelect(row.ubexId)}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
-      {activeId
-        ? (() => {
-            const row = filtered.find((r) => r.ubexId === activeId);
-            if (!row) return null;
-            return (
-              <StockBalanceDetail
-                row={row}
-                store2Configured={store2Configured}
-                selected={selected.has(row.ubexId)}
-                restockStatus={restockState[row.ubexId]?.status ?? "idle"}
-                onToggleSelect={() => toggleSelect(row.ubexId)}
-                onSync={() => setConfirmRows([row])}
-              />
-            );
-          })()
-        : null}
+
+      {activeRow ? (
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 sm:items-center"
+          onClick={() => setActiveId(null)}
+        >
+          <div
+            className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-card border border-line bg-white p-5 shadow-pop"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-1 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setActiveId(null)}
+                className="rounded-card p-1.5 text-muted hover:bg-canvas hover:text-ink"
+                aria-label="Close"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            <StockBalanceDetail
+              row={activeRow}
+              store2Configured={store2Configured}
+              selected={selected.has(activeRow.ubexId)}
+              restockStatus={restockState[activeRow.ubexId]?.status ?? "idle"}
+              onToggleSelect={() => toggleSelect(activeRow.ubexId)}
+              onSync={() => {
+                setConfirmRows([activeRow]);
+                setActiveId(null);
+              }}
+            />
+          </div>
+        </div>
+      ) : null}
 
       {confirmRows ? (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-ink/40 p-4 sm:items-center">
