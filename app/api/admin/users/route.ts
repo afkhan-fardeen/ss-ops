@@ -12,6 +12,7 @@ const ALLOWED_MODULE_IDS = new Set([
   "subscriptions",
   "zohoBooks",
   "salesReport",
+  "stockAlerts",
 ]);
 
 /**

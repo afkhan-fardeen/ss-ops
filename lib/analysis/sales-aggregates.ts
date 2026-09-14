@@ -105,6 +105,31 @@ export async function getTopSellingProducts(
     .slice(0, limit);
 }
 
+/**
+ * Units sold per barcode (falling back to SKU when barcode is blank), summed
+ * across both stores, in one bulk query — for scanning an entire catalog's
+ * sales velocity without an N+1 query per product.
+ */
+export async function getUnitsSoldMap(window: SalesWindow): Promise<Map<string, number>> {
+  const supabase = getSupabaseService();
+  const map = new Map<string, number>();
+  if (!supabase) return map;
+
+  let query = supabase.from("order_line_items").select("barcode, sku, quantity");
+  const start = windowStartIso(window);
+  if (start) query = query.gte("order_created_at", start);
+
+  const { data, error } = await query;
+  if (error || !data) return map;
+
+  for (const row of data) {
+    const key = row.barcode?.trim() || row.sku?.trim();
+    if (!key) continue;
+    map.set(key, (map.get(key) ?? 0) + (row.quantity ?? 0));
+  }
+  return map;
+}
+
 export async function getTotalUnitsSold(
   window: SalesWindow,
   storeId?: 1 | 2,

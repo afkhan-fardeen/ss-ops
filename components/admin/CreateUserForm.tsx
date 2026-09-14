@@ -14,6 +14,7 @@ const SELECTABLE_MODULES: { id: string; label: string }[] = [
   { id: "subscriptions", label: "Subscriptions" },
   { id: "zohoBooks", label: "Zoho Books" },
   { id: "salesReport", label: "Sales Report" },
+  { id: "stockAlerts", label: "Stock Alerts" },
 ];
 
 type SubmitState = "idle" | "saving" | "saved" | "error";

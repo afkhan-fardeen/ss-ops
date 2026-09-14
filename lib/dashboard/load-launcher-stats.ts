@@ -9,6 +9,7 @@ export type LauncherStats = {
   stock: LauncherStat;
   stockAnalysis: LauncherStat;
   subscriptions: LauncherStat;
+  stockAlerts: LauncherStat;
 };
 
 const EMPTY_STATS: LauncherStats = {
@@ -17,6 +18,7 @@ const EMPTY_STATS: LauncherStats = {
   stock: null,
   stockAnalysis: null,
   subscriptions: null,
+  stockAlerts: null,
 };
 
 function relativeToNow(iso: string): string {
@@ -42,7 +44,7 @@ export async function loadLauncherStats(): Promise<LauncherStats> {
 
   const window = getCollectionWindow();
 
-  const [codRes, fulfillmentRes, stockRes, subsRes] = await Promise.allSettled([
+  const [codRes, fulfillmentRes, stockRes, subsRes, alertsRes] = await Promise.allSettled([
     supabase
       .from("shopify_orders_cache")
       .select("*", { count: "exact", head: true })
@@ -63,6 +65,12 @@ export async function loadLauncherStats(): Promise<LauncherStats> {
       .from("subscription_requests")
       .select("*", { count: "exact", head: true })
       .eq("status", "pending"),
+    supabase
+      .from("stock_alert_snapshots")
+      .select("critical_count, warning_count, captured_at")
+      .order("captured_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   const cod =
@@ -100,5 +108,21 @@ export async function loadLauncherStats(): Promise<LauncherStats> {
       ? { value: String(subsRes.value.count), label: "pending" }
       : null;
 
-  return { cod, fulfillment, stock, stockAnalysis, subscriptions };
+  const alertSnapshot =
+    alertsRes.status === "fulfilled" && !alertsRes.value.error
+      ? (alertsRes.value.data as {
+          critical_count: number;
+          warning_count: number;
+          captured_at: string;
+        } | null)
+      : null;
+
+  const stockAlerts = alertSnapshot
+    ? {
+        value: String(alertSnapshot.critical_count),
+        label: `critical · ${relativeToNow(alertSnapshot.captured_at)}`,
+      }
+    : null;
+
+  return { cod, fulfillment, stock, stockAnalysis, subscriptions, stockAlerts };
 }

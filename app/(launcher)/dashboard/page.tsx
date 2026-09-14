@@ -51,6 +51,11 @@ const MODULE_META: Record<string, { description: string; href: string; domain: D
     href: "/ubex-inventory",
     domain: "inventory",
   },
+  stockAlerts: {
+    description: "Products at risk of running out, based on sales pace.",
+    href: "/stock-alerts",
+    domain: "inventory",
+  },
   subscriptions: {
     description: "Review employee subscription requests and track active subscriptions.",
     href: "/subscriptions?status=pending",
@@ -87,6 +92,7 @@ export default async function LauncherPage() {
     stock: stats.stock,
     stockAnalysis: stats.stockAnalysis,
     subscriptions: stats.subscriptions,
+    stockAlerts: stats.stockAlerts,
   };
 
   const domainCards: Record<Domain, LauncherModuleData[]> = {
