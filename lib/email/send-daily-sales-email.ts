@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { getSupabaseService } from "@/lib/supabase/service";
 import type { DailySalesReport } from "@/lib/sales/daily-sales-report";
+import { buildSalesReportWorkbook, salesReportFilename } from "@/lib/sales/build-sales-report-workbook";
 
 const RECIPIENTS_KEY = "sales_report_emails";
 
@@ -97,11 +98,20 @@ export async function sendDailySalesEmail(
   const subject = `Daily sales report — ${report.day.label}`;
   const reportUrl = `${portalBaseUrl}/sales-report?day=${report.day.dateKey}`;
   try {
+    const workbook = await buildSalesReportWorkbook(report);
+    const attachmentBuffer = (await workbook.xlsx.writeBuffer()) as ArrayBuffer;
     await transporter.sendMail({
       from: `Seissense Ops <${process.env.GMAIL_USER}>`,
       to: recipients.join(", "),
       subject,
       html: htmlWrap(subject, buildContent(report, reportUrl)),
+      attachments: [
+        {
+          filename: salesReportFilename(report.day.dateKey),
+          content: Buffer.from(attachmentBuffer),
+          contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        },
+      ],
     });
     return { ok: true, sent: true, recipients: recipients.length };
   } catch (e) {
