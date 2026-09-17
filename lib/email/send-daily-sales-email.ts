@@ -41,28 +41,33 @@ function htmlWrap(title: string, content: string): string {
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body { margin:0; padding:0; background:#F7F7F7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; }
-  .wrapper { max-width:560px; margin:32px auto; background:#fff; border-radius:12px; overflow:hidden; border:1px solid #EBEBEB; }
-  .header { padding:28px 32px 20px; border-bottom:1px solid #EBEBEB; }
-  .header h1 { margin:0; font-size:18px; font-weight:700; color:#111; }
-  .header p  { margin:6px 0 0; font-size:13px; color:#777; }
-  .body { padding:24px 32px; }
-  .store { margin-bottom:20px; }
-  .store:last-child { margin-bottom:0; }
-  .store h2 { margin:0 0 10px; font-size:14px; font-weight:600; color:#111; }
-  table { width:100%; border-collapse:collapse; font-size:13px; }
-  td { padding:8px 0; border-bottom:1px solid #F2F2F2; color:#333; }
-  td:last-child { text-align:right; font-weight:600; color:#111; }
-  tr:last-child td { border-bottom:none; }
-  .cta { display:block; margin:0 0 22px; padding:12px 16px; background:#111; color:#fff !important; text-decoration:none; text-align:center; border-radius:8px; font-size:13px; font-weight:600; }
-  .footer { padding:16px 32px; border-top:1px solid #EBEBEB; font-size:11px; color:#aaa; }
+  body { margin:0; padding:0; background:#EEF1F6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; }
+  .wrapper { max-width:580px; margin:32px auto; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 1px 3px rgba(17,17,17,0.06); }
+  .header { padding:30px 32px; background:linear-gradient(135deg,#1E3A5F 0%,#2E5C8A 100%); }
+  .header p.eyebrow { margin:0; font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; color:#9FC1E5; }
+  .header h1 { margin:6px 0 0; font-size:20px; font-weight:700; color:#fff; }
+  .body { padding:28px 32px 8px; }
+  .note { margin:0 0 20px; padding:10px 14px; background:#F5F7FA; border-left:3px solid #C9D3E0; border-radius:6px; font-size:12px; color:#667; line-height:1.5; }
+  .cta { display:block; margin:0 0 24px; padding:13px 16px; background:#1E3A5F; color:#fff !important; text-decoration:none; text-align:center; border-radius:10px; font-size:13px; font-weight:600; }
+  .store { margin-bottom:22px; border:1px solid #ECEFF3; border-radius:12px; overflow:hidden; }
+  .store:last-child { margin-bottom:8px; }
+  .store h2 { margin:0; padding:12px 16px; font-size:13px; font-weight:700; color:#111; background:#F7F9FC; border-bottom:1px solid #ECEFF3; }
+  .stats { width:100%; border-collapse:collapse; }
+  .stats td { width:50%; padding:14px 16px; vertical-align:top; }
+  .stats .label { display:block; margin:0 0 4px; font-size:10px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; color:#95A0AD; }
+  .stats .value { display:block; font-size:17px; font-weight:700; color:#111; }
+  .stats .value.accent { color:#1E3A5F; }
+  .footer { padding:18px 32px 26px; font-size:11px; color:#aaa; text-align:center; }
 </style>
 </head>
 <body>
 <div class="wrapper">
-  <div class="header"><h1>${title}</h1><p>Seissense Ops Bot</p></div>
+  <div class="header">
+    <p class="eyebrow">Seissense Ops</p>
+    <h1>${title}</h1>
+  </div>
   <div class="body">${content}</div>
-  <div class="footer">Seissense Ops Bot · ${new Date().toLocaleString("en-GB", { timeZone: "Asia/Bahrain" })} (Bahrain)</div>
+  <div class="footer">Automated by Seissense Ops Bot · ${new Date().toLocaleString("en-GB", { timeZone: "Asia/Bahrain" })} (Bahrain)</div>
 </div>
 </body></html>`;
 }
@@ -73,16 +78,22 @@ function buildContent(report: DailySalesReport, reportUrl: string): string {
       (s) => `
       <div class="store">
         <h2>${s.store}</h2>
-        <table>
-          <tr><td>Orders</td><td>${s.orderCount}</td></tr>
-          <tr><td>Units sold</td><td>${s.unitsSold}</td></tr>
-          <tr><td>Total sales</td><td>${formatMoney(s.totalSales, s.currency)}</td></tr>
-          <tr><td>Discounts given</td><td>${formatMoney(s.totalDiscounts, s.currency)}</td></tr>
+        <table class="stats">
+          <tr>
+            <td><span class="label">Orders</span><span class="value">${s.orderCount}</span></td>
+            <td><span class="label">Units sold</span><span class="value">${s.unitsSold}</span></td>
+          </tr>
+          <tr>
+            <td><span class="label">Total sales</span><span class="value accent">${formatMoney(s.totalSales, s.currency)}</span></td>
+            <td><span class="label">Discounts given</span><span class="value">${formatMoney(s.totalDiscounts, s.currency)}</span></td>
+          </tr>
         </table>
       </div>`,
     )
     .join("");
-  return `<a class="cta" href="${reportUrl}">View full report — order list, top products, history</a>${stores}`;
+  return `<a class="cta" href="${reportUrl}">View full report — order list, top products, history</a>
+    <div class="note">Staff-created orders (completed from a draft order) are excluded from these totals.</div>
+    ${stores}`;
 }
 
 export async function sendDailySalesEmail(

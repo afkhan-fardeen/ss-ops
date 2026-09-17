@@ -180,6 +180,9 @@ export default async function SalesReportPage({
           <p className="mt-0.5 text-[13px] text-muted">
             Daily order counts, breakdown, and sales history for both stores.
           </p>
+          <p className="mt-0.5 text-[12px] text-muted">
+            Staff-created orders (completed from a draft order) are excluded from these figures.
+          </p>
         </div>
       </header>
 
