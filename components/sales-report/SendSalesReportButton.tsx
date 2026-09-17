@@ -18,7 +18,7 @@ export function SendSalesReportButton({ dayKey }: { dayKey: string }) {
       };
       if (!res.ok || !data.ok) throw new Error(data.error ?? data.email?.error ?? "Failed to send");
       if (!data.email?.sent) {
-        toast.info("No recipients configured — add one below to receive this report.");
+        toast.info("No recipients configured — add one in Sales Report settings.");
       } else {
         toast.success(`Sent to ${data.email.recipients} recipient${data.email.recipients === 1 ? "" : "s"}`);
       }

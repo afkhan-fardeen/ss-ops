@@ -35,6 +35,8 @@ export type ShopifyOrder = {
   currency: string;
   cancelled_at?: string | null;
   financial_status?: string | null;
+  /** e.g. "web", "pos", "shopify_draft_order" (staff-created via a draft order), "api". */
+  source_name?: string | null;
   gateway?: string | null;
   payment_gateway_names?: string[];
   fulfillment_status?: string | null;

@@ -20,7 +20,7 @@ function getEnv(): ShopifyEnv {
 }
 
 const FIELDS =
-  "id,name,order_number,customer,shipping_address,total_price,total_discounts,currency,cancelled_at,financial_status,fulfillment_status,gateway,payment_gateway_names,created_at,line_items";
+  "id,name,order_number,customer,shipping_address,total_price,total_discounts,currency,cancelled_at,financial_status,fulfillment_status,gateway,payment_gateway_names,created_at,line_items,source_name";
 
 export type OrdersFilter = {
   createdAtMinIso: string;

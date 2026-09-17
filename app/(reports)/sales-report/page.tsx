@@ -14,6 +14,7 @@ import {
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
 import { OrdersProductsPanel } from "@/components/sales-report/OrdersProductsPanel";
+import { SendSalesReportButton } from "@/components/sales-report/SendSalesReportButton";
 
 export const dynamic = "force-dynamic";
 
@@ -207,13 +208,16 @@ export default async function SalesReportPage({
               </span>
             )}
           </div>
-          <a
-            href={`/api/sales-report/download?day=${day.dateKey}`}
-            className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-[12px] font-medium text-white shadow-soft transition hover:bg-ink/90"
-          >
-            <Download size={13} />
-            Download Excel
-          </a>
+          <div className="flex items-center gap-2">
+            {hasFullAccess ? <SendSalesReportButton dayKey={day.dateKey} /> : null}
+            <a
+              href={`/api/sales-report/download?day=${day.dateKey}`}
+              className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-[12px] font-medium text-white shadow-soft transition hover:bg-ink/90"
+            >
+              <Download size={13} />
+              Download Excel
+            </a>
+          </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           {report.stores.map((s) =>

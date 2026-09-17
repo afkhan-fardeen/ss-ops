@@ -42,8 +42,13 @@ function lineItemLabel(li: { title: string; variant_title?: string | null }): st
   return li.variant_title ? `${li.title} - ${li.variant_title}` : li.title;
 }
 
+/** Staff-created orders (completed from a draft order in Shopify admin) — excluded from sales figures. */
+function isStaffDraftOrder(o: ShopifyOrder): boolean {
+  return o.source_name === "shopify_draft_order";
+}
+
 function summarize(store: string, currency: string, orders: ShopifyOrder[]): StoreSalesSummary {
-  const active = orders.filter((o) => !o.cancelled_at);
+  const active = orders.filter((o) => !o.cancelled_at && !isStaffDraftOrder(o));
 
   const products = new Map<string, TopProduct>();
   let unitsSold = 0;
@@ -139,7 +144,7 @@ export async function loadSalesHistory(days = 14): Promise<SalesHistoryDay[]> {
   const bucket = (orders: ShopifyOrder[]): Map<string, Bucket> => {
     const m = new Map<string, Bucket>();
     for (const o of orders) {
-      if (o.cancelled_at) continue;
+      if (o.cancelled_at || isStaffDraftOrder(o)) continue;
       const key = bahrainDateKeyForInstant(o.created_at ?? new Date().toISOString());
       const b = m.get(key) ?? { orderCount: 0, totalSales: 0 };
       b.orderCount += 1;
