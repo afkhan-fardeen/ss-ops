@@ -1,10 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Download, Loader2, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
 import { useUrlViewState } from "@/hooks/useUrlViewState";
 import type { UbexPoolProduct } from "@/lib/ubex/group-balance-rows-by-name";
 import { UbexProductDetail, UbexProductTile } from "./UbexProductCard";
+import { UbexInventoryExportButton } from "./UbexInventoryExportButton";
 
 type SearchResponse = {
   ok: boolean;
@@ -102,13 +103,7 @@ export function UbexInventoryView() {
           {products.length} product{products.length === 1 ? "" : "s"} · {variantCount} variant
           {variantCount === 1 ? "" : "s"} on this page
         </p>
-        <a
-          href="/api/ubex-inventory/download"
-          className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-[12px] font-medium text-white shadow-soft transition hover:bg-ink/90"
-        >
-          <Download size={13} />
-          Export full inventory (.xlsx)
-        </a>
+        <UbexInventoryExportButton />
       </div>
 
       <div className="relative">

@@ -153,14 +153,17 @@ export function stockBalanceMaxItems(): number | null {
   return n;
 }
 
-/** Fetch Ubex inventory; paginates all pages when maxItems is null. Throttled to avoid 429. */
+/** Fetch Ubex inventory; paginates all pages when maxItems is null. Throttled to avoid 429.
+ *  `onPage`, if given, fires after each page lands with the running item/page counts. */
 export async function fetchUbexInventoryAll(
   maxItems: number | null = stockBalanceMaxItems(),
+  onPage?: (fetchedItems: number, pagesFetched: number) => void,
 ): Promise<UbexInventoryItem[]> {
   const out: UbexInventoryItem[] = [];
   const parallel = inventoryPageParallel();
   const delayMs = inventoryPageDelayMs();
   let startPage = 1;
+  let pagesFetched = 0;
 
   while (maxItems === null || out.length < maxItems) {
     const pageNumbers = Array.from({ length: parallel }, (_, i) => startPage + i);
@@ -180,6 +183,8 @@ export async function fetchUbexInventoryAll(
         break;
       }
       out.push(...batch);
+      pagesFetched += 1;
+      onPage?.(out.length, pagesFetched);
       if (batch.length < PAGE_SIZE) {
         stop = true;
         break;
