@@ -4,10 +4,22 @@ import { useRef, useState } from "react";
 import { Download, X } from "lucide-react";
 import { toast } from "sonner";
 
-type ProgressState = { fetched: number; percent: number | null; etaMs: number | null };
+type ProgressState = {
+  phase: "fetching" | "matching";
+  fetched: number;
+  percent: number | null;
+  etaMs: number | null;
+};
 
 type SseEvent =
-  | { type: "progress"; fetched: number; elapsedMs: number; percent: number | null; etaMs: number | null }
+  | {
+      type: "progress";
+      phase: "fetching" | "matching";
+      fetched: number;
+      elapsedMs: number;
+      percent: number | null;
+      etaMs: number | null;
+    }
   | { type: "done"; filename: string; totalItems: number; base64: string }
   | { type: "error"; error: string };
 
@@ -41,7 +53,7 @@ export function UbexInventoryExportButton() {
   const abortRef = useRef<AbortController | null>(null);
 
   async function startExport() {
-    setProgress({ fetched: 0, percent: null, etaMs: null });
+    setProgress({ phase: "fetching", fetched: 0, percent: null, etaMs: null });
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -69,7 +81,12 @@ export function UbexInventoryExportButton() {
           if (!line.startsWith("data:")) continue;
           const event = JSON.parse(line.slice(5).trim()) as SseEvent;
           if (event.type === "progress") {
-            setProgress({ fetched: event.fetched, percent: event.percent, etaMs: event.etaMs });
+            setProgress({
+              phase: event.phase,
+              fetched: event.fetched,
+              percent: event.percent,
+              etaMs: event.etaMs,
+            });
           } else if (event.type === "done") {
             triggerDownload(event.base64, event.filename);
             toast.success(`Exported ${event.totalItems} item${event.totalItems === 1 ? "" : "s"}`);
@@ -94,7 +111,9 @@ export function UbexInventoryExportButton() {
       <div className="flex min-w-[240px] flex-col gap-1.5 rounded-lg border border-line bg-white px-3 py-2">
         <div className="flex items-center justify-between gap-2 text-[12px]">
           <span className="font-medium text-ink">
-            Exporting… {progress.fetched} item{progress.fetched === 1 ? "" : "s"}
+            {progress.phase === "matching"
+              ? "Matching with stores…"
+              : `Exporting… ${progress.fetched} item${progress.fetched === 1 ? "" : "s"}`}
           </span>
           <button
             type="button"

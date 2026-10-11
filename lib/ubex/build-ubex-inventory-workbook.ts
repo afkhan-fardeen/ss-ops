@@ -1,5 +1,6 @@
 import ExcelJS from "exceljs";
-import type { UbexInventoryItem } from "@/lib/ubex/inventory";
+import type { StockBalanceRow } from "@/lib/stock/build-balance-rows";
+import { STORE_LABELS } from "@/lib/stores/labels";
 
 const HEADER_BG = "FF1E3A5F"; // dark navy
 const HEADER_FG = "FFFFFFFF"; // white
@@ -16,10 +17,11 @@ function applyThinBorder(cell: ExcelJS.Cell) {
   };
 }
 
-const HEADERS = ["Product", "SKU", "Barcode", "Size", "Color", "Ubex Stock"];
-
 /** Builds a single-sheet, filterable Excel export of the full Ubex catalog's quantities. */
-export async function buildUbexInventoryWorkbook(items: UbexInventoryItem[]): Promise<ExcelJS.Workbook> {
+export async function buildUbexInventoryWorkbook(
+  rows: StockBalanceRow[],
+  store2Configured: boolean,
+): Promise<ExcelJS.Workbook> {
   const wb = new ExcelJS.Workbook();
   wb.creator = "Seissense Ops";
   wb.created = new Date();
@@ -28,11 +30,22 @@ export async function buildUbexInventoryWorkbook(items: UbexInventoryItem[]): Pr
     views: [{ state: "frozen", ySplit: 1 }],
   });
 
-  ws.columns = HEADERS.map((h) => ({ width: h === "Product" ? 36 : 18 }));
+  const headers = [
+    "Product",
+    "SKU",
+    "Barcode",
+    "Size",
+    "Color",
+    "Ubex Stock",
+    `${STORE_LABELS[1]} — Committed`,
+    ...(store2Configured ? [`${STORE_LABELS[2]} — Committed`] : []),
+  ];
+
+  ws.columns = headers.map((h) => ({ width: h === "Product" ? 36 : 18 }));
 
   const headerRow = ws.getRow(1);
   headerRow.height = 22;
-  HEADERS.forEach((h, i) => {
+  headers.forEach((h, i) => {
     const cell = headerRow.getCell(i + 1);
     cell.value = h;
     cell.font = { bold: true, name: "Calibri", size: 11, color: { argb: HEADER_FG } };
@@ -40,10 +53,20 @@ export async function buildUbexInventoryWorkbook(items: UbexInventoryItem[]): Pr
     cell.alignment = { vertical: "middle", horizontal: i < 5 ? "left" : "right" };
     applyThinBorder(cell);
   });
-  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: HEADERS.length } };
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: headers.length } };
 
-  items.forEach((item, i) => {
-    const row = ws.addRow([item.name, item.sku, item.barcode, item.size ?? "", item.color ?? "", item.stock]);
+  rows.forEach((r, i) => {
+    const values = [
+      r.productName,
+      r.sku,
+      r.barcode,
+      r.size ?? "",
+      r.color ?? "",
+      r.ubexStock,
+      r.storeA.committed ?? "",
+      ...(store2Configured ? [r.storeB?.committed ?? ""] : []),
+    ];
+    const row = ws.addRow(values);
     const isAlt = i % 2 === 1;
     row.eachCell({ includeEmpty: true }, (cell, col) => {
       cell.font = { name: "Calibri", size: 10 };

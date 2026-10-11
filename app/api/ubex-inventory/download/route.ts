@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { PortalAuthError } from "@/lib/auth/require-portal-admin";
 import { requireModuleAccess } from "@/lib/auth/can-access-module";
-import { fetchUbexInventoryAll } from "@/lib/ubex/inventory";
+import { loadStockBalanceCatalog } from "@/lib/stock/load-stock-balance-preview";
 import { buildUbexInventoryWorkbook, ubexInventoryFilename } from "@/lib/ubex/build-ubex-inventory-workbook";
 
 export const dynamic = "force-dynamic";
@@ -19,8 +19,8 @@ export async function GET(_req: NextRequest) {
   }
 
   try {
-    const items = await fetchUbexInventoryAll();
-    const wb = await buildUbexInventoryWorkbook(items);
+    const catalog = await loadStockBalanceCatalog();
+    const wb = await buildUbexInventoryWorkbook(catalog.rows, catalog.store2Configured);
     const buf = (await wb.xlsx.writeBuffer()) as ArrayBuffer;
 
     return new NextResponse(buf, {
