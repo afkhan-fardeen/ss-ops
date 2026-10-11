@@ -84,6 +84,7 @@ export type ShopifyLocation = {
 export type ShopifyVariantInventory = {
   variantId: string;
   barcode: string;
+  sku: string;
   displayName: string;
   inventoryItemId: string;
   onHand: number;
@@ -156,6 +157,7 @@ query VariantInventoryByBarcode($query: String!, $locationId: ID!) {
     nodes {
       id
       barcode
+      sku
       displayName
       inventoryItem {
         id
@@ -176,6 +178,7 @@ type VariantQueryData = {
     nodes: Array<{
       id: string;
       barcode: string | null;
+      sku: string | null;
       displayName: string;
       inventoryItem: {
         id: string;
@@ -221,6 +224,7 @@ export async function fetchShopifyVariantsByBarcode(
     out.push({
       variantId: node.id,
       barcode: bc,
+      sku: node.sku ?? "",
       displayName: node.displayName,
       inventoryItemId: item.id,
       ...q,
@@ -271,6 +275,7 @@ query AllVariantsInventory($locationId: ID!, $cursor: String) {
     nodes {
       id
       barcode
+      sku
       displayName
       inventoryItem {
         id
@@ -292,6 +297,7 @@ type AllVariantsQueryData = {
     nodes: Array<{
       id: string;
       barcode: string | null;
+      sku: string | null;
       displayName: string;
       inventoryItem: {
         id: string;
@@ -316,6 +322,7 @@ function nodeToVariant(
   return {
     variantId: node.id,
     barcode: bc,
+    sku: node.sku ?? "",
     displayName: node.displayName,
     inventoryItemId: item.id,
     ...q,

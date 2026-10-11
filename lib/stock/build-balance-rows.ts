@@ -16,6 +16,8 @@ export type StoreInventorySide = {
   variantId: string | null;
   inventoryItemId: string | null;
   variantLabel: string | null;
+  /** The real Shopify SKU for the matched variant — more trustworthy than Ubex's own `sku` field. */
+  sku: string | null;
 };
 
 export type MatchingVariant = { store: "A" | "B"; label: string };
@@ -58,6 +60,7 @@ function emptySide(): StoreInventorySide {
     variantId: null,
     inventoryItemId: null,
     variantLabel: null,
+    sku: null,
   };
 }
 
@@ -96,6 +99,7 @@ function sideFromVariants(
       variantId: v.variantId,
       inventoryItemId: v.inventoryItemId,
       variantLabel: v.displayName,
+      sku: v.sku || null,
     },
     ambiguous: false,
     unlinked: false,

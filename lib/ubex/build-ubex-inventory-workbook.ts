@@ -56,9 +56,12 @@ export async function buildUbexInventoryWorkbook(
   ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: headers.length } };
 
   rows.forEach((r, i) => {
+    // Ubex's own `sku` field is frequently stale (seen holding an old Shopify variant id
+    // rather than the real SKU) — prefer the live Shopify SKU matched by barcode when we have one.
+    const sku = r.storeA.sku || r.storeB?.sku || r.sku;
     const values = [
       r.productName,
-      r.sku,
+      sku,
       r.barcode,
       r.size ?? "",
       r.color ?? "",
