@@ -1,19 +1,10 @@
 import ExcelJS from "exceljs";
-import type { StockBalanceRow } from "@/lib/stock/build-balance-rows";
-import { STORE_LABELS } from "@/lib/stores/labels";
+import type { UbexInventoryItem } from "@/lib/ubex/inventory";
 
 const HEADER_BG = "FF1E3A5F"; // dark navy
 const HEADER_FG = "FFFFFFFF"; // white
 const ALT_ROW_BG = "FFF0F4FA"; // very light blue
 const BORDER_CLR = "FFD0D8E4"; // soft slate
-
-const STATUS_LABELS: Record<StockBalanceRow["status"], string> = {
-  matched: "Matched",
-  unlinked: "Unlinked",
-  ambiguous: "Ambiguous",
-  skipped: "Skipped",
-  "store-b-not-listed": `Not on ${STORE_LABELS[2]}`,
-};
 
 function applyThinBorder(cell: ExcelJS.Cell) {
   const side: ExcelJS.BorderStyle = "thin";
@@ -25,11 +16,10 @@ function applyThinBorder(cell: ExcelJS.Cell) {
   };
 }
 
-/** Builds a single-sheet, filterable Excel export of the full Ubex↔Shopify stock balance catalog. */
-export async function buildUbexInventoryWorkbook(
-  rows: StockBalanceRow[],
-  store2Configured: boolean,
-): Promise<ExcelJS.Workbook> {
+const HEADERS = ["Product", "SKU", "Barcode", "Size", "Color", "Ubex Stock"];
+
+/** Builds a single-sheet, filterable Excel export of the full Ubex catalog's quantities. */
+export async function buildUbexInventoryWorkbook(items: UbexInventoryItem[]): Promise<ExcelJS.Workbook> {
   const wb = new ExcelJS.Workbook();
   wb.creator = "Seissense Ops";
   wb.created = new Date();
@@ -38,35 +28,11 @@ export async function buildUbexInventoryWorkbook(
     views: [{ state: "frozen", ySplit: 1 }],
   });
 
-  const headers = [
-    "Product",
-    "SKU",
-    "Barcode",
-    "Size",
-    "Color",
-    "Ubex Stock",
-    `${STORE_LABELS[1]} — On Hand`,
-    `${STORE_LABELS[1]} — Available`,
-    `${STORE_LABELS[1]} — Committed`,
-    ...(store2Configured
-      ? [
-          `${STORE_LABELS[2]} — On Hand`,
-          `${STORE_LABELS[2]} — Available`,
-          `${STORE_LABELS[2]} — Committed`,
-        ]
-      : []),
-    "Shared Available",
-    "Status",
-    "Mismatch",
-  ];
-
-  ws.columns = headers.map((h, i) => ({
-    width: i === 0 ? 36 : h === "SKU" || h === "Barcode" ? 18 : 16,
-  }));
+  ws.columns = HEADERS.map((h) => ({ width: h === "Product" ? 36 : 18 }));
 
   const headerRow = ws.getRow(1);
   headerRow.height = 22;
-  headers.forEach((h, i) => {
+  HEADERS.forEach((h, i) => {
     const cell = headerRow.getCell(i + 1);
     cell.value = h;
     cell.font = { bold: true, name: "Calibri", size: 11, color: { argb: HEADER_FG } };
@@ -74,27 +40,10 @@ export async function buildUbexInventoryWorkbook(
     cell.alignment = { vertical: "middle", horizontal: i < 5 ? "left" : "right" };
     applyThinBorder(cell);
   });
-  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: headers.length } };
+  ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: HEADERS.length } };
 
-  rows.forEach((r, i) => {
-    const values = [
-      r.productName,
-      r.sku,
-      r.barcode,
-      r.size ?? "",
-      r.color ?? "",
-      r.ubexStock,
-      r.storeA.onHand ?? "",
-      r.storeA.available ?? "",
-      r.storeA.committed ?? "",
-      ...(store2Configured
-        ? [r.storeB?.onHand ?? "", r.storeB?.available ?? "", r.storeB?.committed ?? ""]
-        : []),
-      r.sharedAvailable ?? "",
-      STATUS_LABELS[r.status],
-      r.mismatch ? "Yes" : "No",
-    ];
-    const row = ws.addRow(values);
+  items.forEach((item, i) => {
+    const row = ws.addRow([item.name, item.sku, item.barcode, item.size ?? "", item.color ?? "", item.stock]);
     const isAlt = i % 2 === 1;
     row.eachCell({ includeEmpty: true }, (cell, col) => {
       cell.font = { name: "Calibri", size: 10 };
