@@ -20,8 +20,8 @@ export default async function StockBalanceErrorsPage() {
             <AlertTriangle size={20} />
           </div>
           <div>
-            <h1 className="hidden text-xl font-medium text-ink md:block">Stock balance errors</h1>
-            <p className="text-fs13 text-muted md:mt-0.5">
+            <h1 className="hidden text-title font-medium text-ink md:block">Stock balance errors</h1>
+            <p className="text-body text-muted md:mt-0.5">
               What is currently broken or unsynced — data-quality issues and unresolved sync
               failures.
             </p>

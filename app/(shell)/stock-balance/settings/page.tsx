@@ -35,9 +35,9 @@ export default async function StockBalanceSettingsPage() {
       />
 
       <SettingsSection title="Stores" description="Both stores draw from the same Ubex warehouse pool.">
-        <SettingRow label={`Store A · ${STORE_LABELS[1]}`} value={env("SHOPIFY_STORE_DOMAIN") ?? "Not set"} state={env("SHOPIFY_STORE_DOMAIN") ? "ok" : "warn"} stateLabel={env("SHOPIFY_STORE_DOMAIN") ? "Connected" : "Missing"} />
-        <SettingRow label={`Store B · ${STORE_LABELS[2]}`} value={env("SHOPIFY_STORE2_DOMAIN") ?? "Not set"} state={isStore2Configured() ? "ok" : "off"} stateLabel={isStore2Configured() ? "Connected" : "Disabled"} />
-        <SettingRow label="Store A location" hint="Inventory location that gets updated." value={env("SHOPIFY_LOCATION_ID") ?? "Auto-detect"} state={env("SHOPIFY_LOCATION_ID") ? "ok" : "default"} stateLabel={env("SHOPIFY_LOCATION_ID") ? "Override" : "Default"} />
+        <SettingRow label={`Store A · ${STORE_LABELS[1]}`} value={env("SHOPIFY_STORE_DOMAIN") ?? "Not set"} mono state={env("SHOPIFY_STORE_DOMAIN") ? "ok" : "warn"} stateLabel={env("SHOPIFY_STORE_DOMAIN") ? "Connected" : "Missing"} />
+        <SettingRow label={`Store B · ${STORE_LABELS[2]}`} value={env("SHOPIFY_STORE2_DOMAIN") ?? "Not set"} mono state={isStore2Configured() ? "ok" : "off"} stateLabel={isStore2Configured() ? "Connected" : "Disabled"} />
+        <SettingRow label="Store A location" hint="Inventory location that gets updated." value={env("SHOPIFY_LOCATION_ID") ?? "Auto-detect"} mono state={env("SHOPIFY_LOCATION_ID") ? "ok" : "default"} stateLabel={env("SHOPIFY_LOCATION_ID") ? "Override" : "Default"} />
       </SettingsSection>
 
       <SettingsSection title="Ubex loading" description="Keeps the portal under Ubex's rate limits.">

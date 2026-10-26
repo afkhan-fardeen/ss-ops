@@ -108,8 +108,8 @@ export function UbexInventoryExportButton() {
   if (progress) {
     const pct = progress.percent ?? 12;
     return (
-      <div className="flex min-w-[240px] flex-col gap-1.5 rounded-lg border border-line bg-white px-3 py-2">
-        <div className="flex items-center justify-between gap-2 text-fs12">
+      <div className="flex min-w-[240px] flex-col gap-2 rounded-control border border-line bg-white px-3 py-2">
+        <div className="flex items-center justify-between gap-2 text-body-sm">
           <span className="font-medium text-ink">
             {progress.phase === "matching"
               ? "Matching with stores…"
@@ -124,13 +124,13 @@ export function UbexInventoryExportButton() {
             <X size={13} />
           </button>
         </div>
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-canvas">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-canvas">
           <div
             className={`h-full bg-ink transition-all ${progress.percent === null ? "animate-pulse" : ""}`}
             style={{ width: `${pct}%` }}
           />
         </div>
-        <span className="text-fs11 text-muted">
+        <span className="text-caption text-muted">
           {progress.percent !== null ? `${progress.percent}% · ` : ""}
           {formatEta(progress.etaMs)}
         </span>
@@ -142,7 +142,7 @@ export function UbexInventoryExportButton() {
     <button
       type="button"
       onClick={() => void startExport()}
-      className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-fs12 font-medium text-white shadow-soft transition hover:bg-ink/90"
+      className="focus-ring inline-flex items-center gap-2 rounded-control bg-ink px-3 py-2 text-body-sm font-medium text-white shadow-soft transition hover:bg-ink/90"
     >
       <Download size={13} />
       Export full inventory (.xlsx)

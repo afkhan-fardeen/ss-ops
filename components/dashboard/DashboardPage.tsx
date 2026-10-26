@@ -37,18 +37,18 @@ export function DashboardHeader({
   return (
     <>
     {/* Phones: the top app bar already shows the page title, so only the description is kept. */}
-    {description ? <p className="text-fs13 text-muted md:hidden">{description}</p> : null}
+    {description ? <p className="text-body text-muted md:hidden">{description}</p> : null}
     <header
       className={`animate-fade-up hidden rounded-card border border-line border-l-4 bg-white p-5 shadow-soft md:block ${border}`}
     >
       {moduleLabel ? (
-        <p className="text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+        <p className="text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
           {moduleLabel}
         </p>
       ) : null}
-      <h1 className="mt-0.5 font-sans text-xl font-medium text-ink">{title}</h1>
+      <h1 className="mt-0.5 font-sans text-title font-medium text-ink">{title}</h1>
       {description ? (
-        <p className="mt-2 text-fs13 text-muted">{description}</p>
+        <p className="mt-2 text-body text-muted">{description}</p>
       ) : null}
     </header>
     </>

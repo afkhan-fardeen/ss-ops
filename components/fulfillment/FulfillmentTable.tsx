@@ -29,7 +29,7 @@ function PushButton({ row, state, onPush }: { row: OrderRow; state: RowState | u
 
   if (status === "fulfilled") {
     return (
-      <span className="inline-flex items-center gap-1.5 text-fs12 font-medium text-[#16A34A]">
+      <span className="inline-flex items-center gap-2 text-body-sm font-medium text-success">
         <Check size={13} strokeWidth={2.4} />
         Fulfilled
       </span>
@@ -45,11 +45,11 @@ function PushButton({ row, state, onPush }: { row: OrderRow; state: RowState | u
       disabled={disabled}
       title={!row.ubexId ? "No Ubex tracking id yet" : status === "error" ? state?.message : "Push fulfillment to Shopify"}
       className={[
-        "focus-ring inline-flex h-11 items-center justify-center gap-1.5 rounded-card border px-3 text-fs13 font-medium transition md:h-8 md:px-2.5 md:text-fs12",
+        "focus-ring inline-flex h-11 items-center justify-center gap-2 rounded-card border px-3 text-body font-medium transition md:h-8 md:px-3 md:text-body-sm",
         status === "error"
-          ? "border-[#DC2626]/30 bg-[rgba(220,38,38,0.10)] text-[#DC2626] hover:bg-[#DC2626]/10"
+          ? "border-danger/30 bg-danger-soft text-danger hover:bg-danger/10"
           : status === "matched" && !disabled
-            ? "border-primary bg-primary text-white hover:bg-primary/90 active:bg-indigo-800"
+            ? "border-primary bg-primary text-white hover:bg-primary/90 active:bg-primary-strong"
             : "border-line bg-white text-ink hover:bg-canvas",
         disabled ? "cursor-not-allowed opacity-60" : "",
       ].join(" ")}
@@ -68,8 +68,8 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
   if (rows.length === 0) {
     return (
       <div className="animate-fade-up space-y-3 rounded-card border border-line bg-white p-8 shadow-soft">
-        <p className="text-center text-sm font-medium text-ink">No orders match the current filter.</p>
-        <p className="text-center text-fs12 text-muted">
+        <p className="text-center text-body font-medium text-ink">No orders match the current filter.</p>
+        <p className="text-center text-body-sm text-muted">
           Try widening the window (<code className="font-mono">FULFILLMENT_WINDOW_DAYS</code>) or switching filter.
         </p>
       </div>
@@ -81,18 +81,15 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
     <MobileOrderList rows={rows} stateMap={stateMap} onPush={onPush} />
     <div className="hidden animate-fade-up rounded-card border border-line bg-white shadow-soft md:block">
       <div className="max-h-[65vh] overflow-auto">
-      <table className="w-full min-w-[900px] border-collapse text-left text-fs13">
+      <table className="w-full min-w-[760px] border-collapse text-left text-body">
         <thead className="sticky top-0 z-10">
-          <tr className="border-b border-line bg-canvas text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+          <tr className="border-b border-line bg-canvas text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
             <th className="px-3 py-3">Order</th>
             <th className="px-3 py-3">Date</th>
             <th className="px-3 py-3">Status</th>
-            <th className="px-3 py-3">UBEX ID</th>
-            <th className="px-3 py-3">Tracking</th>
+            <th className="px-3 py-3">Ubex ID</th>
             <th className="px-3 py-3">Total</th>
-            <th className="px-3 py-3">Payment</th>
             <th className="px-3 py-3">Customer</th>
-            <th className="px-3 py-3">Country</th>
             <th className="px-3 py-3 text-right">Action</th>
           </tr>
         </thead>
@@ -111,46 +108,46 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
                 className="border-b border-line text-ink transition last:border-0 hover:bg-canvas"
                 style={i < 6 ? { animation: "fadeUp 0.4s ease-out both", animationDelay: `${i * 30}ms` } : undefined}
               >
-                <td className="px-3 py-3 font-mono text-fs12 font-medium">{r.orderName}</td>
-                <td className="px-3 py-3 text-fs12 text-muted">{orderDateFmt}</td>
-                <td className="px-3 py-3">
+                <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm font-medium">{r.orderName}</td>
+                <td className="whitespace-nowrap px-3 py-3 text-body-sm text-muted">{orderDateFmt}</td>
+                <td className="whitespace-nowrap px-3 py-3">
                   <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
                   {status === "error" && state?.message ? (
-                    <div className="mt-1 max-w-[200px] truncate text-fs11 text-[#DC2626]" title={state.message}>
+                    <div className="mt-1 max-w-[200px] truncate text-caption text-danger" title={state.message}>
                       {state.message}
                     </div>
                   ) : null}
                 </td>
-                <td className="px-3 py-3 font-mono text-fs12">
+                <td className="whitespace-nowrap px-3 py-3 font-mono text-body-sm">
                   {r.ubexId ? (
-                    <span className="inline-flex items-center gap-1.5">
+                    <span className="inline-flex items-center gap-1">
                       <span className="text-ink">{r.ubexId}</span>
                       <CopyButton value={r.ubexId} />
+                      {r.trackingUrl ? (
+                        <a
+                          href={r.trackingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Open tracking for ${r.orderName}`}
+                          title="Open tracking"
+                          className="focus-ring grid h-6 w-6 place-items-center rounded-control text-muted transition hover:bg-canvas hover:text-ink"
+                        >
+                          <ExternalLink size={13} />
+                        </a>
+                      ) : null}
                     </span>
                   ) : <span className="text-muted">—</span>}
                 </td>
-                <td className="px-3 py-3">
-                  {r.trackingUrl ? (
-                    <div className="inline-flex items-center gap-1.5">
-                      <a href={r.trackingUrl} target="_blank" rel="noopener noreferrer"
-                        className="focus-ring inline-flex items-center gap-1 rounded text-fs12 font-medium text-ink hover:underline">
-                        Open <ExternalLink size={11} />
-                      </a>
-                      <CopyButton value={r.trackingUrl} />
-                    </div>
-                  ) : <span className="text-muted">—</span>}
-                </td>
-                <td className="px-3 py-3 font-mono text-fs12">{r.total}</td>
-                <td className="px-3 py-3 text-fs12">
-                  <span className={[
-                    "inline-flex items-center rounded-full px-2 py-0.5 text-fs11 font-medium",
-                    r.isCod ? "bg-[rgba(217,119,6,0.12)] text-[#D97706]" : "bg-canvas text-muted",
-                  ].join(" ")}>
+                <td className="whitespace-nowrap px-3 py-3 text-body-sm">
+                  <span className="block tabular-nums">{r.total}</span>
+                  <span className={["block text-caption", r.isCod ? "font-medium text-warning" : "text-muted"].join(" ")}>
                     {r.isCod ? "COD" : "Paid"}
                   </span>
                 </td>
-                <td className="px-3 py-3 text-fs12">{r.customerName}</td>
-                <td className="px-3 py-3 font-mono text-fs12">{r.shippingCountry}</td>
+                <td className="px-3 py-3 text-body-sm">
+                  <span className="block">{r.customerName}</span>
+                  <span className="block text-caption text-muted">{r.shippingCountry}</span>
+                </td>
                 <td className="px-3 py-3 text-right">
                   <PushButton row={r} state={state} onPush={onPush} />
                 </td>
@@ -185,30 +182,30 @@ function MobileOrderList({
           <li key={r.orderName} className="rounded-card border border-line bg-white p-4 shadow-soft">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="font-mono text-[15px] font-semibold text-ink">{r.orderName}</p>
-                <p className="mt-0.5 text-fs13 text-muted">{formatOrderDate(r.orderDate)}</p>
+                <p className="font-mono text-heading font-semibold text-ink">{r.orderName}</p>
+                <p className="mt-0.5 text-body text-muted">{formatOrderDate(r.orderDate)}</p>
               </div>
               <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
             </div>
 
-            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 text-fs13">
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3 text-body">
               <div className="col-span-2">
                 <dt className="text-muted">Customer</dt>
                 <dd className="font-medium text-ink">
-                  {r.customerName} <span className="font-mono text-muted">· {r.shippingCountry}</span>
+                  {r.customerName} <span className="tabular-nums text-muted">· {r.shippingCountry}</span>
                 </dd>
               </div>
               <div>
                 <dt className="text-muted">Total</dt>
-                <dd className="font-mono text-ink">{r.total}</dd>
+                <dd className="tabular-nums text-ink">{r.total}</dd>
               </div>
               <div>
                 <dt className="text-muted">Payment</dt>
                 <dd>
                   <span
                     className={[
-                      "inline-flex items-center rounded-full px-2 py-0.5 text-fs12 font-medium",
-                      r.isCod ? "bg-amber-50 text-amber-700" : "bg-canvas text-muted",
+                      "inline-flex items-center rounded-full px-2 py-0.5 text-body-sm font-medium",
+                      r.isCod ? "bg-warning-soft text-warning" : "bg-canvas text-muted",
                     ].join(" ")}
                   >
                     {r.isCod ? "COD" : "Paid"}
@@ -227,7 +224,7 @@ function MobileOrderList({
                           href={r.trackingUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 font-sans text-fs13 font-medium text-primary"
+                          className="inline-flex min-h-11 items-center gap-1 px-1 font-sans text-body font-medium text-primary"
                         >
                           Track <ExternalLink size={12} />
                         </a>
@@ -241,7 +238,7 @@ function MobileOrderList({
             </dl>
 
             {status === "error" && state?.message ? (
-              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-fs13 text-red-700">{state.message}</p>
+              <p className="mt-3 rounded-control bg-danger-soft px-3 py-2 text-body text-danger">{state.message}</p>
             ) : null}
 
             <div className="mt-3 [&>*]:w-full">

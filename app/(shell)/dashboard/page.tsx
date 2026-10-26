@@ -9,7 +9,6 @@ import {
   type OverviewSection,
 } from "@/components/overview/ModuleGrid";
 import { StatCard } from "@/components/dashboard/StatCard";
-import { InstallAppCard } from "@/components/pwa/InstallAppCard";
 
 export const dynamic = "force-dynamic";
 
@@ -91,15 +90,13 @@ export default async function OverviewPage() {
   return (
     <div className="mx-auto w-full max-w-7xl space-y-8">
       <header>
-        <h1 className="text-[22px] font-semibold tracking-tight text-ink md:text-2xl">
+        <h1 className={`text-display font-semibold tracking-tight text-ink ${name ? "" : "max-md:hidden"}`}>
           {name ? `${getAstGreeting()}, ${name}` : "Overview"}
         </h1>
-        <p className="mt-1 text-fs14 text-muted">
+        <p className="mt-1 text-body text-muted">
           Here&apos;s what needs attention across Seissense operations.
         </p>
       </header>
-
-      <InstallAppCard dismissible />
 
       {kpis.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">

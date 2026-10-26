@@ -38,25 +38,25 @@ export function FulfillmentFooter({
 
   return (
     <div
-      className="fixed right-0 z-20 border-t border-line bg-white px-4 py-2.5 bottom-[var(--mobile-nav-h)] md:bottom-0 md:py-3"
+      className="fixed right-0 z-20 border-t border-line bg-white px-4 py-3 bottom-[var(--mobile-nav-h)] md:bottom-0 md:py-3"
       style={{ left: "var(--sb-w, 0px)" }}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-3 text-fs13 text-muted md:text-fs12">
+        <div className="flex min-w-0 items-center gap-3 text-body text-muted md:text-body-sm">
           <span className="truncate">
             {matchedCount > 0
               ? `${matchedCount} ready to push`
               : "All matched orders pushed"}
           </span>
           {msg ? (
-            <span className="hidden rounded-full bg-canvas px-2.5 py-0.5 font-medium text-ink md:inline">{msg}</span>
+            <span className="hidden rounded-full bg-canvas px-3 py-0.5 font-medium text-ink md:inline">{msg}</span>
           ) : null}
         </div>
         <button
           type="button"
           onClick={() => void run()}
           disabled={busy || matchedCount === 0}
-          className="focus-ring inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-6 text-fs14 font-medium text-white shadow-soft transition hover:bg-primary/90 active:bg-indigo-800 disabled:opacity-60 md:h-9 md:rounded-card md:px-4 md:text-fs12"
+          className="focus-ring inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-6 text-body-lg font-medium text-white shadow-soft transition hover:bg-primary/90 active:bg-primary-strong disabled:opacity-60 md:h-9 md:rounded-card md:px-4 md:text-body-sm"
         >
           {busy ? <Loader2 size={14} className="animate-spin-slow" /> : <Send size={14} />}
           {busy ? "Pushing…" : `Fulfil All${matchedCount > 0 ? ` (${matchedCount})` : ""}`}

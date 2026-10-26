@@ -19,29 +19,29 @@ export function Topbar() {
         <div className="flex min-w-0 items-center gap-2">
           {meta.moduleLabel ? (
             <>
-              <span className="hidden text-fs13 text-muted sm:inline">{meta.moduleLabel}</span>
+              <span className="hidden text-body text-muted sm:inline">{meta.moduleLabel}</span>
               <span className="hidden text-line sm:inline">/</span>
             </>
           ) : null}
-          <h1 className="truncate text-[16px] font-semibold text-ink md:text-fs14">{meta.title}</h1>
+          <h1 className="truncate text-title font-semibold text-ink md:text-heading">{meta.title}</h1>
         </div>
         <div className="flex shrink-0 items-center gap-2 md:gap-3">
           <button
             type="button"
             onClick={openCommandPalette}
             aria-label="Search"
-            className="focus-ring grid h-10 w-10 place-items-center rounded-lg text-muted active:bg-canvas md:hidden"
+            className="focus-ring grid h-10 w-10 place-items-center rounded-control text-muted active:bg-canvas md:hidden"
           >
             <Search size={19} />
           </button>
           <button
             type="button"
             onClick={openCommandPalette}
-            className="focus-ring hidden items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-1.5 text-fs12 text-muted transition hover:bg-canvas hover:text-ink md:flex"
+            className="focus-ring hidden items-center gap-2 rounded-control border border-line bg-white px-3 py-2 text-body-sm text-muted transition hover:bg-canvas hover:text-ink md:flex"
           >
             <Search size={13} />
             <span>Jump to…</span>
-            <kbd className="rounded border border-line px-1 text-fs11 font-medium">⌘K</kbd>
+            <kbd className="rounded-control border border-line px-1 text-caption font-medium">⌘K</kbd>
           </button>
           <div className="hidden md:block">
             <RestockStatusIndicator />

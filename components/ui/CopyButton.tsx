@@ -18,7 +18,7 @@ export function CopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={copy}
-      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded text-muted transition hover:bg-canvas hover:text-ink"
+      className="focus-ring inline-flex h-6 w-6 items-center justify-center rounded-control text-muted transition hover:bg-canvas hover:text-ink"
       title={copied ? "Copied" : "Copy"}
       aria-label="Copy"
     >

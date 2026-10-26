@@ -16,20 +16,20 @@ const toneStyles: Record<StatusTone, { pill: string; dot: string }> = {
     dot: "bg-muted",
   },
   accent: {
-    pill: "bg-canvas text-ink border border-ink/20",
-    dot: "bg-ink",
+    pill: "bg-primary-soft text-primary-strong border border-primary/20",
+    dot: "bg-primary",
   },
   green: {
-    pill: "bg-[rgba(22,163,74,0.10)] text-[#16A34A] border border-[#16A34A]/20",
-    dot: "bg-[#16A34A]",
+    pill: "bg-success-soft text-success border border-success/20",
+    dot: "bg-success",
   },
   amber: {
-    pill: "bg-[rgba(217,119,6,0.12)] text-[#D97706] border border-[#D97706]/20",
-    dot: "bg-[#D97706]",
+    pill: "bg-warning-soft text-warning border border-warning/20",
+    dot: "bg-warning",
   },
   red: {
-    pill: "bg-[rgba(220,38,38,0.10)] text-[#DC2626] border border-[#DC2626]/20",
-    dot: "bg-[#DC2626]",
+    pill: "bg-danger-soft text-danger border border-danger/20",
+    dot: "bg-danger",
   },
 };
 
@@ -38,13 +38,13 @@ export function StatusPill({ tone = "neutral", dot = true, icon, children, class
   return (
     <span
       className={[
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-fs11 font-medium leading-5",
+        "inline-flex items-center gap-2 rounded-full px-3 py-0.5 text-caption font-medium leading-5",
         t.pill,
         className,
       ].join(" ")}
     >
       {icon ? <span className="inline-flex h-3 w-3 items-center justify-center">{icon}</span> : null}
-      {dot && !icon ? <span className={`inline-block h-1.5 w-1.5 rounded-full ${t.dot}`} /> : null}
+      {dot && !icon ? <span className={`inline-block h-2 w-2 rounded-full ${t.dot}`} /> : null}
       <span>{children}</span>
     </span>
   );

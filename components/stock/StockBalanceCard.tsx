@@ -37,8 +37,8 @@ function StoreColumn({
   if (notListed || side === null) {
     return (
       <div className={`rounded-card border border-line ${accentClass} p-3`}>
-        <p className="text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">{title}</p>
-        <p className="mt-3 text-fs12 text-muted">
+        <p className="text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">{title}</p>
+        <p className="mt-3 text-body-sm text-muted">
           {notListed ? `Not listed on ${STORE_LABELS[2]}` : `${STORE_LABELS[2]} not configured`}
         </p>
       </div>
@@ -47,19 +47,19 @@ function StoreColumn({
 
   return (
     <div className={`rounded-card border border-line ${accentClass} p-3`}>
-      <p className="text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">{title}</p>
-      <dl className="mt-2 space-y-1 text-fs12">
+      <p className="text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">{title}</p>
+      <dl className="mt-2 space-y-1 text-body-sm">
         <div className="flex justify-between gap-3">
           <dt className="text-muted">On hand</dt>
-          <dd className="font-mono tabular-nums text-ink">{fmt(side.onHand)}</dd>
+          <dd className="tabular-nums text-ink">{fmt(side.onHand)}</dd>
         </div>
         <div className="flex justify-between gap-3">
           <dt className="text-muted">Available</dt>
-          <dd className="font-mono tabular-nums text-ink">{fmt(side.available)}</dd>
+          <dd className="tabular-nums text-ink">{fmt(side.available)}</dd>
         </div>
         <div className="flex justify-between gap-3">
           <dt className="text-muted">Committed</dt>
-          <dd className="font-mono tabular-nums text-ink">{fmt(side.committed)}</dd>
+          <dd className="tabular-nums text-ink">{fmt(side.committed)}</dd>
         </div>
       </dl>
     </div>
@@ -105,29 +105,29 @@ export function StockBalanceMobileCard({
           />
         </label>
       ) : null}
-      <button type="button" onClick={onSelect} className="min-w-0 flex-1 p-3.5 text-left active:bg-canvas">
+      <button type="button" onClick={onSelect} className="min-w-0 flex-1 p-4 text-left active:bg-canvas">
         <div className="flex items-start justify-between gap-2">
-          <p className="line-clamp-2 text-fs14 font-medium text-ink">{row.productName}</p>
+          <p className="line-clamp-2 text-body-lg font-medium text-ink">{row.productName}</p>
           {busy ? <Loader2 size={16} className="mt-0.5 shrink-0 animate-spin text-muted" /> : <StatusPill tone={pill.tone}>{pill.label}</StatusPill>}
         </div>
-        <p className="mt-0.5 truncate font-mono text-fs12 text-muted">
+        <p className="mt-0.5 truncate font-mono text-body-sm text-muted">
           {row.sku || "—"} · {row.barcode || "no barcode"}
         </p>
         <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
-          <div className="rounded-lg bg-canvas px-1 py-1.5">
-            <dt className="text-fs11 text-muted">Ubex</dt>
-            <dd className="font-mono text-fs14 font-semibold tabular-nums text-ink">{row.ubexStock}</dd>
+          <div className="rounded-control bg-canvas px-1 py-2">
+            <dt className="text-caption text-muted">Ubex</dt>
+            <dd className="text-body-lg font-semibold tabular-nums text-ink">{row.ubexStock}</dd>
           </div>
-          <div className="rounded-lg bg-canvas px-1 py-1.5">
-            <dt className="text-fs11 text-muted">Committed</dt>
-            <dd className="font-mono text-fs14 font-semibold tabular-nums text-ink">
+          <div className="rounded-control bg-canvas px-1 py-2">
+            <dt className="text-caption text-muted">Committed</dt>
+            <dd className="text-body-lg font-semibold tabular-nums text-ink">
               {fmt(row.storeA.committed)}
               {store2Configured ? <span className="text-muted"> / {fmt(row.storeB?.committed)}</span> : null}
             </dd>
           </div>
-          <div className="rounded-lg bg-primary-soft px-1 py-1.5">
-            <dt className="text-fs11 text-primary">Available</dt>
-            <dd className="font-mono text-fs14 font-semibold tabular-nums text-primary">{fmt(row.sharedAvailable)}</dd>
+          <div className="rounded-control bg-primary-soft px-1 py-2">
+            <dt className="text-caption text-primary">Available</dt>
+            <dd className="text-body-lg font-semibold tabular-nums text-primary">{fmt(row.sharedAvailable)}</dd>
           </div>
         </dl>
       </button>
@@ -159,7 +159,7 @@ export function StockBalanceTableRow({
   return (
     <tr
       className={[
-        "cursor-pointer border-b border-line text-fs13 transition last:border-0 hover:bg-canvas/60",
+        "cursor-pointer border-b border-line text-body transition last:border-0 hover:bg-canvas/60",
         busy ? "opacity-60" : "",
       ].join(" ")}
       onClick={onSelect}
@@ -179,20 +179,20 @@ export function StockBalanceTableRow({
       )}
       <td className="min-w-[220px] px-3 py-3">
         <p className="line-clamp-1 font-medium text-ink">{row.productName}</p>
-        <p className="mt-0.5 font-mono text-fs11 text-muted">
+        <p className="mt-0.5 font-mono text-caption text-muted">
           {row.sku || "—"} · {row.barcode || "no barcode"}
         </p>
       </td>
-      <td className="px-3 py-3 text-right font-mono tabular-nums text-ink">{row.ubexStock}</td>
-      <td className="px-3 py-3 text-right font-mono tabular-nums text-ink">
+      <td className="px-3 py-3 text-right tabular-nums text-ink">{row.ubexStock}</td>
+      <td className="px-3 py-3 text-right tabular-nums text-ink">
         {fmt(row.storeA.committed)}
       </td>
       {store2Configured ? (
-        <td className="px-3 py-3 text-right font-mono tabular-nums text-ink">
+        <td className="px-3 py-3 text-right tabular-nums text-ink">
           {fmt(row.storeB?.committed)}
         </td>
       ) : null}
-      <td className="px-3 py-3 text-right font-mono text-fs13 font-medium tabular-nums text-ink">
+      <td className="px-3 py-3 text-right text-body font-medium tabular-nums text-ink">
         {fmt(row.sharedAvailable)}
       </td>
       <td className="px-3 py-3">
@@ -243,7 +243,7 @@ export function StockBalanceDetail({
         ) : null}
         <div className="min-w-0 flex-1">
           <p className="font-medium text-ink">{row.productName}</p>
-          <p className="mt-0.5 font-mono text-fs11 text-muted">
+          <p className="mt-0.5 font-mono text-caption text-muted">
             SKU {row.sku || "—"} · {row.barcode || "no barcode"}
           </p>
         </div>
@@ -251,10 +251,10 @@ export function StockBalanceDetail({
       </div>
 
       <div className="mt-3 space-y-3">
-        <div className="rounded-card border border-line bg-violet-50/40 px-3 py-2">
-          <p className="text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-violet-900/70">Ubex</p>
-          <p className="mt-1 font-mono text-fs13 tabular-nums text-ink">Stock: {row.ubexStock}</p>
-          <p className="font-mono text-fs11 text-muted">ID {row.ubexId}</p>
+        <div className="rounded-card border border-line bg-primary-soft px-3 py-2">
+          <p className="text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-primary-strong">Ubex</p>
+          <p className="mt-1 font-mono text-body tabular-nums text-ink">Stock: {row.ubexStock}</p>
+          <p className="font-mono text-caption text-muted">ID {row.ubexId}</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -276,13 +276,13 @@ export function StockBalanceDetail({
 
         {row.sharedAvailable !== null ? (
           <div className="border-t border-line pt-2">
-            <p className="text-fs11 text-muted">Available to sell</p>
-            <p className="font-mono text-[15px] font-medium tabular-nums text-ink">
+            <p className="text-caption text-muted">Available to sell</p>
+            <p className="text-heading font-medium tabular-nums text-ink">
               {row.sharedAvailable}
             </p>
-            <p className="text-fs11 text-muted">Both stores should show this available</p>
+            <p className="text-caption text-muted">Both stores should show this available</p>
             {targetA !== null ? (
-              <p className="mt-1 font-mono text-fs11 text-muted">
+              <p className="tabular-nums mt-1 text-caption text-muted">
                 Target on-hand {STORE_LABELS[1]}: {targetA}
                 {targetB !== null ? ` · ${STORE_LABELS[2]}: ${targetB}` : ""}
               </p>
@@ -295,7 +295,7 @@ export function StockBalanceDetail({
             type="button"
             disabled={busy}
             onClick={onSync}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-primary px-4 text-fs13 font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-primary px-4 text-body font-medium text-white transition hover:opacity-90 disabled:opacity-60"
           >
             {busy ? <Loader2 size={15} className="animate-spin" /> : <PackagePlus size={15} />}
             Sync both stores

@@ -27,7 +27,7 @@ export function CombinedActivityChart({ data, showStock }: Props) {
 
   if (!hasData) {
     return (
-      <div className="flex h-full items-center justify-center text-fs12 text-muted">
+      <div className="flex h-full items-center justify-center text-body-sm text-muted">
         No portal activity in the last 14 days yet.
       </div>
     );

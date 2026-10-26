@@ -10,8 +10,8 @@ function SweepLoadingState() {
   return (
     <div className="flex flex-col items-center justify-center gap-3 rounded-card border border-line bg-white py-16 shadow-soft">
       <Loader2 size={28} className="animate-spin-slow text-muted" />
-      <p className="text-fs13 font-medium text-ink">Finding all mismatches…</p>
-      <p className="max-w-sm text-center text-fs12 text-muted">
+      <p className="text-body font-medium text-ink">Finding all mismatches…</p>
+      <p className="max-w-sm text-center text-body-sm text-muted">
         Fetching products from Ubex and matching Shopify by barcode. Large catalogs may take
         a minute — Ubex limits how fast we can page inventory. You can leave this page; you
         will get a notification when the refresh finishes.
@@ -72,8 +72,8 @@ export function StockBalanceLoader() {
     return (
       <div className="flex flex-col items-center justify-center gap-3 rounded-card border border-line bg-white py-16 shadow-soft">
         <Loader2 size={28} className="animate-spin-slow text-muted" />
-        <p className="text-fs13 font-medium text-ink">Loading stock…</p>
-        <p className="max-w-sm text-center text-fs12 text-muted">
+        <p className="text-body font-medium text-ink">Loading stock…</p>
+        <p className="max-w-sm text-center text-body-sm text-muted">
           Fetching the first page from Ubex and matching Shopify barcodes.
         </p>
       </div>
@@ -83,13 +83,13 @@ export function StockBalanceLoader() {
   if (error && !preview) {
     return (
       <div className="space-y-3">
-        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-fs13 text-[#DC2626]">
+        <div className="rounded-card border border-danger/30 bg-danger-soft px-4 py-3 text-body text-danger">
           {error}
         </div>
         <button
           type="button"
           onClick={() => void (mode === "sweep" ? refreshMismatches() : refresh())}
-          className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas"
+          className="focus-ring rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas"
         >
           Retry
         </button>

@@ -46,10 +46,10 @@ function FulfillmentSkeleton() {
       <div className="rounded-card border border-line bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
-            <div className="h-2.5 w-32 animate-pulse rounded bg-line" />
-            <div className="h-4 w-48 animate-pulse rounded bg-line" />
+            <div className="h-3 w-32 animate-pulse rounded-control bg-line" />
+            <div className="h-4 w-48 animate-pulse rounded-control bg-line" />
           </div>
-          <div className="h-3 w-40 animate-pulse rounded bg-line" />
+          <div className="h-3 w-40 animate-pulse rounded-control bg-line" />
         </div>
       </div>
       <TableSkeleton rows={8} columns={7} />
@@ -125,12 +125,12 @@ async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
 
   if (error) {
     return (
-      <div className="rounded-card border border-[#DC2626]/25 bg-[rgba(220,38,38,0.10)] p-6">
-        <div className="flex items-center gap-2 text-[#DC2626]">
+      <div className="rounded-card border border-danger/25 bg-danger-soft p-6">
+        <div className="flex items-center gap-2 text-danger">
           <AlertTriangle size={18} />
-          <h2 className="text-base font-medium">Could not load fulfillment queue</h2>
+          <h2 className="text-heading font-semibold">Could not load fulfillment queue</h2>
         </div>
-        <p className="mt-2 text-fs13 text-ink">{error}</p>
+        <p className="mt-2 text-body text-ink">{error}</p>
       </div>
     );
   }
@@ -142,12 +142,12 @@ async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
       <section className="animate-fade-up rounded-card border border-line bg-white p-4 shadow-soft md:p-5">
         <div className="flex flex-col gap-1 md:flex-row md:items-center md:justify-between md:gap-3">
           <div className="min-w-0">
-            <h2 className="text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+            <h2 className="text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
               Fulfillment window{storeId === 2 ? ` · ${STORE_LABELS[2]}` : ""}
             </h2>
-            <p className="mt-0.5 text-fs14 font-medium text-ink md:font-mono md:text-fs13">{windowLabel}</p>
+            <p className="tabular-nums mt-0.5 text-body font-medium text-ink">{windowLabel}</p>
           </div>
-          <p className="shrink-0 font-mono text-fs12 text-muted md:text-right">
+          <p className="tabular-nums shrink-0 text-body-sm text-muted md:text-right">
             {ordersScannedInWindow} order{ordersScannedInWindow === 1 ? "" : "s"} in window
           </p>
         </div>

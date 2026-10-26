@@ -59,10 +59,10 @@ function StatCard({
   onClick: () => void;
 }) {
   const colors = {
-    amber:   { iconBg: "bg-[rgba(217,119,6,0.12)]", iconText: "text-[#B45309]", num: "text-[#B45309]", ring: "ring-[#B45309]" },
-    blue:    { iconBg: "bg-[rgba(59,130,246,0.10)]",  iconText: "text-[#2563EB]", num: "text-[#2563EB]", ring: "ring-[#2563EB]" },
-    green:   { iconBg: "bg-[rgba(22,163,74,0.12)]",   iconText: "text-[#15803D]", num: "text-[#15803D]", ring: "ring-[#15803D]" },
-    red:     { iconBg: "bg-[rgba(220,38,38,0.12)]",   iconText: "text-[#DC2626]", num: "text-[#DC2626]", ring: "ring-[#DC2626]" },
+    amber:   { iconBg: "bg-warning-soft", iconText: "text-warning", num: "text-warning", ring: "ring-warning" },
+    blue:    { iconBg: "bg-info-soft",  iconText: "text-info", num: "text-info", ring: "ring-info" },
+    green:   { iconBg: "bg-success-soft",   iconText: "text-success", num: "text-success", ring: "ring-success" },
+    red:     { iconBg: "bg-danger-soft",   iconText: "text-danger", num: "text-danger", ring: "ring-danger" },
     neutral: { iconBg: "bg-canvas",                   iconText: "text-muted",     num: "text-ink",       ring: "ring-ink" },
   };
   const c = colors[color];
@@ -79,8 +79,8 @@ function StatCard({
         <Icon size={16} className={c.iconText} strokeWidth={2} />
       </span>
       <div className="min-w-0">
-        <p className={`text-xl font-semibold leading-tight tabular-nums ${c.num}`}>{count}</p>
-        <p className="truncate text-fs12 font-medium text-muted">
+        <p className={`text-title font-semibold leading-tight tabular-nums ${c.num}`}>{count}</p>
+        <p className="truncate text-body-sm font-medium text-muted">
           {shortLabel ? (
             <>
               <span className="md:hidden">{shortLabel}</span>
@@ -170,7 +170,7 @@ export function FulfillmentView({
       />
 
       {/* ── Stat cards ─────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 md:gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:gap-3">
         <StatCard
           icon={Clock}
           label="Waiting for Ubex"
@@ -220,7 +220,7 @@ export function FulfillmentView({
               aria-selected={active}
               onClick={() => setFilter(f.key)}
               className={[
-                "focus-ring inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-fs13 font-medium transition md:h-8 md:px-3 md:text-fs12",
+                "focus-ring inline-flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-body font-medium transition md:h-8 md:px-3 md:text-body-sm",
                 active
                   ? "border-ink bg-ink text-white"
                   : "border-line bg-white text-muted hover:bg-canvas",
@@ -229,7 +229,7 @@ export function FulfillmentView({
               <span>{f.label}</span>
               <span
                 className={[
-                  "rounded-full px-1.5 py-0.5 text-fs11 font-medium tabular-nums",
+                  "rounded-full px-2 py-0.5 text-caption font-medium tabular-nums",
                   active ? "bg-white/20 text-white" : "bg-canvas text-muted",
                 ].join(" ")}
               >

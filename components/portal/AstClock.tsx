@@ -32,16 +32,16 @@ export function AstClock({ compact = false }: { compact?: boolean }) {
     return () => clearInterval(id);
   }, []);
 
-  if (!now) return <span className="font-mono text-fs11 text-muted opacity-0">--:--</span>;
+  if (!now) return <span className="tabular-nums text-caption text-muted opacity-0">--:--</span>;
 
   const { time, date } = formatAst(now);
 
   if (compact) {
-    return <span className="font-mono text-fs11 text-muted">{time}</span>;
+    return <span className="tabular-nums text-caption text-muted">{time}</span>;
   }
 
   return (
-    <span className="font-mono text-fs11 text-muted">
+    <span className="tabular-nums text-caption text-muted">
       {time} AST <span className="hidden sm:inline">· {date}</span>
     </span>
   );

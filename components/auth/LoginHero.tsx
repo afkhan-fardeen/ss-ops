@@ -38,25 +38,25 @@ export function LoginHero({
         />
 
         <div className="relative max-w-md">
-          <h2 className="text-[32px] font-semibold leading-[1.2] tracking-tight">
+          <h2 className="text-display font-semibold leading-[1.2] tracking-tight">
             One console for every moving part of the operation.
           </h2>
           <ul className="mt-9 space-y-5">
             {HIGHLIGHTS.map(({ icon: Icon, title, text }) => (
-              <li key={title} className="flex gap-3.5">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-white/15">
+              <li key={title} className="flex gap-4">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-control bg-white/15">
                   <Icon size={19} />
                 </span>
                 <div>
-                  <p className="text-[15px] font-medium">{title}</p>
-                  <p className="mt-0.5 text-fs14 leading-snug text-white/70">{text}</p>
+                  <p className="text-heading font-medium">{title}</p>
+                  <p className="mt-0.5 text-body leading-snug text-white/70">{text}</p>
                 </div>
               </li>
             ))}
           </ul>
         </div>
 
-        <p className="relative text-fs13 text-white/60">© Seissense · Internal operations</p>
+        <p className="relative text-body text-white/60">© Seissense · Internal operations</p>
       </aside>
 
       {/* Form */}
@@ -70,13 +70,13 @@ export function LoginHero({
             <img src="/logo.svg" alt="Seissense Ops" className="h-8 w-auto" />
           </div>
 
-          <div className="rounded-2xl border border-line bg-white p-6 shadow-pop sm:p-8">
-            <h1 className="text-[24px] font-semibold tracking-tight text-ink">Welcome back</h1>
-            <p className="mt-1.5 text-fs14 leading-relaxed text-muted">{description}</p>
+          <div className="rounded-sheet border border-line bg-white p-6 shadow-pop sm:p-8">
+            <h1 className="text-display font-semibold tracking-tight text-ink">Welcome back</h1>
+            <p className="mt-2 text-body leading-relaxed text-muted">{description}</p>
             <LoginForm nextPath={nextPath} authMode={authMode} />
           </div>
 
-          <p className="mt-6 text-center text-fs13 text-muted">Internal use only · Seissense Operations</p>
+          <p className="mt-6 text-center text-body text-muted">Internal use only · Seissense Operations</p>
         </div>
       </main>
     </div>

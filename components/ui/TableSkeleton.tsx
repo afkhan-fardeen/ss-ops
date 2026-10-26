@@ -15,7 +15,7 @@ export function TableSkeleton({
           style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
         >
           {Array.from({ length: columns }).map((_, i) => (
-            <div key={i} className="h-3 animate-pulse rounded bg-line" />
+            <div key={i} className="h-3 animate-pulse rounded-control bg-line" />
           ))}
         </div>
       ) : null}
@@ -29,7 +29,7 @@ export function TableSkeleton({
             {Array.from({ length: columns }).map((_, c) => (
               <div
                 key={c}
-                className="h-3 animate-pulse rounded bg-line"
+                className="h-3 animate-pulse rounded-control bg-line"
                 style={{ animationDelay: `${(r * columns + c) * 20}ms`, width: `${60 + ((r + c) % 5) * 8}%` }}
               />
             ))}

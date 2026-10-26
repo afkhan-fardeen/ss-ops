@@ -18,10 +18,10 @@ export function RestockStatusIndicator() {
     <Link
       href="/stock-balance/balance"
       title="Restock in progress — click to view"
-      className="focus-ring flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1 text-primary transition hover:bg-primary-soft/70"
+      className="focus-ring flex items-center gap-2 rounded-full border border-primary/30 bg-primary-soft px-3 py-1 text-primary transition hover:bg-primary-soft/70"
     >
       <Loader2 size={12} className="animate-spin-slow" strokeWidth={2.4} />
-      <span className="hidden text-fs11 font-medium sm:inline">
+      <span className="hidden text-caption font-medium sm:inline">
         Restocking {activeCount} item{activeCount === 1 ? "" : "s"}…
       </span>
     </Link>

@@ -124,7 +124,7 @@ export function Sidebar({
               {collapsed ? (
                 <div className="mx-3 border-t border-line" aria-hidden />
               ) : (
-                <p className="px-3 pb-0.5 text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+                <p className="px-3 pb-0.5 text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                   {group.label}
                 </p>
               )}
@@ -146,15 +146,26 @@ export function Sidebar({
           ))}
 
           <div className="pt-3">
-          <NavCollapsibleSection
-            sectionId="settings"
-            label={showAdminLink ? "Settings" : "Account"}
-            icon={Settings2}
-            accent={SETTINGS_ACCENT}
-            items={settingsNavItems}
-            collapsed={collapsed}
-            isActive={(p) => isPathInSettings(p)}
-          />
+            {settingsNavItems.length === 1 ? (
+              <NavHomeLink
+                href={settingsNavItems[0]!.href}
+                label={settingsNavItems[0]!.label}
+                icon={settingsNavItems[0]!.icon}
+                accent={SETTINGS_ACCENT}
+                active={isPathInSettings(pathname)}
+                collapsed={collapsed}
+              />
+            ) : (
+              <NavCollapsibleSection
+                sectionId="settings"
+                label="Settings"
+                icon={Settings2}
+                accent={SETTINGS_ACCENT}
+                items={settingsNavItems}
+                collapsed={collapsed}
+                isActive={(p) => isPathInSettings(p)}
+              />
+            )}
           </div>
         </div>
 
@@ -164,7 +175,7 @@ export function Sidebar({
             onClick={toggleCollapsed}
             title={collapsed ? "Expand (⌘B)" : "Collapse (⌘B)"}
             className={[
-              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-fs13 font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
+              "focus-ring flex w-full items-center gap-2 rounded-control py-2 text-body font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
               collapsed ? "justify-center px-2" : "px-3",
             ].join(" ")}
           >
@@ -175,7 +186,7 @@ export function Sidebar({
             onClick={() => void logout()}
             title={collapsed ? "Sign out" : undefined}
             className={[
-              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-fs13 font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
+              "focus-ring flex w-full items-center gap-2 rounded-control py-2 text-body font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
               collapsed ? "justify-center px-2" : "px-3",
             ].join(" ")}
           >
@@ -193,7 +204,7 @@ export function Sidebar({
 function LogoMark() {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src="/favicon.png" alt="Seissense Ops" width={30} height={30} className="rounded-md object-contain" />
+    <img src="/favicon.png" alt="Seissense Ops" width={30} height={30} className="rounded-control object-contain" />
   );
 }
 

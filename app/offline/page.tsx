@@ -8,13 +8,13 @@ export default function OfflinePage() {
       <div className="grid h-14 w-14 place-items-center rounded-full bg-primary-soft text-primary">
         <WifiOff size={26} />
       </div>
-      <h1 className="text-xl font-semibold text-ink">You&apos;re offline</h1>
-      <p className="max-w-xs text-fs14 text-muted">
+      <h1 className="text-title font-semibold text-ink">You&apos;re offline</h1>
+      <p className="max-w-xs text-body text-muted">
         The portal needs a connection to show live orders and stock. Reconnect and try again.
       </p>
       <a
         href="/dashboard"
-        className="inline-flex min-h-11 items-center rounded-lg bg-primary px-5 text-fs14 font-medium text-white"
+        className="inline-flex min-h-11 items-center rounded-control bg-primary px-5 text-body-lg font-medium text-white"
       >
         Retry
       </a>

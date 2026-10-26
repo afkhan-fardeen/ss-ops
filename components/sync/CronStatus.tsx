@@ -40,20 +40,20 @@ function fmtAgo(isoDate: string): string {
 function StatusBadge({ run }: { run: CronRunLog }) {
   if (run.status === "running") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+      <span className="inline-flex items-center gap-1 text-caption font-medium text-primary">
         <Loader2 size={13} className="animate-spin" /> Running…
       </span>
     );
   }
   if (run.status === "success") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#16A34A]">
+      <span className="inline-flex items-center gap-1 text-caption font-medium text-success">
         <CheckCircle size={13} /> Success
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#DC2626]">
+    <span className="inline-flex items-center gap-1 text-caption font-medium text-danger">
       <XCircle size={13} /> Error
     </span>
   );
@@ -137,14 +137,14 @@ export function CronStatus() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <RefreshCw size={16} className="text-muted" />
-          <h3 className="text-fs13 font-medium text-ink">Seissense Ops Bot</h3>
+          <h3 className="text-body font-medium text-ink">Seissense Ops Bot</h3>
           {latest?.dry_run && (
-            <span className="rounded-full bg-[rgba(217,119,6,0.15)] px-1.5 py-0.5 text-fs11 font-medium text-[#D97706]">
+            <span className="rounded-full bg-warning-soft px-2 py-0.5 text-caption font-medium text-warning">
               dry-run
             </span>
           )}
         </div>
-        <div className="flex items-center gap-1.5 text-xs text-muted">
+        <div className="flex items-center gap-2 text-caption text-muted">
           <Clock size={12} />
           <span>Scheduled runs paused — manual only</span>
         </div>
@@ -152,10 +152,10 @@ export function CronStatus() {
 
       {/* last run summary */}
       {latest ? (
-        <div className="space-y-3 rounded-lg border border-line bg-canvas/60 px-4 py-3">
+        <div className="space-y-3 rounded-control border border-line bg-canvas/60 px-4 py-3">
           <div className="flex items-center justify-between">
             <StatusBadge run={latest} />
-            <span className="font-mono text-fs11 text-muted">
+            <span className="tabular-nums text-caption text-muted">
               {fmtAgo(latest.started_at)}
               {" · "}
               {fmtDuration(latest.started_at, latest.completed_at)}
@@ -164,18 +164,18 @@ export function CronStatus() {
 
           {/* stat pills */}
           {latest.status !== "running" && (
-            <div className="flex flex-wrap gap-2 text-fs11 font-medium">
-              <span className="rounded-full bg-line/30 px-2 py-0.5 font-mono text-ink">
+            <div className="flex flex-wrap gap-2 text-caption font-medium">
+              <span className="tabular-nums rounded-full bg-line/30 px-2 py-0.5 text-ink">
                 {latest.checked ?? 0} checked
               </span>
-              <span className="rounded-full bg-[rgba(22,163,74,0.12)] px-2 py-0.5 font-mono text-[#15803D]">
+              <span className="tabular-nums rounded-full bg-success-soft px-2 py-0.5 text-success">
                 {latest.fulfilled ?? 0} fulfilled
               </span>
-              <span className="rounded-full bg-line/30 px-2 py-0.5 font-mono text-ink">
+              <span className="tabular-nums rounded-full bg-line/30 px-2 py-0.5 text-ink">
                 {latest.skipped ?? 0} skipped
               </span>
               {(latest.errors ?? 0) > 0 && (
-                <span className="rounded-full bg-[rgba(220,38,38,0.12)] px-2 py-0.5 font-mono text-[#DC2626]">
+                <span className="rounded-full bg-danger-soft px-2 py-0.5 font-mono text-danger">
                   {latest.errors} errors
                 </span>
               )}
@@ -183,11 +183,11 @@ export function CronStatus() {
           )}
 
           {latest.status === "error" && latest.error_detail && (
-            <p className="truncate text-fs11 text-[#DC2626]">{latest.error_detail}</p>
+            <p className="truncate text-caption text-danger">{latest.error_detail}</p>
           )}
         </div>
       ) : (
-        <p className="text-xs italic text-muted">No runs recorded yet.</p>
+        <p className="text-caption italic text-muted">No runs recorded yet.</p>
       )}
 
       {/* action buttons */}
@@ -195,7 +195,7 @@ export function CronStatus() {
         <button
           onClick={() => trigger(true)}
           disabled={triggering || isRunning}
-          className="focus-ring inline-flex items-center gap-1.5 rounded-card border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+          className="focus-ring inline-flex items-center gap-2 rounded-card border border-line bg-white px-3 py-2 text-caption font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
         >
           {triggering ? (
             <Loader2 size={12} className="animate-spin" />
@@ -208,7 +208,7 @@ export function CronStatus() {
         <button
           onClick={() => trigger(false)}
           disabled={triggering || isRunning}
-          className="focus-ring inline-flex items-center gap-1.5 rounded-card bg-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="focus-ring inline-flex items-center gap-2 rounded-card bg-primary px-3 py-2 text-caption font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {triggering ? (
             <Loader2 size={12} className="animate-spin" />
@@ -221,7 +221,7 @@ export function CronStatus() {
         {runs.length > 1 && (
           <button
             onClick={() => setShowHistory((h) => !h)}
-            className="ml-auto inline-flex items-center gap-1 text-xs text-muted transition-colors hover:text-ink"
+            className="ml-auto inline-flex items-center gap-1 text-caption text-muted transition-colors hover:text-ink"
           >
             {showHistory ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
             History
@@ -235,15 +235,15 @@ export function CronStatus() {
           {runs.slice(1).map((run) => (
             <div
               key={run.id}
-              className="flex items-center justify-between py-1 text-fs11"
+              className="flex items-center justify-between py-1 text-caption"
             >
               <div className="flex items-center gap-2">
                 <StatusBadge run={run} />
                 {run.dry_run && (
-                  <span className="text-fs11 text-primary">(dry)</span>
+                  <span className="text-caption text-primary">(dry)</span>
                 )}
               </div>
-              <div className="flex items-center gap-3 font-mono text-muted">
+              <div className="tabular-nums flex items-center gap-3 text-muted">
                 <span>
                   {run.fulfilled ?? 0} fulfilled / {run.checked ?? 0} checked
                 </span>

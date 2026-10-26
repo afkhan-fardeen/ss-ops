@@ -76,7 +76,7 @@ export function HomeDashboard({ showAdmin, summary }: Props) {
       </ChartCard>
 
       <div>
-        <h2 className="font-sans text-fs13 font-medium text-ink">Modules</h2>
+        <h2 className="font-sans text-body font-medium text-ink">Modules</h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map(({ module, description, href }) => {
             const Icon = module.icon;
@@ -95,13 +95,13 @@ export function HomeDashboard({ showAdmin, summary }: Props) {
                     <Icon size={20} className={module.accent.activeText} />
                   </div>
                   <div className="min-w-0">
-                    <h3 className={`text-[15px] font-medium ${module.accent.activeText}`}>
+                    <h3 className={`text-heading font-medium ${module.accent.activeText}`}>
                       {module.label}
                     </h3>
-                    <p className="mt-1 text-fs12 leading-snug text-muted">{description}</p>
+                    <p className="mt-1 text-body-sm leading-snug text-muted">{description}</p>
                   </div>
                 </div>
-                <p className="mt-4 text-fs12 font-medium text-ink group-hover:underline">
+                <p className="mt-4 text-body-sm font-medium text-ink group-hover:underline">
                   Open module →
                 </p>
               </Link>
@@ -113,14 +113,14 @@ export function HomeDashboard({ showAdmin, summary }: Props) {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/fulfillment/list"
-          className="rounded-card border border-primary bg-primary px-4 py-2 text-fs13 font-medium text-white transition hover:opacity-90"
+          className="rounded-card border border-primary bg-primary px-4 py-2 text-body font-medium text-white transition hover:opacity-90"
         >
           Fulfillment list
         </Link>
         {showAdmin ? (
           <Link
             href="/stock-balance/balance"
-            className="rounded-card border border-primary bg-primary px-4 py-2 text-fs13 font-medium text-white transition hover:opacity-90"
+            className="rounded-card border border-primary bg-primary px-4 py-2 text-body font-medium text-white transition hover:opacity-90"
           >
             Stock balance
           </Link>

@@ -33,7 +33,7 @@ export function StockBalanceSearchBar({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={mode === "sweep" ? "Filter mismatches by product, SKU, or barcode…" : "Search product, SKU, or barcode…"}
-          className="min-h-11 w-full rounded-card border border-line bg-white py-2 pl-9 pr-10 text-fs13 text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="min-h-11 w-full rounded-card border border-line bg-white py-2 pl-9 pr-10 text-body text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         {loading && mode === "browse" ? (
           <Loader2
@@ -43,15 +43,15 @@ export function StockBalanceSearchBar({
         ) : null}
       </div>
       {mode === "browse" ? (
-        <div className="flex flex-wrap items-center justify-between gap-2 text-fs12 text-muted">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-body-sm text-muted">
           <span>Page {page}</span>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <button
               type="button"
               disabled={loading || page <= 1}
               onClick={onPrevPage}
               aria-label="Previous page"
-              className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronLeft size={14} />
               Prev
@@ -61,7 +61,7 @@ export function StockBalanceSearchBar({
               disabled={loading || !hasNextPage}
               onClick={onNextPage}
               aria-label="Next page"
-              className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
             >
               Next
               <ChevronRight size={14} />

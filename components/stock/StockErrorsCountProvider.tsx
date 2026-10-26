@@ -31,7 +31,7 @@ export function StockErrorsNavBadge({ href }: { href: string }) {
   if (href !== "/stock-balance/errors") return null;
   if (ctx?.count == null || ctx.count <= 0) return null;
   return (
-    <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-red-50 px-1.5 py-0.5 font-mono text-fs11 tabular-nums text-primary">
+    <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-danger-soft px-2 py-0.5 text-caption tabular-nums text-primary">
       {ctx.count > 99 ? "99+" : ctx.count}
     </span>
   );

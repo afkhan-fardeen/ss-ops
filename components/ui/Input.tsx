@@ -16,9 +16,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   return (
     <div
       className={[
-        "group relative flex h-12 items-center rounded-lg border bg-white transition md:h-11",
+        "group relative flex h-12 items-center rounded-control border bg-white transition md:h-11",
         invalid
-          ? "border-[#DC2626]/50 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12)]"
+          ? "border-danger/50 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12)]"
           : "border-line focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.15)]",
       ].join(" ")}
     >
@@ -34,10 +34,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         ref={ref}
         {...rest}
         className={[
-          "h-full w-full bg-transparent text-base text-ink placeholder:text-muted",
+          "h-full w-full bg-transparent text-body-lg text-ink placeholder:text-muted",
           "border-0 outline-none focus:ring-0",
-          icon ? "pl-2" : "pl-3.5",
-          rightSlot ? "pr-1" : "pr-3.5",
+          icon ? "pl-2" : "pl-4",
+          rightSlot ? "pr-1" : "pr-4",
           className,
         ].join(" ")}
       />

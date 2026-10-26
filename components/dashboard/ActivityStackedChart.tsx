@@ -34,7 +34,7 @@ export function ActivityStackedChart({
 
   if (!hasData) {
     return (
-      <div className="flex h-full items-center justify-center text-fs12 text-muted">
+      <div className="flex h-full items-center justify-center text-body-sm text-muted">
         {emptyMessage}
       </div>
     );

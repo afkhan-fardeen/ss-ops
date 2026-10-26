@@ -53,7 +53,7 @@ function NavChildLink({
     <Link
       href={item.href}
       className={[
-        "group relative flex items-center gap-3 rounded-lg py-2 pl-4 pr-3 text-fs13 font-medium transition-colors",
+        "group relative flex items-center gap-3 rounded-control py-2 pl-4 pr-3 text-body font-medium transition-colors",
         active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
       ].join(" ")}
     >
@@ -155,7 +155,7 @@ export function NavCollapsibleSection({
           title={label}
           onClick={() => setPopoverOpen((v) => !v)}
           className={[
-            "flex w-full justify-center rounded-lg p-2 transition-colors",
+            "flex w-full justify-center rounded-control p-2 transition-colors",
             sectionActive || popoverOpen ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
           ].join(" ")}
         >
@@ -169,10 +169,10 @@ export function NavCollapsibleSection({
                 className="fixed z-50 min-w-[200px] rounded-card border border-line bg-white py-2 shadow-[0_8px_30px_rgba(15,23,42,0.12)]"
                 style={{ top: menuPos.top, left: menuPos.left }}
               >
-                <p className="border-b border-line px-3 pb-2 text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+                <p className="border-b border-line px-3 pb-2 text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                   {label}
                 </p>
-                <nav className="flex flex-col gap-0.5 p-1.5">
+                <nav className="flex flex-col gap-0.5 p-2">
                   {items.map((item) => {
                     const active = isNavItemActive(pathname, item as ModuleNavItem);
                     return (
@@ -181,7 +181,7 @@ export function NavCollapsibleSection({
                         href={item.href}
                         onClick={() => setPopoverOpen(false)}
                         className={[
-                          "relative flex items-center gap-2 rounded-lg py-2 pl-3 pr-2.5 text-fs13 font-medium transition-colors",
+                          "relative flex items-center gap-2 rounded-control py-2 pl-3 pr-3 text-body font-medium transition-colors",
                           active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
                         ].join(" ")}
                       >
@@ -204,7 +204,7 @@ export function NavCollapsibleSection({
     <div>
       <div
         className={[
-          "flex w-full items-center gap-1 rounded-lg transition-colors",
+          "flex w-full items-center gap-1 rounded-control transition-colors",
           sectionActive ? "bg-canvas" : "hover:bg-canvas",
         ].join(" ")}
       >
@@ -212,7 +212,7 @@ export function NavCollapsibleSection({
           <Link
             href={homeHref}
             className={[
-              "focus-ring flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-fs12 font-medium tracking-wide transition-colors",
+              "focus-ring flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-body-sm font-medium tracking-wide transition-colors",
               sectionActive ? "text-ink" : "text-muted",
             ].join(" ")}
           >
@@ -222,7 +222,7 @@ export function NavCollapsibleSection({
         ) : (
           <span
             className={[
-              "flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-fs12 font-medium tracking-wide",
+              "flex min-w-0 flex-1 items-center gap-2 px-3 py-2 text-body-sm font-medium tracking-wide",
               sectionActive ? "text-ink" : "text-muted",
             ].join(" ")}
           >
@@ -236,7 +236,7 @@ export function NavCollapsibleSection({
             onClick={toggle}
             aria-expanded={open}
             aria-controls={panelId}
-            className="focus-ring mr-1 shrink-0 rounded-md p-1 text-muted transition-colors hover:text-ink"
+            className="focus-ring mr-1 shrink-0 rounded-control p-2 text-muted transition-colors hover:text-ink"
             aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
           >
             <ChevronDown
@@ -289,7 +289,7 @@ export function NavHomeLink({
       href={href}
       title={collapsed ? label : undefined}
       className={[
-        "group relative flex items-center gap-3 rounded-lg py-2 text-fs13 font-medium transition-colors",
+        "group relative flex items-center gap-3 rounded-control py-2 text-body font-medium transition-colors",
         collapsed ? "justify-center px-2" : "px-3",
         active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
       ].join(" ")}

@@ -40,7 +40,7 @@ function ConnectivityPill({
 }) {
   if (!configured) {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-canvas px-3 py-1 text-fs11 font-medium text-muted">
+      <span className="inline-flex items-center gap-2 rounded-full border border-line bg-canvas px-3 py-1 text-caption font-medium text-muted">
         <Circle size={7} className="fill-line text-line" />
         {label} — not configured
       </span>
@@ -49,12 +49,12 @@ function ConnectivityPill({
   if (ok) {
     return (
       <span
-        className="inline-flex items-center gap-1.5 rounded-full border border-[#16A34A]/20 bg-[rgba(22,163,74,0.08)] px-3 py-1 text-fs11 font-medium text-[#15803D]"
+        className="inline-flex items-center gap-2 rounded-full border border-success/20 bg-success-soft px-3 py-1 text-caption font-medium text-success"
         title={detail}
       >
-        <span className="relative inline-flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16A34A] opacity-60" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
+        <span className="relative inline-flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
         </span>
         {label}
       </span>
@@ -62,7 +62,7 @@ function ConnectivityPill({
   }
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full border border-[#DC2626]/20 bg-[rgba(220,38,38,0.08)] px-3 py-1 text-fs11 font-medium text-[#DC2626]"
+      className="inline-flex items-center gap-2 rounded-full border border-danger/20 bg-danger-soft px-3 py-1 text-caption font-medium text-danger"
       title={detail}
     >
       <AlertTriangle size={11} className="shrink-0" />
@@ -75,7 +75,7 @@ function ConnectivityStrip({ connectivity }: { connectivity: Connectivity }) {
   const { store1, store2, ubex, supabaseConfigured } = connectivity;
   return (
     <section className="animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft">
-      <h2 className="text-sm font-medium text-ink">Connectivity</h2>
+      <h2 className="text-body font-medium text-ink">Connectivity</h2>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <ConnectivityPill
           label={STORE_LABELS[1]}
@@ -101,29 +101,29 @@ function ConnectivityStrip({ connectivity }: { connectivity: Connectivity }) {
 function RecentFailures({ rows }: { rows: HealthFailureRow[] }) {
   return (
     <section className="animate-fade-up space-y-3">
-      <h2 className="text-sm font-medium text-ink">Recent failures</h2>
+      <h2 className="text-body font-medium text-ink">Recent failures</h2>
       {rows.length === 0 ? (
-        <div className="rounded-card border border-line bg-white p-5 text-fs13 text-muted shadow-soft">
+        <div className="rounded-card border border-line bg-white p-5 text-body text-muted shadow-soft">
           No failures across fulfillment or stock restock in recent history.
         </div>
       ) : (
         <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
-          <table className="w-full text-left text-fs12">
+          <table className="w-full text-left text-body-sm">
             <thead>
-              <tr className="border-b border-line bg-canvas/60 text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
-                <th className="px-4 py-2.5 font-medium">When</th>
-                <th className="px-4 py-2.5 font-medium">Source</th>
-                <th className="px-4 py-2.5 font-medium">Detail</th>
-                <th className="px-4 py-2.5 font-medium">Error</th>
+              <tr className="border-b border-line bg-canvas/60 text-caption uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+                <th className="px-4 py-3 font-medium">When</th>
+                <th className="px-4 py-3 font-medium">Source</th>
+                <th className="px-4 py-3 font-medium">Detail</th>
+                <th className="px-4 py-3 font-medium">Error</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
                 <tr key={row.id} className="border-b border-line last:border-0">
-                  <td className="whitespace-nowrap px-4 py-2.5 font-mono text-muted">{fmtAgo(row.at)}</td>
-                  <td className="whitespace-nowrap px-4 py-2.5 text-ink">{row.source}</td>
-                  <td className="px-4 py-2.5 font-mono text-ink">{row.detail}</td>
-                  <td className="max-w-xs truncate px-4 py-2.5 text-[#DC2626]" title={row.error ?? undefined}>
+                  <td className="whitespace-nowrap px-4 py-3 font-mono text-muted">{fmtAgo(row.at)}</td>
+                  <td className="whitespace-nowrap px-4 py-3 text-ink">{row.source}</td>
+                  <td className="px-4 py-3 font-mono text-ink">{row.detail}</td>
+                  <td className="max-w-xs truncate px-4 py-3 text-danger" title={row.error ?? undefined}>
                     {row.error ?? "—"}
                   </td>
                 </tr>
@@ -139,14 +139,14 @@ function RecentFailures({ rows }: { rows: HealthFailureRow[] }) {
 function ConfigChecklist({ checks }: { checks: ConfigCheck[] }) {
   return (
     <section className="animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft">
-      <h2 className="text-sm font-medium text-ink">Configuration</h2>
+      <h2 className="text-body font-medium text-ink">Configuration</h2>
       <ul className="mt-3 space-y-2">
         {checks.map((c) => (
-          <li key={c.label} className="flex items-center gap-2 text-fs12">
+          <li key={c.label} className="flex items-center gap-2 text-body-sm">
             {c.ok ? (
-              <CheckCircle2 size={14} className="shrink-0 text-[#16A34A]" />
+              <CheckCircle2 size={14} className="shrink-0 text-success" />
             ) : (
-              <XCircle size={14} className="shrink-0 text-[#DC2626]" />
+              <XCircle size={14} className="shrink-0 text-danger" />
             )}
             <span className="text-ink">{c.label}</span>
             {c.hint && <span className="text-muted">— {c.hint}</span>}
@@ -201,7 +201,7 @@ export default async function SystemHealthPage() {
       </div>
 
       <section className="animate-fade-up space-y-3">
-        <h2 className="text-sm font-medium text-ink">Auto-fulfill job</h2>
+        <h2 className="text-body font-medium text-ink">Auto-fulfill job</h2>
         <CronStatus />
       </section>
 

@@ -20,8 +20,8 @@ export default async function StockAlertsPage() {
             <Bell size={20} />
           </div>
           <div>
-            <h1 className="hidden text-xl font-medium text-ink md:block">Stock Alerts</h1>
-            <p className="text-fs13 text-muted md:mt-0.5">
+            <h1 className="hidden text-title font-medium text-ink md:block">Stock Alerts</h1>
+            <p className="text-body text-muted md:mt-0.5">
               Products at risk of running out, based on current Ubex stock and recent sales pace.
             </p>
           </div>

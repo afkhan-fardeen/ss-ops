@@ -12,14 +12,14 @@ function RowIcon({ status }: { status: "idle" | "busy" | "success" | "error" }) 
     return <Loader2 size={14} className="shrink-0 animate-spin-slow text-muted" />;
   }
   if (status === "success") {
-    return <Check size={14} className="shrink-0 text-[#16A34A]" />;
+    return <Check size={14} className="shrink-0 text-success" />;
   }
   if (status === "error") {
-    return <AlertCircle size={14} className="shrink-0 text-[#DC2626]" />;
+    return <AlertCircle size={14} className="shrink-0 text-danger" />;
   }
   return (
     <span
-      className="inline-block h-2.5 w-2.5 shrink-0 rounded-full border border-muted"
+      className="inline-block h-3 w-3 shrink-0 rounded-full border border-muted"
       aria-hidden
     />
   );
@@ -64,8 +64,8 @@ export function SyncProgressTray() {
     >
       {visible ? (
         <div className="rounded-card border border-line bg-white shadow-soft">
-          <div className="flex items-start justify-between gap-2 border-b border-line px-3 py-2.5">
-            <p className="text-fs13 font-medium text-ink">
+          <div className="flex items-start justify-between gap-2 border-b border-line px-3 py-3">
+            <p className="text-body font-medium text-ink">
               {running
                 ? `Syncing ${total} product${total === 1 ? "" : "s"}`
                 : `Synced ${total} product${total === 1 ? "" : "s"}`}
@@ -84,7 +84,7 @@ export function SyncProgressTray() {
               const body = (
                 <>
                   <RowIcon status={row.status} />
-                  <span className="min-w-0 truncate text-fs12 text-ink">
+                  <span className="min-w-0 truncate text-body-sm text-ink">
                     {row.productName || row.ubexId}
                   </span>
                 </>
@@ -94,7 +94,7 @@ export function SyncProgressTray() {
                   {row.status === "error" ? (
                     <Link
                       href="/stock-balance/errors"
-                      className="flex items-center gap-2 rounded-md py-1 hover:bg-canvas"
+                      className="flex items-center gap-2 rounded-control py-1 hover:bg-canvas"
                     >
                       {body}
                     </Link>
@@ -105,7 +105,7 @@ export function SyncProgressTray() {
               );
             })}
           </ul>
-          <p className="border-t border-line px-3 py-2 font-mono text-fs11 tabular-nums text-muted">
+          <p className="border-t border-line px-3 py-2 text-caption tabular-nums text-muted">
             {done} of {total} done
           </p>
         </div>

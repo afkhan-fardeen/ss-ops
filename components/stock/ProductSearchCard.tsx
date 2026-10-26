@@ -81,47 +81,47 @@ export function ProductSearchCard() {
 
   return (
     <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-      <h2 className="text-fs13 font-medium text-ink">Search product</h2>
-      <p className="mt-0.5 text-fs12 text-muted">Name, SKU, or barcode — read-only inventory and sales</p>
+      <h2 className="text-body font-medium text-ink">Search product</h2>
+      <p className="mt-0.5 text-body-sm text-muted">Name, SKU, or barcode — read-only inventory and sales</p>
       <input
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search…"
-        className="mt-3 w-full rounded-md border border-line bg-canvas px-3 py-2 text-fs13 text-ink outline-none focus:border-primary"
+        className="mt-3 w-full rounded-control border border-line bg-canvas px-3 py-2 text-body text-ink outline-none focus:border-primary"
       />
 
       {loading ? (
-        <p className="mt-4 text-fs13 text-muted">Loading…</p>
+        <p className="mt-4 text-body text-muted">Loading…</p>
       ) : null}
 
       {!loading && debounced && data?.ok && !data.found ? (
-        <p className="mt-4 text-fs13 text-muted">No matching product.</p>
+        <p className="mt-4 text-body text-muted">No matching product.</p>
       ) : null}
 
       {!loading && data?.error ? (
-        <p className="mt-4 text-fs13 text-[#DC2626]">{data.error}</p>
+        <p className="mt-4 text-body text-danger">{data.error}</p>
       ) : null}
 
       {product ? (
         <div className="mt-4 space-y-4 border-t border-line pt-4">
           <div>
-            <p className="text-fs14 font-medium text-ink">{product.productName}</p>
-            <p className="mt-0.5 font-mono text-fs12 text-muted">
+            <p className="text-body-lg font-medium text-ink">{product.productName}</p>
+            <p className="mt-0.5 font-mono text-body-sm text-muted">
               SKU {product.sku} · barcode {product.barcode}
             </p>
           </div>
 
           <div>
-            <p className="text-fs11 font-medium uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Inventory</p>
-            <dl className="mt-2 space-y-1 text-fs13">
+            <p className="text-caption font-medium uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Inventory</p>
+            <dl className="mt-2 space-y-1 text-body">
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">Ubex stock</dt>
-                <dd className="font-mono tabular-nums text-ink">{product.ubexStock}</dd>
+                <dd className="tabular-nums text-ink">{product.ubexStock}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">{STORE_LABELS[1]}</dt>
-                <dd className="font-mono tabular-nums text-ink">
+                <dd className="tabular-nums text-ink">
                   on hand {product.storeA.onHand ?? "—"} · available {product.storeA.available ?? "—"} ·
                   committed {product.storeA.committed ?? "—"}
                 </dd>
@@ -129,7 +129,7 @@ export function ProductSearchCard() {
               {product.storeB ? (
                 <div className="flex justify-between gap-4">
                   <dt className="text-muted">{STORE_LABELS[2]}</dt>
-                  <dd className="font-mono tabular-nums text-ink">
+                  <dd className="tabular-nums text-ink">
                     on hand {product.storeB.onHand ?? "—"} · available {product.storeB.available ?? "—"} ·
                     committed {product.storeB.committed ?? "—"}
                   </dd>
@@ -137,13 +137,13 @@ export function ProductSearchCard() {
               ) : null}
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">Total committed</dt>
-                <dd className="font-mono tabular-nums text-ink">{product.commitment.totalCommitted}</dd>
+                <dd className="tabular-nums text-ink">{product.commitment.totalCommitted}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">Can be sent now</dt>
                 <dd
-                  className={`font-mono tabular-nums ${
-                    product.commitment.shortBy > 0 ? "text-[#DC2626]" : "text-ink"
+                  className={`tabular-nums ${
+                    product.commitment.shortBy > 0 ? "text-danger" : "text-ink"
                   }`}
                 >
                   {product.commitment.canBeSent}
@@ -154,18 +154,18 @@ export function ProductSearchCard() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">Truly available</dt>
-                <dd className="font-mono tabular-nums text-ink">{product.commitment.trulyAvailable}</dd>
+                <dd className="tabular-nums text-ink">{product.commitment.trulyAvailable}</dd>
               </div>
             </dl>
           </div>
 
           <div>
             <div className="flex items-center justify-between gap-3">
-              <p className="text-fs11 font-medium uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Sales</p>
+              <p className="text-caption font-medium uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Sales</p>
               <select
                 value={window}
                 onChange={(e) => setWindow(e.target.value as SalesWindow)}
-                className="rounded-md border border-line bg-canvas px-2 py-1 text-fs12 text-ink"
+                className="rounded-control border border-line bg-canvas px-2 py-1 text-body-sm text-ink"
               >
                 {WINDOW_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -174,14 +174,14 @@ export function ProductSearchCard() {
                 ))}
               </select>
             </div>
-            <dl className="mt-2 space-y-1 text-fs13">
+            <dl className="mt-2 space-y-1 text-body">
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">Units sold</dt>
-                <dd className="font-mono tabular-nums text-ink">{product.sales.unitsSold}</dd>
+                <dd className="tabular-nums text-ink">{product.sales.unitsSold}</dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">By store</dt>
-                <dd className="font-mono tabular-nums text-ink">
+                <dd className="tabular-nums text-ink">
                   {STORE_LABELS[1]} {product.sales.storeA} · {STORE_LABELS[2]} {product.sales.storeB}
                 </dd>
               </div>

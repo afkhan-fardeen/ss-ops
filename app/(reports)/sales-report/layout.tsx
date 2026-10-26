@@ -12,7 +12,7 @@ export default function SalesReportLayout({ children }: { children: React.ReactN
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo.svg" alt="Seissense" className="h-6 w-auto" />
-          <Link href="/dashboard" className="text-fs12 font-medium text-muted transition hover:text-ink">
+          <Link href="/dashboard" className="text-body-sm font-medium text-muted transition hover:text-ink">
             Seissense Ops Portal
           </Link>
         </div>

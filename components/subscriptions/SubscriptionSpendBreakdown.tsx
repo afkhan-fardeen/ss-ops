@@ -16,10 +16,10 @@ export function SubscriptionSpendBreakdown({
 
   return (
     <div className="rounded-card border border-line bg-white p-5 shadow-soft">
-      <h3 className="text-fs13 font-medium text-ink">{title}</h3>
-      <p className="mt-0.5 text-fs12 text-muted">Active · est. monthly equivalent</p>
+      <h3 className="text-body font-medium text-ink">{title}</h3>
+      <p className="mt-0.5 text-body-sm text-muted">Active · est. monthly equivalent</p>
       {rows.length === 0 ? (
-        <p className="mt-6 text-center text-fs12 text-muted">{emptyMessage}</p>
+        <p className="mt-6 text-center text-body-sm text-muted">{emptyMessage}</p>
       ) : (
         <ul className="mt-4 space-y-3">
           {rows.map((r) => {
@@ -29,18 +29,18 @@ export function SubscriptionSpendBreakdown({
                 : Math.max(8, (r.count / Math.max(...rows.map((x) => x.count), 1)) * 100);
             return (
               <li key={r.label}>
-                <div className="mb-1 flex items-start justify-between gap-3 text-fs12">
+                <div className="mb-1 flex items-start justify-between gap-3 text-body-sm">
                   <div className="min-w-0">
                     <span className="block truncate text-ink">{r.label}</span>
-                    <span className="text-fs11 text-muted">
+                    <span className="text-caption text-muted">
                       {r.count} plan{r.count === 1 ? "" : "s"}
                     </span>
                   </div>
-                  <span className="shrink-0 text-right font-mono tabular-nums text-ink">
+                  <span className="shrink-0 text-right tabular-nums text-ink">
                     {formatSpendRowTotals(r.totals)}
                   </span>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-canvas">
+                <div className="h-2 overflow-hidden rounded-full bg-canvas">
                   <div
                     className="h-full rounded-full bg-primary"
                     style={{ width: `${widthPct}%` }}

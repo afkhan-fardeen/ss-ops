@@ -1,5 +1,12 @@
 import type { Config } from "tailwindcss";
 
+/**
+ * Design tokens — see docs/design-system.md. Rules:
+ *  - 4px grid: spacing/line-heights are multiples of 4.
+ *  - 8 type roles only (size + line-height; weight is chosen explicitly: 400 / 500 / 600).
+ *  - 3 radii (control, card, sheet) + full for pills.
+ *  - Neutral slate + one indigo accent + 4 semantic colours, all >= 4.5:1 text contrast.
+ */
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,19 +16,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Neutral slate scale + one indigo accent (standard modern-admin palette).
-        canvas: "#F8FAFC", // page background (slate-50)
-        ink: "#0F172A", // primary text (slate-900)
-        muted: "#64748B", // secondary text (slate-500)
-        line: "#E2E8F0", // borders / dividers (slate-200)
+        canvas: "#F8FAFC", // page background
+        ink: "#0F172A", // primary text
+        muted: "#5B6B82", // secondary text (5.2:1 on canvas)
+        line: "#E2E8F0", // borders, dividers
         primary: {
-          DEFAULT: "#4F46E5", // indigo-600
-          soft: "#EEF2FF", // indigo-50
+          DEFAULT: "#4F46E5",
+          strong: "#4338CA", // pressed / text on primary-soft
+          soft: "#EEF2FF",
         },
-        "stock-b": {
-          DEFAULT: "#64748B",
-          bg: "rgba(100,116,139,0.10)",
-        },
+        // Semantic colours: `DEFAULT` is TEXT/ICON colour on white or on `soft` (>= 4.5:1); `soft` backgrounds; `line` borders.
+        success: { DEFAULT: "#15803D", soft: "#F0FDF4", line: "#BBF7D0" },
+        warning: { DEFAULT: "#B45309", soft: "#FFFBEB", line: "#FDE68A" },
+        danger: { DEFAULT: "#B91C1C", soft: "#FEF2F2", line: "#FECACA" },
+        info: { DEFAULT: "#1D4ED8", soft: "#EFF6FF", line: "#BFDBFE" },
+        "stock-b": { DEFAULT: "#5B6B82", bg: "rgba(91,107,130,0.10)" },
       },
       fontFamily: {
         sans: [
@@ -38,14 +47,20 @@ const config: Config = {
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       fontSize: {
-        // Material 3 type floor on phones (label >= 12px, body >= 14px); original sizes from md up.
-        fs11: ["var(--fs-11)", { lineHeight: "1.4" }],
-        fs12: ["var(--fs-12)", { lineHeight: "1.45" }],
-        fs13: ["var(--fs-13)", { lineHeight: "1.5" }],
-        fs14: ["var(--fs-14)", { lineHeight: "1.5" }],
+        // role: [size, { lineHeight }] — values switch at md via CSS variables (globals.css)
+        display: ["var(--t-display)", { lineHeight: "var(--t-display-lh)", letterSpacing: "-0.01em" }],
+        title: ["var(--t-title)", { lineHeight: "var(--t-title-lh)", letterSpacing: "-0.005em" }],
+        heading: ["var(--t-heading)", { lineHeight: "var(--t-heading-lh)" }],
+        "body-lg": ["var(--t-body-lg)", { lineHeight: "var(--t-body-lg-lh)" }],
+        body: ["14px", { lineHeight: "20px" }],
+        "body-sm": ["13px", { lineHeight: "20px" }],
+        caption: ["12px", { lineHeight: "16px" }],
+        code: ["13px", { lineHeight: "20px" }],
       },
       borderRadius: {
-        card: "10px",
+        control: "8px", // buttons, inputs, chips (rect), small tiles
+        card: "12px", // cards, lists, tables
+        sheet: "16px", // top corners of bottom sheets, dialogs
       },
       boxShadow: {
         soft: "0 1px 2px 0 rgb(15 23 42 / 0.05)",

@@ -24,12 +24,12 @@ export function UbexStatusLine({
 
   if (!tokenConfigured) {
     return (
-      <div className="flex items-start gap-2 rounded-card border border-[#D97706]/25 bg-[rgba(217,119,6,0.12)] px-3 py-2 text-fs12 text-ink">
-        <AlertTriangle size={14} className="mt-0.5 shrink-0 text-[#D97706]" />
+      <div className="flex items-start gap-2 rounded-card border border-warning/25 bg-warning-soft px-3 py-2 text-body-sm text-ink">
+        <AlertTriangle size={14} className="mt-0.5 shrink-0 text-warning" />
         <p>
-          Add a non-empty <code className="font-mono text-fs11">UBEX_API_TOKEN</code> in{" "}
-          <code className="font-mono text-fs11">.env</code> and restart{" "}
-          <code className="font-mono text-fs11">npm run dev</code>. Matching uses the last 4 digits of the Shopify
+          Add a non-empty <code className="font-mono text-caption">UBEX_API_TOKEN</code> in{" "}
+          <code className="font-mono text-caption">.env</code> and restart{" "}
+          <code className="font-mono text-caption">npm run dev</code>. Matching uses the last 4 digits of the Shopify
           order number against Ubex shipment references.
         </p>
       </div>
@@ -38,15 +38,15 @@ export function UbexStatusLine({
 
   if (apiMessage) {
     return (
-      <div className="flex items-start gap-2 rounded-card border border-[#DC2626]/25 bg-[rgba(220,38,38,0.10)] px-3 py-2 text-fs12 text-ink">
-        <AlertTriangle size={14} className="mt-0.5 shrink-0 text-[#DC2626]" />
+      <div className="flex items-start gap-2 rounded-card border border-danger/25 bg-danger-soft px-3 py-2 text-body-sm text-ink">
+        <AlertTriangle size={14} className="mt-0.5 shrink-0 text-danger" />
         <div>
-          <div className="font-medium text-[#DC2626]">Ubex Partner API is disabled for this account.</div>
+          <div className="font-medium text-danger">Ubex Partner API is disabled for this account.</div>
           <p className="mt-0.5 text-muted">
-            API responded: <span className="font-mono text-fs11">{apiMessage}</span>
+            API responded: <span className="font-mono text-caption">{apiMessage}</span>
           </p>
           <p className="mt-0.5 text-muted">
-            Contact Ubex to enable Partner API access for <code className="font-mono text-fs11">Seissense</code>.
+            Contact Ubex to enable Partner API access for <code className="font-mono text-caption">Seissense</code>.
             Until then, UBEX IDs and tracking links cannot be populated.
           </p>
         </div>
@@ -56,11 +56,11 @@ export function UbexStatusLine({
 
   if (error) {
     return (
-      <div className="flex items-start gap-2 rounded-card border border-[#DC2626]/25 bg-[rgba(220,38,38,0.10)] px-3 py-2 text-fs12 text-ink">
-        <AlertTriangle size={14} className="mt-0.5 shrink-0 text-[#DC2626]" />
+      <div className="flex items-start gap-2 rounded-card border border-danger/25 bg-danger-soft px-3 py-2 text-body-sm text-ink">
+        <AlertTriangle size={14} className="mt-0.5 shrink-0 text-danger" />
         <div>
-          <div className="font-medium text-[#DC2626]">Couldn&apos;t fetch Ubex shipments.</div>
-          <p className="mt-0.5 font-mono text-fs11 text-muted">{error}</p>
+          <div className="font-medium text-danger">Couldn&apos;t fetch Ubex shipments.</div>
+          <p className="mt-0.5 font-mono text-caption text-muted">{error}</p>
         </div>
       </div>
     );
@@ -71,7 +71,7 @@ export function UbexStatusLine({
   const hasConflicts = (conflictsCount ?? 0) > 0;
 
   return (
-    <div className="flex items-start gap-2 text-fs12 text-muted">
+    <div className="flex items-start gap-2 text-body-sm text-muted">
       <Info size={13} className="mt-0.5 shrink-0 text-muted" />
       <p>
         Ubex linked <span className="font-medium text-ink">{linked}</span> of {total} {rowNoun}
@@ -83,7 +83,7 @@ export function UbexStatusLine({
         {hasConflicts ? (
           <>
             {" "}
-            <span className="text-[#D97706]">
+            <span className="text-warning">
               {conflictsCount} last-4 collision{conflictsCount === 1 ? "" : "s"} skipped
             </span>{" "}
             to avoid mispushing.

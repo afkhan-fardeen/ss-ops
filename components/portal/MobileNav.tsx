@@ -34,7 +34,7 @@ function Tab({
       href={href}
       aria-current={active ? "page" : undefined}
       className={[
-        "flex h-[72px] flex-1 flex-col items-center justify-center gap-1 text-fs11 font-medium transition-colors",
+        "flex h-[72px] flex-1 flex-col items-center justify-center gap-1 text-caption font-medium transition-colors",
         active ? "text-primary" : "text-muted active:text-ink",
       ].join(" ")}
     >
@@ -126,7 +126,7 @@ export function MobileNav({
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="focus-ring absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-4 place-items-center rounded-2xl bg-primary text-white shadow-[0_4px_12px_rgba(79,70,229,0.4)] transition-transform active:scale-95"
+            className="focus-ring absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-4 place-items-center rounded-sheet bg-primary text-white shadow-[0_4px_12px_rgba(79,70,229,0.4)] transition-transform active:scale-95"
           >
             <span className={`transition-transform duration-200 ${open ? "rotate-90" : ""}`}>
               {open ? <X size={24} /> : <LayoutGrid size={24} />}
@@ -164,10 +164,10 @@ function MenuSheet({
         className="animate-backdrop absolute inset-0 bg-ink/40"
       />
       <div
-        className="animate-sheet-up absolute inset-x-0 flex max-h-[calc(100dvh-var(--mobile-nav-h)-48px)] flex-col overflow-hidden rounded-t-3xl bg-white shadow-pop"
+        className="animate-sheet-up absolute inset-x-0 flex max-h-[calc(100dvh-var(--mobile-nav-h)-48px)] flex-col overflow-hidden rounded-t-sheet bg-white shadow-pop"
         style={{ bottom: "var(--mobile-nav-h)" }}
       >
-        <div className="mx-auto mt-2.5 h-1 w-10 shrink-0 rounded-full bg-line" aria-hidden />
+        <div className="mx-auto mt-3 h-1 w-10 shrink-0 rounded-full bg-line" aria-hidden />
 
         <div className="overflow-y-auto overscroll-contain px-4 pb-8 pt-3">
           <button
@@ -176,7 +176,7 @@ function MenuSheet({
               onClose();
               openCommandPalette();
             }}
-            className="focus-ring flex min-h-12 w-full items-center gap-2.5 rounded-xl border border-line bg-canvas px-3.5 text-[15px] text-muted active:bg-line/40"
+            className="focus-ring flex min-h-12 w-full items-center gap-3 rounded-card border border-line bg-canvas px-4 text-heading text-muted active:bg-line/40"
           >
             <Search size={17} />
             Search modules and pages…
@@ -188,8 +188,8 @@ function MenuSheet({
 
           {groups.map((g) => (
             <section key={g.domain} className="mt-5">
-              <h2 className="px-1 pb-2 text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">{g.label}</h2>
-              <ul className="grid grid-cols-3 gap-2.5">
+              <h2 className="px-1 pb-2 text-body-sm font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">{g.label}</h2>
+              <ul className="grid grid-cols-3 gap-3">
                 {g.modules.map((m) => {
                   const Icon = m.icon;
                   const active = isPathInModule(pathname, m.id);
@@ -198,7 +198,7 @@ function MenuSheet({
                       <Link
                         href={m.primaryHref}
                         className={[
-                          "flex h-full min-h-[92px] flex-col items-center justify-center gap-2 rounded-2xl border px-1.5 py-3 text-center transition-colors",
+                          "flex h-full min-h-[92px] flex-col items-center justify-center gap-2 rounded-sheet border px-2 py-3 text-center transition-colors",
                           active
                             ? "border-primary/30 bg-primary-soft"
                             : "border-line bg-white active:bg-canvas",
@@ -206,13 +206,13 @@ function MenuSheet({
                       >
                         <span
                           className={[
-                            "grid h-11 w-11 place-items-center rounded-xl",
+                            "grid h-11 w-11 place-items-center rounded-card",
                             active ? "bg-primary text-white" : "bg-primary-soft text-primary",
                           ].join(" ")}
                         >
                           <Icon size={22} strokeWidth={1.9} />
                         </span>
-                        <span className="text-fs13 font-medium leading-tight text-ink">{m.label}</span>
+                        <span className="text-body font-medium leading-tight text-ink">{m.label}</span>
                       </Link>
                     </li>
                   );
@@ -225,7 +225,7 @@ function MenuSheet({
             {showAdminLink ? (
               <Link
                 href="/admin"
-                className="flex min-h-12 items-center gap-3 rounded-xl px-2 text-[15px] font-medium text-ink active:bg-canvas"
+                className="flex min-h-12 items-center gap-3 rounded-card px-2 text-heading font-medium text-ink active:bg-canvas"
               >
                 <Shield size={19} strokeWidth={1.9} className="text-muted" />
                 Admin tools
@@ -234,7 +234,7 @@ function MenuSheet({
             <button
               type="button"
               onClick={() => void logout()}
-              className="flex min-h-12 w-full items-center gap-3 rounded-xl px-2 text-[15px] font-medium text-red-700 active:bg-red-50"
+              className="flex min-h-12 w-full items-center gap-3 rounded-card px-2 text-heading font-medium text-danger active:bg-danger-soft"
             >
               <LogOut size={19} strokeWidth={1.9} />
               Sign out

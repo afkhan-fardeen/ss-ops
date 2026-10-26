@@ -14,18 +14,18 @@
 :root {
   /* Height of the phone bottom bar including the home-indicator safe area (Material 3 navigation bar). */
   --mobile-nav-h: calc(72px + env(safe-area-inset-bottom));
-  /* Type scale: phone values (Material 3 minimums) */
-  --fs-11: 12px;
-  --fs-12: 13px;
-  --fs-13: 14px;
-  --fs-14: 15px;
+  /* Type roles — phone values (md and up override below). 4px-grid line heights. */
+  --t-display: 24px;  --t-display-lh: 32px;
+  --t-title: 18px;    --t-title-lh: 24px;
+  --t-heading: 16px;  --t-heading-lh: 24px;
+  --t-body-lg: 16px;  --t-body-lg-lh: 24px;
 }
 @media (min-width: 768px) {
   :root {
-    --fs-11: 11px;
-    --fs-12: 12px;
-    --fs-13: 13px;
-    --fs-14: 14px;
+    --t-display: 28px;  --t-display-lh: 36px;
+    --t-title: 20px;    --t-title-lh: 28px;
+    --t-heading: 14px;  --t-heading-lh: 20px;
+    --t-body-lg: 14px;  --t-body-lg-lh: 20px;
   }
 }
 

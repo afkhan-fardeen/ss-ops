@@ -20,8 +20,8 @@ export default async function StockBalancePage() {
             <Scale size={20} />
           </div>
           <div>
-            <h1 className="hidden text-xl font-medium text-ink md:block">Stock balance</h1>
-            <p className="text-fs13 text-muted md:mt-0.5">
+            <h1 className="hidden text-title font-medium text-ink md:block">Stock balance</h1>
+            <p className="text-body text-muted md:mt-0.5">
               Compare Ubex sellable stock with Shopify (on hand, available, committed). Δ is Ubex vs
               available; joined by barcode.
             </p>

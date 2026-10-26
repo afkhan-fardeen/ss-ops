@@ -155,17 +155,17 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
       {/* Search form */}
       <div className="rounded-card border border-line bg-white p-5 shadow-soft">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:flex-row sm:items-end">
-          <div className="min-w-0 flex-1 space-y-1.5">
+          <div className="min-w-0 flex-1 space-y-2">
             <label
               htmlFor="order-input"
-              className="block text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted"
+              className="block text-body-sm font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted"
             >
               Order number
             </label>
-            <div className="flex min-h-11 overflow-hidden rounded-lg border border-line bg-canvas focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/40">
+            <div className="flex min-h-11 overflow-hidden rounded-control border border-line bg-canvas focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/40">
               <span
                 aria-hidden
-                className="inline-flex shrink-0 items-center border-r border-line bg-white/70 px-3 font-mono text-base font-medium text-muted"
+                className="inline-flex shrink-0 items-center border-r border-line bg-white/70 px-3 font-mono text-body-lg font-medium text-muted"
               >
                 {prefixChip(store)}
               </span>
@@ -177,7 +177,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
                 value={orderDigits}
                 onChange={(e) => setOrderDigits(digitsOnly(e.target.value))}
                 placeholder="252701"
-                className="min-h-11 w-full min-w-0 bg-transparent px-3 font-mono text-base text-ink placeholder:text-muted/60 focus:outline-none disabled:opacity-60"
+                className="min-h-11 w-full min-w-0 bg-transparent px-3 font-mono text-body-lg text-ink placeholder:text-muted/60 focus:outline-none disabled:opacity-60"
                 disabled={isLoading}
                 autoComplete="off"
                 autoCorrect="off"
@@ -187,10 +187,10 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           </div>
 
           {storeCount === 2 && (
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label
                 htmlFor="store-select"
-                className="block text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted"
+                className="block text-body-sm font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted"
               >
                 Store
               </label>
@@ -198,7 +198,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
                 id="store-select"
                 value={store}
                 onChange={(e) => setStore(Number(e.target.value) as 1 | 2)}
-                className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 sm:w-auto"
+                className="min-h-11 w-full rounded-control border border-line bg-canvas px-3 text-body-lg text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 sm:w-auto"
                 disabled={isLoading}
               >
                 <option value={1}>{STORE_LABELS[1]}</option>
@@ -210,7 +210,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           <button
             type="submit"
             disabled={isLoading || !hasDigits}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-primary px-5 text-body font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {isLoading ? (
               <Loader2 size={15} className="animate-spin" />
@@ -228,15 +228,15 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           {/* Metadata bar */}
           {awbExtra && (
             <div className="flex flex-wrap items-center gap-3 rounded-card border border-line bg-white p-4 shadow-soft">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 font-mono text-fs12 font-medium text-primary">
+              <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 font-mono text-body-sm font-medium text-primary">
                 <Tag size={11} />
                 {awbExtra.orderName}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 font-mono text-fs12 font-medium text-primary">
+              <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 font-mono text-body-sm font-medium text-primary">
                 {awbExtra.tracking}
               </span>
               {awbExtra.source === "live" && (
-                <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-fs11 font-medium text-primary">
+                <span className="rounded-full bg-primary-soft px-3 py-0.5 text-caption font-medium text-primary">
                   live match
                 </span>
               )}
@@ -264,7 +264,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           {!isLoading && (
             <button
               onClick={reset}
-              className="text-fs12 font-medium text-muted underline underline-offset-2 hover:text-ink"
+              className="text-body-sm font-medium text-muted underline underline-offset-2 hover:text-ink"
             >
               Look up another order
             </button>
@@ -296,12 +296,12 @@ function PdfColumn({
     <div className="space-y-3">
       {/* Column header */}
       <div className="flex items-center justify-between gap-2">
-        <div className={`flex items-center gap-1.5 text-fs12 font-medium ${accentClass}`}>
+        <div className={`flex items-center gap-2 text-body-sm font-medium ${accentClass}`}>
           {icon}
           {title}
           {state.status === "found" && (
             <span
-              className={`ml-1 rounded-full ${accentBgClass} px-2.5 py-0.5 font-mono text-fs11`}
+              className={`ml-1 rounded-full ${accentBgClass} px-3 py-0.5 font-mono text-caption`}
             >
               {state.label}
             </span>
@@ -314,7 +314,7 @@ function PdfColumn({
               href={state.directUrl ?? state.blobUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 rounded-lg border border-line px-2.5 py-1 text-fs12 font-medium text-ink transition-colors hover:bg-canvas"
+              className="flex items-center gap-1 rounded-control border border-line px-3 py-1 text-body-sm font-medium text-ink transition-colors hover:bg-canvas"
             >
               <ExternalLink size={12} />
               New tab
@@ -322,7 +322,7 @@ function PdfColumn({
             <a
               href={state.blobUrl}
               download={`${title.toLowerCase().replace(" ", "-")}.pdf`}
-              className="flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-fs12 font-medium text-white shadow-soft transition-all hover:opacity-90"
+              className="flex items-center gap-1 rounded-control bg-primary px-3 py-1 text-body-sm font-medium text-white shadow-soft transition-all hover:opacity-90"
             >
               <Download size={12} />
               Download
@@ -335,7 +335,7 @@ function PdfColumn({
       {state.status === "loading" && (
         <div className="flex h-[200px] items-center justify-center gap-2 rounded-card border border-line bg-white shadow-soft text-muted">
           <Loader2 size={16} className={`animate-spin shrink-0 ${accentClass}`} />
-          <span className="text-sm">Loading {title.toLowerCase()}…</span>
+          <span className="text-body">Loading {title.toLowerCase()}…</span>
         </div>
       )}
 
@@ -350,14 +350,14 @@ function PdfColumn({
       )}
 
       {state.status === "error" && (
-        <div className="rounded-card border border-red-200 bg-red-50 p-4">
-          <div className="flex items-start gap-2.5">
-            <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-600" />
+        <div className="rounded-card border border-danger-line bg-danger-soft p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle size={15} className="mt-0.5 shrink-0 text-danger" />
             <div className="space-y-0.5">
-              <p className="text-fs12 font-medium text-red-700">
+              <p className="text-body-sm font-medium text-danger">
                 {columnErrorTitle(state.reason, title)}
               </p>
-              <p className="text-fs12 text-ink/80">{state.message}</p>
+              <p className="text-body-sm text-ink/80">{state.message}</p>
             </div>
           </div>
         </div>

@@ -85,7 +85,7 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={[
-        "focus-ring rounded-full border px-2.5 py-1 text-fs11 font-medium transition",
+        "focus-ring rounded-full border px-3 py-1 text-caption font-medium transition",
         active
           ? "border-ink bg-ink text-white"
           : "border-line bg-white text-muted hover:bg-canvas",
@@ -110,7 +110,7 @@ function ModeTab({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-lg px-3 py-2 text-fs13 font-medium transition",
+        "rounded-control px-3 py-2 text-body font-medium transition",
         active ? "bg-white text-ink shadow-soft" : "text-muted hover:text-ink",
       ].join(" ")}
     >
@@ -231,20 +231,20 @@ export function StockBalanceView({
   return (
     <div className="space-y-4">
       <div className="rounded-card border border-line border-l-4 border-l-primary bg-white p-4 shadow-soft">
-        <p className="text-fs12 text-muted">
+        <p className="text-body-sm text-muted">
           Shared Ubex pool · {STORE_LABELS[1]} ({locationName})
           {store2Configured
             ? ` · ${STORE_LABELS[2]} (${locationBName ?? "auto"})`
             : ` · ${STORE_LABELS[2]} not configured`}
         </p>
-        <p className="mt-1 text-fs13 text-ink">
+        <p className="mt-1 text-body text-ink">
           {itemCount} {mode === "sweep" ? "loaded" : "on this page"} · {summary.mismatched} need
           sync · fetched {new Date(fetchedAt).toLocaleString()}
         </p>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="inline-flex items-center gap-1 rounded-lg border border-line bg-canvas p-1">
+        <div className="inline-flex items-center gap-1 rounded-control border border-line bg-canvas p-1">
           <ModeTab
             active={mode === "sweep"}
             label={`Needs attention${mismatchCount !== null ? ` (${mismatchCount})` : ""}`}
@@ -256,7 +256,7 @@ export function StockBalanceView({
           type="button"
           disabled={refreshLoading || running}
           onClick={() => onRefresh?.()}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+          className="inline-flex min-h-9 items-center gap-2 rounded-card border border-line bg-white px-3 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
         >
           {refreshLoading ? (
             <Loader2 size={14} className="animate-spin" />
@@ -290,7 +290,7 @@ export function StockBalanceView({
         <button
           type="button"
           onClick={() => setFilters(WEEKLY_RESTOCK_PRESET)}
-          className="rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1 text-fs11 font-medium text-primary transition hover:opacity-90"
+          className="rounded-full border border-primary/30 bg-primary-soft px-3 py-1 text-caption font-medium text-primary transition hover:opacity-90"
         >
           Weekly restock preset
         </button>
@@ -298,7 +298,7 @@ export function StockBalanceView({
           <button
             type="button"
             onClick={() => setFilters(DEFAULT_STOCK_BALANCE_FILTERS)}
-            className="text-fs11 font-medium text-muted hover:text-ink"
+            className="text-caption font-medium text-muted hover:text-ink"
           >
             Clear filters
           </button>
@@ -310,7 +310,7 @@ export function StockBalanceView({
           <button
             type="button"
             onClick={selectAllMatching}
-            className="text-fs12 font-medium text-primary hover:underline"
+            className="text-body-sm font-medium text-primary hover:underline"
           >
             Select all matching ({restockable.length})
           </button>
@@ -319,7 +319,7 @@ export function StockBalanceView({
               <button
                 type="button"
                 onClick={clearSelection}
-                className="text-fs12 font-medium text-muted hover:text-ink"
+                className="text-body-sm font-medium text-muted hover:text-ink"
               >
                 Clear selection
               </button>
@@ -327,7 +327,7 @@ export function StockBalanceView({
                 type="button"
                 disabled={running}
                 onClick={() => setConfirmRows(selectedRows)}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-card bg-primary px-3 text-fs12 font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+                className="inline-flex min-h-9 items-center gap-2 rounded-card bg-primary px-3 text-body-sm font-medium text-white transition hover:opacity-90 disabled:opacity-60"
               >
                 <PackagePlus size={14} />
                 Sync selected ({selectedRows.length})
@@ -338,7 +338,7 @@ export function StockBalanceView({
       ) : null}
 
       {filtered.length === 0 ? (
-        <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-fs13 text-muted shadow-soft">
+        <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-body text-muted shadow-soft">
           {mode === "sweep"
             ? "No mismatches in this filter set. Clear filters to see the full sweep."
             : "No products in this view. Try another search or clear filters."}
@@ -362,7 +362,7 @@ export function StockBalanceView({
         <div className="hidden overflow-hidden rounded-card border border-line bg-white shadow-soft md:block">
           <div className="max-h-[65vh] overflow-auto">
             <table className="w-full min-w-[760px] border-collapse text-left">
-              <thead className="sticky top-0 z-10 bg-canvas text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+              <thead className="sticky top-0 z-10 bg-canvas text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                 <tr className="border-b border-line">
                   <th className="w-8 px-3 py-3" />
                   <th className="px-3 py-3">Product</th>
@@ -409,7 +409,7 @@ export function StockBalanceView({
               <button
                 type="button"
                 onClick={() => setActiveId(null)}
-                className="rounded-card p-1.5 text-muted hover:bg-canvas hover:text-ink"
+                className="rounded-card p-2 text-muted hover:bg-canvas hover:text-ink"
                 aria-label="Close"
               >
                 <X size={16} />
@@ -435,8 +435,8 @@ export function StockBalanceView({
           <div className="w-full max-w-lg rounded-card border border-line bg-white p-5 shadow-pop">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="text-[15px] font-medium text-ink">Confirm sync</h3>
-                <p className="mt-1 text-fs12 text-muted">
+                <h3 className="text-heading font-medium text-ink">Confirm sync</h3>
+                <p className="mt-1 text-body-sm text-muted">
                   Sets Shopify on-hand from Ubex using shared-pool math
                   {store2Configured ? " for both stores" : ""}.
                 </p>
@@ -444,12 +444,12 @@ export function StockBalanceView({
               <button
                 type="button"
                 onClick={() => setConfirmRows(null)}
-                className="rounded-card p-1.5 text-muted hover:bg-canvas hover:text-ink"
+                className="rounded-card p-2 text-muted hover:bg-canvas hover:text-ink"
               >
                 <X size={16} />
               </button>
             </div>
-            <ul className="mt-4 max-h-64 space-y-2 overflow-y-auto text-fs12">
+            <ul className="mt-4 max-h-64 space-y-2 overflow-y-auto text-body-sm">
               {confirmRows.map((r) => {
                 const targetA = targetShopifyOnHandForStore(
                   r.ubexStock,
@@ -461,10 +461,10 @@ export function StockBalanceView({
                 return (
                   <li key={r.ubexId} className="rounded-card border border-line px-3 py-2">
                     <p className="font-medium text-ink">{r.productName}</p>
-                    <p className="font-mono text-muted">
+                    <p className="tabular-nums text-muted">
                       Ubex {r.ubexStock} · available to sell {r.sharedAvailable ?? "—"}
                     </p>
-                    <p className="font-mono text-muted">
+                    <p className="tabular-nums text-muted">
                       {STORE_LABELS[1]} on-hand {r.storeA.onHand ?? "—"} → {targetA}
                       {targetB !== null
                         ? ` · ${STORE_LABELS[2]} ${r.storeB?.onHand ?? "—"} → ${targetB}`
@@ -480,14 +480,14 @@ export function StockBalanceView({
               <button
                 type="button"
                 onClick={() => setConfirmRows(null)}
-                className="rounded-card border border-line px-4 py-2 text-fs13 font-medium text-muted"
+                className="rounded-card border border-line px-4 py-2 text-body font-medium text-muted"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => void runConfirm()}
-                className="inline-flex items-center gap-1.5 rounded-card bg-primary px-4 py-2 text-fs13 font-medium text-white"
+                className="inline-flex items-center gap-2 rounded-card bg-primary px-4 py-2 text-body font-medium text-white"
               >
                 <PackagePlus size={15} />
                 Sync {confirmRows.length}

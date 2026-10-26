@@ -20,8 +20,8 @@ export default async function UbexInventoryPage() {
             <Package size={20} />
           </div>
           <div>
-            <h1 className="hidden text-xl font-medium text-ink md:block">Ubex inventory</h1>
-            <p className="text-fs13 text-muted md:mt-0.5">
+            <h1 className="hidden text-title font-medium text-ink md:block">Ubex inventory</h1>
+            <p className="text-body text-muted md:mt-0.5">
               Live warehouse stock grouped by product name, with Shopify committed from both stores.
               Read-only — no sync.
             </p>

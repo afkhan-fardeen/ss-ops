@@ -34,7 +34,7 @@ export function SendSalesReportButton({ dayKey }: { dayKey: string }) {
       type="button"
       onClick={() => void send()}
       disabled={sending}
-      className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-line bg-white px-2.5 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+      className="focus-ring inline-flex items-center gap-2 rounded-control border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
     >
       {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
       {sending ? "Sending…" : "Send now"}

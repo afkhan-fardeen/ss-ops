@@ -60,8 +60,8 @@ export default async function FulfillmentDashboardPage() {
       }
     >
       <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-        <h2 className="text-fs13 font-medium text-ink">Auto-fulfill cron</h2>
-        <p className="mt-1 text-fs12 text-muted">Recent scheduled sync runs</p>
+        <h2 className="text-body font-medium text-ink">Auto-fulfill cron</h2>
+        <p className="mt-1 text-body-sm text-muted">Recent scheduled sync runs</p>
         <div className="mt-3">
           <CronStatus />
         </div>

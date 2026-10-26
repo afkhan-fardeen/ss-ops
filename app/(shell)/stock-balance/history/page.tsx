@@ -18,12 +18,12 @@ export default async function StockBalanceHistoryPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl rounded-card border border-[#DC2626]/25 bg-[rgba(220,38,38,0.10)] p-6">
-        <div className="flex items-center gap-2 text-[#DC2626]">
+      <div className="mx-auto max-w-2xl rounded-card border border-danger/25 bg-danger-soft p-6">
+        <div className="flex items-center gap-2 text-danger">
           <AlertTriangle size={18} />
-          <h2 className="text-base font-medium">Could not load history</h2>
+          <h2 className="text-heading font-semibold">Could not load history</h2>
         </div>
-        <p className="mt-2 text-fs13 text-ink">{error}</p>
+        <p className="mt-2 text-body text-ink">{error}</p>
       </div>
     );
   }
@@ -33,10 +33,10 @@ export default async function StockBalanceHistoryPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-5">
       <section className="animate-fade-up rounded-card border border-line border-l-4 border-l-primary bg-white p-5 shadow-soft">
-        <h2 className="flex items-center gap-2 text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-primary/80">
+        <h2 className="flex items-center gap-2 text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-primary/80">
           <History size={13} /> Stock balance history
         </h2>
-        <p className="mt-1 text-fs14 font-medium text-ink">
+        <p className="mt-1 text-body-lg font-medium text-ink">
           Latest {rows.length} restock action{rows.length === 1 ? "" : "s"} · {successCount} successful
         </p>
       </section>

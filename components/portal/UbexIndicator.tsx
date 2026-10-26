@@ -29,9 +29,9 @@ export function UbexIndicator({ className = "" }: { className?: string }) {
 
   const dot: Record<UbexStatus, string> = {
     checking: "bg-muted animate-pulse",
-    ok: "bg-[#16A34A]",
-    error: "bg-[#DC2626]",
-    unconfigured: "bg-[#D97706]",
+    ok: "bg-success",
+    error: "bg-danger",
+    unconfigured: "bg-warning",
   };
   const label: Record<UbexStatus, string> = {
     checking: "Checking…",
@@ -48,15 +48,16 @@ export function UbexIndicator({ className = "" }: { className?: string }) {
         void check();
       }}
       title={`${label[status]} — click to recheck`}
-      className={`focus-ring flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 transition hover:bg-canvas ${className}`}
+      aria-label={`${label[status]}. Tap to recheck`}
+      className={`focus-ring flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-full transition hover:bg-canvas sm:min-h-0 sm:min-w-0 sm:border sm:border-line sm:px-3 sm:py-1 ${className}`}
     >
-      <span className="relative inline-flex h-2 w-2">
+      <span className="relative inline-flex h-2.5 w-2.5">
         {status === "ok" && (
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16A34A] opacity-60" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
         )}
-        <span className={`relative inline-flex h-2 w-2 rounded-full ${dot[status]}`} />
+        <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${dot[status]}`} />
       </span>
-      <span className="hidden text-fs11 font-medium text-muted sm:inline">{label[status]}</span>
+      <span className="hidden text-caption font-medium text-muted sm:inline">{label[status]}</span>
     </button>
   );
 }

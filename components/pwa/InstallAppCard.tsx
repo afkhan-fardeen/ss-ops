@@ -50,25 +50,25 @@ export function InstallAppCard({ dismissible = false }: { dismissible?: boolean 
         </button>
       ) : null}
       <div className="flex items-start gap-3 pr-8">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary text-white">
+        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-card bg-primary text-white">
           <Download size={20} />
         </div>
         <div className="min-w-0">
-          <h2 className="text-[15px] font-semibold text-ink">Install Seissense Ops</h2>
+          <h2 className="text-heading font-semibold text-ink">Install Seissense Ops</h2>
           {canPrompt ? (
             <>
-              <p className="mt-0.5 text-fs13 text-muted">Open it like an app from your home screen — full screen, no browser bar.</p>
+              <p className="mt-0.5 text-body text-muted">Open it like an app from your home screen — full screen, no browser bar.</p>
               <button
                 type="button"
                 onClick={() => void promptInstall()}
-                className="focus-ring mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 text-fs14 font-medium text-white active:bg-indigo-800"
+                className="focus-ring mt-3 inline-flex min-h-11 items-center gap-2 rounded-control bg-primary px-4 text-body-lg font-medium text-white active:bg-primary-strong"
               >
                 <Download size={16} />
                 Install app
               </button>
             </>
           ) : (
-            <p className="mt-1 text-fs13 leading-relaxed text-muted">
+            <p className="mt-1 text-body leading-relaxed text-muted">
               In Safari tap <Share size={14} className="mx-0.5 inline -translate-y-px text-primary" />{" "}
               <span className="font-medium text-ink">Share</span>, then{" "}
               <SquarePlus size={14} className="mx-0.5 inline -translate-y-px text-primary" />{" "}

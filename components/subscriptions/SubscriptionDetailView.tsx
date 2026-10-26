@@ -267,7 +267,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
     <div className="space-y-5">
       <Link
         href="/subscriptions"
-        className="inline-flex items-center gap-1.5 text-fs13 text-muted transition hover:text-ink"
+        className="inline-flex items-center gap-2 text-body text-muted transition hover:text-ink"
       >
         <ArrowLeft size={14} />
         Back to requests
@@ -278,17 +278,17 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
           <div className="rounded-card border border-line bg-white p-5 shadow-soft">
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-mono text-fs12 text-muted">{row.reference_number}</p>
-                <h2 className="mt-1 text-lg font-medium text-ink">
+                <p className="font-mono text-body-sm text-muted">{row.reference_number}</p>
+                <h2 className="mt-1 text-title font-medium text-ink">
                   {display.subscription_name}
                 </h2>
-                <p className="mt-1 text-fs12 text-muted">
+                <p className="mt-1 text-body-sm text-muted">
                   {formatSubscriptionType(display.subscription_type)} subscription
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-fs11 font-medium ${
+                  className={`rounded-full px-3 py-0.5 text-caption font-medium ${
                     display.subscription_type === "business"
                       ? "bg-primary-soft text-primary"
                       : "bg-canvas text-muted"
@@ -297,12 +297,12 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   {formatSubscriptionType(display.subscription_type)}
                 </span>
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-fs11 font-medium ${
+                  className={`rounded-full px-3 py-0.5 text-caption font-medium ${
                     status === "pending"
-                      ? "bg-amber-50 text-amber-700"
+                      ? "bg-warning-soft text-warning"
                       : status === "approved"
-                        ? "bg-emerald-50 text-emerald-700"
-                        : "bg-red-50 text-red-700"
+                        ? "bg-success-soft text-success"
+                        : "bg-danger-soft text-danger"
                   }`}
                 >
                   {STATUS_LABELS[status]}
@@ -312,7 +312,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                     type="button"
                     disabled={loading !== null}
                     onClick={() => setEditing(true)}
-                    className="inline-flex items-center gap-1.5 rounded-card border border-line bg-white px-3 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+                    className="inline-flex items-center gap-2 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
                   >
                     <Pencil size={13} />
                     Edit
@@ -322,7 +322,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
             </div>
 
             {!editing ? (
-              <dl className="mt-4 space-y-2 text-fs13">
+              <dl className="mt-4 space-y-2 text-body">
                 <Row label="Form signed date" value={new Date(saved.submitted_at + "T12:00:00").toLocaleDateString()} />
                 <Row label="Type" value={formatSubscriptionType(saved.subscription_type)} />
                 <Row label={requesterLabel(saved.subscription_type)} value={saved.employee_name} />
@@ -348,7 +348,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 />
                 {saved.justification ? (
                   <div>
-                    <dt className="text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+                    <dt className="text-caption uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                       Justification
                     </dt>
                     <dd className="mt-0.5 text-ink">{saved.justification}</dd>
@@ -357,7 +357,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
               </dl>
             ) : (
               <div className="mt-4 space-y-3">
-                <p className="text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+                <p className="text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                   Edit form details
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -484,7 +484,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                           onClick={() => setField("billing_cycle", key)}
                           disabled={loading !== null}
                           className={[
-                            "rounded-full px-3 py-1.5 text-fs13 font-medium transition",
+                            "rounded-full px-3 py-2 text-body font-medium transition",
                             draft.billing_cycle === key
                               ? "bg-primary-soft text-primary"
                               : "border border-line bg-white text-muted hover:text-ink",
@@ -521,7 +521,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                         );
                       })}
                     </select>
-                    <p className="mt-1 text-fs11 text-muted">
+                    <p className="mt-1 text-caption text-muted">
                       Name · card last 4 (SW = Sense Wellness · SS = Seissense)
                     </p>
                   </Field>
@@ -531,7 +531,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                       onChange={(e) => setField("justification", e.target.value)}
                       rows={3}
                       disabled={loading !== null}
-                      className="min-h-[88px] w-full rounded-card border border-line bg-white px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="min-h-[88px] w-full rounded-card border border-line bg-white px-3 py-2 text-body-lg text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                     />
                   </Field>
                 </div>
@@ -540,7 +540,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                     type="button"
                     disabled={loading !== null}
                     onClick={handleSaveFields}
-                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-card bg-primary px-4 text-fs13 font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-card bg-primary px-4 text-body font-medium text-white transition hover:opacity-90 disabled:opacity-50"
                   >
                     {loading === "save" ? (
                       <Loader2 size={15} className="animate-spin" />
@@ -553,7 +553,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                     type="button"
                     disabled={loading !== null}
                     onClick={cancelEdit}
-                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-card border border-line bg-white px-4 text-fs13 font-medium text-muted transition hover:bg-canvas disabled:opacity-50"
+                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-card border border-line bg-white px-4 text-body font-medium text-muted transition hover:bg-canvas disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -562,13 +562,13 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
             )}
 
             {approvedBy && approvedAt ? (
-              <p className="mt-4 border-t border-line pt-3 text-fs12 text-muted">
+              <p className="mt-4 border-t border-line pt-3 text-body-sm text-muted">
                 Approved by <span className="font-medium text-ink">{approvedBy}</span> on{" "}
                 {new Date(approvedAt).toLocaleString()}
               </p>
             ) : null}
             {status === "rejected" && rejectionReason ? (
-              <p className="mt-4 border-t border-line pt-3 text-fs12 text-red-700">
+              <p className="mt-4 border-t border-line pt-3 text-body-sm text-danger">
                 Rejection reason: {rejectionReason}
               </p>
             ) : null}
@@ -578,7 +578,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
             <a
               href={pdfUrl}
               download={`${row.reference_number}.pdf`}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-4 text-fs13 font-medium text-ink transition hover:bg-canvas"
+              className="inline-flex min-h-11 items-center gap-2 rounded-card border border-line bg-white px-4 text-body font-medium text-ink transition hover:bg-canvas"
             >
               <Download size={15} />
               Download PDF
@@ -586,7 +586,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
             <button
               type="button"
               onClick={handlePrint}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-4 text-fs13 font-medium text-ink transition hover:bg-canvas"
+              className="inline-flex min-h-11 items-center gap-2 rounded-card border border-line bg-white px-4 text-body font-medium text-ink transition hover:bg-canvas"
             >
               <Printer size={15} />
               Print
@@ -597,7 +597,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   type="button"
                   disabled={loading !== null || editing}
                   onClick={handleApprove}
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-card bg-primary px-4 text-fs13 font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-card bg-primary px-4 text-body font-medium text-white transition hover:opacity-90 disabled:opacity-60"
                 >
                   {loading === "approve" ? (
                     <Loader2 size={15} className="animate-spin" />
@@ -610,7 +610,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   type="button"
                   disabled={loading !== null || editing}
                   onClick={() => setShowRejectModal(true)}
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-red-200 bg-red-50 px-4 text-fs13 font-medium text-red-700 transition hover:bg-red-100 disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-card border border-danger-line bg-danger-soft px-4 text-body font-medium text-danger transition hover:bg-danger-line disabled:opacity-60"
                 >
                   <X size={15} />
                   Reject
@@ -621,7 +621,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
               type="button"
               disabled={loading !== null || editing}
               onClick={() => setShowDeleteModal(true)}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-4 text-fs13 font-medium text-red-700 transition hover:bg-red-50 disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 rounded-card border border-line bg-white px-4 text-body font-medium text-danger transition hover:bg-danger-soft disabled:opacity-60"
             >
               <Trash2 size={15} />
               Delete permanently
@@ -630,7 +630,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
         </div>
 
         <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
-          <div className="border-b border-line px-4 py-2.5 text-fs12 font-medium text-muted">
+          <div className="border-b border-line px-4 py-3 text-body-sm font-medium text-muted">
             Form preview
           </div>
           <iframe
@@ -645,20 +645,20 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
       {showRejectModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
           <div className="w-full max-w-md rounded-card border border-line bg-white p-5 shadow-pop">
-            <h3 className="text-base font-medium text-ink">Reject request</h3>
-            <p className="mt-1 text-fs13 text-muted">Optional reason for the employee record.</p>
+            <h3 className="text-heading font-semibold text-ink">Reject request</h3>
+            <p className="mt-1 text-body text-muted">Optional reason for the employee record.</p>
             <textarea
               value={rejectInput}
               onChange={(e) => setRejectInput(e.target.value)}
               rows={3}
-              className="mt-3 w-full rounded-card border border-line px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="mt-3 w-full rounded-card border border-line px-3 py-2 text-body-lg text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               placeholder="Reason (optional)"
             />
             <div className="mt-4 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowRejectModal(false)}
-                className="rounded-card border border-line px-4 py-2 text-fs13 font-medium text-muted"
+                className="rounded-card border border-line px-4 py-2 text-body font-medium text-muted"
               >
                 Cancel
               </button>
@@ -666,7 +666,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 type="button"
                 disabled={loading === "reject"}
                 onClick={handleReject}
-                className="inline-flex items-center gap-1.5 rounded-card bg-primary px-4 py-2 text-fs13 font-medium text-white disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-card bg-primary px-4 py-2 text-body font-medium text-white disabled:opacity-60"
               >
                 {loading === "reject" ? <Loader2 size={14} className="animate-spin" /> : null}
                 Confirm reject
@@ -679,8 +679,8 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
       {showDeleteModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4">
           <div className="w-full max-w-md rounded-card border border-line bg-white p-5 shadow-pop">
-            <h3 className="text-base font-medium text-ink">Delete permanently?</h3>
-            <p className="mt-1 text-fs13 text-muted">
+            <h3 className="text-heading font-semibold text-ink">Delete permanently?</h3>
+            <p className="mt-1 text-body text-muted">
               This removes <span className="font-mono text-ink">{row.reference_number}</span> and its
               PDF forever. This cannot be undone.
             </p>
@@ -689,7 +689,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
                 disabled={loading === "delete"}
-                className="rounded-card border border-line px-4 py-2 text-fs13 font-medium text-muted"
+                className="rounded-card border border-line px-4 py-2 text-body font-medium text-muted"
               >
                 Cancel
               </button>
@@ -697,7 +697,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 type="button"
                 disabled={loading === "delete"}
                 onClick={handleDelete}
-                className="inline-flex items-center gap-1.5 rounded-card bg-primary px-4 py-2 text-fs13 font-medium text-white disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-card bg-primary px-4 py-2 text-body font-medium text-white disabled:opacity-60"
               >
                 {loading === "delete" ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -715,7 +715,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
 }
 
 const inputClass =
-  "min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
+  "min-h-11 w-full rounded-card border border-line bg-white px-3 text-body-lg text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
 
 function Field({
   label,
@@ -729,8 +729,8 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`space-y-1.5 ${className}`}>
-      <label className="block text-fs12 font-medium text-ink">
+    <div className={`space-y-2 ${className}`}>
+      <label className="block text-body-sm font-medium text-ink">
         {label}
         {required ? <span className="text-primary"> *</span> : null}
       </label>
@@ -752,7 +752,7 @@ function Row({
   return (
     <div className="flex justify-between gap-4">
       <dt className="text-muted">{label}</dt>
-      <dd className={`text-right text-ink ${mono ? "font-mono" : ""}`}>{value}</dd>
+      <dd className={`text-right text-ink ${mono ? "" : ""}`}>{value}</dd>
     </div>
   );
 }

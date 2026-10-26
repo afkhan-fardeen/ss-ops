@@ -38,12 +38,12 @@ export default async function FulfillmentSettingsPage() {
       <SettingsSection title="Ubex" description="Shipment lookup used to find each order's tracking number.">
         <SettingRow label="API token" hint="Required to match orders and fetch AWBs." state={getUbexToken() ? "ok" : "warn"} stateLabel={getUbexToken() ? "Configured" : "Missing"} />
         <SettingRow label="Delivered status" hint="Ubex status that counts as fulfilled (used by scheduled sync)." value={env("UBEX_FULFILLED_STATUS") ?? "Order Fulfilled"} state={env("UBEX_FULFILLED_STATUS") ? "ok" : "default"} stateLabel={env("UBEX_FULFILLED_STATUS") ? "Set" : "Default"} />
-        <SettingRow label="Tracking link template" hint="Used when Ubex doesn't return a usable link." value={env("UBEX_TRACKING_URL_TEMPLATE") ?? "https://ubex.co/tracking/{id}"} state={env("UBEX_TRACKING_URL_TEMPLATE") ? "ok" : "default"} stateLabel={env("UBEX_TRACKING_URL_TEMPLATE") ? "Set" : "Default"} />
+        <SettingRow label="Tracking link template" hint="Used when Ubex doesn't return a usable link." value={env("UBEX_TRACKING_URL_TEMPLATE") ?? "https://ubex.co/tracking/{id}"} mono state={env("UBEX_TRACKING_URL_TEMPLATE") ? "ok" : "default"} stateLabel={env("UBEX_TRACKING_URL_TEMPLATE") ? "Set" : "Default"} />
       </SettingsSection>
 
       <SettingsSection title="Stores">
-        <SettingRow label={STORE_LABELS[1]} value={env("SHOPIFY_STORE_DOMAIN") ?? "Not set"} state={env("SHOPIFY_STORE_DOMAIN") ? "ok" : "warn"} stateLabel={env("SHOPIFY_STORE_DOMAIN") ? "Connected" : "Missing"} />
-        <SettingRow label={STORE_LABELS[2]} value={env("SHOPIFY_STORE2_DOMAIN") ?? "Not set"} state={isStore2Configured() ? "ok" : "off"} stateLabel={isStore2Configured() ? "Connected" : "Disabled"} />
+        <SettingRow label={STORE_LABELS[1]} value={env("SHOPIFY_STORE_DOMAIN") ?? "Not set"} mono state={env("SHOPIFY_STORE_DOMAIN") ? "ok" : "warn"} stateLabel={env("SHOPIFY_STORE_DOMAIN") ? "Connected" : "Missing"} />
+        <SettingRow label={STORE_LABELS[2]} value={env("SHOPIFY_STORE2_DOMAIN") ?? "Not set"} mono state={isStore2Configured() ? "ok" : "off"} stateLabel={isStore2Configured() ? "Connected" : "Disabled"} />
       </SettingsSection>
 
       <SettingsSection title="Scheduled sync" description="Automatic fulfillment from Ubex delivery status.">

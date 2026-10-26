@@ -169,7 +169,7 @@ export function CommandPalette({
     <div className="fixed inset-0 z-[300] flex justify-center px-4 pt-[12vh]" role="dialog" aria-modal="true">
       <button type="button" className="absolute inset-0 bg-ink/40 backdrop-blur-[1px]" aria-label="Close" onClick={close} />
       <div className="relative z-10 h-fit w-full max-w-lg overflow-hidden rounded-card border border-line bg-white shadow-[0_20px_60px_rgba(15,23,42,0.22)]">
-        <div className="flex items-center gap-2.5 border-b border-line px-4 py-3.5">
+        <div className="flex items-center gap-3 border-b border-line px-4 py-4">
           <Search size={17} className="shrink-0 text-muted" />
           <input
             ref={inputRef}
@@ -177,15 +177,15 @@ export function CommandPalette({
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onInputKeyDown}
             placeholder="Jump to a module or page…"
-            className="w-full min-w-0 border-0 bg-transparent text-fs14 text-ink outline-none placeholder:text-muted"
+            className="w-full min-w-0 border-0 bg-transparent text-body-lg text-ink outline-none placeholder:text-muted"
           />
-          <kbd className="hidden shrink-0 rounded border border-line px-1.5 py-0.5 text-fs11 font-medium text-muted sm:inline-block">
+          <kbd className="hidden shrink-0 rounded-control border border-line px-2 py-0.5 text-caption font-medium text-muted sm:inline-block">
             Esc
           </kbd>
         </div>
-        <div ref={listRef} className="max-h-[min(60vh,420px)] overflow-y-auto p-1.5">
+        <div ref={listRef} className="max-h-[min(60vh,420px)] overflow-y-auto p-2">
           {filtered.length === 0 ? (
-            <p className="px-3 py-6 text-center text-fs13 text-muted">No matches.</p>
+            <p className="px-3 py-6 text-center text-body text-muted">No matches.</p>
           ) : (
             filtered.map((item, i) => {
               const Icon = item.icon;
@@ -198,13 +198,13 @@ export function CommandPalette({
                   onMouseEnter={() => setActiveIndex(i)}
                   onClick={() => select(item)}
                   className={[
-                    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-fs13 transition-colors",
+                    "flex w-full items-center gap-3 rounded-control px-3 py-3 text-left text-body transition-colors",
                     active ? "bg-canvas text-ink" : "text-ink",
                   ].join(" ")}
                 >
                   <Icon size={16} className="shrink-0 text-muted" />
                   <span className="min-w-0 flex-1 truncate font-medium">{item.label}</span>
-                  <span className="shrink-0 text-fs11 text-muted">{item.group}</span>
+                  <span className="shrink-0 text-caption text-muted">{item.group}</span>
                   {active ? <CornerDownLeft size={13} className="shrink-0 text-muted" /> : null}
                 </button>
               );

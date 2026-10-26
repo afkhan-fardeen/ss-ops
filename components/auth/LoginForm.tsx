@@ -180,7 +180,7 @@ function SupabaseLoginForm({ nextPath }: { nextPath: string }) {
             setError(null);
             setMode((m) => (m === "password" ? "magic" : "password"));
           }}
-          className="focus-ring inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg text-fs14 font-medium text-muted transition hover:text-ink"
+          className="focus-ring inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-control text-body-lg font-medium text-muted transition hover:text-ink"
         >
           {mode === "password" ? "Email me a sign-in link instead" : "Use my password instead"}
         </button>
@@ -194,7 +194,7 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block text-fs13 font-medium text-ink"
+        className="mb-2 block text-body font-medium text-ink"
       >
         {label}
       </label>
@@ -207,7 +207,7 @@ function FieldError({ message }: { message: string }) {
   return (
     <p
       role="alert"
-      className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-fs13 text-red-700"
+      className="flex items-start gap-2 rounded-control border border-danger-line bg-danger-soft px-3 py-3 text-body text-danger"
     >
       <AlertCircle size={16} className="mt-0.5 shrink-0" />
       <span>{message}</span>
@@ -220,7 +220,7 @@ function SubmitButton({ loading, label }: { loading: boolean; label: string }) {
     <button
       type="submit"
       disabled={loading}
-      className="focus-ring inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-[15px] font-medium text-white shadow-soft transition hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-70 md:h-11 md:text-fs14"
+      className="focus-ring inline-flex h-12 w-full items-center justify-center gap-2 rounded-control bg-primary px-4 text-heading font-medium text-white shadow-soft transition hover:bg-primary-strong active:bg-primary-strong disabled:opacity-70 md:h-11 md:text-body-lg"
     >
       {loading ? <Loader2 size={16} className="animate-spin" /> : null}
       <span>{loading ? "Please wait…" : label}</span>

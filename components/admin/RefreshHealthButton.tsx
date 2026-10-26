@@ -19,12 +19,12 @@ export function RefreshHealthButton() {
   return (
     <div className="flex items-center gap-2">
       {lastRefreshed && (
-        <span className="text-fs11 text-muted">Refreshed {lastRefreshed}</span>
+        <span className="text-caption text-muted">Refreshed {lastRefreshed}</span>
       )}
       <button
         onClick={handleRefresh}
         disabled={isPending}
-        className="focus-ring inline-flex items-center gap-1.5 rounded-card border border-line bg-white px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+        className="focus-ring inline-flex items-center gap-2 rounded-card border border-line bg-white px-3 py-2 text-caption font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
       >
         <RefreshCw size={12} className={isPending ? "animate-spin" : undefined} />
         Refresh

@@ -88,8 +88,8 @@ export function StockErrorsView() {
     return (
       <div className="flex flex-col items-center justify-center gap-3 rounded-card border border-line bg-white py-16 shadow-soft">
         <Loader2 size={28} className="animate-spin-slow text-muted" />
-        <p className="text-fs13 font-medium text-ink">Finding stock errors…</p>
-        <p className="max-w-sm text-center text-fs12 text-muted">
+        <p className="text-body font-medium text-ink">Finding stock errors…</p>
+        <p className="max-w-sm text-center text-body-sm text-muted">
           Fetching products from Ubex and matching Shopify by barcode. Large catalogs may take
           a minute — Ubex limits how fast we can page inventory. You can leave this page; you
           will get a notification when the refresh finishes.
@@ -101,13 +101,13 @@ export function StockErrorsView() {
   if (error && !cards) {
     return (
       <div className="space-y-3">
-        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-fs13 text-[#DC2626]">
+        <div className="rounded-card border border-danger/30 bg-danger-soft px-4 py-3 text-body text-danger">
           {error}
         </div>
         <button
           type="button"
           onClick={() => void load()}
-          className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas"
+          className="focus-ring rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas"
         >
           Retry
         </button>
@@ -120,19 +120,19 @@ export function StockErrorsView() {
   return (
     <div className="space-y-4">
       <div className="rounded-card border border-line border-l-4 border-l-primary bg-white p-4 shadow-soft">
-        <p className="text-fs13 font-medium text-ink">
+        <p className="text-body font-medium text-ink">
           {counts.all} issue{counts.all === 1 ? "" : "s"} need attention · {counts["sync-failed"]}{" "}
           sync failure{counts["sync-failed"] === 1 ? "" : "s"}
         </p>
         {fetchedAt ? (
-          <p className="mt-1 text-fs12 text-muted">
+          <p className="mt-1 text-body-sm text-muted">
             Fetched {new Date(fetchedAt).toLocaleString()}
           </p>
         ) : null}
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex flex-wrap items-center gap-1 rounded-lg border border-line bg-canvas p-1">
+        <div className="flex flex-wrap items-center gap-1 rounded-control border border-line bg-canvas p-1">
           {TABS.map((t) => {
             const active = tab === t.id;
             const n = counts[t.id];
@@ -142,7 +142,7 @@ export function StockErrorsView() {
                 type="button"
                 onClick={() => setTab(t.id)}
                 className={[
-                  "relative inline-flex min-h-9 items-center rounded-md px-3 text-fs12 font-medium transition-colors",
+                  "relative inline-flex min-h-9 items-center rounded-control px-3 text-body-sm font-medium transition-colors",
                   active ? "text-ink" : "text-muted hover:text-ink",
                 ].join(" ")}
               >
@@ -150,7 +150,7 @@ export function StockErrorsView() {
                   <motion.span
                     layoutId="stock-error-tab"
                     transition={spring}
-                    className="absolute inset-0 rounded-md bg-white shadow-soft"
+                    className="absolute inset-0 rounded-control bg-white shadow-soft"
                     aria-hidden
                   />
                 ) : null}
@@ -165,7 +165,7 @@ export function StockErrorsView() {
           type="button"
           disabled={loading}
           onClick={() => void load()}
-          className="ml-auto inline-flex min-h-9 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+          className="ml-auto inline-flex min-h-9 items-center gap-2 rounded-card border border-line bg-white px-3 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
           Refresh
@@ -173,7 +173,7 @@ export function StockErrorsView() {
       </div>
 
       {visible.length === 0 ? (
-        <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-fs13 text-muted shadow-soft">
+        <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-body text-muted shadow-soft">
           No issues in this category.
         </p>
       ) : (

@@ -88,7 +88,7 @@ export default async function StockOverviewPage() {
       }
     >
       {summary.error ? (
-        <div className="rounded-card border border-red-200 bg-red-50 px-4 py-3 text-fs13 text-red-700">
+        <div className="rounded-card border border-danger-line bg-danger-soft px-4 py-3 text-body text-danger">
           {summary.error}
         </div>
       ) : null}
@@ -96,10 +96,10 @@ export default async function StockOverviewPage() {
       <ProductSearchCard />
 
       <div id="currently-short" className="mt-4 scroll-mt-20 rounded-card border border-line bg-white p-4 shadow-soft">
-        <h2 className="text-fs14 font-semibold text-ink">Currently short</h2>
-        <p className="mt-0.5 text-fs13 text-muted">Products where committed orders exceed Ubex stock.</p>
+        <h2 className="text-heading font-semibold text-ink">Currently short</h2>
+        <p className="mt-0.5 text-body text-muted">Products where committed orders exceed Ubex stock.</p>
         {!latest?.shortProducts.length ? (
-          <p className="mt-3 text-fs13 text-muted">
+          <p className="mt-3 text-body text-muted">
             {latest
               ? "No short products in the latest sweep."
               : "Run “Find all mismatches” on the Balance page to capture commitment totals."}
@@ -107,16 +107,16 @@ export default async function StockOverviewPage() {
         ) : (
           <ul className="mt-3 divide-y divide-line">
             {latest.shortProducts.map((row) => (
-              <li key={row.barcode} className="flex items-center justify-between gap-3 py-2.5 text-fs13">
+              <li key={row.barcode} className="flex items-center justify-between gap-3 py-3 text-body">
                 <div className="min-w-0">
                   <p className="truncate text-ink">{row.productName}</p>
-                  <p className="font-mono text-fs12 text-muted">{row.barcode}</p>
+                  <p className="font-mono text-body-sm text-muted">{row.barcode}</p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="font-mono tabular-nums text-red-700">{row.shortBy} short</p>
+                  <p className="font-mono tabular-nums text-danger">{row.shortBy} short</p>
                   <Link
                     href={`/stock-balance/balance?search=${encodeURIComponent(row.barcode)}`}
-                    className="text-fs13 font-medium text-primary hover:underline"
+                    className="text-body font-medium text-primary hover:underline"
                   >
                     Open in Balance
                   </Link>

@@ -26,8 +26,8 @@ export function SignOutButton({ compact = false }: { compact?: boolean }) {
       disabled={loading}
       title="Sign out"
       className={[
-        "focus-ring inline-flex h-10 items-center gap-2 rounded-card border border-line bg-white text-fs13 font-medium text-ink transition hover:bg-canvas disabled:opacity-60",
-        compact ? "px-2.5 sm:px-4" : "px-4",
+        "focus-ring inline-flex h-10 items-center gap-2 rounded-card border border-line bg-white text-body font-medium text-ink transition hover:bg-canvas disabled:opacity-60",
+        compact ? "px-3 sm:px-4" : "px-4",
       ].join(" ")}
     >
       <LogOut size={15} strokeWidth={2.2} />

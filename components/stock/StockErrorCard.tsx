@@ -96,7 +96,7 @@ export function StockErrorCard({
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="font-medium text-ink">{card.productName}</p>
-          <p className="mt-0.5 font-mono text-fs11 text-muted">
+          <p className="mt-0.5 font-mono text-caption text-muted">
             SKU {card.sku || "—"} · {card.barcode || "no barcode"}
           </p>
         </div>
@@ -104,11 +104,11 @@ export function StockErrorCard({
       </div>
 
       <div className="mt-3 border-t border-line pt-3 space-y-2">
-        <p className="text-fs13 text-ink">{copy.body}</p>
-        <p className="text-fs12 text-muted">{copy.cause}</p>
+        <p className="text-body text-ink">{copy.body}</p>
+        <p className="text-body-sm text-muted">{copy.cause}</p>
 
         {card.category === "ambiguous" && card.matchingVariants?.length ? (
-          <p className="text-fs12 text-ink">
+          <p className="text-body-sm text-ink">
             Matches:{" "}
             {card.matchingVariants
               .map((v) => `${v.label} (Store ${v.store})`)
@@ -118,20 +118,20 @@ export function StockErrorCard({
 
         {card.category === "sync-failed" && card.syncFailure ? (
           <div className="space-y-2">
-            <p className="text-fs12 text-muted">
+            <p className="text-body-sm text-muted">
               Attempted {formatWhen(card.syncFailure.attemptedAt)}
               {card.syncFailure.attemptedBy
                 ? ` by ${card.syncFailure.attemptedBy}`
                 : ""}
             </p>
-            <p className="whitespace-pre-wrap break-words font-mono text-fs12 text-ink">
+            <p className="tabular-nums whitespace-pre-wrap break-words text-body-sm text-ink">
               {card.syncFailure.message}
             </p>
             <button
               type="button"
               disabled={busy || !card.barcode}
               onClick={onRetry}
-              className="inline-flex min-h-11 items-center gap-2 rounded-card bg-primary px-4 text-fs13 font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 rounded-card bg-primary px-4 text-body font-medium text-white transition hover:opacity-90 disabled:opacity-60"
             >
               {busy ? <Loader2 size={15} className="animate-spin" /> : <PackagePlus size={15} />}
               Retry sync
@@ -140,7 +140,7 @@ export function StockErrorCard({
         ) : null}
 
         {card.category !== "sync-failed" ? (
-          <p className="font-mono text-fs11 text-muted">Ubex ID {card.ubexId}</p>
+          <p className="font-mono text-caption text-muted">Ubex ID {card.ubexId}</p>
         ) : null}
       </div>
     </div>
