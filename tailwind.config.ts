@@ -9,89 +9,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Seissense Ops design system — see design-plan.md
-        canvas: "#FAFAF9",
-        ink: "#1A1A1A",
-        muted: "rgba(26,26,26,0.55)",
-        line: "rgba(26,26,26,0.10)",
-        // Three domain colors instead of one-per-module (was 8 distinct hues —
-        // see docs/design-plan.md drift note). Orders: cod/fulfillment/awb share
-        // teal-green. Inventory: stock/stock-analysis/ubex-inventory share olive.
-        // Finance: subscriptions/zoho-books share purple. Icon + label carry the
-        // individual module identity within a domain, not color.
-        cod: {
-          DEFAULT: "#2F9E7F",
-          bg: "rgba(47,158,127,0.15)",
-          bloom: "#9FDCCB",
-        },
-        fulfillment: {
-          DEFAULT: "#2F9E7F",
-          bg: "rgba(47,158,127,0.15)",
-          bloom: "#9FDCCB",
-        },
-        stock: {
-          DEFAULT: "#6B8A3E",
-          bg: "rgba(107,138,62,0.15)",
-          bloom: "#F0CE7E",
+        // Neutral slate scale + one indigo accent (standard modern-admin palette).
+        canvas: "#F8FAFC", // page background (slate-50)
+        ink: "#0F172A", // primary text (slate-900)
+        muted: "#64748B", // secondary text (slate-500)
+        line: "#E2E8F0", // borders / dividers (slate-200)
+        primary: {
+          DEFAULT: "#4F46E5", // indigo-600
+          soft: "#EEF2FF", // indigo-50
         },
         "stock-b": {
-          DEFAULT: "#5C6B73",
-          bg: "rgba(92,107,115,0.12)",
+          DEFAULT: "#64748B",
+          bg: "rgba(100,116,139,0.10)",
         },
-        "stock-analysis": {
-          DEFAULT: "#6B8A3E",
-          bg: "rgba(107,138,62,0.15)",
-        },
-        "ubex-inventory": {
-          DEFAULT: "#6B8A3E",
-          bg: "rgba(107,138,62,0.15)",
-        },
-        awb: {
-          DEFAULT: "#2F9E7F",
-          bg: "rgba(47,158,127,0.15)",
-          bloom: "#9FDCCB",
-        },
-        subscriptions: {
-          DEFAULT: "#6B4FA2",
-          bg: "rgba(107,79,162,0.15)",
-          bloom: "#C4B8E8",
-        },
-        "zoho-books": {
-          DEFAULT: "#6B4FA2",
-          bg: "rgba(107,79,162,0.15)",
-        },
-        gold: "#B8842E",
       },
       fontFamily: {
         sans: [
           "var(--font-body)",
-          "Plus Jakarta Sans",
+          "Inter",
+          "ui-sans-serif",
+          "system-ui",
           "-apple-system",
           "BlinkMacSystemFont",
-          "Helvetica Neue",
-          "Arial",
+          "Segoe UI",
+          "Roboto",
           "sans-serif",
         ],
-        display: [
-          "var(--font-display)",
-          "Sora",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "sans-serif",
-        ],
-        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       borderRadius: {
-        card: "6px",
-      },
-      backdropBlur: {
-        glass: "28px",
+        card: "10px",
       },
       boxShadow: {
-        // Flat at rest — the border does the work. Shadow is reserved for hover/pop.
-        soft: "0 1px 2px rgba(15, 23, 42, 0.02)",
-        pop: "0 10px 30px -12px rgba(15, 23, 42, 0.20), 0 4px 10px -6px rgba(15, 23, 42, 0.10)",
-        glass: "0 8px 30px rgba(120,100,60,0.12)",
+        soft: "0 1px 2px 0 rgb(15 23 42 / 0.05)",
+        pop: "0 4px 6px -1px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.06)",
       },
     },
   },

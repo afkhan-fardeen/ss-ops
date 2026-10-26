@@ -82,7 +82,7 @@ export function StockBalanceHistoryTable({ rows }: { rows: StockRestockLogRow[] 
                 key={row.id}
                 className={[
                   "border-b border-line last:border-0 hover:bg-canvas",
-                  row.storeId === 1 ? "border-l-2 border-l-stock" : "border-l-2 border-l-stock-b",
+                  row.storeId === 1 ? "border-l-2 border-l-primary" : "border-l-2 border-l-stock-b",
                 ].join(" ")}
               >
                 <td className="whitespace-nowrap px-3 py-2.5 font-mono text-muted">
@@ -93,7 +93,7 @@ export function StockBalanceHistoryTable({ rows }: { rows: StockRestockLogRow[] 
                     <span
                       className={[
                         "inline-block h-1.5 w-1.5 rounded-full",
-                        row.storeId === 1 ? "bg-stock" : "bg-stock-b",
+                        row.storeId === 1 ? "bg-primary" : "bg-stock-b",
                       ].join(" ")}
                     />
                     {row.storeId === 1 ? STORE_LABELS[1] : STORE_LABELS[2]}
@@ -108,7 +108,7 @@ export function StockBalanceHistoryTable({ rows }: { rows: StockRestockLogRow[] 
                   <StatusPill tone={statusTone[row.status]}>{row.status}</StatusPill>
                   {row.error ? (
                     <p
-                      className="mt-0.5 max-w-[200px] truncate text-[11px] text-[#C25151]"
+                      className="mt-0.5 max-w-[200px] truncate text-[11px] text-[#DC2626]"
                       title={row.error}
                     >
                       {row.error}

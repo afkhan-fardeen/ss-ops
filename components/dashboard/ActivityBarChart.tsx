@@ -41,17 +41,17 @@ export function ActivityBarChart({
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={data} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#E4E1D8" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 10, fill: "#8A8880" }}
+          tick={{ fontSize: 10, fill: "#64748B" }}
           tickLine={false}
-          axisLine={{ stroke: "#E4E1D8" }}
+          axisLine={{ stroke: "#E2E8F0" }}
           interval="preserveStartEnd"
         />
         <YAxis
           allowDecimals={false}
-          tick={{ fontSize: 10, fill: "#8A8880" }}
+          tick={{ fontSize: 10, fill: "#64748B" }}
           tickLine={false}
           axisLine={false}
         />
@@ -59,7 +59,7 @@ export function ActivityBarChart({
           contentStyle={{
             fontSize: 12,
             borderRadius: 8,
-            border: "1px solid #E4E1D8",
+            border: "1px solid #E2E8F0",
           }}
           formatter={(v: number) => [v, valueLabel]}
         />

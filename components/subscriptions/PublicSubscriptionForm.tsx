@@ -96,10 +96,10 @@ export function PublicSubscriptionForm() {
   if (referenceNumber) {
     return (
       <div className="space-y-4 text-center">
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-subscriptions-bg text-subscriptions">
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-primary-soft text-primary">
           <CheckCircle2 size={28} />
         </div>
-        <h2 className="font-display text-xl font-medium text-ink">Request submitted</h2>
+        <h2 className="font-sans text-xl font-medium text-ink">Request submitted</h2>
         <p className="text-[14px] text-muted">
           Your reference number is{" "}
           <span className="font-mono font-medium text-ink">{referenceNumber}</span>
@@ -126,7 +126,7 @@ export function PublicSubscriptionForm() {
       />
 
       <section className="space-y-3">
-        <h2 className="text-[12px] font-medium uppercase tracking-wider text-muted">
+        <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">
           Your details
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -167,7 +167,7 @@ export function PublicSubscriptionForm() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-[12px] font-medium uppercase tracking-wider text-muted">
+        <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">
           Subscription details
         </h2>
         <Field label="Subscription type" required>
@@ -183,7 +183,7 @@ export function PublicSubscriptionForm() {
                   className={[
                     "min-h-11 rounded-card border px-3 text-left text-[13px] transition",
                     selected
-                      ? "border-subscriptions bg-subscriptions-bg text-subscriptions"
+                      ? "border-primary bg-primary-soft text-primary"
                       : "border-line bg-white text-ink hover:bg-canvas",
                   ].join(" ")}
                 >
@@ -220,7 +220,7 @@ export function PublicSubscriptionForm() {
             <select
               value={form.entity_billed}
               onChange={(e) => set("entity_billed", e.target.value)}
-              className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+              className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={loading}
             >
               <option value="">Select entity…</option>
@@ -247,7 +247,7 @@ export function PublicSubscriptionForm() {
             <select
               value={form.currency}
               onChange={(e) => set("currency", e.target.value)}
-              className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+              className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={loading}
             >
               {CURRENCY_OPTIONS.map((c) => (
@@ -268,7 +268,7 @@ export function PublicSubscriptionForm() {
                     className={[
                       "rounded-full px-3 py-1.5 text-[13px] font-medium transition",
                       form.billing_cycle === key
-                        ? "bg-subscriptions-bg text-subscriptions"
+                        ? "bg-primary-soft text-primary"
                         : "border border-line bg-white text-muted hover:text-ink",
                     ].join(" ")}
                     disabled={loading}
@@ -293,7 +293,7 @@ export function PublicSubscriptionForm() {
             <select
               value={form.payment_method}
               onChange={(e) => set("payment_method", e.target.value)}
-              className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+              className="min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               disabled={loading}
             >
               <option value="">Select payment method…</option>
@@ -315,7 +315,7 @@ export function PublicSubscriptionForm() {
               value={form.justification}
               onChange={(e) => set("justification", e.target.value)}
               rows={3}
-              className="min-h-[88px] w-full rounded-card border border-line bg-white px-3 py-2 text-base text-ink placeholder:text-muted focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+              className="min-h-[88px] w-full rounded-card border border-line bg-white px-3 py-2 text-base text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               placeholder="Why is this subscription required?"
               disabled={loading}
             />
@@ -324,7 +324,7 @@ export function PublicSubscriptionForm() {
       </section>
 
       {error ? (
-        <p className="rounded-lg border border-fulfillment/30 bg-fulfillment/5 px-3 py-2 text-[13px] text-fulfillment">
+        <p className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-[13px] text-primary">
           {error}
         </p>
       ) : null}
@@ -332,7 +332,7 @@ export function PublicSubscriptionForm() {
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-subscriptions px-4 text-[14px] font-medium text-white shadow-soft transition hover:opacity-90 disabled:opacity-60"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-primary px-4 text-[14px] font-medium text-white shadow-soft transition hover:opacity-90 disabled:opacity-60"
       >
         {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
         {loading ? "Submitting…" : "Submit request"}
@@ -356,7 +356,7 @@ function Field({
     <div className={`space-y-1.5 ${className}`}>
       <label className="block text-[12px] font-medium text-ink">
         {label}
-        {required ? <span className="text-fulfillment"> *</span> : null}
+        {required ? <span className="text-primary"> *</span> : null}
       </label>
       {children}
     </div>

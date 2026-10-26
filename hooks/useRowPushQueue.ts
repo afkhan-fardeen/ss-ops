@@ -43,7 +43,7 @@ export type InitialLogEntry = {
 };
 
 /**
- * Minimal shape a row must satisfy to be pushed. Both CodRow and OrderRow match this.
+ * Minimal shape a row must satisfy to be pushed. OrderRow matches this.
  */
 export type PushableRow = {
   orderId: number;
@@ -132,7 +132,7 @@ function deriveInitial<R extends PushableRow>(
 }
 
 /**
- * Shared hook powering COD + Fulfillment row pushes.
+ * Shared hook powering Fulfillment row pushes.
  * - Exposes `stateMap`, `pushOne(row)`, and `fulfilAll(rows)`.
  * - Shows sonner toasts on single-row push and a summary toast on bulk fulfil.
  * - `pushEndpoint` defaults to "/api/fulfill"; pass "/api/store2/fulfill" for Store 2.

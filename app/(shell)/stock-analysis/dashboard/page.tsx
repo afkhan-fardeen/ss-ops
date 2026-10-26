@@ -83,7 +83,7 @@ export default async function StockAnalysisDashboardPage() {
       }
     >
       {summary.error ? (
-        <div className="rounded-card border border-[#C25151]/30 bg-[rgba(194,81,81,0.08)] px-4 py-3 text-[13px] text-[#C25151]">
+        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-[13px] text-[#DC2626]">
           {summary.error}
         </div>
       ) : null}
@@ -110,10 +110,10 @@ export default async function StockAnalysisDashboardPage() {
                   <p className="font-mono text-[11px] text-muted">{row.barcode}</p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="font-mono tabular-nums text-[#C25151]">{row.shortBy} short</p>
+                  <p className="font-mono tabular-nums text-[#DC2626]">{row.shortBy} short</p>
                   <Link
                     href={`/stock-balance/balance?search=${encodeURIComponent(row.barcode)}`}
-                    className="text-[12px] font-medium text-stock-analysis hover:underline"
+                    className="text-[12px] font-medium text-primary hover:underline"
                   >
                     Open in Balance
                   </Link>

@@ -1,5 +1,5 @@
 import type { ShopifyOrder } from "@/lib/shopify/types";
-import { orderLooksLikeCod } from "@/lib/shopify/fetch-cod-orders";
+import { orderLooksLikeCod } from "@/lib/shopify/order-utils";
 import { getSupabaseService } from "./service";
 import type { ShopifyOrderCacheRow } from "./types";
 
@@ -51,7 +51,6 @@ export type OrdersCacheFilter = {
   createdAtMinIso: string;
   createdAtMaxIso: string;
   fulfillmentStatus?: "any" | "unfulfilled";
-  cod?: "any" | "only" | "exclude";
 };
 
 export type OrdersCacheTable = "shopify_orders_cache" | "shopify_orders_cache_s2";
@@ -73,8 +72,6 @@ export async function readOrdersFromCache(
   if (filter.fulfillmentStatus === "unfulfilled") {
     query = query.or("fulfillment_status.is.null,fulfillment_status.neq.fulfilled");
   }
-  if (filter.cod === "only") query = query.eq("is_cod", true);
-  else if (filter.cod === "exclude") query = query.eq("is_cod", false);
 
   // Safety valve: a date range large enough to pull an unbounded number of full
   // (raw JSON included) rows should fail loud via the caller's Shopify fallback
@@ -119,17 +116,6 @@ export async function upsertOrdersCache(
   }));
   const { error } = await supabase.from(table).upsert(rows, { onConflict: "id" });
   if (error) console.warn(`[orders-cache:${table}] bulk upsert failed:`, error.message);
-}
-
-/** Delete a single cached order (orders/cancelled webhook). */
-export async function deleteOrderCache(
-  orderId: number,
-  table: OrdersCacheTable = "shopify_orders_cache",
-): Promise<void> {
-  const supabase = getSupabaseService();
-  if (!supabase) return;
-  const { error } = await supabase.from(table).delete().eq("id", orderId);
-  if (error) console.warn(`[orders-cache:${table}] delete failed:`, error.message);
 }
 
 /** Freshness check: is the cache younger than `maxAgeSeconds`? */

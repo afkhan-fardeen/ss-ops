@@ -11,10 +11,9 @@ import {
   YAxis,
 } from "recharts";
 import type { CombinedDailySeries } from "@/lib/dashboard/load-portal-home-summary";
-import { COD_ACCENT } from "@/config/modules";
 
-const FULFILLMENT_FILL = "#C4553A";
-const STOCK_FILL = "#6B8A3E";
+const FULFILLMENT_FILL = "#4F46E5";
+const STOCK_FILL = "#06B6D4";
 
 type Props = {
   data: CombinedDailySeries[];
@@ -23,7 +22,7 @@ type Props = {
 
 export function CombinedActivityChart({ data, showStock }: Props) {
   const hasData = data.some(
-    (d) => d.codOrders > 0 || d.fulfillments > 0 || (showStock && d.restocks > 0),
+    (d) => d.fulfillments > 0 || (showStock && d.restocks > 0),
   );
 
   if (!hasData) {
@@ -36,7 +35,6 @@ export function CombinedActivityChart({ data, showStock }: Props) {
 
   const chartData = data.map((d) => ({
     label: d.label,
-    codOrders: d.codOrders,
     fulfillments: d.fulfillments,
     restocks: showStock ? d.restocks : 0,
   }));
@@ -44,17 +42,17 @@ export function CombinedActivityChart({ data, showStock }: Props) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart data={chartData} margin={{ top: 4, right: 8, left: -16, bottom: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#E4E1D8" vertical={false} />
+        <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 10, fill: "#8A8880" }}
+          tick={{ fontSize: 10, fill: "#64748B" }}
           tickLine={false}
-          axisLine={{ stroke: "#E4E1D8" }}
+          axisLine={{ stroke: "#E2E8F0" }}
           interval="preserveStartEnd"
         />
         <YAxis
           allowDecimals={false}
-          tick={{ fontSize: 10, fill: "#8A8880" }}
+          tick={{ fontSize: 10, fill: "#64748B" }}
           tickLine={false}
           axisLine={false}
         />
@@ -62,17 +60,10 @@ export function CombinedActivityChart({ data, showStock }: Props) {
           contentStyle={{
             fontSize: 12,
             borderRadius: 8,
-            border: "1px solid #E4E1D8",
+            border: "1px solid #E2E8F0",
           }}
         />
         <Legend wrapperStyle={{ fontSize: 11 }} />
-        <Bar
-          dataKey="codOrders"
-          name="COD orders emailed"
-          fill={COD_ACCENT.chartFill}
-          radius={[2, 2, 0, 0]}
-          maxBarSize={16}
-        />
         <Bar
           dataKey="fulfillments"
           name="Fulfillments"

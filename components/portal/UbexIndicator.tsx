@@ -29,9 +29,9 @@ export function UbexIndicator({ className = "" }: { className?: string }) {
 
   const dot: Record<UbexStatus, string> = {
     checking: "bg-muted animate-pulse",
-    ok: "bg-[#4CAF50]",
-    error: "bg-[#C25151]",
-    unconfigured: "bg-[#F0B743]",
+    ok: "bg-[#16A34A]",
+    error: "bg-[#DC2626]",
+    unconfigured: "bg-[#D97706]",
   };
   const label: Record<UbexStatus, string> = {
     checking: "Checking…",
@@ -52,7 +52,7 @@ export function UbexIndicator({ className = "" }: { className?: string }) {
     >
       <span className="relative inline-flex h-2 w-2">
         {status === "ok" && (
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4CAF50] opacity-60" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16A34A] opacity-60" />
         )}
         <span className={`relative inline-flex h-2 w-2 rounded-full ${dot[status]}`} />
       </span>

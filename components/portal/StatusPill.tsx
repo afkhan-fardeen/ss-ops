@@ -20,16 +20,16 @@ const toneStyles: Record<StatusTone, { pill: string; dot: string }> = {
     dot: "bg-ink",
   },
   green: {
-    pill: "bg-[rgba(76,175,80,0.10)] text-[#4CAF50] border border-[#4CAF50]/20",
-    dot: "bg-[#4CAF50]",
+    pill: "bg-[rgba(22,163,74,0.10)] text-[#16A34A] border border-[#16A34A]/20",
+    dot: "bg-[#16A34A]",
   },
   amber: {
-    pill: "bg-[rgba(240,183,67,0.12)] text-[#F0B743] border border-[#F0B743]/20",
-    dot: "bg-[#F0B743]",
+    pill: "bg-[rgba(217,119,6,0.12)] text-[#D97706] border border-[#D97706]/20",
+    dot: "bg-[#D97706]",
   },
   red: {
-    pill: "bg-[rgba(194,81,81,0.10)] text-[#C25151] border border-[#C25151]/20",
-    dot: "bg-[#C25151]",
+    pill: "bg-[rgba(220,38,38,0.10)] text-[#DC2626] border border-[#DC2626]/20",
+    dot: "bg-[#DC2626]",
   },
 };
 

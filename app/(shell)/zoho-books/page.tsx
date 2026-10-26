@@ -15,7 +15,7 @@ export default async function ZohoBooksPage() {
     <div className="mx-auto max-w-7xl">
       <header className="animate-fade-up">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-card bg-zoho-books-bg text-zoho-books">
+          <div className="grid h-10 w-10 place-items-center rounded-card bg-primary-soft text-primary">
             <Receipt size={20} />
           </div>
           <div>

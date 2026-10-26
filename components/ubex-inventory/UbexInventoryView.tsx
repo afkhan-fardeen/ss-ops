@@ -116,7 +116,7 @@ export function UbexInventoryView() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search product, SKU, or barcode…"
-          className="min-h-11 w-full rounded-card border border-line bg-white py-2 pl-9 pr-10 text-[13px] text-ink placeholder:text-muted focus:border-ubex-inventory focus:outline-none focus:ring-2 focus:ring-ubex-inventory/20"
+          className="min-h-11 w-full rounded-card border border-line bg-white py-2 pl-9 pr-10 text-[13px] text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         {loading ? (
           <Loader2
@@ -127,7 +127,7 @@ export function UbexInventoryView() {
       </div>
 
       {error ? (
-        <div className="rounded-card border border-[#C25151]/30 bg-[rgba(194,81,81,0.08)] px-4 py-3 text-[13px] text-[#C25151]">
+        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-[13px] text-[#DC2626]">
           {error}
         </div>
       ) : null}

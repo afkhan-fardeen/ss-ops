@@ -34,7 +34,7 @@ export async function canAccessModule(moduleId: ModuleId): Promise<boolean> {
   }
 
   if (session.mode !== "supabase" || !session.userId) {
-    // Shared-password sessions: COD / Fulfillment / AWB only.
+    // Shared-password sessions: Fulfillment / AWB only.
     return !needsExplicitGrant(moduleId);
   }
 

@@ -84,7 +84,7 @@ export default async function AdminPage() {
             </p>
             <p className="mt-3 font-mono text-2xl font-medium tabular-nums text-ink">
               {totalUsers === null ? (
-                <span className="text-base font-normal text-fulfillment">
+                <span className="text-base font-normal text-primary">
                   Could not load (check service key)
                 </span>
               ) : (
@@ -145,7 +145,7 @@ export default async function AdminPage() {
                     <span
                       className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${
                         profile.role === "admin"
-                          ? "bg-gold/10 text-gold"
+                          ? "bg-primary/10 text-primary"
                           : "bg-canvas text-muted"
                       }`}
                     >

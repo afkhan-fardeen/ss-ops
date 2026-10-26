@@ -49,12 +49,12 @@ function ConnectivityPill({
   if (ok) {
     return (
       <span
-        className="inline-flex items-center gap-1.5 rounded-full border border-[#4CAF50]/20 bg-[rgba(76,175,80,0.08)] px-3 py-1 text-[11px] font-medium text-[#2E7D32]"
+        className="inline-flex items-center gap-1.5 rounded-full border border-[#16A34A]/20 bg-[rgba(22,163,74,0.08)] px-3 py-1 text-[11px] font-medium text-[#15803D]"
         title={detail}
       >
         <span className="relative inline-flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4CAF50] opacity-60" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#4CAF50]" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16A34A] opacity-60" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
         </span>
         {label}
       </span>
@@ -62,7 +62,7 @@ function ConnectivityPill({
   }
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full border border-[#C25151]/20 bg-[rgba(194,81,81,0.08)] px-3 py-1 text-[11px] font-medium text-[#C25151]"
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#DC2626]/20 bg-[rgba(220,38,38,0.08)] px-3 py-1 text-[11px] font-medium text-[#DC2626]"
       title={detail}
     >
       <AlertTriangle size={11} className="shrink-0" />
@@ -104,7 +104,7 @@ function RecentFailures({ rows }: { rows: HealthFailureRow[] }) {
       <h2 className="text-sm font-medium text-ink">Recent failures</h2>
       {rows.length === 0 ? (
         <div className="rounded-card border border-line bg-white p-5 text-[13px] text-muted shadow-soft">
-          No failures across fulfillment, stock restock, or COD email in recent history.
+          No failures across fulfillment or stock restock in recent history.
         </div>
       ) : (
         <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
@@ -123,7 +123,7 @@ function RecentFailures({ rows }: { rows: HealthFailureRow[] }) {
                   <td className="whitespace-nowrap px-4 py-2.5 font-mono text-muted">{fmtAgo(row.at)}</td>
                   <td className="whitespace-nowrap px-4 py-2.5 text-ink">{row.source}</td>
                   <td className="px-4 py-2.5 font-mono text-ink">{row.detail}</td>
-                  <td className="max-w-xs truncate px-4 py-2.5 text-[#C25151]" title={row.error ?? undefined}>
+                  <td className="max-w-xs truncate px-4 py-2.5 text-[#DC2626]" title={row.error ?? undefined}>
                     {row.error ?? "—"}
                   </td>
                 </tr>
@@ -144,9 +144,9 @@ function ConfigChecklist({ checks }: { checks: ConfigCheck[] }) {
         {checks.map((c) => (
           <li key={c.label} className="flex items-center gap-2 text-[12.5px]">
             {c.ok ? (
-              <CheckCircle2 size={14} className="shrink-0 text-[#4CAF50]" />
+              <CheckCircle2 size={14} className="shrink-0 text-[#16A34A]" />
             ) : (
-              <XCircle size={14} className="shrink-0 text-[#C25151]" />
+              <XCircle size={14} className="shrink-0 text-[#DC2626]" />
             )}
             <span className="text-ink">{c.label}</span>
             {c.hint && <span className="text-muted">— {c.hint}</span>}
@@ -205,7 +205,7 @@ export default async function SystemHealthPage() {
         <CronStatus />
       </section>
 
-      <ChartCard title="Error rate (14 days)" description="Combined fulfillment, stock restock, and COD email activity.">
+      <ChartCard title="Error rate (14 days)" description="Combined fulfillment and stock restock activity.">
         <ActivityStackedChart data={chartData} successFill="#2F9E7F" />
       </ChartCard>
 

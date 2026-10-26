@@ -22,8 +22,8 @@ export default async function AccountPage() {
     session = await requireSession();
   } catch {
     return (
-      <div className="mx-auto max-w-2xl rounded-card border border-[#C25151]/25 bg-[rgba(194,81,81,0.10)] p-6">
-        <div className="flex items-center gap-2 text-[#C25151]">
+      <div className="mx-auto max-w-2xl rounded-card border border-[#DC2626]/25 bg-[rgba(220,38,38,0.10)] p-6">
+        <div className="flex items-center gap-2 text-[#DC2626]">
           <AlertTriangle size={18} />
           <h2 className="text-base font-medium">Not signed in</h2>
         </div>
@@ -169,7 +169,7 @@ export default async function AccountPage() {
               </p>
               <p className="mt-2 text-[11.5px] font-mono text-muted">
                 SHOPIFY_WEBHOOK_SECRET:{" "}
-                <span className={webhookSecretConfigured ? "text-[#4CAF50]" : "text-[#C25151]"}>
+                <span className={webhookSecretConfigured ? "text-[#16A34A]" : "text-[#DC2626]"}>
                   {webhookSecretConfigured ? "configured" : "missing"}
                 </span>
               </p>
@@ -193,7 +193,7 @@ function InfoRow({
 }) {
   return (
     <div>
-      <dt className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-muted">
+      <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
         {icon}
         {label}
       </dt>

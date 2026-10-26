@@ -1,17 +1,20 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { requireSession } from "@/lib/auth/require-session";
+import { PortalAuthError, requirePortalAdmin } from "@/lib/auth/require-portal-admin";
 
 /**
  * POST /api/sync/trigger?dry_run=true|false
  *
- * Session-protected endpoint that lets portal admins manually trigger the
+ * Admin-only endpoint that lets portal admins manually trigger the
  * auto-fulfill sync from the UI. Internally proxies to /api/sync/auto-fulfill
  * using the CRON_SECRET so the main route stays cron-only.
  */
 export async function POST(req: NextRequest) {
   try {
-    await requireSession();
-  } catch {
+    await requirePortalAdmin();
+  } catch (e) {
+    if (e instanceof PortalAuthError) {
+      return NextResponse.json({ error: e.message }, { status: e.status });
+    }
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -21,8 +24,13 @@ export async function POST(req: NextRequest) {
   const origin = req.nextUrl.origin;
   const url = `${origin}/api/sync/auto-fulfill?dry_run=${dryRun}`;
 
-  const headers: Record<string, string> = { "Content-Type": "application/json" };
-  if (cronSecret) headers["Authorization"] = `Bearer ${cronSecret}`;
+  if (!cronSecret) {
+    return NextResponse.json({ ok: false, error: "CRON_SECRET is not configured" }, { status: 500 });
+  }
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${cronSecret}`,
+  };
 
   try {
     const res = await fetch(url, { method: "POST", headers });

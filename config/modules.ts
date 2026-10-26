@@ -11,12 +11,10 @@ import {
   Settings2,
   TrendingUp,
   Truck,
-  Wallet,
   Warehouse,
 } from "lucide-react";
 
 export type ModuleId =
-  | "cod"
   | "fulfillment"
   | "stock"
   | "awb"
@@ -62,99 +60,29 @@ export type PortalModule = {
 
 export const HOME_HREF = "/dashboard";
 
-// Module accents derive from the cod/fulfillment/stock Tailwind tokens — see design-plan.md.
-export const COD_ACCENT: ModuleAccent = {
-  rail: "bg-cod",
-  labelText: "text-cod",
-  labelHover: "hover:bg-cod-bg",
-  activeBg: "bg-cod-bg",
-  activeText: "text-cod",
-  pillBg: "bg-cod-bg",
-  pillText: "text-cod",
-  mobileActive: "text-cod",
-  chartFill: "#2F9E7F",
-  chartStroke: "#237A63",
+// One accent for every module — the admin UI uses a single primary colour, not per-domain hues.
+const PRIMARY_ACCENT: ModuleAccent = {
+  rail: "bg-primary",
+  labelText: "text-primary",
+  labelHover: "hover:bg-primary-soft",
+  activeBg: "bg-primary-soft",
+  activeText: "text-primary",
+  pillBg: "bg-primary-soft",
+  pillText: "text-primary",
+  mobileActive: "text-primary",
+  chartFill: "#4F46E5",
+  chartStroke: "#4338CA",
 };
 
-// Orders & Delivery domain — shares COD's color (see tailwind.config.ts note).
-export const FULFILLMENT_ACCENT: ModuleAccent = COD_ACCENT;
-
-export const STOCK_ACCENT: ModuleAccent = {
-  rail: "bg-stock",
-  labelText: "text-stock",
-  labelHover: "hover:bg-stock-bg",
-  activeBg: "bg-stock-bg",
-  activeText: "text-stock",
-  pillBg: "bg-stock-bg",
-  pillText: "text-stock",
-  mobileActive: "text-stock",
-  chartFill: "#6B8A3E",
-  chartStroke: "#546E31",
-};
-
-export const HOME_ACCENT: ModuleAccent = {
-  rail: "bg-ink",
-  labelText: "text-ink",
-  labelHover: "hover:bg-canvas",
-  activeBg: "bg-canvas",
-  activeText: "text-ink",
-  pillBg: "bg-canvas",
-  pillText: "text-ink",
-  mobileActive: "text-ink",
-  chartFill: "#1A1A1A",
-  chartStroke: "#1A1A1A",
-};
-
-export const SETTINGS_ACCENT: ModuleAccent = {
-  rail: "bg-gold",
-  labelText: "text-gold",
-  labelHover: "hover:bg-[rgba(184,132,46,0.08)]",
-  activeBg: "bg-[rgba(184,132,46,0.12)]",
-  activeText: "text-gold",
-  pillBg: "bg-[rgba(184,132,46,0.12)]",
-  pillText: "text-gold",
-  mobileActive: "text-gold",
-  chartFill: "#B8842E",
-  chartStroke: "#8F6623",
-};
-
-// Orders & Delivery domain — shares COD's color.
-const AWB_ACCENT: ModuleAccent = COD_ACCENT;
-
-// Inventory domain — shares Stock Balance's color.
-export const STOCK_ANALYSIS_ACCENT: ModuleAccent = STOCK_ACCENT;
-const UBEX_INVENTORY_ACCENT: ModuleAccent = STOCK_ACCENT;
-
-export const SUBSCRIPTIONS_ACCENT: ModuleAccent = {
-  rail: "bg-subscriptions",
-  labelText: "text-subscriptions",
-  labelHover: "hover:bg-subscriptions-bg",
-  activeBg: "bg-subscriptions-bg",
-  activeText: "text-subscriptions",
-  pillBg: "bg-subscriptions-bg",
-  pillText: "text-subscriptions",
-  mobileActive: "text-subscriptions",
-  chartFill: "#6B4FA2",
-  chartStroke: "#543F82",
-};
-
-// Finance domain — shares Subscriptions' color.
-const ZOHO_BOOKS_ACCENT: ModuleAccent = SUBSCRIPTIONS_ACCENT;
-
-function codModule(): PortalModule {
-  return {
-    id: "cod",
-    label: "COD",
-    icon: Wallet,
-    accent: COD_ACCENT,
-    items: [
-      { label: "Dashboard", href: "/cod/dashboard", icon: LayoutDashboard },
-      { label: "COD List", href: "/cod/list", icon: Wallet, aliases: ["/cod-list"] },
-      { label: "History", href: "/cod/history", icon: History, aliases: ["/cod-history"] },
-      { label: "Recipients", href: "/cod/settings", icon: Settings2, aliases: ["/cod-settings"] },
-    ],
-  };
-}
+export const FULFILLMENT_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+export const STOCK_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+export const STOCK_ANALYSIS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+export const SUBSCRIPTIONS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+export const HOME_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+export const SETTINGS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+const AWB_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+const UBEX_INVENTORY_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+const ZOHO_BOOKS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
 
 function fulfillmentModule(): PortalModule {
   return {
@@ -282,7 +210,7 @@ function stockAlertsModule(): PortalModule {
 }
 
 export function getPortalModules(showAdmin: boolean): PortalModule[] {
-  const modules = [codModule(), fulfillmentModule(), awbModule()];
+  const modules = [fulfillmentModule(), awbModule()];
   if (showAdmin) {
     modules.push(stockModule());
     modules.push(stockAnalysisModule());
@@ -298,8 +226,6 @@ export function getPortalModules(showAdmin: boolean): PortalModule[] {
 /** Path prefixes that belong to a module (includes legacy aliases). */
 function modulePathPrefixes(id: ModuleId): string[] {
   switch (id) {
-    case "cod":
-      return ["/cod", "/cod-list", "/cod-settings", "/cod-history"];
     case "fulfillment":
       return ["/fulfillment", "/history"];
     case "stock":
@@ -345,14 +271,6 @@ const GLOBAL_ROUTES: RouteEntry[] = [
 ];
 
 const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
-  { path: "/cod/dashboard", title: "Dashboard", moduleId: "cod", moduleLabel: "COD", accent: COD_ACCENT },
-  { path: "/cod/list", title: "COD List", moduleId: "cod", moduleLabel: "COD", accent: COD_ACCENT },
-  { path: "/cod-list", title: "COD List", moduleId: "cod", moduleLabel: "COD", accent: COD_ACCENT },
-  { path: "/cod/history", title: "History", moduleId: "cod", moduleLabel: "COD", accent: COD_ACCENT },
-  { path: "/cod/settings", title: "Settings", moduleId: "cod", moduleLabel: "COD", accent: COD_ACCENT },
-  { path: "/cod-settings", title: "Settings", moduleId: "cod", moduleLabel: "COD", accent: COD_ACCENT },
-  { path: "/cod/history", title: "History", moduleId: "cod", moduleLabel: "COD", accent: COD_ACCENT },
-  { path: "/cod-history", title: "History", moduleId: "cod", moduleLabel: "COD", accent: COD_ACCENT },
   {
     path: "/fulfillment/dashboard",
     title: "Dashboard",
@@ -523,10 +441,6 @@ export function isNavItemActive(pathname: string, item: ModuleNavItem): boolean 
     if (pathname.startsWith(`${alias}/`)) return true;
   }
   return false;
-}
-
-export function isCodListPath(pathname: string): boolean {
-  return pathname === "/cod-list" || pathname === "/cod/list" || pathname.startsWith("/cod/list?");
 }
 
 const OPEN_STORAGE_PREFIX = "portal.nav.open.";

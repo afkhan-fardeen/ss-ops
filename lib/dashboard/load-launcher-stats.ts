@@ -1,10 +1,8 @@
 import { getSupabaseService } from "@/lib/supabase/service";
-import { getCollectionWindow } from "@/lib/datetime/collection-window";
 
 export type LauncherStat = { value: string; label: string } | null;
 
 export type LauncherStats = {
-  cod: LauncherStat;
   fulfillment: LauncherStat;
   stock: LauncherStat;
   stockAnalysis: LauncherStat;
@@ -13,7 +11,6 @@ export type LauncherStats = {
 };
 
 const EMPTY_STATS: LauncherStats = {
-  cod: null,
   fulfillment: null,
   stock: null,
   stockAnalysis: null,
@@ -42,15 +39,7 @@ export async function loadLauncherStats(): Promise<LauncherStats> {
   const supabase = getSupabaseService();
   if (!supabase) return EMPTY_STATS;
 
-  const window = getCollectionWindow();
-
-  const [codRes, fulfillmentRes, stockRes, subsRes, alertsRes] = await Promise.allSettled([
-    supabase
-      .from("shopify_orders_cache")
-      .select("*", { count: "exact", head: true })
-      .eq("is_cod", true)
-      .gte("created_at", window.createdAtMinIso)
-      .lt("created_at", window.createdAtMaxIso),
+  const [fulfillmentRes, stockRes, subsRes, alertsRes] = await Promise.allSettled([
     supabase
       .from("shopify_orders_cache")
       .select("*", { count: "exact", head: true })
@@ -72,11 +61,6 @@ export async function loadLauncherStats(): Promise<LauncherStats> {
       .limit(1)
       .maybeSingle(),
   ]);
-
-  const cod =
-    codRes.status === "fulfilled" && !codRes.value.error && codRes.value.count !== null
-      ? { value: String(codRes.value.count), label: "in today's window" }
-      : null;
 
   const fulfillment =
     fulfillmentRes.status === "fulfilled" &&
@@ -124,5 +108,5 @@ export async function loadLauncherStats(): Promise<LauncherStats> {
       }
     : null;
 
-  return { cod, fulfillment, stock, stockAnalysis, subscriptions, stockAlerts };
+  return { fulfillment, stock, stockAnalysis, subscriptions, stockAlerts };
 }

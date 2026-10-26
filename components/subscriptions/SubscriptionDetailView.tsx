@@ -290,7 +290,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
                     display.subscription_type === "business"
-                      ? "bg-subscriptions-bg text-subscriptions"
+                      ? "bg-primary-soft text-primary"
                       : "bg-canvas text-muted"
                   }`}
                 >
@@ -299,10 +299,10 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
                     status === "pending"
-                      ? "bg-gold/10 text-gold"
+                      ? "bg-amber-50 text-amber-700"
                       : status === "approved"
-                        ? "bg-cod-bg text-cod"
-                        : "bg-fulfillment/10 text-fulfillment"
+                        ? "bg-emerald-50 text-emerald-700"
+                        : "bg-red-50 text-red-700"
                   }`}
                 >
                   {STATUS_LABELS[status]}
@@ -357,7 +357,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
               </dl>
             ) : (
               <div className="mt-4 space-y-3">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
                   Edit form details
                 </p>
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -486,7 +486,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                           className={[
                             "rounded-full px-3 py-1.5 text-[13px] font-medium transition",
                             draft.billing_cycle === key
-                              ? "bg-subscriptions-bg text-subscriptions"
+                              ? "bg-primary-soft text-primary"
                               : "border border-line bg-white text-muted hover:text-ink",
                           ].join(" ")}
                         >
@@ -531,7 +531,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                       onChange={(e) => setField("justification", e.target.value)}
                       rows={3}
                       disabled={loading !== null}
-                      className="min-h-[88px] w-full rounded-card border border-line bg-white px-3 py-2 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+                      className="min-h-[88px] w-full rounded-card border border-line bg-white px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                     />
                   </Field>
                 </div>
@@ -540,7 +540,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                     type="button"
                     disabled={loading !== null}
                     onClick={handleSaveFields}
-                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-card bg-subscriptions px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+                    className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-card bg-primary px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-50"
                   >
                     {loading === "save" ? (
                       <Loader2 size={15} className="animate-spin" />
@@ -568,7 +568,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
               </p>
             ) : null}
             {status === "rejected" && rejectionReason ? (
-              <p className="mt-4 border-t border-line pt-3 text-[12px] text-fulfillment">
+              <p className="mt-4 border-t border-line pt-3 text-[12px] text-red-700">
                 Rejection reason: {rejectionReason}
               </p>
             ) : null}
@@ -597,7 +597,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   type="button"
                   disabled={loading !== null || editing}
                   onClick={handleApprove}
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-card bg-cod px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-card bg-primary px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
                 >
                   {loading === "approve" ? (
                     <Loader2 size={15} className="animate-spin" />
@@ -610,7 +610,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   type="button"
                   disabled={loading !== null || editing}
                   onClick={() => setShowRejectModal(true)}
-                  className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-fulfillment/40 bg-fulfillment/5 px-4 text-[13px] font-medium text-fulfillment transition hover:bg-fulfillment/10 disabled:opacity-60"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-red-200 bg-red-50 px-4 text-[13px] font-medium text-red-700 transition hover:bg-red-100 disabled:opacity-60"
                 >
                   <X size={15} />
                   Reject
@@ -621,7 +621,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
               type="button"
               disabled={loading !== null || editing}
               onClick={() => setShowDeleteModal(true)}
-              className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-4 text-[13px] font-medium text-fulfillment transition hover:bg-fulfillment/5 disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-4 text-[13px] font-medium text-red-700 transition hover:bg-red-50 disabled:opacity-60"
             >
               <Trash2 size={15} />
               Delete permanently
@@ -651,7 +651,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
               value={rejectInput}
               onChange={(e) => setRejectInput(e.target.value)}
               rows={3}
-              className="mt-3 w-full rounded-card border border-line px-3 py-2 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30"
+              className="mt-3 w-full rounded-card border border-line px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               placeholder="Reason (optional)"
             />
             <div className="mt-4 flex justify-end gap-2">
@@ -666,7 +666,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 type="button"
                 disabled={loading === "reject"}
                 onClick={handleReject}
-                className="inline-flex items-center gap-1.5 rounded-card bg-fulfillment px-4 py-2 text-[13px] font-medium text-white disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 rounded-card bg-primary px-4 py-2 text-[13px] font-medium text-white disabled:opacity-60"
               >
                 {loading === "reject" ? <Loader2 size={14} className="animate-spin" /> : null}
                 Confirm reject
@@ -697,7 +697,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 type="button"
                 disabled={loading === "delete"}
                 onClick={handleDelete}
-                className="inline-flex items-center gap-1.5 rounded-card bg-fulfillment px-4 py-2 text-[13px] font-medium text-white disabled:opacity-60"
+                className="inline-flex items-center gap-1.5 rounded-card bg-primary px-4 py-2 text-[13px] font-medium text-white disabled:opacity-60"
               >
                 {loading === "delete" ? (
                   <Loader2 size={14} className="animate-spin" />
@@ -715,7 +715,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
 }
 
 const inputClass =
-  "min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-subscriptions focus:outline-none focus:ring-2 focus:ring-subscriptions/30";
+  "min-h-11 w-full rounded-card border border-line bg-white px-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
 
 function Field({
   label,
@@ -732,7 +732,7 @@ function Field({
     <div className={`space-y-1.5 ${className}`}>
       <label className="block text-[12px] font-medium text-ink">
         {label}
-        {required ? <span className="text-fulfillment"> *</span> : null}
+        {required ? <span className="text-primary"> *</span> : null}
       </label>
       {children}
     </div>

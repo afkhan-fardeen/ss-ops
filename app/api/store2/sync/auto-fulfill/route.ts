@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { verifyCronRequest } from "@/lib/auth/verify-cron";
 import {
   getPendingOrderUbexLinks,
   markOrderAutoFulfilled,
@@ -36,13 +37,8 @@ type SyncResult = {
 };
 
 export async function POST(req: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET?.trim();
-  if (cronSecret) {
-    const auth = req.headers.get("authorization") ?? "";
-    if (auth !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = verifyCronRequest(req);
+  if (denied) return denied;
 
   const dryRun = req.nextUrl.searchParams.get("dry_run") === "true";
 
@@ -202,13 +198,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET?.trim();
-  if (cronSecret) {
-    const auth = req.headers.get("authorization") ?? "";
-    if (auth !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = verifyCronRequest(req);
+  if (denied) return denied;
   return NextResponse.json({
     ok: true,
     store: 2,

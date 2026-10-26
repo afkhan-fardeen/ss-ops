@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Toaster } from "sonner";
-import { jakarta, jetbrainsMono, sora } from "./fonts";
+import { inter, jetbrainsMono } from "./fonts";
 import { MotionProviders } from "@/components/motion/MotionProviders";
 import "./globals.css";
 
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body
-        className={`${sora.variable} ${jakarta.variable} ${jetbrainsMono.variable} font-sans antialiased relative min-h-screen bg-canvas`}
+        className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased relative min-h-screen bg-canvas`}
       >
         <MotionProviders>{children}</MotionProviders>
         <Toaster position="top-right" richColors closeButton />

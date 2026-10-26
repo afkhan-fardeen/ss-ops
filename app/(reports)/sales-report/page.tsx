@@ -10,7 +10,7 @@ import {
   bahrainDateKeyForInstant,
   getBahrainCalendarDay,
   getBahrainCalendarDayForKey,
-} from "@/lib/datetime/collection-window";
+} from "@/lib/datetime/bahrain-time";
 import { ChartCard } from "@/components/dashboard/ChartCard";
 import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
 import { OrdersProductsPanel } from "@/components/sales-report/OrdersProductsPanel";
@@ -172,7 +172,7 @@ export default async function SalesReportPage({
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <header className="animate-fade-up flex items-center gap-3">
-        <div className="grid h-10 w-10 place-items-center rounded-card bg-subscriptions-bg text-subscriptions">
+        <div className="grid h-10 w-10 place-items-center rounded-card bg-primary-soft text-primary">
           <BarChart3 size={20} />
         </div>
         <div>
@@ -233,7 +233,7 @@ export default async function SalesReportPage({
 
       {hasFullAccess && history ? (
         <section className="space-y-3">
-          <h2 className="text-[13px] font-medium uppercase tracking-wider text-muted">
+          <h2 className="text-[13px] font-semibold uppercase tracking-wide text-muted">
             Last 14 days
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">

@@ -6,7 +6,7 @@ import {
   getBahrainCalendarDay,
   shortBahrainDayLabel,
   type BahrainCalendarDay,
-} from "@/lib/datetime/collection-window";
+} from "@/lib/datetime/bahrain-time";
 import { STORE_LABELS } from "@/lib/stores/labels";
 
 export type SalesOrderRow = {

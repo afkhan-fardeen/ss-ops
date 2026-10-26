@@ -29,7 +29,7 @@ function PushButton({ row, state, onPush }: { row: OrderRow; state: RowState | u
 
   if (status === "fulfilled") {
     return (
-      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#4CAF50]">
+      <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[#16A34A]">
         <Check size={13} strokeWidth={2.4} />
         Fulfilled
       </span>
@@ -47,7 +47,7 @@ function PushButton({ row, state, onPush }: { row: OrderRow; state: RowState | u
       className={[
         "focus-ring inline-flex h-8 items-center gap-1.5 rounded-card border px-2.5 text-[12px] font-medium transition",
         status === "error"
-          ? "border-[#C25151]/30 bg-[rgba(194,81,81,0.10)] text-[#C25151] hover:bg-[#C25151]/10"
+          ? "border-[#DC2626]/30 bg-[rgba(220,38,38,0.10)] text-[#DC2626] hover:bg-[#DC2626]/10"
           : "border-line bg-white text-ink hover:bg-canvas",
         disabled ? "cursor-not-allowed opacity-60" : "",
       ].join(" ")}
@@ -79,7 +79,7 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
       <div className="max-h-[65vh] overflow-auto">
       <table className="w-full min-w-[900px] border-collapse text-left text-[13px]">
         <thead className="sticky top-0 z-10">
-          <tr className="border-b border-line bg-canvas text-[10px] font-medium uppercase tracking-wider text-muted">
+          <tr className="border-b border-line bg-canvas text-[11px] font-semibold uppercase tracking-wide text-muted">
             <th className="px-3 py-3">Order</th>
             <th className="px-3 py-3">Date</th>
             <th className="px-3 py-3">Status</th>
@@ -112,7 +112,7 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
                 <td className="px-3 py-3">
                   <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
                   {status === "error" && state?.message ? (
-                    <div className="mt-1 max-w-[200px] truncate text-[11px] text-[#C25151]" title={state.message}>
+                    <div className="mt-1 max-w-[200px] truncate text-[11px] text-[#DC2626]" title={state.message}>
                       {state.message}
                     </div>
                   ) : null}
@@ -140,7 +140,7 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
                 <td className="px-3 py-3 text-[12px]">
                   <span className={[
                     "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium",
-                    r.isCod ? "bg-[rgba(240,183,67,0.12)] text-[#F0B743]" : "bg-canvas text-muted",
+                    r.isCod ? "bg-[rgba(217,119,6,0.12)] text-[#D97706]" : "bg-canvas text-muted",
                   ].join(" ")}>
                     {r.isCod ? "COD" : "Paid"}
                   </span>

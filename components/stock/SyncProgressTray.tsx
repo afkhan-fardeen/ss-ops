@@ -12,10 +12,10 @@ function RowIcon({ status }: { status: "idle" | "busy" | "success" | "error" }) 
     return <Loader2 size={14} className="shrink-0 animate-spin-slow text-muted" />;
   }
   if (status === "success") {
-    return <Check size={14} className="shrink-0 text-[#4CAF50]" />;
+    return <Check size={14} className="shrink-0 text-[#16A34A]" />;
   }
   if (status === "error") {
-    return <AlertCircle size={14} className="shrink-0 text-[#C25151]" />;
+    return <AlertCircle size={14} className="shrink-0 text-[#DC2626]" />;
   }
   return (
     <span

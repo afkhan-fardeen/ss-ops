@@ -131,7 +131,7 @@ export function StockErrorCard({
               type="button"
               disabled={busy || !card.barcode}
               onClick={onRetry}
-              className="inline-flex min-h-11 items-center gap-2 rounded-card bg-stock px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 rounded-card bg-primary px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
             >
               {busy ? <Loader2 size={15} className="animate-spin" /> : <PackagePlus size={15} />}
               Retry sync

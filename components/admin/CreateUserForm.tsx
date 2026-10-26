@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Check, Loader2, UserPlus } from "lucide-react";
 
 const SELECTABLE_MODULES: { id: string; label: string }[] = [
-  { id: "cod", label: "COD" },
   { id: "fulfillment", label: "Fulfillment" },
   { id: "awb", label: "AWB Lookup" },
   { id: "stock", label: "Stock Balance" },
@@ -24,7 +23,7 @@ export function CreateUserForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [selected, setSelected] = useState<Set<string>>(new Set(["cod", "fulfillment", "awb"]));
+  const [selected, setSelected] = useState<Set<string>>(new Set(["fulfillment", "awb"]));
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -66,7 +65,7 @@ export function CreateUserForm() {
       setEmail("");
       setPassword("");
       setFullName("");
-      setSelected(new Set(["cod", "fulfillment", "awb"]));
+      setSelected(new Set(["fulfillment", "awb"]));
       setSubmitState("saved");
       router.refresh();
       setTimeout(() => setSubmitState("idle"), 2500);
@@ -92,7 +91,7 @@ export function CreateUserForm() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5 sm:col-span-2">
-          <label htmlFor="create-email" className="block text-[12px] font-medium uppercase tracking-wider text-muted">
+          <label htmlFor="create-email" className="block text-[12px] font-semibold uppercase tracking-wide text-muted">
             Email
           </label>
           <input
@@ -103,13 +102,13 @@ export function CreateUserForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={submitState === "saving"}
-            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 text-base text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
+            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
             placeholder="staff@example.com"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="create-password" className="block text-[12px] font-medium uppercase tracking-wider text-muted">
+          <label htmlFor="create-password" className="block text-[12px] font-semibold uppercase tracking-wide text-muted">
             Password
           </label>
           <input
@@ -121,13 +120,13 @@ export function CreateUserForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={submitState === "saving"}
-            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 font-mono text-base text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
+            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 font-mono text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
             placeholder="Min. 8 characters"
           />
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="create-name" className="block text-[12px] font-medium uppercase tracking-wider text-muted">
+          <label htmlFor="create-name" className="block text-[12px] font-semibold uppercase tracking-wide text-muted">
             Full name <span className="normal-case tracking-normal text-muted/70">(optional)</span>
           </label>
           <input
@@ -136,14 +135,14 @@ export function CreateUserForm() {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             disabled={submitState === "saving"}
-            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 text-base text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40"
+            className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 py-2 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40"
             placeholder="Display name"
           />
         </div>
       </div>
 
       <div className="space-y-2">
-        <p className="text-[12px] font-medium uppercase tracking-wider text-muted">Modules</p>
+        <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">Modules</p>
         <div className="flex flex-wrap gap-2">
           {SELECTABLE_MODULES.map((m) => {
             const checked = selected.has(m.id);
@@ -155,7 +154,7 @@ export function CreateUserForm() {
                 disabled={submitState === "saving"}
                 className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
                   checked
-                    ? "bg-awb-bg text-awb"
+                    ? "bg-primary-soft text-primary"
                     : "bg-canvas text-muted hover:bg-line/30"
                 }`}
               >
@@ -171,7 +170,7 @@ export function CreateUserForm() {
         <button
           type="submit"
           disabled={submitState === "saving" || !email.trim() || password.length < 8}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-awb px-4 text-[13px] font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-[13px] font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {submitState === "saving" ? (
             <Loader2 size={14} className="animate-spin" />
@@ -181,10 +180,10 @@ export function CreateUserForm() {
           {submitState === "saving" ? "Creating…" : "Create user"}
         </button>
         {submitState === "saved" && (
-          <span className="text-[12px] text-cod">User created — they can log in now.</span>
+          <span className="text-[12px] text-emerald-700">User created — they can log in now.</span>
         )}
         {submitState === "error" && (
-          <span className="text-[12px] text-fulfillment">{errorMsg}</span>
+          <span className="text-[12px] text-red-700">{errorMsg}</span>
         )}
       </div>
     </form>

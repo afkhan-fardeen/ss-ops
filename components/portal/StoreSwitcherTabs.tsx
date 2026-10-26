@@ -22,7 +22,7 @@ const STORE_TABS: StoreTab[] = [
  * This is a client component so it can read the current URL params reactively.
  *
  * The active pill slides between tabs via a shared `layoutId`, namespaced per
- * page (via `namespace`) so a COD store-switcher and a Fulfillment store-switcher
+ * page (via `namespace`) so independent store-switchers
  * never bridge their layout animation if both were ever mounted at once.
  */
 export function StoreSwitcherTabs({ namespace = "default" }: { namespace?: string }) {

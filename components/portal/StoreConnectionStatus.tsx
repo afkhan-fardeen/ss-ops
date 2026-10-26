@@ -19,12 +19,12 @@ function StorePill({ label, status }: { label: string; status: StoreConnectionSt
   if (status.ok) {
     return (
       <span
-        className="inline-flex items-center gap-1.5 rounded-full border border-[#4CAF50]/20 bg-[rgba(76,175,80,0.08)] px-3 py-1 text-[11px] font-medium text-[#2E7D32]"
+        className="inline-flex items-center gap-1.5 rounded-full border border-[#16A34A]/20 bg-[rgba(22,163,74,0.08)] px-3 py-1 text-[11px] font-medium text-[#15803D]"
         title={`${status.shopName ?? status.domain} · ${status.latencyMs}ms`}
       >
         <span className="relative inline-flex h-1.5 w-1.5">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#4CAF50] opacity-60" />
-          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#4CAF50]" />
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16A34A] opacity-60" />
+          <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
         </span>
         {label}
         {status.shopName ? ` · ${status.shopName}` : ""}
@@ -34,7 +34,7 @@ function StorePill({ label, status }: { label: string; status: StoreConnectionSt
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full border border-[#C25151]/20 bg-[rgba(194,81,81,0.08)] px-3 py-1 text-[11px] font-medium text-[#C25151]"
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#DC2626]/20 bg-[rgba(220,38,38,0.08)] px-3 py-1 text-[11px] font-medium text-[#DC2626]"
       title={status.error}
     >
       <AlertTriangle size={11} className="shrink-0" />

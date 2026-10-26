@@ -33,7 +33,7 @@ export function StockBalanceSearchBar({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={mode === "sweep" ? "Filter mismatches by product, SKU, or barcode…" : "Search product, SKU, or barcode…"}
-          className="min-h-11 w-full rounded-card border border-line bg-white py-2 pl-9 pr-10 text-[13px] text-ink placeholder:text-muted focus:border-stock focus:outline-none focus:ring-2 focus:ring-stock/20"
+          className="min-h-11 w-full rounded-card border border-line bg-white py-2 pl-9 pr-10 text-[13px] text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         {loading && mode === "browse" ? (
           <Loader2

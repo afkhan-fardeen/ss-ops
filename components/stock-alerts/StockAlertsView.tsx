@@ -38,7 +38,7 @@ export function StockAlertsView({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-card border border-line border-l-4 border-l-stock bg-white p-4 shadow-soft">
+      <div className="rounded-card border border-line border-l-4 border-l-primary bg-white p-4 shadow-soft">
         <p className="text-[13px] text-ink">
           Scanned {scannedCount} linked products · fetched {new Date(fetchedAt).toLocaleString()}
         </p>
@@ -83,7 +83,7 @@ export function StockAlertsView({
         <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
           <div className="max-h-[65vh] overflow-auto">
             <table className="w-full min-w-[720px] border-collapse text-left">
-              <thead className="sticky top-0 z-10 bg-canvas text-[10px] font-medium uppercase tracking-wider text-muted">
+              <thead className="sticky top-0 z-10 bg-canvas text-[11px] font-semibold uppercase tracking-wide text-muted">
                 <tr className="border-b border-line">
                   <th className="px-3 py-3">Product</th>
                   <th className="px-3 py-3 text-right">Ubex stock</th>

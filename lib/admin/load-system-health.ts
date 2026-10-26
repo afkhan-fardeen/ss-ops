@@ -20,7 +20,7 @@ export type Connectivity = {
 
 export type HealthFailureRow = {
   id: string;
-  source: "Fulfillment" | "Stock restock" | "COD email";
+  source: "Fulfillment" | "Stock restock";
   at: string;
   detail: string;
   error: string | null;
@@ -88,26 +88,7 @@ async function loadRecentStockRestockFailures(limit: number): Promise<HealthFail
   }));
 }
 
-async function loadRecentCodEmailFailures(limit: number): Promise<HealthFailureRow[]> {
-  const supabase = getSupabaseService();
-  if (!supabase) return [];
-  const { data, error } = await supabase
-    .from("cod_email_log")
-    .select("id, recipients, error, sent_at")
-    .eq("status", "error")
-    .order("sent_at", { ascending: false })
-    .limit(limit);
-  if (error || !data) return [];
-  return data.map((r) => ({
-    id: `cod-email-${r.id}`,
-    source: "COD email" as const,
-    at: r.sent_at,
-    detail: r.recipients,
-    error: r.error,
-  }));
-}
-
-/** Combined success/error activity across all three logs, bucketed into a daily trend. */
+/** Combined success/error activity across both logs, bucketed into a daily trend. */
 async function loadErrorTrend(days: number): Promise<DailyStatusSplit[]> {
   const supabase = getSupabaseService();
   if (!supabase) return bucketStatusRows([], days);
@@ -118,7 +99,7 @@ async function loadErrorTrend(days: number): Promise<DailyStatusSplit[]> {
   const sinceIso = since.toISOString();
   const rowCap = 1000;
 
-  const [fulfillment, stockRestock, codEmail] = await Promise.all([
+  const [fulfillment, stockRestock] = await Promise.all([
     supabase
       .from("fulfillment_log")
       .select("created_at, status")
@@ -129,17 +110,11 @@ async function loadErrorTrend(days: number): Promise<DailyStatusSplit[]> {
       .select("created_at, status")
       .gte("created_at", sinceIso)
       .limit(rowCap),
-    supabase
-      .from("cod_email_log")
-      .select("sent_at, status")
-      .gte("sent_at", sinceIso)
-      .limit(rowCap),
   ]);
 
   const rows: { at: string; status: string }[] = [
     ...(fulfillment.data ?? []).map((r) => ({ at: r.created_at as string, status: r.status as string })),
     ...(stockRestock.data ?? []).map((r) => ({ at: r.created_at as string, status: r.status as string })),
-    ...(codEmail.data ?? []).map((r) => ({ at: r.sent_at as string, status: r.status as string })),
   ];
 
   return bucketStatusRows(rows, days);
@@ -227,7 +202,7 @@ export async function loadSystemHealth(): Promise<SystemHealth> {
   const [
     { store1, store2 },
     ubex,
-    [fulfillmentFailures, stockRestockFailures, codEmailFailures],
+    [fulfillmentFailures, stockRestockFailures],
     cronRuns,
     errorTrend,
     stuckFulfillmentCount,
@@ -238,7 +213,6 @@ export async function loadSystemHealth(): Promise<SystemHealth> {
     Promise.all([
       loadRecentFulfillmentFailures(15),
       loadRecentStockRestockFailures(15),
-      loadRecentCodEmailFailures(15),
     ]),
     getRecentCronRuns(10),
     loadErrorTrend(LOOKBACK_DAYS),
@@ -246,7 +220,7 @@ export async function loadSystemHealth(): Promise<SystemHealth> {
     countStuckStockRestockIdempotency(),
   ]);
 
-  const recentFailures = [...fulfillmentFailures, ...stockRestockFailures, ...codEmailFailures]
+  const recentFailures = [...fulfillmentFailures, ...stockRestockFailures]
     .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
     .slice(0, 20);
 

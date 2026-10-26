@@ -123,8 +123,8 @@ async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
 
   if (error) {
     return (
-      <div className="rounded-card border border-[#C25151]/25 bg-[rgba(194,81,81,0.10)] p-6">
-        <div className="flex items-center gap-2 text-[#C25151]">
+      <div className="rounded-card border border-[#DC2626]/25 bg-[rgba(220,38,38,0.10)] p-6">
+        <div className="flex items-center gap-2 text-[#DC2626]">
           <AlertTriangle size={18} />
           <h2 className="text-base font-medium">Could not load fulfillment queue</h2>
         </div>
@@ -140,7 +140,7 @@ async function FulfillmentContent({ storeId }: { storeId: 1 | 2 }) {
       <section className="animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-[11px] font-medium uppercase tracking-wider text-muted">
+            <h2 className="text-[11px] font-semibold uppercase tracking-wide text-muted">
               Fulfillment window{storeId === 2 ? ` · ${STORE_LABELS[2]}` : ""}
             </h2>
             <p className="mt-1 font-mono text-[13px] font-medium text-ink">{windowLabel}</p>

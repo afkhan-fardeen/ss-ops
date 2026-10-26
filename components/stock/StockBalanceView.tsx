@@ -230,7 +230,7 @@ export function StockBalanceView({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-card border border-line border-l-4 border-l-stock bg-white p-4 shadow-soft">
+      <div className="rounded-card border border-line border-l-4 border-l-primary bg-white p-4 shadow-soft">
         <p className="text-[12px] text-muted">
           Shared Ubex pool · {STORE_LABELS[1]} ({locationName})
           {store2Configured
@@ -290,7 +290,7 @@ export function StockBalanceView({
         <button
           type="button"
           onClick={() => setFilters(WEEKLY_RESTOCK_PRESET)}
-          className="rounded-full border border-stock/30 bg-stock-bg px-2.5 py-1 text-[11px] font-medium text-stock transition hover:opacity-90"
+          className="rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1 text-[11px] font-medium text-primary transition hover:opacity-90"
         >
           Weekly restock preset
         </button>
@@ -310,7 +310,7 @@ export function StockBalanceView({
           <button
             type="button"
             onClick={selectAllMatching}
-            className="text-[12px] font-medium text-stock hover:underline"
+            className="text-[12px] font-medium text-primary hover:underline"
           >
             Select all matching ({restockable.length})
           </button>
@@ -327,7 +327,7 @@ export function StockBalanceView({
                 type="button"
                 disabled={running}
                 onClick={() => setConfirmRows(selectedRows)}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-card bg-stock px-3 text-[12px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-card bg-primary px-3 text-[12px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
               >
                 <PackagePlus size={14} />
                 Sync selected ({selectedRows.length})
@@ -347,7 +347,7 @@ export function StockBalanceView({
         <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
           <div className="max-h-[65vh] overflow-auto">
             <table className="w-full min-w-[760px] border-collapse text-left">
-              <thead className="sticky top-0 z-10 bg-canvas text-[10px] font-medium uppercase tracking-wider text-muted">
+              <thead className="sticky top-0 z-10 bg-canvas text-[11px] font-semibold uppercase tracking-wide text-muted">
                 <tr className="border-b border-line">
                   <th className="w-8 px-3 py-3" />
                   <th className="px-3 py-3">Product</th>
@@ -471,7 +471,7 @@ export function StockBalanceView({
               <button
                 type="button"
                 onClick={() => void runConfirm()}
-                className="inline-flex items-center gap-1.5 rounded-card bg-stock px-4 py-2 text-[13px] font-medium text-white"
+                className="inline-flex items-center gap-1.5 rounded-card bg-primary px-4 py-2 text-[13px] font-medium text-white"
               >
                 <PackagePlus size={15} />
                 Sync {confirmRows.length}

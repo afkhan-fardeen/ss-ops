@@ -193,7 +193,7 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block text-[11px] font-medium uppercase tracking-wider text-muted"
+        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted"
       >
         {label}
       </label>
@@ -204,7 +204,7 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
 
 function FieldError({ message }: { message: string }) {
   return (
-    <p className="text-[12px] font-medium text-[#C25151]" role="alert">
+    <p className="text-[12px] font-medium text-[#DC2626]" role="alert">
       {message}
     </p>
   );

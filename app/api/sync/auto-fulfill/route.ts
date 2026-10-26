@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { verifyCronRequest } from "@/lib/auth/verify-cron";
 import {
   getPendingOrderUbexLinks,
   markOrderAutoFulfilled,
@@ -41,14 +42,8 @@ type SyncResult = {
 };
 
 export async function POST(req: NextRequest) {
-  // Verify cron secret. Vercel sends Authorization: Bearer <CRON_SECRET> automatically.
-  const cronSecret = process.env.CRON_SECRET?.trim();
-  if (cronSecret) {
-    const auth = req.headers.get("authorization") ?? "";
-    if (auth !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = verifyCronRequest(req);
+  if (denied) return denied;
 
   // ?dry_run=true  →  fetch Ubex statuses and report what WOULD happen, but skip
   // all Shopify calls and Supabase writes. Safe to run at any time.
@@ -213,13 +208,8 @@ export async function POST(req: NextRequest) {
 
 // Allow GET so Vercel's cron health-check can confirm the route exists.
 export async function GET(req: NextRequest) {
-  const cronSecret = process.env.CRON_SECRET?.trim();
-  if (cronSecret) {
-    const auth = req.headers.get("authorization") ?? "";
-    if (auth !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-  }
+  const denied = verifyCronRequest(req);
+  if (denied) return denied;
   return NextResponse.json({
     ok: true,
     fulfilledStatus: FULFILLED_STATUS,

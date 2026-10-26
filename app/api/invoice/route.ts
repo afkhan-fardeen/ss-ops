@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireSession } from "@/lib/auth/require-session";
+import { requireModuleAccess } from "@/lib/auth/can-access-module";
+import { PortalAuthError } from "@/lib/auth/require-portal-admin";
 import { fetchInvoiceForOrder } from "@/lib/zoho/fetch-invoice";
 
 /**
@@ -13,8 +14,11 @@ import { fetchInvoiceForOrder } from "@/lib/zoho/fetch-invoice";
  */
 export async function GET(req: NextRequest) {
   try {
-    await requireSession();
-  } catch {
+    await requireModuleAccess("awb");
+  } catch (e) {
+    if (e instanceof PortalAuthError) {
+      return NextResponse.json({ ok: false, error: e.message }, { status: e.status });
+    }
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 

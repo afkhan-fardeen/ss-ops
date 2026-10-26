@@ -158,11 +158,11 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           <div className="min-w-0 flex-1 space-y-1.5">
             <label
               htmlFor="order-input"
-              className="block text-[12px] font-medium uppercase tracking-wider text-muted"
+              className="block text-[12px] font-semibold uppercase tracking-wide text-muted"
             >
               Order number
             </label>
-            <div className="flex min-h-11 overflow-hidden rounded-lg border border-line bg-canvas focus-within:border-awb focus-within:ring-2 focus-within:ring-awb/40">
+            <div className="flex min-h-11 overflow-hidden rounded-lg border border-line bg-canvas focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/40">
               <span
                 aria-hidden
                 className="inline-flex shrink-0 items-center border-r border-line bg-white/70 px-3 font-mono text-base font-medium text-muted"
@@ -190,7 +190,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
             <div className="space-y-1.5">
               <label
                 htmlFor="store-select"
-                className="block text-[12px] font-medium uppercase tracking-wider text-muted"
+                className="block text-[12px] font-semibold uppercase tracking-wide text-muted"
               >
                 Store
               </label>
@@ -198,7 +198,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
                 id="store-select"
                 value={store}
                 onChange={(e) => setStore(Number(e.target.value) as 1 | 2)}
-                className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 text-base text-ink focus:border-awb focus:outline-none focus:ring-2 focus:ring-awb/40 sm:w-auto"
+                className="min-h-11 w-full rounded-lg border border-line bg-canvas px-3 text-base text-ink focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 sm:w-auto"
                 disabled={isLoading}
               >
                 <option value={1}>{STORE_LABELS[1]}</option>
@@ -210,7 +210,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           <button
             type="submit"
             disabled={isLoading || !hasDigits}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-awb px-5 text-sm font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             {isLoading ? (
               <Loader2 size={15} className="animate-spin" />
@@ -228,15 +228,15 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           {/* Metadata bar */}
           {awbExtra && (
             <div className="flex flex-wrap items-center gap-3 rounded-card border border-line bg-white p-4 shadow-soft">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-awb-bg px-3 py-1 font-mono text-[12px] font-medium text-awb">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 font-mono text-[12px] font-medium text-primary">
                 <Tag size={11} />
                 {awbExtra.orderName}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-awb-bg px-3 py-1 font-mono text-[12px] font-medium text-awb">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 font-mono text-[12px] font-medium text-primary">
                 {awbExtra.tracking}
               </span>
               {awbExtra.source === "live" && (
-                <span className="rounded-full bg-cod-bg px-2.5 py-0.5 text-[11px] font-medium text-cod">
+                <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-[11px] font-medium text-primary">
                   live match
                 </span>
               )}
@@ -249,15 +249,15 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
               title="Airway Bill"
               icon={<FileSearch size={14} />}
               state={awbState}
-              accentClass="text-awb"
-              accentBgClass="bg-awb-bg"
+              accentClass="text-primary"
+              accentBgClass="bg-primary-soft"
             />
             <PdfColumn
               title="Zoho Invoice"
               icon={<FileText size={14} />}
               state={invoiceState}
-              accentClass="text-cod"
-              accentBgClass="bg-cod-bg"
+              accentClass="text-primary"
+              accentBgClass="bg-primary-soft"
             />
           </div>
 
@@ -322,7 +322,7 @@ function PdfColumn({
             <a
               href={state.blobUrl}
               download={`${title.toLowerCase().replace(" ", "-")}.pdf`}
-              className="flex items-center gap-1 rounded-lg bg-awb px-2.5 py-1 text-[12px] font-medium text-white shadow-soft transition-all hover:opacity-90"
+              className="flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-[12px] font-medium text-white shadow-soft transition-all hover:opacity-90"
             >
               <Download size={12} />
               Download
@@ -350,11 +350,11 @@ function PdfColumn({
       )}
 
       {state.status === "error" && (
-        <div className="rounded-card border border-fulfillment-bg bg-fulfillment-bg p-4">
+        <div className="rounded-card border border-red-200 bg-red-50 p-4">
           <div className="flex items-start gap-2.5">
-            <AlertCircle size={15} className="mt-0.5 shrink-0 text-fulfillment" />
+            <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-600" />
             <div className="space-y-0.5">
-              <p className="text-[12px] font-medium text-fulfillment">
+              <p className="text-[12px] font-medium text-red-700">
                 {columnErrorTitle(state.reason, title)}
               </p>
               <p className="text-[12px] text-ink/80">{state.message}</p>

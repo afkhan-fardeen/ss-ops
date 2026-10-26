@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getBahrainCalendarDay } from "@/lib/datetime/collection-window";
+import { verifyCronRequest } from "@/lib/auth/verify-cron";
+import { getBahrainCalendarDay } from "@/lib/datetime/bahrain-time";
 import { loadDailySalesReport } from "@/lib/sales/daily-sales-report";
 import { sendDailySalesEmail } from "@/lib/email/send-daily-sales-email";
 import { resolvePortalBaseUrl } from "@/lib/portal-url";
@@ -18,19 +19,9 @@ import { resolvePortalBaseUrl } from "@/lib/portal-url";
  *
  * Auth: expects  Authorization: Bearer <CRON_SECRET>
  */
-function checkAuth(req: NextRequest): NextResponse | null {
-  const cronSecret = process.env.CRON_SECRET?.trim();
-  if (!cronSecret) return null;
-  const auth = req.headers.get("authorization") ?? "";
-  if (auth !== `Bearer ${cronSecret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  return null;
-}
-
 export async function POST(req: NextRequest) {
-  const unauthorized = checkAuth(req);
-  if (unauthorized) return unauthorized;
+  const denied = verifyCronRequest(req);
+  if (denied) return denied;
 
   const dryRun = req.nextUrl.searchParams.get("dry_run") === "true";
   const offsetParam = req.nextUrl.searchParams.get("offset");
@@ -49,7 +40,7 @@ export async function POST(req: NextRequest) {
 
 // Allow GET as a lightweight check that the route/auth is wired correctly.
 export async function GET(req: NextRequest) {
-  const unauthorized = checkAuth(req);
-  if (unauthorized) return unauthorized;
+  const denied = verifyCronRequest(req);
+  if (denied) return denied;
   return NextResponse.json({ ok: true, endpoint: "daily-sales-report" });
 }

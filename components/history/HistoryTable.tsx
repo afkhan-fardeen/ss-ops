@@ -77,7 +77,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
         <Inbox size={28} className="text-muted" />
         <h3 className="text-sm font-medium text-ink">No fulfillments yet</h3>
         <p className="max-w-sm text-[13px] text-muted">
-          Pushes from COD or Fulfillment will appear here with tracking, status, and the signed-in
+          Pushes from Fulfillment will appear here with tracking, status, and the signed-in
           user who triggered them.
         </p>
       </div>
@@ -127,7 +127,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
         <div className="max-h-[65vh] overflow-auto">
           <table className="w-full min-w-[700px] divide-y divide-line text-[13px]">
             <thead className="sticky top-0 z-10 bg-canvas">
-              <tr className="text-left text-[11px] font-medium uppercase tracking-wider text-muted">
+              <tr className="text-left text-[11px] font-semibold uppercase tracking-wide text-muted">
                 <th className="px-4 py-2.5">When</th>
                 <th className="px-4 py-2.5">Order</th>
                 <th className="px-4 py-2.5">Tracking</th>
@@ -219,9 +219,9 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                       </td>
                     </tr>
                     {isExpanded && row.error ? (
-                      <tr className="bg-[rgba(194,81,81,0.05)]">
+                      <tr className="bg-[rgba(220,38,38,0.05)]">
                         <td colSpan={6} className="px-4 py-3">
-                          <pre className="whitespace-pre-wrap break-words font-mono text-[11.5px] leading-relaxed text-[#C25151]">
+                          <pre className="whitespace-pre-wrap break-words font-mono text-[11.5px] leading-relaxed text-[#DC2626]">
                             {row.error}
                           </pre>
                         </td>

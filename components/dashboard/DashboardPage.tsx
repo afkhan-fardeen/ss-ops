@@ -7,14 +7,13 @@ type Props = {
 
 const BORDER: Record<string, string> = {
   home: "border-l-ink",
-  cod: "border-l-cod",
-  fulfillment: "border-l-fulfillment",
-  stock: "border-l-stock",
-  stockAnalysis: "border-l-stock-analysis",
-  ubexInventory: "border-l-ubex-inventory",
-  awb: "border-l-awb",
-  subscriptions: "border-l-subscriptions",
-  zohoBooks: "border-l-zoho-books",
+  fulfillment: "border-l-primary",
+  stock: "border-l-primary",
+  stockAnalysis: "border-l-primary",
+  ubexInventory: "border-l-primary",
+  awb: "border-l-primary",
+  subscriptions: "border-l-primary",
+  zohoBooks: "border-l-primary",
 };
 
 export function DashboardPage({ children, moduleId }: Props) {
@@ -43,11 +42,11 @@ export function DashboardHeader({
       className={`animate-fade-up rounded-card border border-line border-l-4 bg-white p-5 shadow-soft ${border}`}
     >
       {moduleLabel ? (
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
           {moduleLabel}
         </p>
       ) : null}
-      <h1 className="mt-0.5 font-display text-xl font-medium text-ink">{title}</h1>
+      <h1 className="mt-0.5 font-sans text-xl font-medium text-ink">{title}</h1>
       {description ? (
         <p className="mt-2 text-[13px] text-muted">{description}</p>
       ) : null}

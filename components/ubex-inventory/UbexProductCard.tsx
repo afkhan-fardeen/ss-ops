@@ -31,7 +31,7 @@ export function UbexProductTile({
       aria-pressed={selected}
       className={[
         "flex min-h-[200px] flex-col justify-between rounded-card border bg-white p-4 text-left shadow-soft transition",
-        selected ? "border-ubex-inventory ring-2 ring-ubex-inventory/20" : "border-line hover:bg-canvas/40",
+        selected ? "border-primary ring-2 ring-primary/20" : "border-line hover:bg-canvas/40",
       ].join(" ")}
     >
       <div className="min-w-0">

@@ -101,7 +101,7 @@ export function StockErrorsView() {
   if (error && !cards) {
     return (
       <div className="space-y-3">
-        <div className="rounded-card border border-[#C25151]/30 bg-[rgba(194,81,81,0.08)] px-4 py-3 text-[13px] text-[#C25151]">
+        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-[13px] text-[#DC2626]">
           {error}
         </div>
         <button
@@ -119,7 +119,7 @@ export function StockErrorsView() {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-card border border-line border-l-4 border-l-stock bg-white p-4 shadow-soft">
+      <div className="rounded-card border border-line border-l-4 border-l-primary bg-white p-4 shadow-soft">
         <p className="text-[13px] font-medium text-ink">
           {counts.all} issue{counts.all === 1 ? "" : "s"} need attention · {counts["sync-failed"]}{" "}
           sync failure{counts["sync-failed"] === 1 ? "" : "s"}

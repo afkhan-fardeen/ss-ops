@@ -8,7 +8,3 @@ export function formatMoney(amount: string, currency: string): string {
     return `${currency} ${n.toFixed(2)}`;
   }
 }
-
-export function formatMoneyAed(amount: string): string {
-  return formatMoney(amount, "AED");
-}

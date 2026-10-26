@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getBahrainCalendarDay, getBahrainCalendarDayForKey } from "@/lib/datetime/collection-window";
+import { getBahrainCalendarDay, getBahrainCalendarDayForKey } from "@/lib/datetime/bahrain-time";
 import { loadDailySalesReport } from "@/lib/sales/daily-sales-report";
 import { buildSalesReportWorkbook, salesReportFilename } from "@/lib/sales/build-sales-report-workbook";
 

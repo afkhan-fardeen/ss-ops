@@ -18,8 +18,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
       className={[
         "group relative flex h-11 items-center rounded-card border bg-white transition",
         invalid
-          ? "border-[#C25151]/50 focus-within:shadow-[0_0_0_3px_rgba(194,81,81,0.12)]"
-          : "border-line focus-within:border-gold focus-within:shadow-[0_0_0_3px_rgba(184,132,46,0.18)]",
+          ? "border-[#DC2626]/50 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12)]"
+          : "border-line focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(217,119,6,0.18)]",
       ].join(" ")}
     >
       {icon ? (

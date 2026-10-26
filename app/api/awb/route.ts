@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireSession } from "@/lib/auth/require-session";
+import { requireModuleAccess } from "@/lib/auth/can-access-module";
+import { PortalAuthError } from "@/lib/auth/require-portal-admin";
 import { lookupOrderTracking } from "@/lib/awb/lookup-order-tracking";
 import { fetchAwb } from "@/lib/ubex/fetch-awb";
 
@@ -11,8 +12,11 @@ import { fetchAwb } from "@/lib/ubex/fetch-awb";
  */
 export async function GET(req: NextRequest) {
   try {
-    await requireSession();
-  } catch {
+    await requireModuleAccess("awb");
+  } catch (e) {
+    if (e instanceof PortalAuthError) {
+      return NextResponse.json({ ok: false, error: e.message }, { status: e.status });
+    }
     return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
   }
 

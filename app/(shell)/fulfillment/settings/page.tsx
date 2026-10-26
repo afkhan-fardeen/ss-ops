@@ -8,8 +8,8 @@ export default function FulfillmentSettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
-      <header className="rounded-card border border-line border-l-4 border-l-fulfillment bg-white p-5 shadow-soft">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-fulfillment">
+      <header className="rounded-card border border-line border-l-4 border-l-primary bg-white p-5 shadow-soft">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">
           Fulfillment
         </p>
         <h1 className="mt-1 text-xl font-medium text-ink">Config</h1>

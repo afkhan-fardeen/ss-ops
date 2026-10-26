@@ -3,7 +3,6 @@ import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { createPortalUser } from "@/lib/supabase/profiles";
 
 const ALLOWED_MODULE_IDS = new Set([
-  "cod",
   "fulfillment",
   "awb",
   "stock",

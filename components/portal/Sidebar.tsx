@@ -115,7 +115,7 @@ export function Sidebar({
       <aside
         style={{ width }}
         className={[
-          "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-line bg-white/90 py-5 backdrop-blur-sm transition-[width] duration-200 md:flex",
+          "fixed inset-y-0 left-0 z-30 hidden flex-col border-r border-line bg-white py-4 transition-[width] duration-200 md:flex",
           collapsed ? "px-2" : "px-3",
         ].join(" ")}
       >
@@ -187,7 +187,7 @@ export function Sidebar({
       </aside>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-white/90 backdrop-blur-sm md:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-white md:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <Link

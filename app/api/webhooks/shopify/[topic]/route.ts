@@ -1,10 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import type { ShopifyOrder } from "@/lib/shopify/types";
-import {
-  deleteOrderCache,
-  upsertOrderCache,
-} from "@/lib/supabase/orders-cache";
+import { upsertOrderCache } from "@/lib/supabase/orders-cache";
 import { upsertOrderLineItems } from "@/lib/supabase/order-line-items";
 
 /**
@@ -89,12 +86,9 @@ async function handleOrdersUpsert(raw: string): Promise<void> {
 }
 
 async function handleOrdersCancelled(raw: string): Promise<void> {
-  // Keep the cancellation in cache but mark it cancelled; cleaner than a hard delete for the UI.
+  // The payload carries cancelled_at, so a plain upsert records the cancellation; readers filter on it.
   const order = JSON.parse(raw) as ShopifyOrder & { created_at?: string };
-  if (order?.id) await upsertOrderCache({ ...order, fulfillment_status: "cancelled" });
-  else if (typeof (order as unknown as { id?: number }).id === "number") {
-    await deleteOrderCache((order as unknown as { id: number }).id);
-  }
+  if (order?.id) await upsertOrderCache(order);
 }
 
 async function handleFulfillmentSync(raw: string): Promise<void> {

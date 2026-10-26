@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { requireSession } from "@/lib/auth/require-session";
+import { PortalAuthError, requirePortalAdmin } from "@/lib/auth/require-portal-admin";
 
 /**
  * Admin-only endpoint that (re)registers the portal's Shopify webhook subscriptions.
@@ -61,8 +61,11 @@ async function shopifyFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
 export async function POST(req: NextRequest) {
   try {
-    await requireSession();
-  } catch {
+    await requirePortalAdmin();
+  } catch (e) {
+    if (e instanceof PortalAuthError) {
+      return NextResponse.json({ error: e.message }, { status: e.status });
+    }
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -102,8 +105,11 @@ export async function POST(req: NextRequest) {
 
 export async function GET(_req: NextRequest) {
   try {
-    await requireSession();
-  } catch {
+    await requirePortalAdmin();
+  } catch (e) {
+    if (e instanceof PortalAuthError) {
+      return NextResponse.json({ error: e.message }, { status: e.status });
+    }
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { webhooks } = await shopifyFetch<{ webhooks: ShopifyWebhook[] }>(`/webhooks.json?limit=250`);

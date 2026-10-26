@@ -72,7 +72,7 @@ export function StockAlertsLoader() {
   if (error && rows === null) {
     return (
       <div className="space-y-3">
-        <div className="rounded-card border border-[#C25151]/30 bg-[rgba(194,81,81,0.08)] px-4 py-3 text-[13px] text-[#C25151]">
+        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-[13px] text-[#DC2626]">
           {error}
         </div>
         <button

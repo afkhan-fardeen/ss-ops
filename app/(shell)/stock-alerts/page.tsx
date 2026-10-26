@@ -16,7 +16,7 @@ export default async function StockAlertsPage() {
     <div className="mx-auto max-w-5xl space-y-5">
       <header className="animate-fade-up">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-card bg-stock-bg text-stock">
+          <div className="grid h-10 w-10 place-items-center rounded-card bg-primary-soft text-primary">
             <Bell size={20} />
           </div>
           <div>

@@ -86,7 +86,7 @@ export function SubscriptionsListView({
               className={[
                 "rounded-full px-3 py-1.5 text-[12px] font-medium transition",
                 active === tab.key
-                  ? "bg-subscriptions-bg text-subscriptions"
+                  ? "bg-primary-soft text-primary"
                   : "border border-line bg-white text-muted hover:text-ink",
               ].join(" ")}
             >
@@ -162,7 +162,7 @@ export function SubscriptionsListView({
                   <td className="px-4 py-3">
                     <Link
                       href={`/subscriptions/${row.id}`}
-                      className="font-mono text-[12px] font-medium text-subscriptions hover:underline"
+                      className="font-mono text-[12px] font-medium text-primary hover:underline"
                     >
                       {row.reference_number}
                     </Link>
@@ -205,9 +205,9 @@ export function SubscriptionsListView({
 
 function StatusBadge({ status }: { status: SubscriptionRequestRow["status"] }) {
   const styles = {
-    pending: "bg-gold/10 text-gold",
-    approved: "bg-cod-bg text-cod",
-    rejected: "bg-fulfillment/10 text-fulfillment",
+    pending: "bg-amber-50 text-amber-700",
+    approved: "bg-emerald-50 text-emerald-700",
+    rejected: "bg-red-50 text-red-700",
   };
   return (
     <span
@@ -221,7 +221,7 @@ function StatusBadge({ status }: { status: SubscriptionRequestRow["status"] }) {
 function TypeBadge({ type }: { type: SubscriptionType }) {
   const styles =
     type === "business"
-      ? "bg-subscriptions-bg text-subscriptions"
+      ? "bg-primary-soft text-primary"
       : "bg-canvas text-muted";
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${styles}`}>

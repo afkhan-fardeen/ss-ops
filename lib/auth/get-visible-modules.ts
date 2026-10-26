@@ -5,8 +5,8 @@ import { getUserAllowedModules } from "@/lib/supabase/profiles";
 /**
  * Modules the current user may see on the launcher and shell sidebar.
  * - Admin: all modules
- * - Shared-password session: COD / Fulfillment / AWB (no stock / analysis / ubex / subscriptions)
- * - Member with allowed_modules = null: COD / Fulfillment / AWB
+ * - Shared-password session: Fulfillment / AWB (no stock / analysis / ubex / subscriptions)
+ * - Member with allowed_modules = null: Fulfillment / AWB
  *   (stock, stock analysis, ubex inventory & subscriptions need an explicit grant)
  * - Member with an array: only those ids
  */

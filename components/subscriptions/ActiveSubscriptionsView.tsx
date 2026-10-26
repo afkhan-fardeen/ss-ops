@@ -96,7 +96,7 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
                   <td className="px-4 py-3">
                     <Link
                       href={`/subscriptions/${row.id}`}
-                      className="font-medium text-ink hover:text-subscriptions"
+                      className="font-medium text-ink hover:text-primary"
                     >
                       {row.employee_name}
                     </Link>
@@ -144,7 +144,7 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
 function TypeBadge({ type }: { type: SubscriptionType }) {
   const styles =
     type === "business"
-      ? "bg-subscriptions-bg text-subscriptions"
+      ? "bg-primary-soft text-primary"
       : "bg-canvas text-muted";
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${styles}`}>

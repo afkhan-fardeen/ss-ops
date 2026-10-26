@@ -4,7 +4,7 @@ import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import {
   getBahrainCalendarDay,
   getBahrainCalendarDayForKey,
-} from "@/lib/datetime/collection-window";
+} from "@/lib/datetime/bahrain-time";
 import { loadDailySalesReport } from "@/lib/sales/daily-sales-report";
 import { sendDailySalesEmail } from "@/lib/email/send-daily-sales-email";
 import { resolvePortalBaseUrl } from "@/lib/portal-url";

@@ -93,7 +93,7 @@ export default async function SubscriptionsDashboardPage() {
           </div>
           <Link
             href="/subscriptions"
-            className="text-[12px] font-medium text-subscriptions hover:underline"
+            className="text-[12px] font-medium text-primary hover:underline"
           >
             View all
           </Link>
@@ -124,7 +124,7 @@ export default async function SubscriptionsDashboardPage() {
                     <td className="px-4 py-2.5">
                       <Link
                         href={`/subscriptions/${row.id}`}
-                        className="font-mono text-[12px] font-medium text-subscriptions hover:underline"
+                        className="font-mono text-[12px] font-medium text-primary hover:underline"
                       >
                         {row.reference_number}
                       </Link>
@@ -133,7 +133,7 @@ export default async function SubscriptionsDashboardPage() {
                       <span
                         className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${
                           row.subscription_type === "business"
-                            ? "bg-subscriptions-bg text-subscriptions"
+                            ? "bg-primary-soft text-primary"
                             : "bg-canvas text-muted"
                         }`}
                       >
@@ -217,7 +217,7 @@ export default async function SubscriptionsDashboardPage() {
           </div>
           <Link
             href="/subscriptions/active"
-            className="text-[12px] font-medium text-subscriptions hover:underline"
+            className="text-[12px] font-medium text-primary hover:underline"
           >
             Active registry
           </Link>
@@ -284,14 +284,14 @@ export default async function SubscriptionsDashboardPage() {
       {summary.pending > 0 ? (
         <Link
           href="/subscriptions"
-          className="inline-flex rounded-card border border-subscriptions bg-subscriptions px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+          className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
         >
           Review {summary.pending} pending request{summary.pending === 1 ? "" : "s"}
         </Link>
       ) : (
         <Link
           href="/subscriptions/active"
-          className="inline-flex rounded-card border border-subscriptions bg-subscriptions px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+          className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
         >
           Open active subscriptions
         </Link>

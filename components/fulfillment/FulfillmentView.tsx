@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { Clock, CheckCircle, Send, AlertCircle } from "lucide-react";
 import { useUrlViewState } from "@/hooks/useUrlViewState";
 import type { OrderRow } from "@/lib/orders/build-order-rows";
-import { UbexStatusLine } from "@/components/cod-list/UbexStatusLine";
+import { UbexStatusLine } from "@/components/fulfillment/UbexStatusLine";
 import type { InitialLogEntry, RowStateMap } from "@/hooks/useRowPushQueue";
 import { useRowPushQueue } from "@/hooks/useRowPushQueue";
 import { FulfillmentTable } from "./FulfillmentTable";
@@ -56,10 +56,10 @@ function StatCard({
   onClick: () => void;
 }) {
   const colors = {
-    amber:   { iconBg: "bg-[rgba(240,183,67,0.12)]", iconText: "text-[#C9920D]", num: "text-[#C9920D]", ring: "ring-[#C9920D]" },
+    amber:   { iconBg: "bg-[rgba(217,119,6,0.12)]", iconText: "text-[#B45309]", num: "text-[#B45309]", ring: "ring-[#B45309]" },
     blue:    { iconBg: "bg-[rgba(59,130,246,0.10)]",  iconText: "text-[#2563EB]", num: "text-[#2563EB]", ring: "ring-[#2563EB]" },
-    green:   { iconBg: "bg-[rgba(76,175,80,0.12)]",   iconText: "text-[#2E7D32]", num: "text-[#2E7D32]", ring: "ring-[#2E7D32]" },
-    red:     { iconBg: "bg-[rgba(194,81,81,0.12)]",   iconText: "text-[#C25151]", num: "text-[#C25151]", ring: "ring-[#C25151]" },
+    green:   { iconBg: "bg-[rgba(22,163,74,0.12)]",   iconText: "text-[#15803D]", num: "text-[#15803D]", ring: "ring-[#15803D]" },
+    red:     { iconBg: "bg-[rgba(220,38,38,0.12)]",   iconText: "text-[#DC2626]", num: "text-[#DC2626]", ring: "ring-[#DC2626]" },
     neutral: { iconBg: "bg-canvas",                   iconText: "text-muted",     num: "text-ink",       ring: "ring-ink" },
   };
   const c = colors[color];

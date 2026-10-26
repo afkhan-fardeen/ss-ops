@@ -3,8 +3,8 @@ import { Mail } from "lucide-react";
 import { canAccessModule } from "@/lib/auth/can-access-module";
 import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { getSupabaseService } from "@/lib/supabase/service";
-import { RecipientGroup } from "@/components/cod-settings/RecipientGroup";
-import { getBahrainCalendarDay } from "@/lib/datetime/collection-window";
+import { RecipientGroup } from "@/components/settings/RecipientGroup";
+import { getBahrainCalendarDay } from "@/lib/datetime/bahrain-time";
 import { SendSalesReportButton } from "@/components/sales-report/SendSalesReportButton";
 
 export const dynamic = "force-dynamic";
@@ -37,7 +37,7 @@ export default async function SalesReportSettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <header>
-        <p className="text-[11px] font-medium uppercase tracking-wider text-subscriptions">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-primary">
           Sales Report
         </p>
         <h1 className="mt-1 text-xl font-medium text-ink">Recipients</h1>
@@ -50,7 +50,7 @@ export default async function SalesReportSettingsPage() {
       <section className="space-y-3">
         <div className="flex items-center gap-2">
           <Mail size={15} className="text-muted" />
-          <h2 className="text-[13px] font-medium uppercase tracking-wider text-muted">
+          <h2 className="text-[13px] font-semibold uppercase tracking-wide text-muted">
             Email recipients
           </h2>
         </div>

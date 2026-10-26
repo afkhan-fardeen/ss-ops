@@ -1,6 +1,6 @@
 import { formatMoney } from "@/lib/utils";
 import type { ShopifyOrder } from "@/lib/shopify/types";
-import { formatShippingAddress, orderLooksLikeCod } from "@/lib/shopify/fetch-cod-orders";
+import { formatShippingAddress, orderLooksLikeCod } from "@/lib/shopify/order-utils";
 import { ubexTrackingForShopifyOrder, type UbexLookup } from "@/lib/ubex/build-lookup";
 import { lookupHasEntries } from "@/lib/ubex/merge-lookup";
 import { resolveTrackingUrl } from "@/lib/ubex/tracking-url";

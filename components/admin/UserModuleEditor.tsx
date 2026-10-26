@@ -5,7 +5,6 @@ import { Check, RotateCcw, Loader2 } from "lucide-react";
 import type { ProfileRow } from "@/lib/supabase/profiles";
 
 const SELECTABLE_MODULES: { id: string; label: string }[] = [
-  { id: "cod", label: "COD" },
   { id: "fulfillment", label: "Fulfillment" },
   { id: "awb", label: "AWB Lookup" },
   { id: "stock", label: "Stock Balance" },
@@ -113,7 +112,7 @@ export function UserModuleEditor({ user }: { user: ProfileRow }) {
               onClick={() => handleCheckboxChange(m.id)}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
                 checked
-                  ? "bg-awb-bg text-awb"
+                  ? "bg-primary-soft text-primary"
                   : "bg-canvas text-muted hover:bg-line/30"
               }`}
             >
@@ -128,7 +127,7 @@ export function UserModuleEditor({ user }: { user: ProfileRow }) {
         {isDirty && saveState !== "saving" && (
           <button
             onClick={handleSave}
-            className="rounded-lg bg-awb px-3 py-1 text-[12px] font-medium text-white shadow-soft transition-all hover:opacity-90"
+            className="rounded-lg bg-primary px-3 py-1 text-[12px] font-medium text-white shadow-soft transition-all hover:opacity-90"
           >
             Save
           </button>
@@ -149,13 +148,13 @@ export function UserModuleEditor({ user }: { user: ProfileRow }) {
           </span>
         )}
         {saveState === "saved" && (
-          <span className="text-[12px] text-cod">Saved</span>
+          <span className="text-[12px] text-emerald-700">Saved</span>
         )}
         {saveState === "error" && (
-          <span className="text-[12px] text-fulfillment">{errorMsg}</span>
+          <span className="text-[12px] text-red-700">{errorMsg}</span>
         )}
         {unrestricted && saveState === "idle" && (
-          <span className="rounded-full bg-cod-bg px-2.5 py-0.5 text-[11px] font-medium text-cod">
+          <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-[11px] font-medium text-primary">
             full access
           </span>
         )}

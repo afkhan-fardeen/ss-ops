@@ -18,16 +18,6 @@ export function LoginHero({
   return (
     <div className="relative flex min-h-screen">
       <aside className="relative hidden w-[42%] flex-col justify-between overflow-hidden bg-ink px-14 py-12 lg:flex">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)",
-            backgroundSize: "56px 56px",
-          }}
-          aria-hidden="true"
-        />
-
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo.svg"
@@ -37,16 +27,16 @@ export function LoginHero({
         />
 
         <div className="relative max-w-sm">
-          <h2 className="font-display text-[28px] font-medium leading-[1.25] text-white">
+          <h2 className="text-[28px] font-semibold leading-[1.25] tracking-tight text-white">
             One console for every moving part of the operation.
           </h2>
-          <p className="mt-4 text-[14px] leading-relaxed text-white/50">
+          <p className="mt-4 text-[14px] leading-relaxed text-white/60">
             Orders, fulfillment, stock, and finance — brought into a single
             internal system built for the way the team actually works.
           </p>
         </div>
 
-        <div className="relative flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-medium uppercase tracking-wider text-white/35">
+        <div className="relative flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-semibold uppercase tracking-wide text-white/35">
           {DOMAINS.map((d, i) => (
             <span key={d} className="flex items-center gap-5">
               {d}
@@ -74,7 +64,7 @@ export function LoginHero({
           </motion.div>
 
           <motion.div variants={staggerItem}>
-            <h1 className="font-display text-[26px] font-medium text-ink">Sign in</h1>
+            <h1 className="text-[26px] font-semibold tracking-tight text-ink">Sign in</h1>
             <p className="mt-2 text-[14px] leading-relaxed text-muted">{description}</p>
           </motion.div>
 

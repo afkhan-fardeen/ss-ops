@@ -88,7 +88,7 @@ export function ProductSearchCard() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search…"
-        className="mt-3 w-full rounded-md border border-line bg-canvas px-3 py-2 text-[13px] text-ink outline-none focus:border-stock-analysis"
+        className="mt-3 w-full rounded-md border border-line bg-canvas px-3 py-2 text-[13px] text-ink outline-none focus:border-primary"
       />
 
       {loading ? (
@@ -100,7 +100,7 @@ export function ProductSearchCard() {
       ) : null}
 
       {!loading && data?.error ? (
-        <p className="mt-4 text-[13px] text-[#C25151]">{data.error}</p>
+        <p className="mt-4 text-[13px] text-[#DC2626]">{data.error}</p>
       ) : null}
 
       {product ? (
@@ -143,7 +143,7 @@ export function ProductSearchCard() {
                 <dt className="text-muted">Can be sent now</dt>
                 <dd
                   className={`font-mono tabular-nums ${
-                    product.commitment.shortBy > 0 ? "text-[#C25151]" : "text-ink"
+                    product.commitment.shortBy > 0 ? "text-[#DC2626]" : "text-ink"
                   }`}
                 >
                   {product.commitment.canBeSent}

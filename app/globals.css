@@ -50,25 +50,9 @@ body {
 .animate-pulse-dot    { animation: pulse-dot 2.2s ease-in-out infinite; }
 .animate-spin-slow    { animation: spin 0.9s linear infinite; }
 
-/* Staggered table rows (COD) — inline style sets animationDelay */
-.animate-cod-row {
-  animation: fadeUp 0.38s ease-out both;
-}
-
 /* focus ring */
 .focus-ring:focus { outline: none; }
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #FAFAF9, 0 0 0 4px rgba(184, 132, 46, 0.45);
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(79, 70, 229, 0.5);
 }
-
-/*
- * Tech background (TechBackground component) — crisp static fine grid, no blur,
- * no motion, no gradient. Used behind the login screen and the launcher.
- */
-.tech-grid-layer {
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M40 0H0V40' fill='none' stroke='rgba(26,26,26,0.07)' stroke-width='1'/%3E%3C/svg%3E");
-}
-

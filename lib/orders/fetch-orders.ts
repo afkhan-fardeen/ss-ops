@@ -1,5 +1,4 @@
 import type { ShopifyOrder, ShopifyOrdersResponse } from "@/lib/shopify/types";
-import { orderLooksLikeCod } from "@/lib/shopify/fetch-cod-orders";
 import {
   isOrdersCacheFresh,
   readOrdersFromCache,
@@ -29,8 +28,6 @@ export type OrdersFilter = {
   fulfillmentStatus?: "any" | "unfulfilled" | "shipped" | "partial" | "unshipped";
   /** Shopify-side financial filter. */
   financialStatus?: "any" | "pending" | "paid" | "authorized" | "partially_paid";
-  /** Client-side COD filter. Default "any". */
-  cod?: "any" | "only" | "exclude";
   /**
    * Cache strategy. Default "prefer-cache":
    *   - "prefer-cache": serve from Supabase when the cache is fresh (webhooks keep it current).
@@ -38,13 +35,15 @@ export type OrdersFilter = {
    *   - "cache-only": read-only from Supabase (returns empty if cache is cold).
    */
   cacheStrategy?: "prefer-cache" | "live" | "cache-only";
+  /** Include orders Shopify marks as cancelled. Default false — cancelled orders are never actionable. */
+  includeCancelled?: boolean;
   /** Max age for "prefer-cache" to consider the cache usable. Default 300 s (5 min). */
   maxCacheAgeSeconds?: number;
 };
 
 export type FetchOrdersResult = {
   orders: ShopifyOrder[];
-  /** Before the client-side COD filter. Useful for UX ("N orders scanned"). */
+  /** Number of orders scanned in the window. */
   ordersScannedInWindow: number;
   /** Where the data came from. */
   source: "cache" | "shopify";
@@ -106,13 +105,14 @@ export async function fetchOrdersForStore(
   filter: OrdersFilter,
 ): Promise<FetchOrdersResult> {
   const strategy = filter.cacheStrategy ?? "prefer-cache";
+  const dropCancelled = (list: ShopifyOrder[]) =>
+    filter.includeCancelled ? list : list.filter((o) => !o.cancelled_at);
   const maxAge = filter.maxCacheAgeSeconds ?? 300;
 
   const cacheFilter = {
     createdAtMinIso: filter.createdAtMinIso,
     createdAtMaxIso: filter.createdAtMaxIso,
     fulfillmentStatus: filter.fulfillmentStatus === "unfulfilled" ? "unfulfilled" : "any",
-    cod: filter.cod,
   } as const;
 
   if (strategy !== "live") {
@@ -123,7 +123,8 @@ export async function fetchOrdersForStore(
     if (fresh) {
       const cached = await readOrdersFromCache(cacheFilter, cacheTable).catch(() => null);
       if (cached) {
-        return { orders: cached.orders, ordersScannedInWindow: cached.ordersScannedInWindow, source: "cache" };
+        const orders = dropCancelled(cached.orders);
+        return { orders, ordersScannedInWindow: orders.length, source: "cache" };
       }
     }
     if (strategy === "cache-only") {
@@ -142,15 +143,11 @@ export async function fetchOrdersForStore(
     })
     .catch((e) => console.warn(`[orders-cache:${cacheTable}] background upsert:`, e));
 
-  let orders = all;
-  if (filter.cod === "only") orders = all.filter(orderLooksLikeCod);
-  else if (filter.cod === "exclude") orders = all.filter((o) => !orderLooksLikeCod(o));
-
-  return { orders, ordersScannedInWindow, source: "shopify" };
+  return { orders: dropCancelled(all), ordersScannedInWindow, source: "shopify" };
 }
 
 /**
- * Generalised Shopify order fetcher used by both /cod-list and /fulfillment. Consults the Supabase
+ * Generalised Shopify order fetcher used by /fulfillment. Consults the Supabase
  * `shopify_orders_cache` when fresh (Phase D) and falls back to the Shopify Admin API otherwise.
  */
 export async function fetchOrders(filter: OrdersFilter): Promise<FetchOrdersResult> {

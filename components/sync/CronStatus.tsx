@@ -14,22 +14,8 @@ import {
   ChevronUp,
 } from "lucide-react";
 import type { CronRunLog } from "@/lib/supabase/cron-run-log";
-import { msToNextAutoFulfillRun } from "@/lib/cron/auto-fulfill-schedule";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
-
-function msToNextRun(): number {
-  return msToNextAutoFulfillRun();
-}
-
-function fmtCountdown(ms: number): string {
-  const totalSec = Math.max(0, Math.ceil(ms / 1000));
-  const h = Math.floor(totalSec / 3600);
-  const m = Math.floor((totalSec % 3600) / 60);
-  const s = totalSec % 60;
-  if (h > 0) return `${h}h ${m}m`;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
 
 function fmtDuration(startedAt: string, completedAt: string | null): string {
   const start = new Date(startedAt).getTime();
@@ -54,20 +40,20 @@ function fmtAgo(isoDate: string): string {
 function StatusBadge({ run }: { run: CronRunLog }) {
   if (run.status === "running") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-gold">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
         <Loader2 size={13} className="animate-spin" /> Running…
       </span>
     );
   }
   if (run.status === "success") {
     return (
-      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#4CAF50]">
+      <span className="inline-flex items-center gap-1 text-xs font-medium text-[#16A34A]">
         <CheckCircle size={13} /> Success
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#C25151]">
+    <span className="inline-flex items-center gap-1 text-xs font-medium text-[#DC2626]">
       <XCircle size={13} /> Error
     </span>
   );
@@ -77,7 +63,6 @@ function StatusBadge({ run }: { run: CronRunLog }) {
 
 export function CronStatus() {
   const [runs, setRuns] = useState<CronRunLog[]>([]);
-  const [countdown, setCountdown] = useState(msToNextRun());
   const [triggering, setTriggering] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const pollRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -115,12 +100,6 @@ export function CronStatus() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning]);
-
-  // ── countdown ticker ──────────────────────────────────────────────────────
-  useEffect(() => {
-    const id = setInterval(() => setCountdown(msToNextRun()), 1_000);
-    return () => clearInterval(id);
-  }, []);
 
   // ── trigger handler ───────────────────────────────────────────────────────
   async function trigger(dryRun: boolean) {
@@ -160,17 +139,14 @@ export function CronStatus() {
           <RefreshCw size={16} className="text-muted" />
           <h3 className="text-[13px] font-medium text-ink">Seissense Ops Bot</h3>
           {latest?.dry_run && (
-            <span className="rounded-full bg-[rgba(240,183,67,0.15)] px-1.5 py-0.5 text-[10px] font-medium text-[#B8842E]">
+            <span className="rounded-full bg-[rgba(217,119,6,0.15)] px-1.5 py-0.5 text-[10px] font-medium text-[#D97706]">
               dry-run
             </span>
           )}
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted">
           <Clock size={12} />
-          <span>Next in</span>
-          <span className="font-mono font-medium tabular-nums text-ink">
-            {fmtCountdown(countdown)}
-          </span>
+          <span>Scheduled runs paused — manual only</span>
         </div>
       </div>
 
@@ -192,14 +168,14 @@ export function CronStatus() {
               <span className="rounded-full bg-line/30 px-2 py-0.5 font-mono text-ink">
                 {latest.checked ?? 0} checked
               </span>
-              <span className="rounded-full bg-[rgba(76,175,80,0.12)] px-2 py-0.5 font-mono text-[#2E7D32]">
+              <span className="rounded-full bg-[rgba(22,163,74,0.12)] px-2 py-0.5 font-mono text-[#15803D]">
                 {latest.fulfilled ?? 0} fulfilled
               </span>
               <span className="rounded-full bg-line/30 px-2 py-0.5 font-mono text-ink">
                 {latest.skipped ?? 0} skipped
               </span>
               {(latest.errors ?? 0) > 0 && (
-                <span className="rounded-full bg-[rgba(194,81,81,0.12)] px-2 py-0.5 font-mono text-[#C25151]">
+                <span className="rounded-full bg-[rgba(220,38,38,0.12)] px-2 py-0.5 font-mono text-[#DC2626]">
                   {latest.errors} errors
                 </span>
               )}
@@ -207,7 +183,7 @@ export function CronStatus() {
           )}
 
           {latest.status === "error" && latest.error_detail && (
-            <p className="truncate text-[11px] text-[#C25151]">{latest.error_detail}</p>
+            <p className="truncate text-[11px] text-[#DC2626]">{latest.error_detail}</p>
           )}
         </div>
       ) : (
@@ -232,7 +208,7 @@ export function CronStatus() {
         <button
           onClick={() => trigger(false)}
           disabled={triggering || isRunning}
-          className="focus-ring inline-flex items-center gap-1.5 rounded-card bg-gold px-3 py-1.5 text-xs font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className="focus-ring inline-flex items-center gap-1.5 rounded-card bg-primary px-3 py-1.5 text-xs font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {triggering ? (
             <Loader2 size={12} className="animate-spin" />
@@ -264,7 +240,7 @@ export function CronStatus() {
               <div className="flex items-center gap-2">
                 <StatusBadge run={run} />
                 {run.dry_run && (
-                  <span className="text-[10px] text-gold">(dry)</span>
+                  <span className="text-[10px] text-primary">(dry)</span>
                 )}
               </div>
               <div className="flex items-center gap-3 font-mono text-muted">

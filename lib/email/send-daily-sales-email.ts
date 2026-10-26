@@ -12,7 +12,7 @@ function getTransporter() {
   return nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
 }
 
-export async function getSalesReportRecipients(): Promise<string[]> {
+async function getSalesReportRecipients(): Promise<string[]> {
   try {
     const supabase = getSupabaseService();
     if (!supabase) return [];

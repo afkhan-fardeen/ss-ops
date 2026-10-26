@@ -42,7 +42,7 @@ export function SubscriptionSpendBreakdown({
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-canvas">
                   <div
-                    className="h-full rounded-full bg-subscriptions"
+                    className="h-full rounded-full bg-primary"
                     style={{ width: `${widthPct}%` }}
                   />
                 </div>

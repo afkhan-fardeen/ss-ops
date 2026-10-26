@@ -5,8 +5,6 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, type LucideIcon } from "lucide-react";
-import { motion } from "framer-motion";
-import { spring } from "@/lib/motion";
 import {
   getNavOpenKey,
   isNavItemActive,
@@ -45,11 +43,9 @@ function readStoredOpen(sectionId: NavSectionId, defaultOpen: boolean): boolean 
 
 function NavChildLink({
   item,
-  accent,
   active,
 }: {
   item: NavCollapsibleItem;
-  accent: ModuleAccent;
   active: boolean;
 }) {
   const Icon = item.icon;
@@ -58,17 +54,9 @@ function NavChildLink({
       href={item.href}
       className={[
         "group relative flex items-center gap-3 rounded-lg py-2 pl-4 pr-3 text-[13px] font-medium transition-colors",
-        active ? "bg-canvas text-ink" : "text-muted hover:bg-canvas hover:text-ink",
+        active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
       ].join(" ")}
     >
-      {active ? (
-        <motion.span
-          layoutId="sidebar-active-rail"
-          transition={spring}
-          className={`absolute inset-y-1.5 left-0 w-[3px] rounded-r ${accent.rail}`}
-          aria-hidden
-        />
-      ) : null}
       <Icon size={16} strokeWidth={2} />
       <span className="flex-1">{item.label}</span>
       <StockErrorsNavBadge href={item.href} />
@@ -168,7 +156,7 @@ export function NavCollapsibleSection({
           onClick={() => setPopoverOpen((v) => !v)}
           className={[
             "flex w-full justify-center rounded-lg p-2 transition-colors",
-            sectionActive || popoverOpen ? "bg-canvas text-ink" : "text-muted hover:bg-canvas hover:text-ink",
+            sectionActive || popoverOpen ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
           ].join(" ")}
         >
           {SectionIcon ? <SectionIcon size={18} /> : null}
@@ -181,7 +169,7 @@ export function NavCollapsibleSection({
                 className="fixed z-50 min-w-[200px] rounded-card border border-line bg-white py-2 shadow-[0_8px_30px_rgba(15,23,42,0.12)]"
                 style={{ top: menuPos.top, left: menuPos.left }}
               >
-                <p className="border-b border-line px-3 pb-2 text-[11px] font-medium uppercase tracking-wider text-muted">
+                <p className="border-b border-line px-3 pb-2 text-[11px] font-semibold uppercase tracking-wide text-muted">
                   {label}
                 </p>
                 <nav className="flex flex-col gap-0.5 p-1.5">
@@ -194,15 +182,9 @@ export function NavCollapsibleSection({
                         onClick={() => setPopoverOpen(false)}
                         className={[
                           "relative flex items-center gap-2 rounded-lg py-2 pl-3 pr-2.5 text-[13px] font-medium transition-colors",
-                          active ? "bg-canvas text-ink" : "text-muted hover:bg-canvas hover:text-ink",
+                          active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
                         ].join(" ")}
                       >
-                        {active ? (
-                          <span
-                            className={`absolute inset-y-1.5 left-0 w-[3px] rounded-r ${accent.rail}`}
-                            aria-hidden
-                          />
-                        ) : null}
                         <item.icon size={15} />
                         <span className="flex-1">{item.label}</span>
                         <StockErrorsNavBadge href={item.href} />
@@ -277,7 +259,6 @@ export function NavCollapsibleSection({
               <NavChildLink
                 key={item.href}
                 item={item}
-                accent={accent}
                 active={isNavItemActive(pathname, item as ModuleNavItem)}
               />
             ))}
@@ -310,17 +291,9 @@ export function NavHomeLink({
       className={[
         "group relative flex items-center gap-3 rounded-lg py-2 text-[13px] font-medium transition-colors",
         collapsed ? "justify-center px-2" : "px-3",
-        active ? "bg-canvas text-ink" : "text-muted hover:bg-canvas hover:text-ink",
+        active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
       ].join(" ")}
     >
-      {active && !collapsed ? (
-        <motion.span
-          layoutId="sidebar-active-rail"
-          transition={spring}
-          className={`absolute inset-y-1.5 left-0 w-[3px] rounded-r ${accent.rail}`}
-          aria-hidden
-        />
-      ) : null}
       <Icon size={16} strokeWidth={active ? 2.2 : 2} />
       {!collapsed && <span>{label}</span>}
     </Link>

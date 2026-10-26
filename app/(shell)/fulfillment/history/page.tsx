@@ -9,8 +9,8 @@ export default async function FulfillmentHistoryPage() {
 
   if (error === "Supabase not configured") {
     return (
-      <div className="mx-auto max-w-2xl rounded-card border border-[#F0B743]/25 bg-[rgba(240,183,67,0.12)] p-6">
-        <div className="flex items-center gap-2 text-[#F0B743]">
+      <div className="mx-auto max-w-2xl rounded-card border border-[#D97706]/25 bg-[rgba(217,119,6,0.12)] p-6">
+        <div className="flex items-center gap-2 text-[#D97706]">
           <AlertTriangle size={18} />
           <h2 className="text-base font-medium">Supabase not configured</h2>
         </div>
@@ -24,8 +24,8 @@ export default async function FulfillmentHistoryPage() {
 
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl rounded-card border border-[#C25151]/25 bg-[rgba(194,81,81,0.10)] p-6">
-        <div className="flex items-center gap-2 text-[#C25151]">
+      <div className="mx-auto max-w-2xl rounded-card border border-[#DC2626]/25 bg-[rgba(220,38,38,0.10)] p-6">
+        <div className="flex items-center gap-2 text-[#DC2626]">
           <AlertTriangle size={18} />
           <h2 className="text-base font-medium">Could not load history</h2>
         </div>
@@ -41,10 +41,10 @@ export default async function FulfillmentHistoryPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-5">
-      <section className="animate-fade-up rounded-card border border-line border-l-4 border-l-fulfillment bg-white p-5 shadow-soft">
+      <section className="animate-fade-up rounded-card border border-line border-l-4 border-l-primary bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider text-fulfillment">
+            <h2 className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-primary">
               <HistoryIcon size={13} /> Fulfillment history
             </h2>
             <p className="mt-1 text-[14px] font-medium text-ink">

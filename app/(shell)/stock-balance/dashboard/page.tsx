@@ -80,7 +80,7 @@ export default async function StockBalanceDashboardPage() {
       />
       <Link
         href="/stock-balance/balance"
-        className="inline-flex rounded-card border border-stock bg-stock px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+        className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
       >
         Open stock balance
       </Link>

@@ -1,25 +1,16 @@
-import { JetBrains_Mono, Plus_Jakarta_Sans, Sora } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 
-/** Display face — greetings, page titles, module headers. Weights capped at 500 per design-plan.md. */
-export const sora = Sora({
+/** UI face for headings and body copy. */
+export const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  variable: "--font-display",
-  display: "swap",
-});
-
-/** Body face — everything else that isn't a number or an ID. */
-export const jakarta = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
   variable: "--font-body",
   display: "swap",
 });
 
-/** Data face — FX rates, tracking numbers, BHD totals, timestamps, order counts. */
+/** Data face — IDs, tracking numbers, amounts, timestamps. */
 export const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  weight: ["300", "400"],
+  weight: ["400", "500"],
   variable: "--font-mono",
   display: "swap",
 });

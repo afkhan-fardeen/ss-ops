@@ -37,7 +37,7 @@ function StoreColumn({
   if (notListed || side === null) {
     return (
       <div className={`rounded-card border border-line ${accentClass} p-3`}>
-        <p className="text-[11px] font-medium uppercase tracking-wider text-muted">{title}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">{title}</p>
         <p className="mt-3 text-[12px] text-muted">
           {notListed ? `Not listed on ${STORE_LABELS[2]}` : `${STORE_LABELS[2]} not configured`}
         </p>
@@ -47,7 +47,7 @@ function StoreColumn({
 
   return (
     <div className={`rounded-card border border-line ${accentClass} p-3`}>
-      <p className="text-[11px] font-medium uppercase tracking-wider text-muted">{title}</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">{title}</p>
       <dl className="mt-2 space-y-1 text-[12px]">
         <div className="flex justify-between gap-3">
           <dt className="text-muted">On hand</dt>
@@ -101,7 +101,7 @@ export function StockBalanceTableRow({
             type="checkbox"
             checked={selected}
             onChange={onToggleSelect}
-            className="h-4 w-4 accent-stock"
+            className="h-4 w-4 accent-primary"
             aria-label={`Select ${row.productName}`}
           />
         </td>
@@ -168,7 +168,7 @@ export function StockBalanceDetail({
             type="checkbox"
             checked={selected}
             onChange={onToggleSelect}
-            className="mt-1 h-4 w-4 shrink-0 accent-stock"
+            className="mt-1 h-4 w-4 shrink-0 accent-primary"
             aria-label={`Select ${row.productName}`}
           />
         ) : null}
@@ -183,13 +183,13 @@ export function StockBalanceDetail({
 
       <div className="mt-3 space-y-3">
         <div className="rounded-card border border-line bg-violet-50/40 px-3 py-2">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-violet-900/70">Ubex</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-violet-900/70">Ubex</p>
           <p className="mt-1 font-mono text-[13px] tabular-nums text-ink">Stock: {row.ubexStock}</p>
           <p className="font-mono text-[11px] text-muted">ID {row.ubexId}</p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <StoreColumn title={STORE_LABELS[1]} accentClass="bg-stock-bg/40" side={row.storeA} />
+          <StoreColumn title={STORE_LABELS[1]} accentClass="bg-primary-soft/40" side={row.storeA} />
           {store2Configured ? (
             <StoreColumn
               title={STORE_LABELS[2]}
@@ -226,7 +226,7 @@ export function StockBalanceDetail({
             type="button"
             disabled={busy}
             onClick={onSync}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-stock px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-primary px-4 text-[13px] font-medium text-white transition hover:opacity-90 disabled:opacity-60"
           >
             {busy ? <Loader2 size={15} className="animate-spin" /> : <PackagePlus size={15} />}
             Sync both stores

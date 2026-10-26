@@ -1,4 +1,3 @@
-import { GlassCard } from "@/components/ui/GlassCard";
 import { PublicSubscriptionForm } from "@/components/subscriptions/PublicSubscriptionForm";
 
 export const metadata = {
@@ -14,8 +13,8 @@ export default function PublicSubscriptionRequestPage() {
         <p className="text-[12px] text-muted">Finance Department — Subscription Request Form</p>
       </div>
 
-      <GlassCard className="w-full max-w-2xl p-6 sm:p-8">
-        <h1 className="font-display text-xl font-medium text-ink sm:text-2xl">
+      <div className="w-full max-w-2xl rounded-card border border-line bg-white p-6 shadow-soft sm:p-8">
+        <h1 className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
           Subscription request
         </h1>
         <p className="mt-1 text-[13px] text-muted">
@@ -25,7 +24,7 @@ export default function PublicSubscriptionRequestPage() {
         <div className="mt-6">
           <PublicSubscriptionForm />
         </div>
-      </GlassCard>
+      </div>
 
       <p className="mt-6 text-center text-[11px] text-muted">
         Form No. SUB · Seissense Operations
