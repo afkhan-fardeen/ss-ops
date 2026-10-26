@@ -12,6 +12,7 @@ import {
   SUBSCRIPTION_TYPE_LABELS,
 } from "@/lib/subscriptions/constants";
 import type { SubscriptionType } from "@/lib/subscriptions/types";
+import { btn } from "@/components/ui/button-styles";
 
 type FormState = {
   subscription_type: SubscriptionType | "";
@@ -332,7 +333,7 @@ export function PublicSubscriptionForm() {
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-primary px-4 text-body-lg font-medium text-white shadow-soft transition hover:opacity-90 disabled:opacity-60"
+        className={btn("primary", "md", "w-full")}
       >
         {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
         {loading ? "Submitting…" : "Submit request"}

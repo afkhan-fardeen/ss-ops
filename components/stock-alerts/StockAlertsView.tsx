@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Loader2, RefreshCw } from "lucide-react";
 import type { StockAlertRow } from "@/lib/stock/compute-stock-alerts";
 import { StatusPill } from "@/components/portal/StatusPill";
+import { btn } from "@/components/ui/button-styles";
 
 type Tab = "all" | "critical" | "warning";
 
@@ -66,7 +67,7 @@ export function StockAlertsView({
           type="button"
           disabled={loading}
           onClick={onRefresh}
-          className="inline-flex min-h-9 items-center gap-2 rounded-card border border-line bg-white px-3 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+          className={btn("secondary", "sm")}
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
           Rescan

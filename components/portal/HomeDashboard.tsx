@@ -9,6 +9,7 @@ import {
 } from "@/components/dashboard/DashboardPage";
 import { StatCard } from "@/components/dashboard/StatCard";
 import type { PortalHomeSummary } from "@/lib/dashboard/load-portal-home-summary";
+import { btn } from "@/components/ui/button-styles";
 
 type Props = { showAdmin: boolean; summary: PortalHomeSummary };
 
@@ -113,14 +114,14 @@ export function HomeDashboard({ showAdmin, summary }: Props) {
       <div className="flex flex-wrap gap-3">
         <Link
           href="/fulfillment/list"
-          className="rounded-card border border-primary bg-primary px-4 py-2 text-body font-medium text-white transition hover:opacity-90"
+          className={btn("primary", "md")}
         >
           Fulfillment list
         </Link>
         {showAdmin ? (
           <Link
             href="/stock-balance/balance"
-            className="rounded-card border border-primary bg-primary px-4 py-2 text-body font-medium text-white transition hover:opacity-90"
+            className={btn("primary", "md")}
           >
             Stock balance
           </Link>

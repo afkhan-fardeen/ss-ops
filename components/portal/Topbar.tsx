@@ -19,7 +19,7 @@ export function Topbar() {
         <div className="flex min-w-0 items-center gap-2">
           {meta.moduleLabel ? (
             <>
-              <span className="hidden text-body text-muted sm:inline">{meta.moduleLabel}</span>
+              <span className={`hidden text-body font-medium sm:inline ${meta.accent?.labelText ?? "text-muted"}`}>{meta.moduleLabel}</span>
               <span className="hidden text-line sm:inline">/</span>
             </>
           ) : null}

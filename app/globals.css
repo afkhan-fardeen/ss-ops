@@ -92,7 +92,7 @@ body {
 .focus-ring:focus { outline: none; }
 .focus-ring:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px rgba(37, 99, 235, 0.5);
 }
 
 /* Hide scrollbars on swipeable strips (tab bars, filter chips) while keeping them scrollable. */
@@ -116,4 +116,24 @@ body {
 .animate-backdrop { animation: fadeIn 0.18s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
   .animate-sheet-up, .animate-backdrop { animation: none; }
+}
+
+/* Skeleton shimmer + indeterminate progress sweep */
+@keyframes shimmer {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+@keyframes indeterminate {
+  0%   { left: -40%; }
+  100% { left: 100%; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #E2E8F0 25%, #F1F5F9 40%, #E2E8F0 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+.animate-indeterminate { animation: indeterminate 1.3s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+  .animate-indeterminate { animation: none; left: 30%; }
 }

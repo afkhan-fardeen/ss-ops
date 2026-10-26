@@ -19,7 +19,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         "group relative flex h-12 items-center rounded-control border bg-white transition md:h-11",
         invalid
           ? "border-danger/50 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12)]"
-          : "border-line focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.15)]",
+          : "border-line focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(37,99,235,0.18)]",
       ].join(" ")}
     >
       {icon ? (

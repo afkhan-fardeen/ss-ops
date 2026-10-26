@@ -30,8 +30,15 @@ Numbers, amounts, dates: Inter with `tabular-nums` (not monospace). Eyebrow labe
 
 ## 4. Colour (all text pairs ≥ 4.5:1, verified)
 - Neutrals: `canvas` page · `ink` text · `muted` secondary text · `line` borders · white surfaces.
-- One accent: `primary` (indigo) · `primary-strong` pressed / text on `primary-soft` · `primary-soft` tint.
-- Semantic (`DEFAULT` = text/icon, `soft` = background, `line` = border): `success`, `warning`, `danger`, `info`. **No hand-written hex/rgba in components.**
+- Primary (actions, links, focus): blue — `primary` (#2563EB), `primary-strong` (pressed / text on tint), `primary-soft` (tint).
+- **One accent per area** (icons, active nav, dots, KPI borders, charts): `orders` blue · `inventory` teal · `finance` orange · `system` cyan (Account/Admin). Each has `DEFAULT` (text/icon), `solid` (bars/fills), `soft` (tint), `line` (border). Module accents live in `config/modules.ts` (`accentForDomain`).
+- Semantic (`DEFAULT` = text/icon, `soft` = background, `line` = border): `success` green · `warning` amber · `danger` red · `info` sky. **No hand-written hex/rgba in components.**
+- Chart series: `#2563EB`, `#0D9488`, `#EA580C`, `#0891B2`, `#BE185D`, `#65A30D`.
+
+## 4b. Shared UI primitives (use these, don't re-style)
+- `components/ui/button-styles.ts` → `btn(variant, size, extra?, pill?)` for `<button>`, `<a>`, `<Link>`; `components/ui/Button.tsx` for the React version (`loading`, `icon`). Variants: primary · secondary · tonal · danger · dangerSoft · ghost. Sizes: sm · md · lg (taller on phones).
+- `Toaster` (white card, status icon + left accent, bottom-centre above the phone bar), `Spinner`, `ProgressBar` (determinate / indeterminate, ARIA), `Skeleton` / `CardSkeleton` / `ListSkeleton` / `PageSkeleton` (shimmer), `RouteProgress` (top navigation bar).
+- Visual QA: the **Design gallery** page (`/design`; dev or admin) shows colours, type roles, buttons, toasts, loaders and stat cards.
 
 ## 5. Layout rules
 - Phone chrome budget: top bar 56px + (module tab strip 44px if the module has ≥ 2 pages) + bottom bar 72px. One extra sticky bar at most (e.g. Fulfil All), which sits directly above the bottom bar.

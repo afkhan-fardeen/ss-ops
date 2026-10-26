@@ -5,13 +5,17 @@ import type { Config } from "tailwindcss";
  *  - 4px grid: spacing/line-heights are multiples of 4.
  *  - 8 type roles only (size + line-height; weight is chosen explicitly: 400 / 500 / 600).
  *  - 3 radii (control, card, sheet) + full for pills.
- *  - Neutral slate + one indigo accent + 4 semantic colours, all >= 4.5:1 text contrast.
+ *  - Neutral slate + blue primary + one accent per area (orders/inventory/finance/system) + 4 semantic colours,
+ *    all >= 4.5:1 text contrast.
  */
 const config: Config = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    // Class names written as strings in config/lib (e.g. the per-area accent classes) must be scanned too.
+    "./config/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {
@@ -21,15 +25,20 @@ const config: Config = {
         muted: "#5B6B82", // secondary text (5.2:1 on canvas)
         line: "#E2E8F0", // borders, dividers
         primary: {
-          DEFAULT: "#4F46E5",
-          strong: "#4338CA", // pressed / text on primary-soft
-          soft: "#EEF2FF",
+          DEFAULT: "#2563EB", // blue-600
+          strong: "#1D4ED8", // pressed / text on primary-soft
+          soft: "#EFF6FF",
         },
+        // One accent per area of the portal. `DEFAULT` = text/icon (>= 4.5:1), `solid` = bars/fills, `soft` = tint, `line` = border.
+        orders: { DEFAULT: "#1D4ED8", solid: "#2563EB", soft: "#EFF6FF", line: "#BFDBFE" },
+        inventory: { DEFAULT: "#0F766E", solid: "#0D9488", soft: "#F0FDFA", line: "#99F6E4" },
+        finance: { DEFAULT: "#C2410C", solid: "#EA580C", soft: "#FFF7ED", line: "#FED7AA" },
+        system: { DEFAULT: "#0E7490", solid: "#0891B2", soft: "#ECFEFF", line: "#A5F3FC" },
         // Semantic colours: `DEFAULT` is TEXT/ICON colour on white or on `soft` (>= 4.5:1); `soft` backgrounds; `line` borders.
         success: { DEFAULT: "#15803D", soft: "#F0FDF4", line: "#BBF7D0" },
-        warning: { DEFAULT: "#B45309", soft: "#FFFBEB", line: "#FDE68A" },
+        warning: { DEFAULT: "#A16207", soft: "#FEFCE8", line: "#FDE68A" },
         danger: { DEFAULT: "#B91C1C", soft: "#FEF2F2", line: "#FECACA" },
-        info: { DEFAULT: "#1D4ED8", soft: "#EFF6FF", line: "#BFDBFE" },
+        info: { DEFAULT: "#0369A1", soft: "#F0F9FF", line: "#BAE6FD" },
         "stock-b": { DEFAULT: "#5B6B82", bg: "rgba(91,107,130,0.10)" },
       },
       fontFamily: {

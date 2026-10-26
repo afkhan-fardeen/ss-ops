@@ -11,6 +11,7 @@ import {
   FileText,
 } from "lucide-react";
 import { STORE_LABELS } from "@/lib/stores/labels";
+import { btn } from "@/components/ui/button-styles";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -210,7 +211,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           <button
             type="submit"
             disabled={isLoading || !hasDigits}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-primary px-5 text-body font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            className={btn("primary", "md", "w-full sm:w-auto")}
           >
             {isLoading ? (
               <Loader2 size={15} className="animate-spin" />
@@ -322,7 +323,7 @@ function PdfColumn({
             <a
               href={state.blobUrl}
               download={`${title.toLowerCase().replace(" ", "-")}.pdf`}
-              className="flex items-center gap-1 rounded-control bg-primary px-3 py-1 text-body-sm font-medium text-white shadow-soft transition-all hover:opacity-90"
+              className={btn("primary", "sm")}
             >
               <Download size={12} />
               Download

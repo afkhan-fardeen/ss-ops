@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Share, SquarePlus, X } from "lucide-react";
 import { usePwa } from "@/components/pwa/PwaProvider";
+import { btn } from "@/components/ui/button-styles";
 
 const DISMISS_KEY = "pwa.install.dismissed";
 const DISMISS_DAYS = 14;
@@ -61,7 +62,7 @@ export function InstallAppCard({ dismissible = false }: { dismissible?: boolean 
               <button
                 type="button"
                 onClick={() => void promptInstall()}
-                className="focus-ring mt-3 inline-flex min-h-11 items-center gap-2 rounded-control bg-primary px-4 text-body-lg font-medium text-white active:bg-primary-strong"
+                className={btn("primary", "md", "mt-3")}
               >
                 <Download size={16} />
                 Install app

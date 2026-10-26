@@ -9,6 +9,7 @@ import { STORE_LABELS } from "@/lib/stores/labels";
 import { useRestockQueue } from "@/hooks/useRestockQueue";
 import { useStockErrorsCount } from "@/components/stock/StockErrorsCountProvider";
 import { StockErrorCard } from "@/components/stock/StockErrorCard";
+import { btn } from "@/components/ui/button-styles";
 import type {
   StockErrorCard as StockErrorCardData,
   StockErrorCategory,
@@ -165,7 +166,7 @@ export function StockErrorsView() {
           type="button"
           disabled={loading}
           onClick={() => void load()}
-          className="ml-auto inline-flex min-h-9 items-center gap-2 rounded-card border border-line bg-white px-3 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+          className={btn("secondary", "sm", "ml-auto")}
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
           Refresh

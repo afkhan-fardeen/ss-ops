@@ -15,7 +15,7 @@ export function TableSkeleton({
           style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
         >
           {Array.from({ length: columns }).map((_, i) => (
-            <div key={i} className="h-3 animate-pulse rounded-control bg-line" />
+            <div key={i} className="h-3 skeleton rounded-control" />
           ))}
         </div>
       ) : null}
@@ -29,7 +29,7 @@ export function TableSkeleton({
             {Array.from({ length: columns }).map((_, c) => (
               <div
                 key={c}
-                className="h-3 animate-pulse rounded-control bg-line"
+                className="h-3 skeleton rounded-control"
                 style={{ animationDelay: `${(r * columns + c) * 20}ms`, width: `${60 + ((r + c) % 5) * 8}%` }}
               />
             ))}
@@ -46,7 +46,7 @@ export function FilterChipSkeleton({ count = 5 }: { count?: number }) {
       {Array.from({ length: count }).map((_, i) => (
         <div
           key={i}
-          className="h-7 animate-pulse rounded-full bg-line"
+          className="h-7 skeleton rounded-full"
           style={{ width: `${56 + (i % 3) * 18}px` }}
         />
       ))}

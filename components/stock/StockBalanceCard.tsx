@@ -6,6 +6,7 @@ import { targetShopifyOnHandForStore } from "@/lib/stock/stock-balance-target";
 import { STORE_LABELS } from "@/lib/stores/labels";
 import { StatusPill, type StatusTone } from "@/components/portal/StatusPill";
 import type { RestockRowStatus } from "@/hooks/useRestockQueue";
+import { btn } from "@/components/ui/button-styles";
 
 function fmt(n: number | null | undefined): string {
   if (n === null || n === undefined) return "—";
@@ -295,7 +296,7 @@ export function StockBalanceDetail({
             type="button"
             disabled={busy}
             onClick={onSync}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-primary px-4 text-body font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+            className={btn("primary", "md", "w-full")}
           >
             {busy ? <Loader2 size={15} className="animate-spin" /> : <PackagePlus size={15} />}
             Sync both stores

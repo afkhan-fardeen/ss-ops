@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Toaster } from "sonner";
+import { Suspense } from "react";
+import { Toaster } from "@/components/ui/Toaster";
+import { RouteProgress } from "@/components/ui/RouteProgress";
 import { inter, jetbrainsMono } from "./fonts";
 import { MotionProviders } from "@/components/motion/MotionProviders";
 import { PwaProvider } from "@/components/pwa/PwaProvider";
@@ -36,7 +38,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PwaProvider>
           <MotionProviders>{children}</MotionProviders>
         </PwaProvider>
-        <Toaster position="bottom-center" richColors closeButton mobileOffset={{ bottom: "calc(var(--mobile-nav-h) + 12px)" }} offset={24} />
+        <Suspense fallback={null}>
+          <RouteProgress />
+        </Suspense>
+        <Toaster />
       </body>
     </html>
   );

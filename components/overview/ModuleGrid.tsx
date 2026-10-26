@@ -8,11 +8,15 @@ export type OverviewModule = {
   href: string;
   icon: React.ReactNode;
   stat?: { value: string; label: string } | null;
+  /** Area colour classes (from the module's accent). */
+  tint: { bg: string; text: string; rail: string };
 };
 
 export type OverviewSection = {
   id: string;
   label: string;
+  /** Rail colour class for the area dot. */
+  rail: string;
   modules: OverviewModule[];
 };
 
@@ -21,7 +25,8 @@ export function ModuleGrid({ sections }: { sections: OverviewSection[] }) {
     <div className="space-y-8">
       {sections.map((section) => (
         <section key={section.id}>
-          <h2 className="mb-3 text-body-sm font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+          <h2 className="mb-3 flex items-center gap-2 text-body-sm font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+            <span aria-hidden className={`h-2 w-2 rounded-full ${section.rail}`} />
             {section.label}
           </h2>
           {/* Phones: Material 3 list — one row per module, 72px, leading icon, trailing chevron */}
@@ -29,7 +34,7 @@ export function ModuleGrid({ sections }: { sections: OverviewSection[] }) {
             {section.modules.map((m) => (
               <li key={m.id}>
                 <Link href={m.href} className="flex min-h-[72px] items-center gap-4 px-4 py-3 active:bg-canvas">
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary-soft text-primary">
+                  <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${m.tint.bg} ${m.tint.text}`}>
                     {m.icon}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -54,15 +59,15 @@ export function ModuleGrid({ sections }: { sections: OverviewSection[] }) {
               <Link
                 key={m.id}
                 href={m.href}
-                className="group flex h-full flex-col gap-3 rounded-card border border-line bg-white p-5 shadow-soft transition hover:border-primary/40 hover:shadow-pop"
+                className="group flex h-full flex-col gap-3 rounded-card border border-line bg-white p-5 shadow-soft transition hover:shadow-pop"
               >
                 <div className="flex items-start justify-between">
-                  <div className="grid h-10 w-10 place-items-center rounded-control bg-primary-soft text-primary">
+                  <div className={`grid h-10 w-10 place-items-center rounded-control ${m.tint.bg} ${m.tint.text}`}>
                     {m.icon}
                   </div>
                   <ArrowUpRight
                     size={16}
-                    className="text-muted transition group-hover:text-primary"
+                    className="text-muted transition group-hover:text-ink"
                   />
                 </div>
                 <div className="flex-1">

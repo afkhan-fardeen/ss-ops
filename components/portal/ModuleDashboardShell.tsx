@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Children, cloneElement, Fragment, isValidElement } from "react";
 import type { ModuleId } from "@/config/modules";
 import { getPortalModules } from "@/config/modules";
 import {
@@ -7,6 +8,22 @@ import {
   DashboardKpiGrid,
   DashboardPage,
 } from "@/components/dashboard/DashboardPage";
+
+const ACCENT_BORDER = {
+  orders: "border-l-orders-solid",
+  inventory: "border-l-inventory-solid",
+  finance: "border-l-finance-solid",
+} as const;
+
+/** Gives every StatCard in a module dashboard the module's area colour (unless it set its own). */
+function withAccent(node: React.ReactNode, accentClass: string): React.ReactNode {
+  return Children.map(node, (child) => {
+    if (!isValidElement(child)) return child;
+    if (child.type === Fragment) return withAccent((child.props as { children?: React.ReactNode }).children, accentClass);
+    const props = child.props as { accentClass?: string };
+    return props.accentClass ? child : cloneElement(child as React.ReactElement<{ accentClass?: string }>, { accentClass });
+  });
+}
 
 type Props = {
   moduleId: ModuleId;
@@ -35,7 +52,7 @@ export function ModuleDashboardShell({
         title={title}
         description={description}
       />
-      {kpi ? <DashboardKpiGrid>{kpi}</DashboardKpiGrid> : null}
+      {kpi ? <DashboardKpiGrid>{withAccent(kpi, ACCENT_BORDER[mod.domain])}</DashboardKpiGrid> : null}
       {charts ? <DashboardChartGrid>{charts}</DashboardChartGrid> : null}
       {children}
     </DashboardPage>

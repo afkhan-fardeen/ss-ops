@@ -6,6 +6,7 @@ import { Copy, ExternalLink } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import type { SubscriptionRequestRow, SubscriptionType } from "@/lib/subscriptions/types";
+import { btn } from "@/components/ui/button-styles";
 import {
   formatBillingCycle,
   formatMoney,
@@ -98,7 +99,7 @@ export function SubscriptionsListView({
           <button
             type="button"
             onClick={copyLink}
-            className="inline-flex min-h-11 items-center gap-2 rounded-card border border-line bg-white px-3 text-body font-medium text-ink transition hover:bg-canvas"
+            className={btn("secondary", "md")}
           >
             <Copy size={14} />
             {copied ? "Copied" : "Copy public link"}
@@ -107,7 +108,7 @@ export function SubscriptionsListView({
             href={publicFormUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-2 rounded-card border border-line bg-white px-3 text-body font-medium text-ink transition hover:bg-canvas"
+            className={btn("secondary", "md")}
           >
             <ExternalLink size={14} />
             Open form

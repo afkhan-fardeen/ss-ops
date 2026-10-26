@@ -70,26 +70,80 @@ export type PortalModule = {
 
 export const HOME_HREF = "/dashboard";
 
-// One accent for every module — the admin UI uses a single primary colour, not per-domain hues.
-const PRIMARY_ACCENT: ModuleAccent = {
+// One accent per area (orders = blue, inventory = teal, finance = orange, system = cyan); home uses the primary blue.
+// Class names are written out in full so Tailwind's scanner keeps them.
+const ORDERS_ACCENT: ModuleAccent = {
+  rail: "bg-orders-solid",
+  labelText: "text-orders",
+  labelHover: "hover:bg-orders-soft",
+  activeBg: "bg-orders-soft",
+  activeText: "text-orders",
+  pillBg: "bg-orders-soft",
+  pillText: "text-orders",
+  mobileActive: "text-orders",
+  chartFill: "#2563EB",
+  chartStroke: "#1D4ED8",
+};
+const INVENTORY_ACCENT: ModuleAccent = {
+  rail: "bg-inventory-solid",
+  labelText: "text-inventory",
+  labelHover: "hover:bg-inventory-soft",
+  activeBg: "bg-inventory-soft",
+  activeText: "text-inventory",
+  pillBg: "bg-inventory-soft",
+  pillText: "text-inventory",
+  mobileActive: "text-inventory",
+  chartFill: "#0D9488",
+  chartStroke: "#0F766E",
+};
+const FINANCE_ACCENT: ModuleAccent = {
+  rail: "bg-finance-solid",
+  labelText: "text-finance",
+  labelHover: "hover:bg-finance-soft",
+  activeBg: "bg-finance-soft",
+  activeText: "text-finance",
+  pillBg: "bg-finance-soft",
+  pillText: "text-finance",
+  mobileActive: "text-finance",
+  chartFill: "#EA580C",
+  chartStroke: "#C2410C",
+};
+const SYSTEM_ACCENT: ModuleAccent = {
+  rail: "bg-system-solid",
+  labelText: "text-system",
+  labelHover: "hover:bg-system-soft",
+  activeBg: "bg-system-soft",
+  activeText: "text-system",
+  pillBg: "bg-system-soft",
+  pillText: "text-system",
+  mobileActive: "text-system",
+  chartFill: "#0891B2",
+  chartStroke: "#0E7490",
+};
+const HOME_PRIMARY: ModuleAccent = {
   rail: "bg-primary",
   labelText: "text-primary",
   labelHover: "hover:bg-primary-soft",
   activeBg: "bg-primary-soft",
-  activeText: "text-primary",
+  activeText: "text-primary-strong",
   pillBg: "bg-primary-soft",
-  pillText: "text-primary",
-  mobileActive: "text-primary",
-  chartFill: "#4F46E5",
-  chartStroke: "#4338CA",
+  pillText: "text-primary-strong",
+  mobileActive: "text-primary-strong",
+  chartFill: "#2563EB",
+  chartStroke: "#1D4ED8",
 };
 
-export const FULFILLMENT_ACCENT: ModuleAccent = PRIMARY_ACCENT;
-export const STOCK_ACCENT: ModuleAccent = PRIMARY_ACCENT;
-export const SUBSCRIPTIONS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
-export const HOME_ACCENT: ModuleAccent = PRIMARY_ACCENT;
-export const SETTINGS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
-const AWB_ACCENT: ModuleAccent = PRIMARY_ACCENT;
+export const FULFILLMENT_ACCENT: ModuleAccent = ORDERS_ACCENT;
+export const STOCK_ACCENT: ModuleAccent = INVENTORY_ACCENT;
+export const SUBSCRIPTIONS_ACCENT: ModuleAccent = FINANCE_ACCENT;
+export const HOME_ACCENT: ModuleAccent = HOME_PRIMARY;
+export const SETTINGS_ACCENT: ModuleAccent = SYSTEM_ACCENT;
+const AWB_ACCENT: ModuleAccent = ORDERS_ACCENT;
+
+/** Accent for an area, by domain. */
+export function accentForDomain(domain: ModuleDomain): ModuleAccent {
+  return domain === "orders" ? ORDERS_ACCENT : domain === "inventory" ? INVENTORY_ACCENT : FINANCE_ACCENT;
+}
 
 function fulfillmentModule(): PortalModule {
   return {
@@ -236,6 +290,7 @@ const GLOBAL_ROUTES: RouteEntry[] = [
   { path: "/dashboard", title: "Overview" },
   { path: "/dashboard/analytics", title: "Analytics" },
   { path: "/account", title: "Account" },
+  { path: "/design", title: "Design gallery" },
   { path: "/admin", title: "Admin" },
 ];
 

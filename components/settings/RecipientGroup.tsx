@@ -4,6 +4,7 @@ import { Plus, Trash2, Mail, Save, Loader2, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { btn } from "@/components/ui/button-styles";
 
 export function RecipientGroup({
   settingKey,
@@ -105,7 +106,7 @@ export function RecipientGroup({
         <button
           type="button"
           onClick={addEmail}
-          className="focus-ring inline-flex min-h-11 items-center gap-2 rounded-card border border-line bg-white px-3 text-body font-medium text-ink transition hover:bg-canvas"
+          className={btn("secondary", "md")}
         >
           <Plus size={14} />
           Add
@@ -123,7 +124,7 @@ export function RecipientGroup({
           type="button"
           onClick={() => void save()}
           disabled={saving}
-          className="focus-ring inline-flex h-9 items-center gap-2 rounded-card bg-ink px-4 text-body font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
+          className={btn("primary", "sm")}
         >
           {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
           {saving ? "Saving…" : saveLabel}

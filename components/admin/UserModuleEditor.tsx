@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Check, RotateCcw, Loader2 } from "lucide-react";
 import type { ProfileRow } from "@/lib/supabase/profiles";
+import { btn } from "@/components/ui/button-styles";
 
 const SELECTABLE_MODULES: { id: string; label: string }[] = [
   { id: "fulfillment", label: "Fulfillment" },
@@ -123,7 +124,7 @@ export function UserModuleEditor({ user }: { user: ProfileRow }) {
         {isDirty && saveState !== "saving" && (
           <button
             onClick={handleSave}
-            className="rounded-control bg-primary px-3 py-1 text-body-sm font-medium text-white shadow-soft transition-all hover:opacity-90"
+            className={btn("primary", "sm")}
           >
             Save
           </button>

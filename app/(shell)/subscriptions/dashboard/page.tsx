@@ -9,6 +9,7 @@ import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { SubscriptionPipelineChart } from "@/components/subscriptions/SubscriptionPipelineChart";
 import { SubscriptionSpendBreakdown } from "@/components/subscriptions/SubscriptionSpendBreakdown";
 import { SubscriptionSpendPanel } from "@/components/subscriptions/SubscriptionSpendPanel";
+import { btn } from "@/components/ui/button-styles";
 import {
   formatCurrencyTotals,
   loadSubscriptionDashboardSummary,
@@ -284,14 +285,14 @@ export default async function SubscriptionsDashboardPage() {
       {summary.pending > 0 ? (
         <Link
           href="/subscriptions"
-          className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-body font-medium text-white transition hover:opacity-90"
+          className={btn("primary", "md")}
         >
           Review {summary.pending} pending request{summary.pending === 1 ? "" : "s"}
         </Link>
       ) : (
         <Link
           href="/subscriptions/active"
-          className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-body font-medium text-white transition hover:opacity-90"
+          className={btn("primary", "md")}
         >
           Open active subscriptions
         </Link>

@@ -70,12 +70,12 @@ function StoreStatusSkeleton() {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-1 rounded-control border border-line bg-canvas p-1">
-        <div className="h-8 w-28 animate-pulse rounded-control bg-line" />
-        <div className="h-8 w-28 animate-pulse rounded-control bg-line" />
+        <div className="h-8 w-28 skeleton rounded-control" />
+        <div className="h-8 w-28 skeleton rounded-control" />
       </div>
       <div className="flex items-center gap-2">
-        <div className="h-6 w-32 animate-pulse rounded-full bg-line" />
-        <div className="h-6 w-36 animate-pulse rounded-full bg-line" />
+        <div className="h-6 w-32 skeleton rounded-full" />
+        <div className="h-6 w-36 skeleton rounded-full" />
       </div>
     </div>
   );

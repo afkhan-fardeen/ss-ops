@@ -1,8 +1,10 @@
 "use client";
 
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useRef, useState } from "react";
 import { Download, X } from "lucide-react";
 import { toast } from "sonner";
+import { btn } from "@/components/ui/button-styles";
 
 type ProgressState = {
   phase: "fetching" | "matching";
@@ -124,12 +126,7 @@ export function UbexInventoryExportButton() {
             <X size={13} />
           </button>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-canvas">
-          <div
-            className={`h-full bg-ink transition-all ${progress.percent === null ? "animate-pulse" : ""}`}
-            style={{ width: `${pct}%` }}
-          />
-        </div>
+        <ProgressBar value={progress.percent === null ? undefined : pct} label="Export progress" />
         <span className="text-caption text-muted">
           {progress.percent !== null ? `${progress.percent}% · ` : ""}
           {formatEta(progress.etaMs)}
@@ -142,7 +139,7 @@ export function UbexInventoryExportButton() {
     <button
       type="button"
       onClick={() => void startExport()}
-      className="focus-ring inline-flex items-center gap-2 rounded-control bg-ink px-3 py-2 text-body-sm font-medium text-white shadow-soft transition hover:bg-ink/90"
+      className={btn("primary", "sm")}
     >
       <Download size={13} />
       Export full inventory (.xlsx)

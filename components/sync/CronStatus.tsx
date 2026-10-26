@@ -14,6 +14,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import type { CronRunLog } from "@/lib/supabase/cron-run-log";
+import { btn } from "@/components/ui/button-styles";
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -195,7 +196,7 @@ export function CronStatus() {
         <button
           onClick={() => trigger(true)}
           disabled={triggering || isRunning}
-          className="focus-ring inline-flex items-center gap-2 rounded-card border border-line bg-white px-3 py-2 text-caption font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+          className={btn("secondary", "md")}
         >
           {triggering ? (
             <Loader2 size={12} className="animate-spin" />
@@ -208,7 +209,7 @@ export function CronStatus() {
         <button
           onClick={() => trigger(false)}
           disabled={triggering || isRunning}
-          className="focus-ring inline-flex items-center gap-2 rounded-card bg-primary px-3 py-2 text-caption font-medium text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          className={btn("primary", "md")}
         >
           {triggering ? (
             <Loader2 size={12} className="animate-spin" />

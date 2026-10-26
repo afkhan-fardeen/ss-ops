@@ -16,7 +16,7 @@ export default async function StockBalancePage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <header className="animate-fade-up">
         <div className="flex items-center gap-3">
-          <div className="hidden h-10 w-10 place-items-center md:grid rounded-card bg-canvas text-ink">
+          <div className="hidden h-10 w-10 place-items-center md:grid rounded-card bg-inventory-soft text-inventory">
             <Scale size={20} />
           </div>
           <div>

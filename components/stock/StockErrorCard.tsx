@@ -5,6 +5,7 @@ import { StatusPill, type StatusTone } from "@/components/portal/StatusPill";
 import type { StockErrorCard as StockErrorCardData } from "@/lib/stock/load-stock-errors";
 import { STORE_LABELS } from "@/lib/stores/labels";
 import type { RestockRowStatus } from "@/hooks/useRestockQueue";
+import { btn } from "@/components/ui/button-styles";
 
 function pillFor(card: StockErrorCardData): { tone: StatusTone; label: string } {
   switch (card.category) {
@@ -131,7 +132,7 @@ export function StockErrorCard({
               type="button"
               disabled={busy || !card.barcode}
               onClick={onRetry}
-              className="inline-flex min-h-11 items-center gap-2 rounded-card bg-primary px-4 text-body font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+              className={btn("primary", "md")}
             >
               {busy ? <Loader2 size={15} className="animate-spin" /> : <PackagePlus size={15} />}
               Retry sync

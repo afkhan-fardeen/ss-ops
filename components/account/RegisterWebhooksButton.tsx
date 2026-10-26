@@ -3,6 +3,7 @@
 import { Loader2, Zap } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { btn } from "@/components/ui/button-styles";
 
 export function RegisterWebhooksButton({ disabled }: { disabled?: boolean }) {
   const [loading, setLoading] = useState(false);
@@ -37,7 +38,7 @@ export function RegisterWebhooksButton({ disabled }: { disabled?: boolean }) {
       type="button"
       onClick={() => void register()}
       disabled={disabled || loading}
-      className="focus-ring inline-flex h-10 items-center gap-2 rounded-card bg-ink px-4 text-body font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
+      className={btn("primary", "md")}
     >
       {loading ? <Loader2 size={15} className="animate-spin" /> : <Zap size={15} strokeWidth={2.2} />}
       <span>{loading ? "Registering…" : "Register webhooks"}</span>

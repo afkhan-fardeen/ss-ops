@@ -44,9 +44,11 @@ function readStoredOpen(sectionId: NavSectionId, defaultOpen: boolean): boolean 
 function NavChildLink({
   item,
   active,
+  accent,
 }: {
   item: NavCollapsibleItem;
   active: boolean;
+  accent: ModuleAccent;
 }) {
   const Icon = item.icon;
   return (
@@ -54,7 +56,7 @@ function NavChildLink({
       href={item.href}
       className={[
         "group relative flex items-center gap-3 rounded-control py-2 pl-4 pr-3 text-body font-medium transition-colors",
-        active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
+        active ? `${accent.activeBg} ${accent.activeText}` : "text-muted hover:bg-canvas hover:text-ink",
       ].join(" ")}
     >
       <Icon size={16} strokeWidth={2} />
@@ -156,7 +158,7 @@ export function NavCollapsibleSection({
           onClick={() => setPopoverOpen((v) => !v)}
           className={[
             "flex w-full justify-center rounded-control p-2 transition-colors",
-            sectionActive || popoverOpen ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
+            sectionActive || popoverOpen ? `${accent.activeBg} ${accent.activeText}` : `${accent.labelText} ${accent.labelHover}`,
           ].join(" ")}
         >
           {SectionIcon ? <SectionIcon size={18} /> : null}
@@ -182,7 +184,7 @@ export function NavCollapsibleSection({
                         onClick={() => setPopoverOpen(false)}
                         className={[
                           "relative flex items-center gap-2 rounded-control py-2 pl-3 pr-3 text-body font-medium transition-colors",
-                          active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
+                          active ? `${accent.activeBg} ${accent.activeText}` : "text-muted hover:bg-canvas hover:text-ink",
                         ].join(" ")}
                       >
                         <item.icon size={15} />
@@ -216,7 +218,7 @@ export function NavCollapsibleSection({
               sectionActive ? "text-ink" : "text-muted",
             ].join(" ")}
           >
-            {SectionIcon ? <SectionIcon size={15} strokeWidth={2.2} /> : null}
+            {SectionIcon ? <SectionIcon size={16} strokeWidth={2.2} className={accent.labelText} /> : null}
             <span className="truncate">{label}</span>
           </Link>
         ) : (
@@ -226,7 +228,7 @@ export function NavCollapsibleSection({
               sectionActive ? "text-ink" : "text-muted",
             ].join(" ")}
           >
-            {SectionIcon ? <SectionIcon size={15} strokeWidth={2.2} /> : null}
+            {SectionIcon ? <SectionIcon size={16} strokeWidth={2.2} className={accent.labelText} /> : null}
             <span className="truncate">{label}</span>
           </span>
         )}
@@ -259,6 +261,7 @@ export function NavCollapsibleSection({
               <NavChildLink
                 key={item.href}
                 item={item}
+                accent={accent}
                 active={isNavItemActive(pathname, item as ModuleNavItem)}
               />
             ))}
@@ -291,7 +294,7 @@ export function NavHomeLink({
       className={[
         "group relative flex items-center gap-3 rounded-control py-2 text-body font-medium transition-colors",
         collapsed ? "justify-center px-2" : "px-3",
-        active ? "bg-primary-soft text-primary" : "text-muted hover:bg-canvas hover:text-ink",
+        active ? `${accent.activeBg} ${accent.activeText}` : "text-muted hover:bg-canvas hover:text-ink",
       ].join(" ")}
     >
       <Icon size={16} strokeWidth={active ? 2.2 : 2} />

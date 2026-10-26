@@ -13,6 +13,7 @@ import { UserModuleEditor } from "@/components/admin/UserModuleEditor";
 import { CreateUserForm } from "@/components/admin/CreateUserForm";
 import { RegisterWebhooksButton } from "@/components/account/RegisterWebhooksButton";
 import { CronStatus } from "@/components/sync/CronStatus";
+import { btn } from "@/components/ui/button-styles";
 
 export const dynamic = "force-dynamic";
 
@@ -66,7 +67,7 @@ export default async function AdminPage() {
         />
         <Link
           href="/admin/health"
-          className="focus-ring mt-1 inline-flex shrink-0 items-center gap-2 rounded-card border border-line bg-white px-3 py-2 text-caption font-medium text-ink transition-colors hover:bg-canvas"
+          className={btn("secondary", "md", "mt-1")}
         >
           <Activity size={13} />
           System health
@@ -76,7 +77,7 @@ export default async function AdminPage() {
       {/* User count */}
       <section className="animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft">
         <div className="flex items-start gap-4">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-card bg-canvas text-ink">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-card bg-system-soft text-system">
             <Users size={20} />
           </div>
           <div>

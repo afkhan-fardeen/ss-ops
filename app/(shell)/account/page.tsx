@@ -70,7 +70,7 @@ export default async function AccountPage() {
       {/* Identity */}
       <section className="animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-card bg-canvas text-ink">
+          <div className="grid h-10 w-10 place-items-center rounded-card bg-system-soft text-system">
             <User2 size={18} />
           </div>
           <div className="leading-tight">

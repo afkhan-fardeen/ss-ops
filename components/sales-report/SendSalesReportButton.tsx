@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
+import { btn } from "@/components/ui/button-styles";
 
 export function SendSalesReportButton({ dayKey }: { dayKey: string }) {
   const [sending, setSending] = useState(false);
@@ -34,7 +35,7 @@ export function SendSalesReportButton({ dayKey }: { dayKey: string }) {
       type="button"
       onClick={() => void send()}
       disabled={sending}
-      className="focus-ring inline-flex items-center gap-2 rounded-control border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+      className={btn("secondary", "sm")}
     >
       {sending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
       {sending ? "Sending…" : "Send now"}

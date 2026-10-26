@@ -6,6 +6,7 @@ import { useUrlViewState } from "@/hooks/useUrlViewState";
 import type { UbexPoolProduct } from "@/lib/ubex/group-balance-rows-by-name";
 import { UbexProductDetail, UbexProductTile } from "./UbexProductCard";
 import { UbexInventoryExportButton } from "./UbexInventoryExportButton";
+import { btn } from "@/components/ui/button-styles";
 
 type SearchResponse = {
   ok: boolean;
@@ -163,7 +164,7 @@ export function UbexInventoryView() {
             disabled={loading || page <= 1}
             onClick={() => goToPage(page - 1)}
             aria-label="Previous page"
-            className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+            className={btn("secondary", "sm")}
           >
             <ChevronLeft size={14} />
             Prev
@@ -174,7 +175,7 @@ export function UbexInventoryView() {
             disabled={loading || !hasNextPage}
             onClick={() => goToPage(page + 1)}
             aria-label="Next page"
-            className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+            className={btn("secondary", "sm")}
           >
             Next
             <ChevronRight size={14} />

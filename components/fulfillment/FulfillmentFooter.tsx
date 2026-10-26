@@ -3,6 +3,7 @@
 import { Loader2, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { btn } from "@/components/ui/button-styles";
 
 type FulfilResult = { success: number; failed: number; total: number };
 
@@ -56,7 +57,7 @@ export function FulfillmentFooter({
           type="button"
           onClick={() => void run()}
           disabled={busy || matchedCount === 0}
-          className="focus-ring inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-6 text-body-lg font-medium text-white shadow-soft transition hover:bg-primary/90 active:bg-primary-strong disabled:opacity-60 md:h-9 md:rounded-card md:px-4 md:text-body-sm"
+          className={btn("primary", "lg", "", true)}
         >
           {busy ? <Loader2 size={14} className="animate-spin-slow" /> : <Send size={14} />}
           {busy ? "Pushing…" : `Fulfil All${matchedCount > 0 ? ` (${matchedCount})` : ""}`}

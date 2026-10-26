@@ -16,6 +16,7 @@ import { STORE_LABELS } from "@/lib/stores/labels";
 import { StockBalanceDetail, StockBalanceMobileCard, StockBalanceTableRow } from "@/components/stock/StockBalanceCard";
 import { StockBalanceSearchBar } from "@/components/stock/StockBalanceSearchBar";
 import { useRestockQueue, type RestockRowInput } from "@/hooks/useRestockQueue";
+import { btn } from "@/components/ui/button-styles";
 
 type Props = {
   rows: StockBalanceRow[];
@@ -256,7 +257,7 @@ export function StockBalanceView({
           type="button"
           disabled={refreshLoading || running}
           onClick={() => onRefresh?.()}
-          className="inline-flex min-h-9 items-center gap-2 rounded-card border border-line bg-white px-3 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+          className={btn("secondary", "sm")}
         >
           {refreshLoading ? (
             <Loader2 size={14} className="animate-spin" />
@@ -327,7 +328,7 @@ export function StockBalanceView({
                 type="button"
                 disabled={running}
                 onClick={() => setConfirmRows(selectedRows)}
-                className="inline-flex min-h-9 items-center gap-2 rounded-card bg-primary px-3 text-body-sm font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+                className={btn("primary", "sm")}
               >
                 <PackagePlus size={14} />
                 Sync selected ({selectedRows.length})
@@ -487,7 +488,7 @@ export function StockBalanceView({
               <button
                 type="button"
                 onClick={() => void runConfirm()}
-                className="inline-flex items-center gap-2 rounded-card bg-primary px-4 py-2 text-body font-medium text-white"
+                className={btn("primary", "md")}
               >
                 <PackagePlus size={15} />
                 Sync {confirmRows.length}

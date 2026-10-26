@@ -46,10 +46,10 @@ function FulfillmentSkeleton() {
       <div className="rounded-card border border-line bg-white p-5 shadow-soft">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
-            <div className="h-3 w-32 animate-pulse rounded-control bg-line" />
-            <div className="h-4 w-48 animate-pulse rounded-control bg-line" />
+            <div className="h-3 w-32 skeleton rounded-control" />
+            <div className="h-4 w-48 skeleton rounded-control" />
           </div>
-          <div className="h-3 w-40 animate-pulse rounded-control bg-line" />
+          <div className="h-3 w-40 skeleton rounded-control" />
         </div>
       </div>
       <TableSkeleton rows={8} columns={7} />

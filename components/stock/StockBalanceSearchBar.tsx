@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, Loader2, Search } from "lucide-react";
+import { btn } from "@/components/ui/button-styles";
 
 export function StockBalanceSearchBar({
   value,
@@ -51,7 +52,7 @@ export function StockBalanceSearchBar({
               disabled={loading || page <= 1}
               onClick={onPrevPage}
               aria-label="Previous page"
-              className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+              className={btn("secondary", "sm")}
             >
               <ChevronLeft size={14} />
               Prev
@@ -61,7 +62,7 @@ export function StockBalanceSearchBar({
               disabled={loading || !hasNextPage}
               onClick={onNextPage}
               aria-label="Next page"
-              className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+              className={btn("secondary", "sm")}
             >
               Next
               <ChevronRight size={14} />

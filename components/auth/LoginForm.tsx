@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 import { DEFAULT_POST_LOGIN_PATH, getSafeNextPath } from "@/lib/auth/safe-next-path";
 import { getBrowserSupabase } from "@/lib/supabase/browser";
+import { btn } from "@/components/ui/button-styles";
 
 export function LoginForm({
   nextPath,
@@ -220,7 +221,7 @@ function SubmitButton({ loading, label }: { loading: boolean; label: string }) {
     <button
       type="submit"
       disabled={loading}
-      className="focus-ring inline-flex h-12 w-full items-center justify-center gap-2 rounded-control bg-primary px-4 text-heading font-medium text-white shadow-soft transition hover:bg-primary-strong active:bg-primary-strong disabled:opacity-70 md:h-11 md:text-body-lg"
+      className={btn("primary", "lg", "w-full")}
     >
       {loading ? <Loader2 size={16} className="animate-spin" /> : null}
       <span>{loading ? "Please wait…" : label}</span>

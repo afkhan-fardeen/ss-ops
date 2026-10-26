@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Loader2, UserPlus } from "lucide-react";
+import { btn } from "@/components/ui/button-styles";
 
 const SELECTABLE_MODULES: { id: string; label: string }[] = [
   { id: "fulfillment", label: "Fulfillment" },
@@ -166,7 +167,7 @@ export function CreateUserForm() {
         <button
           type="submit"
           disabled={submitState === "saving" || !email.trim() || password.length < 8}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-control bg-primary px-4 text-body font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          className={btn("primary", "md", "w-full sm:w-auto")}
         >
           {submitState === "saving" ? (
             <Loader2 size={14} className="animate-spin" />

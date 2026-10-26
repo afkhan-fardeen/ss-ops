@@ -19,14 +19,14 @@ export function LoginHero({
   return (
     <div className="flex min-h-dvh bg-canvas">
       {/* Brand panel — desktop only */}
-      <aside className="relative hidden w-[46%] max-w-[640px] flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-900 px-14 py-12 text-white lg:flex">
+      <aside className="relative hidden w-[46%] max-w-[640px] flex-col justify-between overflow-hidden bg-gradient-to-br from-blue-600 via-blue-700 to-teal-800 px-14 py-12 text-white lg:flex">
         <div
           aria-hidden
           className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10 blur-3xl"
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl"
+          className="pointer-events-none absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-teal-300/20 blur-3xl"
         />
 
         {/* eslint-disable-next-line @next/next/no-img-element */}

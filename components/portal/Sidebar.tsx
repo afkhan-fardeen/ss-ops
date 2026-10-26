@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Home, LogOut, PanelLeftClose, PanelLeftOpen, Settings2 } from "lucide-react";
 import {
+  accentForDomain,
   getPortalModules,
   groupModulesByDomain,
   HOME_ACCENT,
@@ -124,7 +125,8 @@ export function Sidebar({
               {collapsed ? (
                 <div className="mx-3 border-t border-line" aria-hidden />
               ) : (
-                <p className="px-3 pb-0.5 text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+                <p className="flex items-center gap-2 px-3 pb-0.5 text-caption font-semibold uppercase tracking-wide text-muted">
+                  <span aria-hidden className={`h-2 w-2 rounded-full ${accentForDomain(group.domain).rail}`} />
                   {group.label}
                 </p>
               )}

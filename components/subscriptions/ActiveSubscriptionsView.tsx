@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { SubscriptionRequestRow, SubscriptionType } from "@/lib/subscriptions/types";
+import { btn } from "@/components/ui/button-styles";
 import {
   formatBillingCycle,
   formatMoney,
@@ -167,7 +168,7 @@ export function ActiveSubscriptionsView({ rows }: { rows: SubscriptionRequestRow
                   <td className="px-4 py-3">
                     <a
                       href={`/api/subscriptions/${row.id}/pdf?download=1`}
-                      className="inline-flex items-center gap-2 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas"
+                      className={btn("secondary", "sm")}
                       title={`Download ${row.reference_number}.pdf`}
                     >
                       <Download size={14} />

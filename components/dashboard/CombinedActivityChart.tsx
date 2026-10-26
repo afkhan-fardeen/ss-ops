@@ -12,8 +12,8 @@ import {
 } from "recharts";
 import type { CombinedDailySeries } from "@/lib/dashboard/load-portal-home-summary";
 
-const FULFILLMENT_FILL = "#4F46E5";
-const STOCK_FILL = "#06B6D4";
+const FULFILLMENT_FILL = "#2563EB";
+const STOCK_FILL = "#0D9488";
 
 type Props = {
   data: CombinedDailySeries[];

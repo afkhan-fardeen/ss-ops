@@ -6,11 +6,12 @@ type Props = {
 };
 
 const BORDER: Record<string, string> = {
-  home: "border-l-ink",
-  fulfillment: "border-l-primary",
-  stock: "border-l-primary",
-  awb: "border-l-primary",
-  subscriptions: "border-l-primary",
+  home: "border-l-primary",
+  fulfillment: "border-l-orders-solid",
+  awb: "border-l-orders-solid",
+  stock: "border-l-inventory-solid",
+  subscriptions: "border-l-finance-solid",
+  salesReport: "border-l-finance-solid",
 };
 
 export function DashboardPage({ children, moduleId }: Props) {

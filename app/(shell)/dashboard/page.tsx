@@ -3,6 +3,7 @@ import { isPortalAdmin } from "@/lib/auth/is-portal-admin";
 import { getAstGreeting, getDisplayName } from "@/lib/dashboard/get-display-name";
 import { loadLauncherStats, type LauncherStats } from "@/lib/dashboard/load-launcher-stats";
 import { getVisiblePortalModules } from "@/lib/auth/get-visible-modules";
+import { accentForDomain } from "@/config/modules";
 import {
   ModuleGrid,
   type OverviewModule,
@@ -73,18 +74,19 @@ export default async function OverviewPage() {
       href: meta.href,
       icon: <Icon size={20} strokeWidth={1.8} />,
       stat: statByModule[m.id],
+      tint: { bg: m.accent.activeBg, text: m.accent.activeText, rail: m.accent.rail },
     });
   }
 
   const sections: OverviewSection[] = DOMAIN_ORDER.filter((d) => byDomain[d].length > 0).map(
-    (d) => ({ id: d, label: DOMAIN_LABEL[d], modules: byDomain[d] }),
+    (d) => ({ id: d, label: DOMAIN_LABEL[d], rail: accentForDomain(d).rail, modules: byDomain[d] }),
   );
 
   const kpis = [
-    { label: "Unfulfilled orders", stat: stats.fulfillment },
-    { label: "Stock mismatches", stat: stats.stock },
-    { label: "Critical stock alerts", stat: stats.stockAlerts },
-    { label: "Pending subscriptions", stat: stats.subscriptions },
+    { label: "Unfulfilled orders", stat: stats.fulfillment, accent: "border-l-orders-solid" },
+    { label: "Stock mismatches", stat: stats.stock, accent: "border-l-inventory-solid" },
+    { label: "Critical stock alerts", stat: stats.stockAlerts, accent: "border-l-danger" },
+    { label: "Pending subscriptions", stat: stats.subscriptions, accent: "border-l-finance-solid" },
   ].filter((k) => k.stat);
 
   return (
@@ -101,7 +103,7 @@ export default async function OverviewPage() {
       {kpis.length > 0 ? (
         <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
           {kpis.map((k) => (
-            <StatCard key={k.label} label={k.label} value={k.stat!.value} hint={k.stat!.label} />
+            <StatCard key={k.label} label={k.label} value={k.stat!.value} hint={k.stat!.label} accentClass={k.accent} />
           ))}
         </div>
       ) : null}

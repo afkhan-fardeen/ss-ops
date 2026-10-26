@@ -15,6 +15,7 @@ import { ChartCard } from "@/components/dashboard/ChartCard";
 import { ActivityBarChart } from "@/components/dashboard/ActivityBarChart";
 import { OrdersProductsPanel } from "@/components/sales-report/OrdersProductsPanel";
 import { SendSalesReportButton } from "@/components/sales-report/SendSalesReportButton";
+import { btn } from "@/components/ui/button-styles";
 
 export const dynamic = "force-dynamic";
 
@@ -213,7 +214,7 @@ export default async function SalesReportPage({
             {hasFullAccess ? <SendSalesReportButton dayKey={day.dateKey} /> : null}
             <a
               href={`/api/sales-report/download?day=${day.dateKey}`}
-              className="focus-ring inline-flex items-center gap-2 rounded-control bg-ink px-3 py-2 text-body-sm font-medium text-white shadow-soft transition hover:bg-ink/90"
+              className={btn("primary", "sm")}
             >
               <Download size={13} />
               Download Excel

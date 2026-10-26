@@ -1,4 +1,5 @@
 import { WifiOff } from "lucide-react";
+import { btn } from "@/components/ui/button-styles";
 
 export const metadata = { title: "Offline — Seissense Ops" };
 
@@ -14,7 +15,7 @@ export default function OfflinePage() {
       </p>
       <a
         href="/dashboard"
-        className="inline-flex min-h-11 items-center rounded-control bg-primary px-5 text-body-lg font-medium text-white"
+        className={btn("primary", "md")}
       >
         Retry
       </a>

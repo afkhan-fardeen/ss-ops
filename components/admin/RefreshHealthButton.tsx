@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
+import { btn } from "@/components/ui/button-styles";
 
 export function RefreshHealthButton() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export function RefreshHealthButton() {
       <button
         onClick={handleRefresh}
         disabled={isPending}
-        className="focus-ring inline-flex items-center gap-2 rounded-card border border-line bg-white px-3 py-2 text-caption font-medium text-ink transition-colors hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+        className={btn("secondary", "md")}
       >
         <RefreshCw size={12} className={isPending ? "animate-spin" : undefined} />
         Refresh

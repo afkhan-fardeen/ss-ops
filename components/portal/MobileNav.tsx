@@ -6,8 +6,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Home, LayoutGrid, LogOut, Search, Shield, User2, X, type LucideIcon } from "lucide-react";
 import {
   groupModulesByDomain,
+  HOME_ACCENT,
   HOME_HREF,
   isPathInModule,
+  SETTINGS_ACCENT,
+  type ModuleAccent,
   type ModuleId,
   type PortalModule,
 } from "@/config/modules";
@@ -23,11 +26,13 @@ function Tab({
   label,
   icon: Icon,
   active,
+  accent,
 }: {
   href: string;
   label: string;
   icon: LucideIcon;
   active: boolean;
+  accent: ModuleAccent;
 }) {
   return (
     <Link
@@ -35,13 +40,13 @@ function Tab({
       aria-current={active ? "page" : undefined}
       className={[
         "flex h-[72px] flex-1 flex-col items-center justify-center gap-1 text-caption font-medium transition-colors",
-        active ? "text-primary" : "text-muted active:text-ink",
+        active ? accent.activeText : "text-muted active:text-ink",
       ].join(" ")}
     >
       <span
         className={[
           "grid h-8 w-16 place-items-center rounded-full transition-colors duration-200",
-          active ? "bg-primary-soft" : "",
+          active ? accent.activeBg : "",
         ].join(" ")}
       >
         <Icon size={20} strokeWidth={active ? 2.3 : 1.9} />
@@ -97,13 +102,14 @@ export function MobileNav({
       >
         <div className="relative flex items-stretch">
           {/* left of the FAB */}
-          <Tab href={HOME_HREF} label="Home" icon={Home} active={pathname === HOME_HREF} />
+          <Tab href={HOME_HREF} label="Home" icon={Home} active={pathname === HOME_HREF} accent={HOME_ACCENT} />
           {first ? (
             <Tab
               href={first.primaryHref}
               label={first.shortLabel ?? first.label}
               icon={first.icon}
               active={isPathInModule(pathname, first.id)}
+              accent={first.accent}
             />
           ) : null}
 
@@ -117,16 +123,17 @@ export function MobileNav({
               label={second.shortLabel ?? second.label}
               icon={second.icon}
               active={isPathInModule(pathname, second.id)}
+              accent={second.accent}
             />
           ) : null}
-          <Tab href="/account" label="Account" icon={User2} active={accountActive} />
+          <Tab href="/account" label="Account" icon={User2} active={accountActive} accent={SETTINGS_ACCENT} />
 
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="focus-ring absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-4 place-items-center rounded-sheet bg-primary text-white shadow-[0_4px_12px_rgba(79,70,229,0.4)] transition-transform active:scale-95"
+            className="focus-ring absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-4 place-items-center rounded-sheet bg-primary text-white shadow-[0_4px_12px_rgba(37,99,235,0.4)] transition-transform active:scale-95"
           >
             <span className={`transition-transform duration-200 ${open ? "rotate-90" : ""}`}>
               {open ? <X size={24} /> : <LayoutGrid size={24} />}
@@ -199,15 +206,13 @@ function MenuSheet({
                         href={m.primaryHref}
                         className={[
                           "flex h-full min-h-[92px] flex-col items-center justify-center gap-2 rounded-sheet border px-2 py-3 text-center transition-colors",
-                          active
-                            ? "border-primary/30 bg-primary-soft"
-                            : "border-line bg-white active:bg-canvas",
+                          active ? `${m.accent.activeBg} border-transparent` : "border-line bg-white active:bg-canvas",
                         ].join(" ")}
                       >
                         <span
                           className={[
                             "grid h-11 w-11 place-items-center rounded-card",
-                            active ? "bg-primary text-white" : "bg-primary-soft text-primary",
+                            active ? `${m.accent.rail} text-white` : `${m.accent.activeBg} ${m.accent.activeText}`,
                           ].join(" ")}
                         >
                           <Icon size={22} strokeWidth={1.9} />

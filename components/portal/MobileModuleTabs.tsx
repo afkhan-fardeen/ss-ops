@@ -45,11 +45,11 @@ export function MobileModuleTabs() {
                 aria-current={active ? "page" : undefined}
                 className={[
                   "relative flex min-h-11 items-center px-3 text-body font-medium",
-                  active ? "text-primary" : "text-muted active:text-ink",
+                  active ? mod.accent.activeText : "text-muted active:text-ink",
                 ].join(" ")}
               >
                 {item.label}
-                {active ? <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" /> : null}
+                {active ? <span className={`absolute inset-x-3 bottom-0 h-0.5 rounded-full ${mod.accent.rail}`} /> : null}
               </Link>
             </li>
           );

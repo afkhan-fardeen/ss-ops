@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { btn } from "@/components/ui/button-styles";
 import type {
   BillingCycle,
   SubscriptionRequestRow,
@@ -312,7 +313,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                     type="button"
                     disabled={loading !== null}
                     onClick={() => setEditing(true)}
-                    className="inline-flex items-center gap-2 rounded-card border border-line bg-white px-3 py-2 text-body-sm font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+                    className={btn("secondary", "sm")}
                   >
                     <Pencil size={13} />
                     Edit
@@ -540,7 +541,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                     type="button"
                     disabled={loading !== null}
                     onClick={handleSaveFields}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-card bg-primary px-4 text-body font-medium text-white transition hover:opacity-90 disabled:opacity-50"
+                    className={btn("primary", "md")}
                   >
                     {loading === "save" ? (
                       <Loader2 size={15} className="animate-spin" />
@@ -553,7 +554,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                     type="button"
                     disabled={loading !== null}
                     onClick={cancelEdit}
-                    className="inline-flex min-h-11 items-center justify-center gap-2 rounded-card border border-line bg-white px-4 text-body font-medium text-muted transition hover:bg-canvas disabled:opacity-50"
+                    className={btn("secondary", "md")}
                   >
                     Cancel
                   </button>
@@ -578,7 +579,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
             <a
               href={pdfUrl}
               download={`${row.reference_number}.pdf`}
-              className="inline-flex min-h-11 items-center gap-2 rounded-card border border-line bg-white px-4 text-body font-medium text-ink transition hover:bg-canvas"
+              className={btn("secondary", "md")}
             >
               <Download size={15} />
               Download PDF
@@ -586,7 +587,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
             <button
               type="button"
               onClick={handlePrint}
-              className="inline-flex min-h-11 items-center gap-2 rounded-card border border-line bg-white px-4 text-body font-medium text-ink transition hover:bg-canvas"
+              className={btn("secondary", "md")}
             >
               <Printer size={15} />
               Print
@@ -597,7 +598,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   type="button"
                   disabled={loading !== null || editing}
                   onClick={handleApprove}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-card bg-primary px-4 text-body font-medium text-white transition hover:opacity-90 disabled:opacity-60"
+                  className={btn("primary", "md")}
                 >
                   {loading === "approve" ? (
                     <Loader2 size={15} className="animate-spin" />
@@ -610,7 +611,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                   type="button"
                   disabled={loading !== null || editing}
                   onClick={() => setShowRejectModal(true)}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-card border border-danger-line bg-danger-soft px-4 text-body font-medium text-danger transition hover:bg-danger-line disabled:opacity-60"
+                  className={btn("dangerSoft", "md")}
                 >
                   <X size={15} />
                   Reject
@@ -666,7 +667,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 type="button"
                 disabled={loading === "reject"}
                 onClick={handleReject}
-                className="inline-flex items-center gap-2 rounded-card bg-primary px-4 py-2 text-body font-medium text-white disabled:opacity-60"
+                className={btn("primary", "md")}
               >
                 {loading === "reject" ? <Loader2 size={14} className="animate-spin" /> : null}
                 Confirm reject
@@ -697,7 +698,7 @@ export function SubscriptionDetailView({ row }: { row: SubscriptionRequestRow })
                 type="button"
                 disabled={loading === "delete"}
                 onClick={handleDelete}
-                className="inline-flex items-center gap-2 rounded-card bg-primary px-4 py-2 text-body font-medium text-white disabled:opacity-60"
+                className={btn("primary", "md")}
               >
                 {loading === "delete" ? (
                   <Loader2 size={14} className="animate-spin" />
