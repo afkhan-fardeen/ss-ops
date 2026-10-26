@@ -17,9 +17,9 @@ export function SettingsHeader({
 }) {
   return (
     <header>
-      <p className="text-[12px] font-semibold uppercase tracking-wide text-primary">{module}</p>
-      <h1 className="mt-1 text-2xl font-semibold tracking-tight text-ink">{title}</h1>
-      {description ? <p className="mt-1.5 text-[14px] leading-relaxed text-muted">{description}</p> : null}
+      <p className="hidden text-fs12 font-semibold uppercase tracking-wide text-primary md:block">{module}</p>
+      <h1 className="mt-1 hidden text-2xl font-semibold tracking-tight text-ink md:block">{title}</h1>
+      {description ? <p className="text-fs14 leading-relaxed text-muted md:mt-1.5">{description}</p> : null}
     </header>
   );
 }
@@ -39,8 +39,8 @@ export function SettingsSection({
     <section className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
       <div className="flex items-start justify-between gap-3 border-b border-line px-4 py-3.5 sm:px-5">
         <div className="min-w-0">
-          <h2 className="text-[14px] font-semibold text-ink">{title}</h2>
-          {description ? <p className="mt-0.5 text-[13px] text-muted">{description}</p> : null}
+          <h2 className="text-fs14 font-semibold text-ink">{title}</h2>
+          {description ? <p className="mt-0.5 text-fs13 text-muted">{description}</p> : null}
         </div>
         {action}
       </div>
@@ -60,7 +60,7 @@ const STATE_STYLES: Record<SettingState, string> = {
 
 export function StateBadge({ state, children }: { state: SettingState; children: ReactNode }) {
   return (
-    <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[12px] font-medium ${STATE_STYLES[state]}`}>
+    <span className={`inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-fs12 font-medium ${STATE_STYLES[state]}`}>
       {children}
     </span>
   );
@@ -87,12 +87,12 @@ export function SettingRow({
   return (
     <div className="flex flex-col gap-1.5 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-5">
       <div className="min-w-0">
-        <p className="text-[14px] font-medium text-ink">{label}</p>
-        {hint ? <p className="mt-0.5 text-[13px] leading-snug text-muted">{hint}</p> : null}
+        <p className="text-fs14 font-medium text-ink">{label}</p>
+        {hint ? <p className="mt-0.5 text-fs13 leading-snug text-muted">{hint}</p> : null}
       </div>
       <div className="flex min-w-0 items-center gap-2 sm:max-w-[55%] sm:justify-end">
         {value != null ? (
-          <span className={`min-w-0 break-all text-[13px] text-ink ${mono ? "font-mono" : ""}`}>{value}</span>
+          <span className={`min-w-0 break-all text-fs13 text-ink ${mono ? "font-mono" : ""}`}>{value}</span>
         ) : null}
         {state ? <StateBadge state={state}>{stateLabel ?? state}</StateBadge> : null}
         {children}
@@ -102,5 +102,5 @@ export function SettingRow({
 }
 
 export function SettingsFootnote({ children }: { children: ReactNode }) {
-  return <p className="px-1 text-[13px] leading-relaxed text-muted">{children}</p>;
+  return <p className="px-1 text-fs13 leading-relaxed text-muted">{children}</p>;
 }

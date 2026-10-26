@@ -96,6 +96,7 @@ function fulfillmentModule(): PortalModule {
     id: "fulfillment",
     domain: "orders",
     primaryHref: "/fulfillment/list",
+    shortLabel: "Orders",
     label: "Fulfillment",
     icon: Truck,
     accent: FULFILLMENT_ACCENT,
@@ -108,7 +109,7 @@ function fulfillmentModule(): PortalModule {
         aliases: ["/fulfillment"],
       },
       { label: "History", href: "/fulfillment/history", icon: History, aliases: ["/history"] },
-      { label: "Config", href: "/fulfillment/settings", icon: Settings2 },
+      { label: "Settings", href: "/fulfillment/settings", icon: Settings2 },
     ],
   };
 }
@@ -232,6 +233,7 @@ export type RouteMeta = {
 type RouteEntry = RouteMeta & { path: string };
 
 const GLOBAL_ROUTES: RouteEntry[] = [
+  { path: "/dashboard", title: "Overview" },
   { path: "/dashboard/analytics", title: "Analytics" },
   { path: "/account", title: "Account" },
   { path: "/admin", title: "Admin" },
@@ -388,12 +390,10 @@ export function resolveRouteMeta(pathname: string): RouteMeta {
 
 export function isNavItemActive(pathname: string, item: ModuleNavItem): boolean {
   if (pathname === item.href) return true;
+  // Aliases are legacy URLs of the SAME page: exact match only. A prefix match would light up
+  // e.g. "Fulfillment list" (alias /fulfillment) on /fulfillment/dashboard as well.
   if (item.aliases?.includes(pathname)) return true;
-  if (pathname.startsWith(`${item.href}/`)) return true;
-  for (const alias of item.aliases ?? []) {
-    if (pathname.startsWith(`${alias}/`)) return true;
-  }
-  return false;
+  return pathname.startsWith(`${item.href}/`);
 }
 
 const OPEN_STORAGE_PREFIX = "portal.nav.open.";

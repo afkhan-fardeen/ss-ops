@@ -100,11 +100,11 @@ export function PublicSubscriptionForm() {
           <CheckCircle2 size={28} />
         </div>
         <h2 className="font-sans text-xl font-medium text-ink">Request submitted</h2>
-        <p className="text-[14px] text-muted">
+        <p className="text-fs14 text-muted">
           Your reference number is{" "}
           <span className="font-mono font-medium text-ink">{referenceNumber}</span>
         </p>
-        <p className="text-[13px] text-muted">
+        <p className="text-fs13 text-muted">
           Finance will review your request. Print and sign the generated form when instructed.
         </p>
       </div>
@@ -126,7 +126,7 @@ export function PublicSubscriptionForm() {
       />
 
       <section className="space-y-3">
-        <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">
+        <h2 className="text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
           Your details
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -167,7 +167,7 @@ export function PublicSubscriptionForm() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-[12px] font-semibold uppercase tracking-wide text-muted">
+        <h2 className="text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
           Subscription details
         </h2>
         <Field label="Subscription type" required>
@@ -181,14 +181,14 @@ export function PublicSubscriptionForm() {
                   disabled={loading}
                   onClick={() => set("subscription_type", type)}
                   className={[
-                    "min-h-11 rounded-card border px-3 text-left text-[13px] transition",
+                    "min-h-11 rounded-card border px-3 text-left text-fs13 transition",
                     selected
                       ? "border-primary bg-primary-soft text-primary"
                       : "border-line bg-white text-ink hover:bg-canvas",
                   ].join(" ")}
                 >
                   <span className="font-medium">{SUBSCRIPTION_TYPE_LABELS[type]}</span>
-                  <span className="mt-0.5 block text-[11px] text-muted">
+                  <span className="mt-0.5 block text-fs11 text-muted">
                     {type === "employee"
                       ? "License or tool for a specific person"
                       : "Company / shared subscription"}
@@ -266,7 +266,7 @@ export function PublicSubscriptionForm() {
                     type="button"
                     onClick={() => set("billing_cycle", key)}
                     className={[
-                      "rounded-full px-3 py-1.5 text-[13px] font-medium transition",
+                      "rounded-full px-3 py-1.5 text-fs13 font-medium transition",
                       form.billing_cycle === key
                         ? "bg-primary-soft text-primary"
                         : "border border-line bg-white text-muted hover:text-ink",
@@ -306,7 +306,7 @@ export function PublicSubscriptionForm() {
                 );
               })}
             </select>
-            <p className="mt-1 text-[11px] text-muted">
+            <p className="mt-1 text-fs11 text-muted">
               Name · card last 4 · SW = Sense Wellness · SS = Seissense
             </p>
           </Field>
@@ -324,7 +324,7 @@ export function PublicSubscriptionForm() {
       </section>
 
       {error ? (
-        <p className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-[13px] text-primary">
+        <p className="rounded-lg border border-primary/30 bg-primary/5 px-3 py-2 text-fs13 text-primary">
           {error}
         </p>
       ) : null}
@@ -332,7 +332,7 @@ export function PublicSubscriptionForm() {
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-primary px-4 text-[14px] font-medium text-white shadow-soft transition hover:opacity-90 disabled:opacity-60"
+        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-card bg-primary px-4 text-fs14 font-medium text-white shadow-soft transition hover:opacity-90 disabled:opacity-60"
       >
         {loading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
         {loading ? "Submitting…" : "Submit request"}
@@ -354,7 +354,7 @@ function Field({
 }) {
   return (
     <div className={`space-y-1.5 ${className}`}>
-      <label className="block text-[12px] font-medium text-ink">
+      <label className="block text-fs12 font-medium text-ink">
         {label}
         {required ? <span className="text-primary"> *</span> : null}
       </label>

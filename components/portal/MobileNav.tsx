@@ -34,13 +34,13 @@ function Tab({
       href={href}
       aria-current={active ? "page" : undefined}
       className={[
-        "flex h-16 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors",
+        "flex h-[72px] flex-1 flex-col items-center justify-center gap-1 text-fs11 font-medium transition-colors",
         active ? "text-primary" : "text-muted active:text-ink",
       ].join(" ")}
     >
       <span
         className={[
-          "grid h-7 w-12 place-items-center rounded-full transition-colors",
+          "grid h-8 w-16 place-items-center rounded-full transition-colors duration-200",
           active ? "bg-primary-soft" : "",
         ].join(" ")}
       >
@@ -92,7 +92,7 @@ export function MobileNav({
 
       <nav
         aria-label="Primary"
-        className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white/95 backdrop-blur md:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-white shadow-[0_-1px_3px_rgba(15,23,42,0.06)] md:hidden"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="relative flex items-stretch">
@@ -108,7 +108,7 @@ export function MobileNav({
           ) : null}
 
           {/* space for the FAB */}
-          <div className="w-[76px] shrink-0" aria-hidden />
+          <div className="w-[72px] shrink-0" aria-hidden />
 
           {/* right of the FAB */}
           {second ? (
@@ -126,7 +126,7 @@ export function MobileNav({
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
-            className="focus-ring absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-5 place-items-center rounded-full bg-primary text-white shadow-[0_6px_16px_rgba(79,70,229,0.45)] ring-4 ring-white transition-transform active:scale-95"
+            className="focus-ring absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-4 place-items-center rounded-2xl bg-primary text-white shadow-[0_4px_12px_rgba(79,70,229,0.4)] transition-transform active:scale-95"
           >
             <span className={`transition-transform duration-200 ${open ? "rotate-90" : ""}`}>
               {open ? <X size={24} /> : <LayoutGrid size={24} />}
@@ -188,7 +188,7 @@ function MenuSheet({
 
           {groups.map((g) => (
             <section key={g.domain} className="mt-5">
-              <h2 className="px-1 pb-2 text-[12px] font-semibold uppercase tracking-wide text-muted">{g.label}</h2>
+              <h2 className="px-1 pb-2 text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">{g.label}</h2>
               <ul className="grid grid-cols-3 gap-2.5">
                 {g.modules.map((m) => {
                   const Icon = m.icon;
@@ -212,7 +212,7 @@ function MenuSheet({
                         >
                           <Icon size={22} strokeWidth={1.9} />
                         </span>
-                        <span className="text-[13px] font-medium leading-tight text-ink">{m.label}</span>
+                        <span className="text-fs13 font-medium leading-tight text-ink">{m.label}</span>
                       </Link>
                     </li>
                   );

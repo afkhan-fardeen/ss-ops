@@ -60,8 +60,8 @@ export function StockAlertsLoader() {
     return (
       <div className="flex flex-col items-center justify-center gap-3 rounded-card border border-line bg-white py-16 shadow-soft">
         <Loader2 size={28} className="animate-spin-slow text-muted" />
-        <p className="text-[13px] font-medium text-ink">Scanning stock levels…</p>
-        <p className="max-w-sm text-center text-[12px] text-muted">
+        <p className="text-fs13 font-medium text-ink">Scanning stock levels…</p>
+        <p className="max-w-sm text-center text-fs12 text-muted">
           Joining the full Ubex catalog with both stores and checking 14-day sales velocity.
           Large catalogs may take a minute.
         </p>
@@ -72,13 +72,13 @@ export function StockAlertsLoader() {
   if (error && rows === null) {
     return (
       <div className="space-y-3">
-        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-[13px] text-[#DC2626]">
+        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-fs13 text-[#DC2626]">
           {error}
         </div>
         <button
           type="button"
           onClick={() => void scan()}
-          className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas"
+          className="focus-ring rounded-card border border-line bg-white px-3 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas"
         >
           Retry
         </button>

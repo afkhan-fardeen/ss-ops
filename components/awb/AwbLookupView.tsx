@@ -158,7 +158,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           <div className="min-w-0 flex-1 space-y-1.5">
             <label
               htmlFor="order-input"
-              className="block text-[12px] font-semibold uppercase tracking-wide text-muted"
+              className="block text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted"
             >
               Order number
             </label>
@@ -190,7 +190,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
             <div className="space-y-1.5">
               <label
                 htmlFor="store-select"
-                className="block text-[12px] font-semibold uppercase tracking-wide text-muted"
+                className="block text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted"
               >
                 Store
               </label>
@@ -228,15 +228,15 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           {/* Metadata bar */}
           {awbExtra && (
             <div className="flex flex-wrap items-center gap-3 rounded-card border border-line bg-white p-4 shadow-soft">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 font-mono text-[12px] font-medium text-primary">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 font-mono text-fs12 font-medium text-primary">
                 <Tag size={11} />
                 {awbExtra.orderName}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 font-mono text-[12px] font-medium text-primary">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 font-mono text-fs12 font-medium text-primary">
                 {awbExtra.tracking}
               </span>
               {awbExtra.source === "live" && (
-                <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-[11px] font-medium text-primary">
+                <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-fs11 font-medium text-primary">
                   live match
                 </span>
               )}
@@ -264,7 +264,7 @@ export function AwbLookupView({ storeCount }: { storeCount: 1 | 2 }) {
           {!isLoading && (
             <button
               onClick={reset}
-              className="text-[12px] font-medium text-muted underline underline-offset-2 hover:text-ink"
+              className="text-fs12 font-medium text-muted underline underline-offset-2 hover:text-ink"
             >
               Look up another order
             </button>
@@ -296,12 +296,12 @@ function PdfColumn({
     <div className="space-y-3">
       {/* Column header */}
       <div className="flex items-center justify-between gap-2">
-        <div className={`flex items-center gap-1.5 text-[12px] font-medium ${accentClass}`}>
+        <div className={`flex items-center gap-1.5 text-fs12 font-medium ${accentClass}`}>
           {icon}
           {title}
           {state.status === "found" && (
             <span
-              className={`ml-1 rounded-full ${accentBgClass} px-2.5 py-0.5 font-mono text-[11px]`}
+              className={`ml-1 rounded-full ${accentBgClass} px-2.5 py-0.5 font-mono text-fs11`}
             >
               {state.label}
             </span>
@@ -314,7 +314,7 @@ function PdfColumn({
               href={state.directUrl ?? state.blobUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 rounded-lg border border-line px-2.5 py-1 text-[12px] font-medium text-ink transition-colors hover:bg-canvas"
+              className="flex items-center gap-1 rounded-lg border border-line px-2.5 py-1 text-fs12 font-medium text-ink transition-colors hover:bg-canvas"
             >
               <ExternalLink size={12} />
               New tab
@@ -322,7 +322,7 @@ function PdfColumn({
             <a
               href={state.blobUrl}
               download={`${title.toLowerCase().replace(" ", "-")}.pdf`}
-              className="flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-[12px] font-medium text-white shadow-soft transition-all hover:opacity-90"
+              className="flex items-center gap-1 rounded-lg bg-primary px-2.5 py-1 text-fs12 font-medium text-white shadow-soft transition-all hover:opacity-90"
             >
               <Download size={12} />
               Download
@@ -354,10 +354,10 @@ function PdfColumn({
           <div className="flex items-start gap-2.5">
             <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-600" />
             <div className="space-y-0.5">
-              <p className="text-[12px] font-medium text-red-700">
+              <p className="text-fs12 font-medium text-red-700">
                 {columnErrorTitle(state.reason, title)}
               </p>
-              <p className="text-[12px] text-ink/80">{state.message}</p>
+              <p className="text-fs12 text-ink/80">{state.message}</p>
             </div>
           </div>
         </div>

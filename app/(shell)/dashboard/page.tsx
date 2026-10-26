@@ -91,10 +91,10 @@ export default async function OverviewPage() {
   return (
     <div className="mx-auto w-full max-w-7xl space-y-8">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight text-ink">
+        <h1 className="text-[22px] font-semibold tracking-tight text-ink md:text-2xl">
           {name ? `${getAstGreeting()}, ${name}` : "Overview"}
         </h1>
-        <p className="mt-1 text-[14px] text-muted">
+        <p className="mt-1 text-fs14 text-muted">
           Here&apos;s what needs attention across Seissense operations.
         </p>
       </header>
@@ -102,7 +102,7 @@ export default async function OverviewPage() {
       <InstallAppCard dismissible />
 
       {kpis.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 xl:grid-cols-4">
           {kpis.map((k) => (
             <StatCard key={k.label} label={k.label} value={k.stat!.value} hint={k.stat!.label} />
           ))}

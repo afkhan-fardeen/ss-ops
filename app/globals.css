@@ -12,8 +12,35 @@
 }
 
 :root {
-  /* Height of the phone bottom bar including the home-indicator safe area. */
-  --mobile-nav-h: calc(64px + env(safe-area-inset-bottom));
+  /* Height of the phone bottom bar including the home-indicator safe area (Material 3 navigation bar). */
+  --mobile-nav-h: calc(72px + env(safe-area-inset-bottom));
+  /* Type scale: phone values (Material 3 minimums) */
+  --fs-11: 12px;
+  --fs-12: 13px;
+  --fs-13: 14px;
+  --fs-14: 15px;
+}
+@media (min-width: 768px) {
+  :root {
+    --fs-11: 11px;
+    --fs-12: 12px;
+    --fs-13: 13px;
+    --fs-14: 14px;
+  }
+}
+
+/* Touch: every button gets at least a 44x44px hit area without changing its look or layout. */
+@media (pointer: coarse) {
+  button, [role="button"], [role="tab"], summary { position: relative; }
+  button::before, [role="button"]::before, [role="tab"]::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
 }
 
 html {

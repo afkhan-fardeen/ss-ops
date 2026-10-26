@@ -137,9 +137,9 @@ export function CronStatus() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <RefreshCw size={16} className="text-muted" />
-          <h3 className="text-[13px] font-medium text-ink">Seissense Ops Bot</h3>
+          <h3 className="text-fs13 font-medium text-ink">Seissense Ops Bot</h3>
           {latest?.dry_run && (
-            <span className="rounded-full bg-[rgba(217,119,6,0.15)] px-1.5 py-0.5 text-[11px] font-medium text-[#D97706]">
+            <span className="rounded-full bg-[rgba(217,119,6,0.15)] px-1.5 py-0.5 text-fs11 font-medium text-[#D97706]">
               dry-run
             </span>
           )}
@@ -155,7 +155,7 @@ export function CronStatus() {
         <div className="space-y-3 rounded-lg border border-line bg-canvas/60 px-4 py-3">
           <div className="flex items-center justify-between">
             <StatusBadge run={latest} />
-            <span className="font-mono text-[11px] text-muted">
+            <span className="font-mono text-fs11 text-muted">
               {fmtAgo(latest.started_at)}
               {" · "}
               {fmtDuration(latest.started_at, latest.completed_at)}
@@ -164,7 +164,7 @@ export function CronStatus() {
 
           {/* stat pills */}
           {latest.status !== "running" && (
-            <div className="flex flex-wrap gap-2 text-[11px] font-medium">
+            <div className="flex flex-wrap gap-2 text-fs11 font-medium">
               <span className="rounded-full bg-line/30 px-2 py-0.5 font-mono text-ink">
                 {latest.checked ?? 0} checked
               </span>
@@ -183,7 +183,7 @@ export function CronStatus() {
           )}
 
           {latest.status === "error" && latest.error_detail && (
-            <p className="truncate text-[11px] text-[#DC2626]">{latest.error_detail}</p>
+            <p className="truncate text-fs11 text-[#DC2626]">{latest.error_detail}</p>
           )}
         </div>
       ) : (
@@ -235,12 +235,12 @@ export function CronStatus() {
           {runs.slice(1).map((run) => (
             <div
               key={run.id}
-              className="flex items-center justify-between py-1 text-[11px]"
+              className="flex items-center justify-between py-1 text-fs11"
             >
               <div className="flex items-center gap-2">
                 <StatusBadge run={run} />
                 {run.dry_run && (
-                  <span className="text-[11px] text-primary">(dry)</span>
+                  <span className="text-fs11 text-primary">(dry)</span>
                 )}
               </div>
               <div className="flex items-center gap-3 font-mono text-muted">

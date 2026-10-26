@@ -16,12 +16,12 @@ export default async function UbexInventoryPage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <header className="animate-fade-up">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-card bg-canvas text-ink">
+          <div className="hidden h-10 w-10 place-items-center md:grid rounded-card bg-canvas text-ink">
             <Package size={20} />
           </div>
           <div>
-            <h1 className="text-xl font-medium text-ink">Ubex inventory</h1>
-            <p className="mt-0.5 text-[13px] text-muted">
+            <h1 className="hidden text-xl font-medium text-ink md:block">Ubex inventory</h1>
+            <p className="text-fs13 text-muted md:mt-0.5">
               Live warehouse stock grouped by product name, with Shopify committed from both stores.
               Read-only — no sync.
             </p>

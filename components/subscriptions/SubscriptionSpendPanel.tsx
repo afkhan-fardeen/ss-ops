@@ -32,8 +32,8 @@ export function SubscriptionSpendPanel({
     <div className="rounded-card border border-line bg-white p-5 shadow-soft">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-[13px] font-medium text-ink">Spend overview</h3>
-          <p className="mt-0.5 text-[12px] text-muted">
+          <h3 className="text-fs13 font-medium text-ink">Spend overview</h3>
+          <p className="mt-0.5 text-fs12 text-muted">
             Est. monthly burn (yearly ÷ 12) · one-time excluded
           </p>
         </div>
@@ -44,7 +44,7 @@ export function SubscriptionSpendPanel({
               type="button"
               onClick={() => setTab(t.key)}
               className={[
-                "rounded-full px-3 py-1 text-[11px] font-medium transition",
+                "rounded-full px-3 py-1 text-fs11 font-medium transition",
                 tab === t.key
                   ? "bg-ink text-white"
                   : "border border-line bg-white text-muted hover:text-ink",
@@ -58,13 +58,13 @@ export function SubscriptionSpendPanel({
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <div>
-          <p className="text-[11px] uppercase tracking-wider text-muted">Est. monthly burn</p>
+          <p className="text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Est. monthly burn</p>
           <p className="mt-1 font-mono text-xl font-medium tabular-nums text-ink">
             {formatCurrencyTotals(slice.monthlyEquivalentByCurrency)}
           </p>
         </div>
         <div>
-          <p className="text-[11px] uppercase tracking-wider text-muted">Annualized</p>
+          <p className="text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Annualized</p>
           <p className="mt-1 font-mono text-xl font-medium tabular-nums text-ink">
             {formatCurrencyTotals(slice.annualizedByCurrency)}
           </p>
@@ -72,7 +72,7 @@ export function SubscriptionSpendPanel({
       </div>
 
       {slice.monthlyEquivalentByCurrency.length > 0 ? (
-        <ul className="mt-4 space-y-1.5 border-t border-line pt-3 text-[12px] text-muted">
+        <ul className="mt-4 space-y-1.5 border-t border-line pt-3 text-fs12 text-muted">
           {slice.monthlyEquivalentByCurrency.map((r) => (
             <li key={r.currency} className="flex justify-between gap-3">
               <span>
@@ -85,7 +85,7 @@ export function SubscriptionSpendPanel({
           ))}
         </ul>
       ) : (
-        <p className="mt-4 text-[12px] text-muted">No recurring spend in this slice yet.</p>
+        <p className="mt-4 text-fs12 text-muted">No recurring spend in this slice yet.</p>
       )}
     </div>
   );

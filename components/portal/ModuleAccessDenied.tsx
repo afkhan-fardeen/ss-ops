@@ -3,7 +3,7 @@ export function ModuleAccessDenied({ description }: { description: string }) {
   return (
     <div className="mx-auto max-w-lg rounded-card border border-line bg-white p-8 shadow-soft">
       <h1 className="text-lg font-medium text-ink">Access denied</h1>
-      <p className="mt-2 text-[13px] text-muted">{description}</p>
+      <p className="mt-2 text-fs13 text-muted">{description}</p>
     </div>
   );
 }

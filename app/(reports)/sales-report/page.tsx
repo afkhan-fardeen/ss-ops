@@ -46,24 +46,24 @@ function shiftDateKey(dateKey: string, deltaDays: number): string {
 function StoreSummaryCard({ summary }: { summary: StoreSalesSummary }) {
   return (
     <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-      <p className="text-[13px] font-medium text-ink">{summary.store}</p>
+      <p className="text-fs13 font-medium text-ink">{summary.store}</p>
       <div className="mt-3 grid grid-cols-2 gap-3">
         <div>
-          <p className="text-[11px] uppercase tracking-wider text-muted">Orders</p>
+          <p className="text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Orders</p>
           <p className="mt-0.5 text-[17px] font-semibold text-ink">{summary.orderCount}</p>
         </div>
         <div>
-          <p className="text-[11px] uppercase tracking-wider text-muted">Units sold</p>
+          <p className="text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Units sold</p>
           <p className="mt-0.5 text-[17px] font-semibold text-ink">{summary.unitsSold}</p>
         </div>
         <div>
-          <p className="text-[11px] uppercase tracking-wider text-muted">Total sales</p>
+          <p className="text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Total sales</p>
           <p className="mt-0.5 text-[17px] font-semibold text-ink">
             {formatMoney(summary.totalSales, summary.currency)}
           </p>
         </div>
         <div>
-          <p className="text-[11px] uppercase tracking-wider text-muted">Discounts</p>
+          <p className="text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Discounts</p>
           <p className="mt-0.5 text-[17px] font-semibold text-ink">
             {formatMoney(summary.totalDiscounts, summary.currency)}
           </p>
@@ -80,13 +80,13 @@ function StoreDetailFull({ summary }: { summary: StoreSalesSummary }) {
       <StoreSummaryCard summary={summary} />
 
       <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-        <p className="text-[12px] font-medium text-ink">Top products</p>
+        <p className="text-fs12 font-medium text-ink">Top products</p>
         {summary.topProducts.length === 0 ? (
-          <p className="mt-2 text-[12px] text-muted">No line items this day.</p>
+          <p className="mt-2 text-fs12 text-muted">No line items this day.</p>
         ) : (
           <ul className="mt-2 space-y-1.5">
             {summary.topProducts.map((p) => (
-              <li key={p.name} className="flex items-center justify-between gap-3 text-[12px]">
+              <li key={p.name} className="flex items-center justify-between gap-3 text-fs12">
                 <span className="min-w-0 flex-1 truncate text-ink">{p.name}</span>
                 <span className="shrink-0 font-mono text-muted">{p.unitsSold}×</span>
               </li>
@@ -96,15 +96,15 @@ function StoreDetailFull({ summary }: { summary: StoreSalesSummary }) {
       </div>
 
       <div className="rounded-card border border-line bg-white shadow-soft">
-        <p className="px-4 pt-4 text-[12px] font-medium text-ink">
+        <p className="px-4 pt-4 text-fs12 font-medium text-ink">
           Orders <span className="text-muted">({summary.orders.length})</span>
         </p>
         {summary.orders.length === 0 ? (
-          <p className="p-4 text-[12px] text-muted">No orders this day.</p>
+          <p className="p-4 text-fs12 text-muted">No orders this day.</p>
         ) : (
           <div className="mt-2 max-h-[320px] overflow-y-auto">
-            <table className="w-full text-left text-[12px]">
-              <thead className="sticky top-0 bg-white text-[11px] uppercase tracking-wider text-muted">
+            <table className="w-full text-left text-fs12">
+              <thead className="sticky top-0 bg-white text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                 <tr className="border-b border-line">
                   <th className="px-4 py-2">Order</th>
                   <th className="px-4 py-2">Time</th>
@@ -177,10 +177,10 @@ export default async function SalesReportPage({
         </div>
         <div>
           <h1 className="text-xl font-medium text-ink">Sales Report</h1>
-          <p className="mt-0.5 text-[13px] text-muted">
+          <p className="mt-0.5 text-fs13 text-muted">
             Daily order counts, breakdown, and sales history for both stores.
           </p>
-          <p className="mt-0.5 text-[12px] text-muted">Draft orders excluded.</p>
+          <p className="mt-0.5 text-fs12 text-muted">Draft orders excluded.</p>
         </div>
       </header>
 
@@ -194,7 +194,7 @@ export default async function SalesReportPage({
             >
               <ChevronLeft size={15} />
             </Link>
-            <h2 className="px-2 text-[13px] font-medium text-ink">{day.label}</h2>
+            <h2 className="px-2 text-fs13 font-medium text-ink">{day.label}</h2>
             {canGoNext ? (
               <Link
                 href={`/sales-report?day=${nextKey}`}
@@ -213,7 +213,7 @@ export default async function SalesReportPage({
             {hasFullAccess ? <SendSalesReportButton dayKey={day.dateKey} /> : null}
             <a
               href={`/api/sales-report/download?day=${day.dateKey}`}
-              className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-[12px] font-medium text-white shadow-soft transition hover:bg-ink/90"
+              className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-fs12 font-medium text-white shadow-soft transition hover:bg-ink/90"
             >
               <Download size={13} />
               Download Excel
@@ -233,7 +233,7 @@ export default async function SalesReportPage({
 
       {hasFullAccess && history ? (
         <section className="space-y-3">
-          <h2 className="text-[13px] font-semibold uppercase tracking-wide text-muted">
+          <h2 className="text-fs13 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
             Last 14 days
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -254,7 +254,7 @@ export default async function SalesReportPage({
       ) : null}
 
       {hasFullAccess ? (
-        <p className="text-center text-[11px] text-muted">
+        <p className="text-center text-fs11 text-muted">
           Manage report recipients in{" "}
           <Link href="/sales-report/settings" className="underline hover:text-ink">
             Sales Report settings

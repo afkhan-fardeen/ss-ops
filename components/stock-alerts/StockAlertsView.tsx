@@ -39,10 +39,10 @@ export function StockAlertsView({
   return (
     <div className="space-y-4">
       <div className="rounded-card border border-line border-l-4 border-l-primary bg-white p-4 shadow-soft">
-        <p className="text-[13px] text-ink">
+        <p className="text-fs13 text-ink">
           Scanned {scannedCount} linked products · fetched {new Date(fetchedAt).toLocaleString()}
         </p>
-        <p className="mt-1 text-[12px] text-muted">
+        <p className="mt-1 text-fs12 text-muted">
           Flags products running low or out, based on 14-day sales velocity across both stores —
           not just a flat stock count.
         </p>
@@ -66,7 +66,7 @@ export function StockAlertsView({
           type="button"
           disabled={loading}
           onClick={onRefresh}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:opacity-60"
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
           Rescan
@@ -74,16 +74,46 @@ export function StockAlertsView({
       </div>
 
       {filtered.length === 0 ? (
-        <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-[13px] text-muted shadow-soft">
+        <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-fs13 text-muted shadow-soft">
           {rows.length === 0
             ? "Nothing flagged — every linked product has healthy stock for its sales pace."
             : "Nothing in this tab."}
         </p>
       ) : (
-        <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
+        <>
+        <ul className="space-y-3 md:hidden">
+          {filtered.map((row) => (
+            <li key={row.ubexId} className="rounded-card border border-line bg-white p-3.5 shadow-soft">
+              <div className="flex items-start justify-between gap-2">
+                <p className="line-clamp-2 text-fs14 font-medium text-ink">{row.productName}</p>
+                <StatusPill tone={row.severity === "critical" ? "red" : "amber"}>
+                  {row.severity === "critical" ? "Critical" : "Warning"}
+                </StatusPill>
+              </div>
+              <p className="mt-0.5 truncate font-mono text-fs12 text-muted">
+                {row.sku || "—"} · {row.barcode || "no barcode"}
+              </p>
+              <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-lg bg-canvas px-1 py-1.5">
+                  <dt className="text-fs11 text-muted">Ubex stock</dt>
+                  <dd className="font-mono text-fs14 font-semibold tabular-nums text-ink">{row.ubexStock}</dd>
+                </div>
+                <div className="rounded-lg bg-canvas px-1 py-1.5">
+                  <dt className="text-fs11 text-muted">Sold (14d)</dt>
+                  <dd className="font-mono text-fs14 font-semibold tabular-nums text-ink">{row.unitsSold14d}</dd>
+                </div>
+                <div className="rounded-lg bg-canvas px-1 py-1.5">
+                  <dt className="text-fs11 text-muted">Runway</dt>
+                  <dd className="font-mono text-fs14 font-semibold tabular-nums text-ink">{daysLabel(row)}</dd>
+                </div>
+              </dl>
+            </li>
+          ))}
+        </ul>
+        <div className="hidden overflow-hidden rounded-card border border-line bg-white shadow-soft md:block">
           <div className="max-h-[65vh] overflow-auto">
             <table className="w-full min-w-[720px] border-collapse text-left">
-              <thead className="sticky top-0 z-10 bg-canvas text-[11px] font-semibold uppercase tracking-wide text-muted">
+              <thead className="sticky top-0 z-10 bg-canvas text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                 <tr className="border-b border-line">
                   <th className="px-3 py-3">Product</th>
                   <th className="px-3 py-3 text-right">Ubex stock</th>
@@ -94,10 +124,10 @@ export function StockAlertsView({
               </thead>
               <tbody>
                 {filtered.map((row) => (
-                  <tr key={row.ubexId} className="border-b border-line text-[13px] last:border-0">
+                  <tr key={row.ubexId} className="border-b border-line text-fs13 last:border-0">
                     <td className="min-w-[220px] px-3 py-3">
                       <p className="line-clamp-1 font-medium text-ink">{row.productName}</p>
-                      <p className="mt-0.5 font-mono text-[11px] text-muted">
+                      <p className="mt-0.5 font-mono text-fs11 text-muted">
                         {row.sku || "—"} · {row.barcode || "no barcode"}
                       </p>
                     </td>
@@ -121,6 +151,7 @@ export function StockAlertsView({
             </table>
           </div>
         </div>
+        </>
       )}
     </div>
   );
@@ -132,7 +163,7 @@ function TabButton({ active, label, onClick }: { active: boolean; label: string;
       type="button"
       onClick={onClick}
       className={[
-        "rounded-lg px-3 py-2 text-[13px] font-medium transition",
+        "rounded-lg px-3 py-2 text-fs13 font-medium transition",
         active ? "bg-white text-ink shadow-soft" : "text-muted hover:text-ink",
       ].join(" ")}
     >

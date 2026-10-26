@@ -109,7 +109,7 @@ export function UbexInventoryExportButton() {
     const pct = progress.percent ?? 12;
     return (
       <div className="flex min-w-[240px] flex-col gap-1.5 rounded-lg border border-line bg-white px-3 py-2">
-        <div className="flex items-center justify-between gap-2 text-[12px]">
+        <div className="flex items-center justify-between gap-2 text-fs12">
           <span className="font-medium text-ink">
             {progress.phase === "matching"
               ? "Matching with stores…"
@@ -130,7 +130,7 @@ export function UbexInventoryExportButton() {
             style={{ width: `${pct}%` }}
           />
         </div>
-        <span className="text-[11px] text-muted">
+        <span className="text-fs11 text-muted">
           {progress.percent !== null ? `${progress.percent}% · ` : ""}
           {formatEta(progress.etaMs)}
         </span>
@@ -142,7 +142,7 @@ export function UbexInventoryExportButton() {
     <button
       type="button"
       onClick={() => void startExport()}
-      className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-[12px] font-medium text-white shadow-soft transition hover:bg-ink/90"
+      className="focus-ring inline-flex items-center gap-1.5 rounded-lg bg-ink px-3 py-1.5 text-fs12 font-medium text-white shadow-soft transition hover:bg-ink/90"
     >
       <Download size={13} />
       Export full inventory (.xlsx)

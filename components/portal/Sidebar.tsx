@@ -124,7 +124,7 @@ export function Sidebar({
               {collapsed ? (
                 <div className="mx-3 border-t border-line" aria-hidden />
               ) : (
-                <p className="px-3 pb-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                <p className="px-3 pb-0.5 text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                   {group.label}
                 </p>
               )}
@@ -164,7 +164,7 @@ export function Sidebar({
             onClick={toggleCollapsed}
             title={collapsed ? "Expand (⌘B)" : "Collapse (⌘B)"}
             className={[
-              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-[13px] font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
+              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-fs13 font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
               collapsed ? "justify-center px-2" : "px-3",
             ].join(" ")}
           >
@@ -175,7 +175,7 @@ export function Sidebar({
             onClick={() => void logout()}
             title={collapsed ? "Sign out" : undefined}
             className={[
-              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-[13px] font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
+              "focus-ring flex w-full items-center gap-2 rounded-lg py-2 text-fs13 font-medium text-muted transition-colors hover:bg-canvas hover:text-ink",
               collapsed ? "justify-center px-2" : "px-3",
             ].join(" ")}
           >

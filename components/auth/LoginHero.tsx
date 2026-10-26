@@ -49,14 +49,14 @@ export function LoginHero({
                 </span>
                 <div>
                   <p className="text-[15px] font-medium">{title}</p>
-                  <p className="mt-0.5 text-[14px] leading-snug text-white/70">{text}</p>
+                  <p className="mt-0.5 text-fs14 leading-snug text-white/70">{text}</p>
                 </div>
               </li>
             ))}
           </ul>
         </div>
 
-        <p className="relative text-[13px] text-white/60">© Seissense · Internal operations</p>
+        <p className="relative text-fs13 text-white/60">© Seissense · Internal operations</p>
       </aside>
 
       {/* Form */}
@@ -72,11 +72,11 @@ export function LoginHero({
 
           <div className="rounded-2xl border border-line bg-white p-6 shadow-pop sm:p-8">
             <h1 className="text-[24px] font-semibold tracking-tight text-ink">Welcome back</h1>
-            <p className="mt-1.5 text-[14px] leading-relaxed text-muted">{description}</p>
+            <p className="mt-1.5 text-fs14 leading-relaxed text-muted">{description}</p>
             <LoginForm nextPath={nextPath} authMode={authMode} />
           </div>
 
-          <p className="mt-6 text-center text-[13px] text-muted">Internal use only · Seissense Operations</p>
+          <p className="mt-6 text-center text-fs13 text-muted">Internal use only · Seissense Operations</p>
         </div>
       </main>
     </div>

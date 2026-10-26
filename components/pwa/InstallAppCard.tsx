@@ -57,27 +57,23 @@ export function InstallAppCard({ dismissible = false }: { dismissible?: boolean 
           <h2 className="text-[15px] font-semibold text-ink">Install Seissense Ops</h2>
           {canPrompt ? (
             <>
-              <p className="mt-0.5 text-[13px] text-muted">Open it like an app from your home screen — full screen, no browser bar.</p>
+              <p className="mt-0.5 text-fs13 text-muted">Open it like an app from your home screen — full screen, no browser bar.</p>
               <button
                 type="button"
                 onClick={() => void promptInstall()}
-                className="focus-ring mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 text-[14px] font-medium text-white active:bg-indigo-800"
+                className="focus-ring mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 text-fs14 font-medium text-white active:bg-indigo-800"
               >
                 <Download size={16} />
                 Install app
               </button>
             </>
           ) : (
-            <ol className="mt-1.5 space-y-1.5 text-[13px] text-muted">
-              <li className="flex items-center gap-2">
-                <Share size={15} className="shrink-0 text-primary" />
-                Tap <span className="font-medium text-ink">Share</span> in Safari
-              </li>
-              <li className="flex items-center gap-2">
-                <SquarePlus size={15} className="shrink-0 text-primary" />
-                Choose <span className="font-medium text-ink">Add to Home Screen</span>
-              </li>
-            </ol>
+            <p className="mt-1 text-fs13 leading-relaxed text-muted">
+              In Safari tap <Share size={14} className="mx-0.5 inline -translate-y-px text-primary" />{" "}
+              <span className="font-medium text-ink">Share</span>, then{" "}
+              <SquarePlus size={14} className="mx-0.5 inline -translate-y-px text-primary" />{" "}
+              <span className="font-medium text-ink">Add to Home Screen</span>.
+            </p>
           )}
         </div>
       </div>

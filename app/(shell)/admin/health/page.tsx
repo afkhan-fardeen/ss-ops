@@ -40,7 +40,7 @@ function ConnectivityPill({
 }) {
   if (!configured) {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-canvas px-3 py-1 text-[11px] font-medium text-muted">
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-canvas px-3 py-1 text-fs11 font-medium text-muted">
         <Circle size={7} className="fill-line text-line" />
         {label} — not configured
       </span>
@@ -49,7 +49,7 @@ function ConnectivityPill({
   if (ok) {
     return (
       <span
-        className="inline-flex items-center gap-1.5 rounded-full border border-[#16A34A]/20 bg-[rgba(22,163,74,0.08)] px-3 py-1 text-[11px] font-medium text-[#15803D]"
+        className="inline-flex items-center gap-1.5 rounded-full border border-[#16A34A]/20 bg-[rgba(22,163,74,0.08)] px-3 py-1 text-fs11 font-medium text-[#15803D]"
         title={detail}
       >
         <span className="relative inline-flex h-1.5 w-1.5">
@@ -62,7 +62,7 @@ function ConnectivityPill({
   }
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full border border-[#DC2626]/20 bg-[rgba(220,38,38,0.08)] px-3 py-1 text-[11px] font-medium text-[#DC2626]"
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#DC2626]/20 bg-[rgba(220,38,38,0.08)] px-3 py-1 text-fs11 font-medium text-[#DC2626]"
       title={detail}
     >
       <AlertTriangle size={11} className="shrink-0" />
@@ -103,14 +103,14 @@ function RecentFailures({ rows }: { rows: HealthFailureRow[] }) {
     <section className="animate-fade-up space-y-3">
       <h2 className="text-sm font-medium text-ink">Recent failures</h2>
       {rows.length === 0 ? (
-        <div className="rounded-card border border-line bg-white p-5 text-[13px] text-muted shadow-soft">
+        <div className="rounded-card border border-line bg-white p-5 text-fs13 text-muted shadow-soft">
           No failures across fulfillment or stock restock in recent history.
         </div>
       ) : (
         <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
-          <table className="w-full text-left text-[12px]">
+          <table className="w-full text-left text-fs12">
             <thead>
-              <tr className="border-b border-line bg-canvas/60 text-[11px] uppercase tracking-wider text-muted">
+              <tr className="border-b border-line bg-canvas/60 text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                 <th className="px-4 py-2.5 font-medium">When</th>
                 <th className="px-4 py-2.5 font-medium">Source</th>
                 <th className="px-4 py-2.5 font-medium">Detail</th>
@@ -142,7 +142,7 @@ function ConfigChecklist({ checks }: { checks: ConfigCheck[] }) {
       <h2 className="text-sm font-medium text-ink">Configuration</h2>
       <ul className="mt-3 space-y-2">
         {checks.map((c) => (
-          <li key={c.label} className="flex items-center gap-2 text-[12.5px]">
+          <li key={c.label} className="flex items-center gap-2 text-fs12">
             {c.ok ? (
               <CheckCircle2 size={14} className="shrink-0 text-[#16A34A]" />
             ) : (

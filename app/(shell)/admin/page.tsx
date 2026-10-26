@@ -81,7 +81,7 @@ export default async function AdminPage() {
           </div>
           <div>
             <h2 className="text-sm font-medium text-ink">Total users</h2>
-            <p className="mt-0.5 text-[12.5px] text-muted">
+            <p className="mt-0.5 text-fs12 text-muted">
               Rows in the profiles table (Supabase sign-ups).
             </p>
             <p className="mt-3 font-mono text-2xl font-medium tabular-nums text-ink">
@@ -107,12 +107,12 @@ export default async function AdminPage() {
           <ShieldCheck size={16} className="text-muted" />
           <h2 className="text-sm font-medium text-ink">Module access</h2>
         </div>
-        <p className="text-[13px] text-muted">
+        <p className="text-fs13 text-muted">
           Control which modules each user can open. Admins always see all modules.
         </p>
 
         {profiles.length === 0 ? (
-          <div className="rounded-card border border-line bg-white p-5 shadow-soft text-[13px] text-muted">
+          <div className="rounded-card border border-line bg-white p-5 shadow-soft text-fs13 text-muted">
             No users found.
           </div>
         ) : (
@@ -126,25 +126,25 @@ export default async function AdminPage() {
                 >
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="truncate text-[13px] font-medium text-ink">
+                      <p className="truncate text-fs13 font-medium text-ink">
                         {profile.full_name ?? profile.email}
                       </p>
                       {profile.full_name && (
-                        <p className="truncate font-mono text-[11px] text-muted">
+                        <p className="truncate font-mono text-fs11 text-muted">
                           {profile.email}
                         </p>
                       )}
-                      <p className="mt-1 flex items-center gap-1 text-[11px] text-muted">
+                      <p className="mt-1 flex items-center gap-1 text-fs11 text-muted">
                         <Clock size={11} />
                         Last sign-in:{" "}
                         <span className="font-mono text-ink">{formatWhen(lastSignIn)}</span>
                       </p>
-                      <p className="mt-0.5 text-[11px] text-muted">
+                      <p className="mt-0.5 text-fs11 text-muted">
                         Modules: {modulesSummary(profile.allowed_modules)}
                       </p>
                     </div>
                     <span
-                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-medium capitalize ${
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-fs11 font-medium capitalize ${
                         profile.role === "admin"
                           ? "bg-primary/10 text-primary"
                           : "bg-canvas text-muted"
@@ -155,7 +155,7 @@ export default async function AdminPage() {
                   </div>
 
                   {profile.role === "admin" ? (
-                    <p className="text-[12px] text-muted italic">
+                    <p className="text-fs12 text-muted italic">
                       Admins always have full access.
                     </p>
                   ) : (
@@ -178,11 +178,11 @@ export default async function AdminPage() {
         <div className="rounded-card border border-line bg-white p-5 shadow-soft">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div>
-              <h3 className="text-[14px] font-semibold text-ink">Shopify webhooks</h3>
-              <p className="mt-1 text-[13px] text-muted">
+              <h3 className="text-fs14 font-semibold text-ink">Shopify webhooks</h3>
+              <p className="mt-1 text-fs13 text-muted">
                 Register order and fulfillment webhooks so the portal stays live.
               </p>
-              <p className="mt-2 font-mono text-[12px] text-muted">
+              <p className="mt-2 font-mono text-fs12 text-muted">
                 SHOPIFY_WEBHOOK_SECRET:{" "}
                 <span className={process.env.SHOPIFY_WEBHOOK_SECRET ? "text-emerald-700" : "text-red-700"}>
                   {process.env.SHOPIFY_WEBHOOK_SECRET ? "configured" : "missing"}
@@ -194,8 +194,8 @@ export default async function AdminPage() {
         </div>
 
         <div>
-          <h3 className="mb-1 text-[14px] font-semibold text-ink">Seissense Ops Bot</h3>
-          <p className="mb-2 text-[13px] text-muted">
+          <h3 className="mb-1 text-fs14 font-semibold text-ink">Seissense Ops Bot</h3>
+          <p className="mb-2 text-fs13 text-muted">
             Auto-fulfills Shopify orders from Ubex delivery status. Scheduled runs are paused — use the buttons to run it manually.
           </p>
           <CronStatus />
@@ -208,19 +208,19 @@ export default async function AdminPage() {
           <History size={16} className="text-muted" />
           <h2 className="text-sm font-medium text-ink">Recent logins</h2>
         </div>
-        <p className="text-[13px] text-muted">
+        <p className="text-fs13 text-muted">
           Successful staff sign-ins (password and magic link). Admin-only.
         </p>
 
         {recentLogins.length === 0 ? (
-          <div className="rounded-card border border-line bg-white p-5 shadow-soft text-[13px] text-muted">
+          <div className="rounded-card border border-line bg-white p-5 shadow-soft text-fs13 text-muted">
             No login events recorded yet. Events appear after the next staff sign-in.
           </div>
         ) : (
           <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
-            <table className="w-full text-left text-[12px]">
+            <table className="w-full text-left text-fs12">
               <thead>
-                <tr className="border-b border-line bg-canvas/60 text-[11px] uppercase tracking-wider text-muted">
+                <tr className="border-b border-line bg-canvas/60 text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                   <th className="px-4 py-2.5 font-medium">When</th>
                   <th className="px-4 py-2.5 font-medium">Email</th>
                   <th className="hidden px-4 py-2.5 font-medium sm:table-cell">IP</th>

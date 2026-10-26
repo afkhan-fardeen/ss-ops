@@ -35,25 +35,29 @@ export function DashboardHeader({
 }) {
   const border = moduleId ? BORDER[moduleId] : "border-l-ink";
   return (
+    <>
+    {/* Phones: the top app bar already shows the page title, so only the description is kept. */}
+    {description ? <p className="text-fs13 text-muted md:hidden">{description}</p> : null}
     <header
-      className={`animate-fade-up rounded-card border border-line border-l-4 bg-white p-5 shadow-soft ${border}`}
+      className={`animate-fade-up hidden rounded-card border border-line border-l-4 bg-white p-5 shadow-soft md:block ${border}`}
     >
       {moduleLabel ? (
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+        <p className="text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
           {moduleLabel}
         </p>
       ) : null}
       <h1 className="mt-0.5 font-sans text-xl font-medium text-ink">{title}</h1>
       {description ? (
-        <p className="mt-2 text-[13px] text-muted">{description}</p>
+        <p className="mt-2 text-fs13 text-muted">{description}</p>
       ) : null}
     </header>
+    </>
   );
 }
 
 export function DashboardKpiGrid({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{children}</div>
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{children}</div>
   );
 }
 

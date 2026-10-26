@@ -16,12 +16,12 @@ export default async function StockBalancePage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <header className="animate-fade-up">
         <div className="flex items-center gap-3">
-          <div className="grid h-10 w-10 place-items-center rounded-card bg-canvas text-ink">
+          <div className="hidden h-10 w-10 place-items-center md:grid rounded-card bg-canvas text-ink">
             <Scale size={20} />
           </div>
           <div>
-            <h1 className="text-xl font-medium text-ink">Stock balance</h1>
-            <p className="mt-0.5 text-[13px] text-muted">
+            <h1 className="hidden text-xl font-medium text-ink md:block">Stock balance</h1>
+            <p className="text-fs13 text-muted md:mt-0.5">
               Compare Ubex sellable stock with Shopify (on hand, available, committed). Δ is Ubex vs
               available; joined by barcode.
             </p>

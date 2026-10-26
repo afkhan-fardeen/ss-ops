@@ -80,14 +80,14 @@ export function CreateUserForm() {
         <UserPlus size={16} className="text-muted" />
         <h2 className="text-sm font-medium text-ink">Add user</h2>
       </div>
-      <p className="text-[13px] text-muted">
+      <p className="text-fs13 text-muted">
         Create a staff account with email and password. They will only see the modules you select —
         with full access inside those modules.
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5 sm:col-span-2">
-          <label htmlFor="create-email" className="block text-[12px] font-semibold uppercase tracking-wide text-muted">
+          <label htmlFor="create-email" className="block text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
             Email
           </label>
           <input
@@ -104,7 +104,7 @@ export function CreateUserForm() {
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="create-password" className="block text-[12px] font-semibold uppercase tracking-wide text-muted">
+          <label htmlFor="create-password" className="block text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
             Password
           </label>
           <input
@@ -122,7 +122,7 @@ export function CreateUserForm() {
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor="create-name" className="block text-[12px] font-semibold uppercase tracking-wide text-muted">
+          <label htmlFor="create-name" className="block text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
             Full name <span className="normal-case tracking-normal text-muted/70">(optional)</span>
           </label>
           <input
@@ -138,7 +138,7 @@ export function CreateUserForm() {
       </div>
 
       <div className="space-y-2">
-        <p className="text-[12px] font-semibold uppercase tracking-wide text-muted">Modules</p>
+        <p className="text-fs12 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Modules</p>
         <div className="flex flex-wrap gap-2">
           {SELECTABLE_MODULES.map((m) => {
             const checked = selected.has(m.id);
@@ -148,7 +148,7 @@ export function CreateUserForm() {
                 type="button"
                 onClick={() => toggle(m.id)}
                 disabled={submitState === "saving"}
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-fs12 font-medium transition-colors ${
                   checked
                     ? "bg-primary-soft text-primary"
                     : "bg-canvas text-muted hover:bg-line/30"
@@ -166,7 +166,7 @@ export function CreateUserForm() {
         <button
           type="submit"
           disabled={submitState === "saving" || !email.trim() || password.length < 8}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-[13px] font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-fs13 font-medium text-white shadow-soft transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         >
           {submitState === "saving" ? (
             <Loader2 size={14} className="animate-spin" />
@@ -176,10 +176,10 @@ export function CreateUserForm() {
           {submitState === "saving" ? "Creating…" : "Create user"}
         </button>
         {submitState === "saved" && (
-          <span className="text-[12px] text-emerald-700">User created — they can log in now.</span>
+          <span className="text-fs12 text-emerald-700">User created — they can log in now.</span>
         )}
         {submitState === "error" && (
-          <span className="text-[12px] text-red-700">{errorMsg}</span>
+          <span className="text-fs12 text-red-700">{errorMsg}</span>
         )}
       </div>
     </form>

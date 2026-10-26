@@ -9,7 +9,7 @@ import { StoreSwitcherTabs } from "./StoreSwitcherTabs";
 function StorePill({ label, status }: { label: string; status: StoreConnectionStatus }) {
   if (!status.configured) {
     return (
-      <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-canvas px-3 py-1 text-[11px] font-medium text-muted">
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-canvas px-3 py-1 text-fs11 font-medium text-muted">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-line" />
         {label} — not configured
       </span>
@@ -19,7 +19,7 @@ function StorePill({ label, status }: { label: string; status: StoreConnectionSt
   if (status.ok) {
     return (
       <span
-        className="inline-flex items-center gap-1.5 rounded-full border border-[#16A34A]/20 bg-[rgba(22,163,74,0.08)] px-3 py-1 text-[11px] font-medium text-[#15803D]"
+        className="inline-flex items-center gap-1.5 rounded-full border border-[#16A34A]/20 bg-[rgba(22,163,74,0.08)] px-3 py-1 text-fs11 font-medium text-[#15803D]"
         title={`${status.shopName ?? status.domain} · ${status.latencyMs}ms`}
       >
         <span className="relative inline-flex h-1.5 w-1.5">
@@ -34,7 +34,7 @@ function StorePill({ label, status }: { label: string; status: StoreConnectionSt
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full border border-[#DC2626]/20 bg-[rgba(220,38,38,0.08)] px-3 py-1 text-[11px] font-medium text-[#DC2626]"
+      className="inline-flex items-center gap-1.5 rounded-full border border-[#DC2626]/20 bg-[rgba(220,38,38,0.08)] px-3 py-1 text-fs11 font-medium text-[#DC2626]"
       title={status.error}
     >
       <AlertTriangle size={11} className="shrink-0" />

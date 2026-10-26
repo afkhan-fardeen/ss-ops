@@ -56,7 +56,7 @@ export function UbexIndicator({ className = "" }: { className?: string }) {
         )}
         <span className={`relative inline-flex h-2 w-2 rounded-full ${dot[status]}`} />
       </span>
-      <span className="hidden text-[11px] font-medium text-muted sm:inline">{label[status]}</span>
+      <span className="hidden text-fs11 font-medium text-muted sm:inline">{label[status]}</span>
     </button>
   );
 }

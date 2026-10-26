@@ -36,11 +36,11 @@ export function UbexProductTile({
     >
       <div className="min-w-0">
         <p className="line-clamp-2 font-medium text-ink">{product.name}</p>
-        <p className="mt-0.5 text-[12px] text-muted">
+        <p className="mt-0.5 text-fs12 text-muted">
           {product.variantCount} variant{product.variantCount === 1 ? "" : "s"}
         </p>
       </div>
-      <dl className="mt-3 space-y-1 text-[12px]">
+      <dl className="mt-3 space-y-1 text-fs12">
         <div className="flex justify-between gap-2">
           <dt className="text-muted">Ubex</dt>
           <dd className="font-mono tabular-nums text-ink">{product.totalStock}</dd>
@@ -76,13 +76,13 @@ export function UbexProductDetail({
   return (
     <div className="rounded-card border border-line bg-white p-4 shadow-soft">
       <p className="font-medium text-ink">{product.name}</p>
-      <p className="mt-0.5 text-[12px] text-muted">
+      <p className="mt-0.5 text-fs12 text-muted">
         Ubex {product.totalStock} · {STORE_LABELS[1]} committed {product.committedIntl}
         {store2Configured ? ` · ${STORE_LABELS[2]} committed ${product.committedGcc}` : ""}
         {" · "}available to sell {fmt(product.availableToSell)}
       </p>
       {product.availableToSell === null ? (
-        <p className="mt-2 text-[12px] text-muted">
+        <p className="mt-2 text-fs12 text-muted">
           Available to sell is unknown when a variant is unlinked, ambiguous, or skipped.
         </p>
       ) : null}
@@ -90,21 +90,21 @@ export function UbexProductDetail({
         {product.variants.map((v) => {
           const meta = variantMeta(v.size, v.color);
           return (
-            <li key={v.ubexId} className="flex items-start justify-between gap-3 py-2 text-[13px]">
+            <li key={v.ubexId} className="flex items-start justify-between gap-3 py-2 text-fs13">
               <div className="min-w-0">
                 <p className="text-ink">
                   <span className="font-mono">{v.barcode || "no barcode"}</span>
                   {meta ? <span className="text-muted"> · {meta}</span> : null}
                 </p>
-                {v.sku ? <p className="font-mono text-[11px] text-muted">SKU {v.sku}</p> : null}
-                <p className="mt-0.5 text-[11px] text-muted">
+                {v.sku ? <p className="font-mono text-fs11 text-muted">SKU {v.sku}</p> : null}
+                <p className="mt-0.5 text-fs11 text-muted">
                   {STORE_LABELS[1]} {fmt(v.committedIntl)}
                   {store2Configured ? ` · ${STORE_LABELS[2]} ${fmt(v.committedGcc)}` : ""}
                 </p>
               </div>
               <div className="shrink-0 text-right font-mono tabular-nums">
                 <p className="text-ink">Ubex {v.ubexStock}</p>
-                <p className="text-[12px] text-muted">sell {fmt(v.availableToSell)}</p>
+                <p className="text-fs12 text-muted">sell {fmt(v.availableToSell)}</p>
               </div>
             </li>
           );

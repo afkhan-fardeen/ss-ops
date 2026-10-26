@@ -177,15 +177,15 @@ export function CommandPalette({
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onInputKeyDown}
             placeholder="Jump to a module or page…"
-            className="w-full min-w-0 border-0 bg-transparent text-[14px] text-ink outline-none placeholder:text-muted"
+            className="w-full min-w-0 border-0 bg-transparent text-fs14 text-ink outline-none placeholder:text-muted"
           />
-          <kbd className="hidden shrink-0 rounded border border-line px-1.5 py-0.5 text-[11px] font-medium text-muted sm:inline-block">
+          <kbd className="hidden shrink-0 rounded border border-line px-1.5 py-0.5 text-fs11 font-medium text-muted sm:inline-block">
             Esc
           </kbd>
         </div>
         <div ref={listRef} className="max-h-[min(60vh,420px)] overflow-y-auto p-1.5">
           {filtered.length === 0 ? (
-            <p className="px-3 py-6 text-center text-[13px] text-muted">No matches.</p>
+            <p className="px-3 py-6 text-center text-fs13 text-muted">No matches.</p>
           ) : (
             filtered.map((item, i) => {
               const Icon = item.icon;
@@ -198,13 +198,13 @@ export function CommandPalette({
                   onMouseEnter={() => setActiveIndex(i)}
                   onClick={() => select(item)}
                   className={[
-                    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] transition-colors",
+                    "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-fs13 transition-colors",
                     active ? "bg-canvas text-ink" : "text-ink",
                   ].join(" ")}
                 >
                   <Icon size={16} className="shrink-0 text-muted" />
                   <span className="min-w-0 flex-1 truncate font-medium">{item.label}</span>
-                  <span className="shrink-0 text-[11px] text-muted">{item.group}</span>
+                  <span className="shrink-0 text-fs11 text-muted">{item.group}</span>
                   {active ? <CornerDownLeft size={13} className="shrink-0 text-muted" /> : null}
                 </button>
               );

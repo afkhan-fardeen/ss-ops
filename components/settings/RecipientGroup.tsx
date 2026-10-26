@@ -64,7 +64,7 @@ export function RecipientGroup({
       {/* Recipient list */}
       <ul className="space-y-2">
         {recipients.length === 0 ? (
-          <li className="rounded-lg border border-dashed border-line px-4 py-5 text-center text-[13px] text-muted">
+          <li className="rounded-lg border border-dashed border-line px-4 py-5 text-center text-fs13 text-muted">
             No recipients yet — add one below.
           </li>
         ) : (
@@ -72,7 +72,7 @@ export function RecipientGroup({
             <li key={email} className="flex items-center justify-between gap-3 rounded-lg border border-line px-4 py-2.5">
               <div className="flex items-center gap-2">
                 <Mail size={14} className="shrink-0 text-muted" />
-                <span className="text-[13px] text-ink">{email}</span>
+                <span className="text-fs13 text-ink">{email}</span>
               </div>
               <button
                 type="button"
@@ -105,7 +105,7 @@ export function RecipientGroup({
         <button
           type="button"
           onClick={addEmail}
-          className="focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[13px] font-medium text-ink transition hover:bg-canvas"
+          className="focus-ring inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-fs13 font-medium text-ink transition hover:bg-canvas"
         >
           <Plus size={14} />
           Add
@@ -114,7 +114,7 @@ export function RecipientGroup({
 
       <div className="flex items-center justify-end gap-3 pt-1">
         {saved && (
-          <span className="flex items-center gap-1.5 text-[12px] font-medium text-[#16A34A]">
+          <span className="flex items-center gap-1.5 text-fs12 font-medium text-[#16A34A]">
             <CheckCircle size={13} />
             Saved
           </span>
@@ -123,7 +123,7 @@ export function RecipientGroup({
           type="button"
           onClick={() => void save()}
           disabled={saving}
-          className="focus-ring inline-flex h-9 items-center gap-2 rounded-card bg-ink px-4 text-[13px] font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
+          className="focus-ring inline-flex h-9 items-center gap-2 rounded-card bg-ink px-4 text-fs13 font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
         >
           {saving ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
           {saving ? "Saving…" : saveLabel}

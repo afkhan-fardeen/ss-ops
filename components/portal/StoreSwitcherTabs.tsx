@@ -45,7 +45,7 @@ export function StoreSwitcherTabs({ namespace = "default" }: { namespace?: strin
             key={tab.id}
             href={buildHref(tab.id)}
             className={[
-              "relative inline-flex min-h-11 items-center rounded-md px-4 py-2 text-[12px] font-medium transition-colors sm:min-h-0 sm:h-8 sm:py-0",
+              "relative inline-flex min-h-11 items-center rounded-md px-4 py-2 text-fs12 font-medium transition-colors sm:min-h-0 sm:h-8 sm:py-0",
               active ? "text-ink" : "text-muted hover:text-ink",
             ].join(" ")}
             aria-selected={active}

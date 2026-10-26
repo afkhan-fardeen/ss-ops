@@ -65,7 +65,7 @@ export function SyncProgressTray() {
       {visible ? (
         <div className="rounded-card border border-line bg-white shadow-soft">
           <div className="flex items-start justify-between gap-2 border-b border-line px-3 py-2.5">
-            <p className="text-[13px] font-medium text-ink">
+            <p className="text-fs13 font-medium text-ink">
               {running
                 ? `Syncing ${total} product${total === 1 ? "" : "s"}`
                 : `Synced ${total} product${total === 1 ? "" : "s"}`}
@@ -84,7 +84,7 @@ export function SyncProgressTray() {
               const body = (
                 <>
                   <RowIcon status={row.status} />
-                  <span className="min-w-0 truncate text-[12px] text-ink">
+                  <span className="min-w-0 truncate text-fs12 text-ink">
                     {row.productName || row.ubexId}
                   </span>
                 </>
@@ -105,7 +105,7 @@ export function SyncProgressTray() {
               );
             })}
           </ul>
-          <p className="border-t border-line px-3 py-2 font-mono text-[11px] tabular-nums text-muted">
+          <p className="border-t border-line px-3 py-2 font-mono text-fs11 tabular-nums text-muted">
             {done} of {total} done
           </p>
         </div>

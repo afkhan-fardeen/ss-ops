@@ -81,40 +81,40 @@ export function ProductSearchCard() {
 
   return (
     <div className="rounded-card border border-line bg-white p-4 shadow-soft">
-      <h2 className="text-[13px] font-medium text-ink">Search product</h2>
-      <p className="mt-0.5 text-[12px] text-muted">Name, SKU, or barcode — read-only inventory and sales</p>
+      <h2 className="text-fs13 font-medium text-ink">Search product</h2>
+      <p className="mt-0.5 text-fs12 text-muted">Name, SKU, or barcode — read-only inventory and sales</p>
       <input
         type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search…"
-        className="mt-3 w-full rounded-md border border-line bg-canvas px-3 py-2 text-[13px] text-ink outline-none focus:border-primary"
+        className="mt-3 w-full rounded-md border border-line bg-canvas px-3 py-2 text-fs13 text-ink outline-none focus:border-primary"
       />
 
       {loading ? (
-        <p className="mt-4 text-[13px] text-muted">Loading…</p>
+        <p className="mt-4 text-fs13 text-muted">Loading…</p>
       ) : null}
 
       {!loading && debounced && data?.ok && !data.found ? (
-        <p className="mt-4 text-[13px] text-muted">No matching product.</p>
+        <p className="mt-4 text-fs13 text-muted">No matching product.</p>
       ) : null}
 
       {!loading && data?.error ? (
-        <p className="mt-4 text-[13px] text-[#DC2626]">{data.error}</p>
+        <p className="mt-4 text-fs13 text-[#DC2626]">{data.error}</p>
       ) : null}
 
       {product ? (
         <div className="mt-4 space-y-4 border-t border-line pt-4">
           <div>
-            <p className="text-[14px] font-medium text-ink">{product.productName}</p>
-            <p className="mt-0.5 font-mono text-[12px] text-muted">
+            <p className="text-fs14 font-medium text-ink">{product.productName}</p>
+            <p className="mt-0.5 font-mono text-fs12 text-muted">
               SKU {product.sku} · barcode {product.barcode}
             </p>
           </div>
 
           <div>
-            <p className="text-[11px] font-medium uppercase tracking-wide text-muted">Inventory</p>
-            <dl className="mt-2 space-y-1 text-[13px]">
+            <p className="text-fs11 font-medium uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Inventory</p>
+            <dl className="mt-2 space-y-1 text-fs13">
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">Ubex stock</dt>
                 <dd className="font-mono tabular-nums text-ink">{product.ubexStock}</dd>
@@ -161,11 +161,11 @@ export function ProductSearchCard() {
 
           <div>
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] font-medium uppercase tracking-wide text-muted">Sales</p>
+              <p className="text-fs11 font-medium uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">Sales</p>
               <select
                 value={window}
                 onChange={(e) => setWindow(e.target.value as SalesWindow)}
-                className="rounded-md border border-line bg-canvas px-2 py-1 text-[12px] text-ink"
+                className="rounded-md border border-line bg-canvas px-2 py-1 text-fs12 text-ink"
               >
                 {WINDOW_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -174,7 +174,7 @@ export function ProductSearchCard() {
                 ))}
               </select>
             </div>
-            <dl className="mt-2 space-y-1 text-[13px]">
+            <dl className="mt-2 space-y-1 text-fs13">
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">Units sold</dt>
                 <dd className="font-mono tabular-nums text-ink">{product.sales.unitsSold}</dd>

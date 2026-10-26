@@ -43,6 +43,7 @@ function applyFilter(rows: OrderRow[], filter: FilterKey, stateMap: RowStateMap)
 function StatCard({
   icon: Icon,
   label,
+  shortLabel,
   count,
   color,
   active,
@@ -50,6 +51,8 @@ function StatCard({
 }: {
   icon: React.ElementType;
   label: string;
+  /** Shown on phones, where the tile is narrow. */
+  shortLabel?: string;
   count: number;
   color: "amber" | "blue" | "green" | "red" | "neutral";
   active: boolean;
@@ -68,16 +71,25 @@ function StatCard({
       type="button"
       onClick={onClick}
       className={[
-        "flex flex-1 items-center gap-3 rounded-card border border-line bg-white p-4 text-left transition",
+        "flex min-w-0 flex-1 items-center gap-3 rounded-card border border-line bg-white p-3 text-left transition md:p-4",
         active ? `${c.ring} ring-2 shadow-soft` : "hover:shadow-soft",
       ].join(" ")}
     >
-      <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full ${c.iconBg}`}>
+      <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full md:h-9 md:w-9 ${c.iconBg}`}>
         <Icon size={16} className={c.iconText} strokeWidth={2} />
       </span>
-      <div>
-        <p className={`text-xl font-medium tabular-nums ${c.num}`}>{count}</p>
-        <p className="text-[11px] font-medium text-muted">{label}</p>
+      <div className="min-w-0">
+        <p className={`text-xl font-semibold leading-tight tabular-nums ${c.num}`}>{count}</p>
+        <p className="truncate text-fs12 font-medium text-muted">
+          {shortLabel ? (
+            <>
+              <span className="md:hidden">{shortLabel}</span>
+              <span className="hidden md:inline">{label}</span>
+            </>
+          ) : (
+            label
+          )}
+        </p>
       </div>
     </button>
   );
@@ -145,7 +157,7 @@ export function FulfillmentView({
   ).length;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-20 md:pb-16">
       <UbexStatusLine
         tokenConfigured={ubexTokenConfigured}
         linked={rows.filter((r) => r.ubexId).length}
@@ -158,10 +170,11 @@ export function FulfillmentView({
       />
 
       {/* ── Stat cards ─────────────────────────────────── */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 md:gap-3">
         <StatCard
           icon={Clock}
           label="Waiting for Ubex"
+          shortLabel="Waiting"
           count={filterCounts.waiting}
           color="amber"
           active={filter === "waiting"}
@@ -170,6 +183,7 @@ export function FulfillmentView({
         <StatCard
           icon={Send}
           label="Ready to push"
+          shortLabel="Ready"
           count={filterCounts.matched}
           color="blue"
           active={filter === "matched"}
@@ -206,7 +220,7 @@ export function FulfillmentView({
               aria-selected={active}
               onClick={() => setFilter(f.key)}
               className={[
-                "focus-ring inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-medium transition md:h-8 md:px-3 md:text-[12px]",
+                "focus-ring inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-fs13 font-medium transition md:h-8 md:px-3 md:text-fs12",
                 active
                   ? "border-ink bg-ink text-white"
                   : "border-line bg-white text-muted hover:bg-canvas",
@@ -215,7 +229,7 @@ export function FulfillmentView({
               <span>{f.label}</span>
               <span
                 className={[
-                  "rounded-full px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
+                  "rounded-full px-1.5 py-0.5 text-fs11 font-medium tabular-nums",
                   active ? "bg-white/20 text-white" : "bg-canvas text-muted",
                 ].join(" ")}
               >

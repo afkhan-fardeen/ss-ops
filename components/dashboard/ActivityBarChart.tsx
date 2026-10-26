@@ -32,7 +32,7 @@ export function ActivityBarChart({
 
   if (!hasData) {
     return (
-      <div className="flex h-full items-center justify-center text-[12px] text-muted">
+      <div className="flex h-full items-center justify-center text-fs12 text-muted">
         {emptyMessage}
       </div>
     );

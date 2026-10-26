@@ -38,7 +38,7 @@ export function StatusPill({ tone = "neutral", dot = true, icon, children, class
   return (
     <span
       className={[
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium leading-5",
+        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-fs11 font-medium leading-5",
         t.pill,
         className,
       ].join(" ")}

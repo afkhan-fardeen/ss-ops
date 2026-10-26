@@ -84,7 +84,7 @@ export function SubscriptionsListView({
               type="button"
               onClick={() => setTab(tab.key)}
               className={[
-                "rounded-full px-3 py-1.5 text-[12px] font-medium transition",
+                "rounded-full px-3 py-1.5 text-fs12 font-medium transition",
                 active === tab.key
                   ? "bg-primary-soft text-primary"
                   : "border border-line bg-white text-muted hover:text-ink",
@@ -98,7 +98,7 @@ export function SubscriptionsListView({
           <button
             type="button"
             onClick={copyLink}
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[13px] font-medium text-ink transition hover:bg-canvas"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-fs13 font-medium text-ink transition hover:bg-canvas"
           >
             <Copy size={14} />
             {copied ? "Copied" : "Copy public link"}
@@ -107,7 +107,7 @@ export function SubscriptionsListView({
             href={publicFormUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-[13px] font-medium text-ink transition hover:bg-canvas"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-card border border-line bg-white px-3 text-fs13 font-medium text-ink transition hover:bg-canvas"
           >
             <ExternalLink size={14} />
             Open form
@@ -122,7 +122,7 @@ export function SubscriptionsListView({
             type="button"
             onClick={() => setTypeFilter(filter.key)}
             className={[
-              "min-h-10 shrink-0 rounded-full px-4 text-[13px] font-medium transition md:min-h-0 md:px-3 md:py-1 md:text-[12px]",
+              "min-h-10 shrink-0 rounded-full px-4 text-fs13 font-medium transition md:min-h-0 md:px-3 md:py-1 md:text-fs12",
               typeFilter === filter.key
                 ? "bg-ink text-white"
                 : "border border-line bg-white text-muted hover:text-ink",
@@ -135,7 +135,7 @@ export function SubscriptionsListView({
 
       <ul className="space-y-3 md:hidden">
         {filteredRows.length === 0 ? (
-          <li className="rounded-card border border-line bg-white p-6 text-center text-[14px] text-muted shadow-soft">
+          <li className="rounded-card border border-line bg-white p-6 text-center text-fs14 text-muted shadow-soft">
             No requests in this view.
           </li>
         ) : (
@@ -148,7 +148,7 @@ export function SubscriptionsListView({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-[15px] font-semibold text-ink">{row.subscription_name}</p>
-                    <p className="mt-0.5 truncate text-[13px] text-muted">{row.employee_name}</p>
+                    <p className="mt-0.5 truncate text-fs13 text-muted">{row.employee_name}</p>
                   </div>
                   <StatusBadge status={row.status} />
                 </div>
@@ -157,13 +157,13 @@ export function SubscriptionsListView({
                     <p className="font-mono text-[16px] font-semibold tabular-nums text-ink">
                       {formatMoney(Number(row.amount), row.currency)}
                     </p>
-                    <p className="text-[13px] text-muted">
+                    <p className="text-fs13 text-muted">
                       {formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-mono text-[12px] text-primary">{row.reference_number}</p>
-                    <p className="text-[12px] text-muted">{new Date(row.submitted_at).toLocaleDateString()}</p>
+                    <p className="font-mono text-fs12 text-primary">{row.reference_number}</p>
+                    <p className="text-fs12 text-muted">{new Date(row.submitted_at).toLocaleDateString()}</p>
                   </div>
                 </div>
               </Link>
@@ -173,9 +173,9 @@ export function SubscriptionsListView({
       </ul>
 
       <div className="hidden overflow-x-auto rounded-card border border-line bg-white shadow-soft md:block">
-        <table className="w-full min-w-[820px] text-left text-[13px]">
+        <table className="w-full min-w-[820px] text-left text-fs13">
           <thead>
-            <tr className="border-b border-line bg-canvas/60 text-[11px] uppercase tracking-wider text-muted">
+            <tr className="border-b border-line bg-canvas/60 text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
               <th className="px-4 py-2.5 font-medium">Reference</th>
               <th className="px-4 py-2.5 font-medium">Type</th>
               <th className="px-4 py-2.5 font-medium">Employee</th>
@@ -201,7 +201,7 @@ export function SubscriptionsListView({
                   <td className="px-4 py-3">
                     <Link
                       href={`/subscriptions/${row.id}`}
-                      className="font-mono text-[12px] font-medium text-primary hover:underline"
+                      className="font-mono text-fs12 font-medium text-primary hover:underline"
                     >
                       {row.reference_number}
                     </Link>
@@ -211,7 +211,7 @@ export function SubscriptionsListView({
                   </td>
                   <td className="px-4 py-3">
                     <div className="font-medium text-ink">{row.employee_name}</div>
-                    <div className="text-[11px] text-muted">{row.employee_email}</div>
+                    <div className="text-fs11 text-muted">{row.employee_email}</div>
                   </td>
                   <td className="px-4 py-3 text-ink">{row.subscription_name}</td>
                   <td className="px-4 py-3 font-mono tabular-nums">
@@ -220,7 +220,7 @@ export function SubscriptionsListView({
                   <td className="px-4 py-3 text-muted">
                     {formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
                   </td>
-                  <td className="px-4 py-3 text-[12px] text-ink">
+                  <td className="px-4 py-3 text-fs12 text-ink">
                     {paymentLabel(row.payment_method)}
                   </td>
                   <td className="px-4 py-3 font-mono tabular-nums text-ink">
@@ -229,7 +229,7 @@ export function SubscriptionsListView({
                   <td className="px-4 py-3">
                     <StatusBadge status={row.status} />
                   </td>
-                  <td className="px-4 py-3 font-mono text-[11px] text-muted">
+                  <td className="px-4 py-3 font-mono text-fs11 text-muted">
                     {new Date(row.submitted_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -250,7 +250,7 @@ function StatusBadge({ status }: { status: SubscriptionRequestRow["status"] }) {
   };
   return (
     <span
-      className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${styles[status]}`}
+      className={`inline-flex rounded-full px-2 py-0.5 text-fs11 font-medium ${styles[status]}`}
     >
       {STATUS_LABELS[status]}
     </span>
@@ -263,7 +263,7 @@ function TypeBadge({ type }: { type: SubscriptionType }) {
       ? "bg-primary-soft text-primary"
       : "bg-canvas text-muted";
   return (
-    <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${styles}`}>
+    <span className={`inline-flex rounded-full px-2 py-0.5 text-fs11 font-medium ${styles}`}>
       {formatSubscriptionType(type)}
     </span>
   );

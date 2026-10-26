@@ -19,7 +19,7 @@ export function RefreshHealthButton() {
   return (
     <div className="flex items-center gap-2">
       {lastRefreshed && (
-        <span className="text-[11px] text-muted">Refreshed {lastRefreshed}</span>
+        <span className="text-fs11 text-muted">Refreshed {lastRefreshed}</span>
       )}
       <button
         onClick={handleRefresh}

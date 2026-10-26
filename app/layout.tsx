@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PwaProvider>
           <MotionProviders>{children}</MotionProviders>
         </PwaProvider>
-        <Toaster position="top-right" richColors closeButton />
+        <Toaster position="bottom-center" richColors closeButton mobileOffset={{ bottom: "calc(var(--mobile-nav-h) + 12px)" }} offset={24} />
       </body>
     </html>
   );

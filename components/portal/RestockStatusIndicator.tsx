@@ -21,7 +21,7 @@ export function RestockStatusIndicator() {
       className="focus-ring flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1 text-primary transition hover:bg-primary-soft/70"
     >
       <Loader2 size={12} className="animate-spin-slow" strokeWidth={2.4} />
-      <span className="hidden text-[11px] font-medium sm:inline">
+      <span className="hidden text-fs11 font-medium sm:inline">
         Restocking {activeCount} item{activeCount === 1 ? "" : "s"}…
       </span>
     </Link>

@@ -19,11 +19,11 @@ export function Topbar() {
         <div className="flex min-w-0 items-center gap-2">
           {meta.moduleLabel ? (
             <>
-              <span className="hidden text-[13px] text-muted sm:inline">{meta.moduleLabel}</span>
+              <span className="hidden text-fs13 text-muted sm:inline">{meta.moduleLabel}</span>
               <span className="hidden text-line sm:inline">/</span>
             </>
           ) : null}
-          <h1 className="truncate text-[16px] font-semibold text-ink md:text-[14px]">{meta.title}</h1>
+          <h1 className="truncate text-[16px] font-semibold text-ink md:text-fs14">{meta.title}</h1>
         </div>
         <div className="flex shrink-0 items-center gap-2 md:gap-3">
           <button
@@ -37,11 +37,11 @@ export function Topbar() {
           <button
             type="button"
             onClick={openCommandPalette}
-            className="focus-ring hidden items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-1.5 text-[12px] text-muted transition hover:bg-canvas hover:text-ink md:flex"
+            className="focus-ring hidden items-center gap-2 rounded-lg border border-line bg-white px-2.5 py-1.5 text-fs12 text-muted transition hover:bg-canvas hover:text-ink md:flex"
           >
             <Search size={13} />
             <span>Jump to…</span>
-            <kbd className="rounded border border-line px-1 text-[11px] font-medium">⌘K</kbd>
+            <kbd className="rounded border border-line px-1 text-fs11 font-medium">⌘K</kbd>
           </button>
           <div className="hidden md:block">
             <RestockStatusIndicator />

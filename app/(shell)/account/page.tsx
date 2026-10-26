@@ -59,8 +59,8 @@ export default async function AccountPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <header className="animate-fade-up">
-        <h1 className="text-xl font-medium text-ink">Account</h1>
-        <p className="mt-1 text-[13px] text-muted">
+        <h1 className="hidden text-xl font-medium text-ink md:block">Account</h1>
+        <p className="text-fs13 text-muted md:mt-1">
           {isAdmin
             ? "Your portal identity, session, and admin controls."
             : "Your portal identity and session."}
@@ -77,14 +77,14 @@ export default async function AccountPage() {
             <div className="text-[15px] font-medium text-ink">
               {profile?.full_name || profile?.email || session.email || "Portal user"}
             </div>
-            <div className="mt-0.5 font-mono text-[11.5px] text-muted">
+            <div className="mt-0.5 font-mono text-fs11 text-muted">
               {session.mode === "supabase" ? "Supabase Auth" : "Shared password session"}
             </div>
           </div>
         </div>
 
         {session.mode === "supabase" && isAdmin ? (
-          <p className="mt-4 text-[13px]">
+          <p className="mt-4 text-fs13">
             <Link href="/admin" className="font-medium text-ink underline underline-offset-2 hover:text-muted">
               Open admin
             </Link>
@@ -100,7 +100,7 @@ export default async function AccountPage() {
           </InfoRow>
           <InfoRow icon={<Shield size={13} />} label="Role">
             {session.mode === "supabase" ? (
-              <span className="font-mono text-[12px] uppercase tracking-wider text-ink">
+              <span className="font-mono text-fs12 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-ink">
                 {profile?.role ?? "member"}
               </span>
             ) : (
@@ -109,7 +109,7 @@ export default async function AccountPage() {
           </InfoRow>
           <InfoRow icon={<KeyRound size={13} />} label="Last sign-in">
             {lastSignInAt ? (
-              <span className="font-mono text-[12px] text-ink">
+              <span className="font-mono text-fs12 text-ink">
                 {new Date(lastSignInAt).toLocaleString(undefined, {
                   dateStyle: "medium",
                   timeStyle: "short",
@@ -120,7 +120,7 @@ export default async function AccountPage() {
             )}
           </InfoRow>
           <InfoRow icon={<ShieldCheck size={13} />} label="Auth mode">
-            <span className="font-mono text-[12px] text-ink">
+            <span className="font-mono text-fs12 text-ink">
               {session.mode === "supabase" ? "Email + password / magic link" : "Shared password"}
             </span>
           </InfoRow>
@@ -134,7 +134,7 @@ export default async function AccountPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
             <h2 className="text-sm font-medium text-ink">Session</h2>
-            <p className="mt-1 text-[12.5px] text-muted">
+            <p className="mt-1 text-fs12 text-muted">
               Sign out to end this session on this device.
             </p>
           </div>
@@ -157,11 +157,11 @@ function InfoRow({
 }) {
   return (
     <div>
-      <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+      <dt className="flex items-center gap-1.5 text-fs11 font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
         {icon}
         {label}
       </dt>
-      <dd className="mt-1 text-[13px] text-ink">{children}</dd>
+      <dd className="mt-1 text-fs13 text-ink">{children}</dd>
     </div>
   );
 }

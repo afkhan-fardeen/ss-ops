@@ -106,7 +106,7 @@ export function UserModuleEditor({ user }: { user: ProfileRow }) {
               key={m.id}
               type="button"
               onClick={() => handleCheckboxChange(m.id)}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-medium transition-colors ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-fs12 font-medium transition-colors ${
                 checked
                   ? "bg-primary-soft text-primary"
                   : "bg-canvas text-muted hover:bg-line/30"
@@ -123,7 +123,7 @@ export function UserModuleEditor({ user }: { user: ProfileRow }) {
         {isDirty && saveState !== "saving" && (
           <button
             onClick={handleSave}
-            className="rounded-lg bg-primary px-3 py-1 text-[12px] font-medium text-white shadow-soft transition-all hover:opacity-90"
+            className="rounded-lg bg-primary px-3 py-1 text-fs12 font-medium text-white shadow-soft transition-all hover:opacity-90"
           >
             Save
           </button>
@@ -131,26 +131,26 @@ export function UserModuleEditor({ user }: { user: ProfileRow }) {
         {!unrestricted && (
           <button
             onClick={handleReset}
-            className="flex items-center gap-1 text-[12px] font-medium text-muted transition-colors hover:text-ink"
+            className="flex items-center gap-1 text-fs12 font-medium text-muted transition-colors hover:text-ink"
           >
             <RotateCcw size={11} />
             Full access
           </button>
         )}
         {saveState === "saving" && (
-          <span className="flex items-center gap-1 text-[12px] text-muted">
+          <span className="flex items-center gap-1 text-fs12 text-muted">
             <Loader2 size={11} className="animate-spin" />
             Saving…
           </span>
         )}
         {saveState === "saved" && (
-          <span className="text-[12px] text-emerald-700">Saved</span>
+          <span className="text-fs12 text-emerald-700">Saved</span>
         )}
         {saveState === "error" && (
-          <span className="text-[12px] text-red-700">{errorMsg}</span>
+          <span className="text-fs12 text-red-700">{errorMsg}</span>
         )}
         {unrestricted && saveState === "idle" && (
-          <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-[11px] font-medium text-primary">
+          <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-fs11 font-medium text-primary">
             full access
           </span>
         )}

@@ -37,6 +37,13 @@ const config: Config = {
         ],
         mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
+      fontSize: {
+        // Material 3 type floor on phones (label >= 12px, body >= 14px); original sizes from md up.
+        fs11: ["var(--fs-11)", { lineHeight: "1.4" }],
+        fs12: ["var(--fs-12)", { lineHeight: "1.45" }],
+        fs13: ["var(--fs-13)", { lineHeight: "1.5" }],
+        fs14: ["var(--fs-14)", { lineHeight: "1.5" }],
+      },
       borderRadius: {
         card: "10px",
       },

@@ -88,23 +88,23 @@ export default async function SubscriptionsDashboardPage() {
       <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
           <div>
-            <h3 className="text-[13px] font-medium text-ink">Needs review</h3>
-            <p className="text-[12px] text-muted">Pending requests · oldest first</p>
+            <h3 className="text-fs13 font-medium text-ink">Needs review</h3>
+            <p className="text-fs12 text-muted">Pending requests · oldest first</p>
           </div>
           <Link
             href="/subscriptions"
-            className="text-[12px] font-medium text-primary hover:underline"
+            className="text-fs12 font-medium text-primary hover:underline"
           >
             View all
           </Link>
         </div>
         {summary.pendingQueue.length === 0 ? (
-          <p className="px-4 py-8 text-center text-[13px] text-muted">Inbox clear</p>
+          <p className="px-4 py-8 text-center text-fs13 text-muted">Inbox clear</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-[13px]">
+            <table className="w-full min-w-[720px] text-left text-fs13">
               <thead>
-                <tr className="border-b border-line bg-canvas/60 text-[11px] uppercase tracking-wider text-muted">
+                <tr className="border-b border-line bg-canvas/60 text-fs11 uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                   <th className="px-4 py-2.5 font-medium">Ref</th>
                   <th className="px-4 py-2.5 font-medium">Type</th>
                   <th className="px-4 py-2.5 font-medium">Requester</th>
@@ -124,14 +124,14 @@ export default async function SubscriptionsDashboardPage() {
                     <td className="px-4 py-2.5">
                       <Link
                         href={`/subscriptions/${row.id}`}
-                        className="font-mono text-[12px] font-medium text-primary hover:underline"
+                        className="font-mono text-fs12 font-medium text-primary hover:underline"
                       >
                         {row.reference_number}
                       </Link>
                     </td>
                     <td className="px-4 py-2.5">
                       <span
-                        className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                        className={`inline-flex rounded-full px-2 py-0.5 text-fs11 font-medium ${
                           row.subscription_type === "business"
                             ? "bg-primary-soft text-primary"
                             : "bg-canvas text-muted"
@@ -142,19 +142,19 @@ export default async function SubscriptionsDashboardPage() {
                     </td>
                     <td className="px-4 py-2.5 text-ink">{row.employee_name}</td>
                     <td className="px-4 py-2.5 text-muted">{row.subscription_name}</td>
-                    <td className="px-4 py-2.5 font-mono text-[12px] tabular-nums text-ink">
+                    <td className="px-4 py-2.5 font-mono text-fs12 tabular-nums text-ink">
                       {formatMoney(Number(row.amount), row.currency)}
-                      <span className="ml-1 text-[11px] text-muted">
+                      <span className="ml-1 text-fs11 text-muted">
                         / {formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 font-mono text-[12px] tabular-nums text-ink">
+                    <td className="px-4 py-2.5 font-mono text-fs12 tabular-nums text-ink">
                       {paymentLast4(row.payment_method) ?? "—"}
                     </td>
-                    <td className="px-4 py-2.5 font-mono text-[11px] text-muted">
+                    <td className="px-4 py-2.5 font-mono text-fs11 text-muted">
                       {new Date(row.submitted_at).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-2.5 font-mono text-[12px] text-muted">
+                    <td className="px-4 py-2.5 font-mono text-fs12 text-muted">
                       {ageLabel(row.submitted_at)}
                     </td>
                   </tr>
@@ -212,18 +212,18 @@ export default async function SubscriptionsDashboardPage() {
       <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
         <div className="flex items-center justify-between border-b border-line px-4 py-3">
           <div>
-            <h3 className="text-[13px] font-medium text-ink">Recently approved</h3>
-            <p className="text-[12px] text-muted">Latest 5 active subscriptions</p>
+            <h3 className="text-fs13 font-medium text-ink">Recently approved</h3>
+            <p className="text-fs12 text-muted">Latest 5 active subscriptions</p>
           </div>
           <Link
             href="/subscriptions/active"
-            className="text-[12px] font-medium text-primary hover:underline"
+            className="text-fs12 font-medium text-primary hover:underline"
           >
             Active registry
           </Link>
         </div>
         {summary.recentApproved.length === 0 ? (
-          <p className="px-4 py-8 text-center text-[13px] text-muted">
+          <p className="px-4 py-8 text-center text-fs13 text-muted">
             No approved subscriptions yet.
           </p>
         ) : (
@@ -235,10 +235,10 @@ export default async function SubscriptionsDashboardPage() {
                   className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 transition hover:bg-canvas/40"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-[13px] font-medium text-ink">
+                    <p className="truncate text-fs13 font-medium text-ink">
                       {row.subscription_name}
                     </p>
-                    <p className="text-[11px] text-muted">
+                    <p className="text-fs11 text-muted">
                       {row.employee_name}
                       {row.approved_at
                         ? ` · ${new Date(row.approved_at).toLocaleDateString()}`
@@ -246,10 +246,10 @@ export default async function SubscriptionsDashboardPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-mono text-[12px] tabular-nums text-ink">
+                    <p className="font-mono text-fs12 tabular-nums text-ink">
                       {formatMoney(Number(row.amount), row.currency)}
                     </p>
-                    <p className="font-mono text-[11px] text-muted">
+                    <p className="font-mono text-fs11 text-muted">
                       {paymentLast4(row.payment_method) ?? "—"}
                     </p>
                   </div>
@@ -284,14 +284,14 @@ export default async function SubscriptionsDashboardPage() {
       {summary.pending > 0 ? (
         <Link
           href="/subscriptions"
-          className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+          className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-fs13 font-medium text-white transition hover:opacity-90"
         >
           Review {summary.pending} pending request{summary.pending === 1 ? "" : "s"}
         </Link>
       ) : (
         <Link
           href="/subscriptions/active"
-          className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-[13px] font-medium text-white transition hover:opacity-90"
+          className="inline-flex rounded-card border border-primary bg-primary px-4 py-2 text-fs13 font-medium text-white transition hover:opacity-90"
         >
           Open active subscriptions
         </Link>

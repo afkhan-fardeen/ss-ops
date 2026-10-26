@@ -99,7 +99,7 @@ export function UbexInventoryView() {
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <p className="text-[12px] text-muted">
+        <p className="text-fs12 text-muted">
           {products.length} product{products.length === 1 ? "" : "s"} · {variantCount} variant
           {variantCount === 1 ? "" : "s"} on this page
         </p>
@@ -116,7 +116,7 @@ export function UbexInventoryView() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search product, SKU, or barcode…"
-          className="min-h-11 w-full rounded-card border border-line bg-white py-2 pl-9 pr-10 text-[13px] text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          className="min-h-11 w-full rounded-card border border-line bg-white py-2 pl-9 pr-10 text-fs13 text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
         />
         {loading ? (
           <Loader2
@@ -127,13 +127,13 @@ export function UbexInventoryView() {
       </div>
 
       {error ? (
-        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-[13px] text-[#DC2626]">
+        <div className="rounded-card border border-[#DC2626]/30 bg-[rgba(220,38,38,0.08)] px-4 py-3 text-fs13 text-[#DC2626]">
           {error}
         </div>
       ) : null}
 
       {!loading && products.length === 0 && !error ? (
-        <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-[13px] text-muted shadow-soft">
+        <p className="rounded-card border border-line bg-white px-4 py-10 text-center text-fs13 text-muted shadow-soft">
           {debounced ? "No matching products." : "No Ubex inventory on this page."}
         </p>
       ) : null}
@@ -163,18 +163,18 @@ export function UbexInventoryView() {
             disabled={loading || page <= 1}
             onClick={() => goToPage(page - 1)}
             aria-label="Previous page"
-            className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ChevronLeft size={14} />
             Prev
           </button>
-          <span className="px-2 text-[12px] text-muted">Page {page}</span>
+          <span className="px-2 text-fs12 text-muted">Page {page}</span>
           <button
             type="button"
             disabled={loading || !hasNextPage}
             onClick={() => goToPage(page + 1)}
             aria-label="Next page"
-            className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-[12px] font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded-card border border-line bg-white px-2.5 py-1.5 text-fs12 font-medium text-ink transition hover:bg-canvas disabled:cursor-not-allowed disabled:opacity-40"
           >
             Next
             <ChevronRight size={14} />

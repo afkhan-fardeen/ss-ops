@@ -25,7 +25,7 @@ export function MobileModuleTabs() {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={[
-                  "relative flex min-h-11 items-center px-3 text-[14px] font-medium",
+                  "relative flex min-h-11 items-center px-3 text-fs14 font-medium",
                   active ? "text-primary" : "text-muted active:text-ink",
                 ].join(" ")}
               >
