@@ -21,10 +21,10 @@ function parseWindow(raw: string | null): SalesWindow {
   return 30;
 }
 
-/** GET /api/stock-analysis/product?search=&window=30 — read-only product commitment + sales. */
+/** GET /api/stock-balance/product?search=&window=30 — read-only product commitment + sales. */
 export async function GET(req: NextRequest) {
   try {
-    await requireModuleAccess("stockAnalysis");
+    await requireModuleAccess("stock");
   } catch (e) {
     if (e instanceof PortalAuthError) {
       return NextResponse.json({ ok: false, error: e.message }, { status: e.status });

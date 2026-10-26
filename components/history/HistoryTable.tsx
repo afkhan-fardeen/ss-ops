@@ -86,7 +86,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="History filter">
+      <div className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0" role="tablist" aria-label="History filter">
         {([
           { key: "all",     label: "All",         count: rows.length },
           { key: "manual",  label: "Manual",       count: rows.filter((r) => r.userEmail !== null && r.status === "success").length },
@@ -103,7 +103,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
               aria-selected={active}
               onClick={() => setFilter(f.key)}
               className={[
-                "focus-ring inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12px] font-medium transition",
+                "focus-ring inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-medium transition md:h-8 md:px-3 md:text-[12px]",
                 active
                   ? "border-ink bg-canvas text-ink"
                   : "border-line bg-white text-muted hover:bg-canvas",
@@ -112,7 +112,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
               <span>{f.label}</span>
               <span
                 className={[
-                  "rounded-full px-1.5 py-0.5 text-[10px] font-medium tabular-nums",
+                  "rounded-full px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
                   active ? "bg-white text-ink" : "bg-canvas text-muted",
                 ].join(" ")}
               >
@@ -123,7 +123,56 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
         })}
       </div>
 
-      <div className="overflow-hidden rounded-card border border-line bg-white shadow-soft">
+      <ul className="space-y-3 md:hidden">
+        {filtered.map((row) => {
+          const when = formatWhen(row.createdAt);
+          return (
+            <li key={row.id} className="rounded-card border border-line bg-white p-4 shadow-soft">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-mono text-[15px] font-semibold text-ink">{row.orderName}</p>
+                  <p className="mt-0.5 text-[13px] text-muted">
+                    {when.rel} · <span className="font-mono">{when.abs}</span>
+                  </p>
+                </div>
+                <StatusPill
+                  tone={row.status === "success" ? "green" : "red"}
+                  icon={row.status === "error" ? <AlertCircle size={11} /> : undefined}
+                >
+                  {row.status === "success" ? "Success" : "Error"}
+                </StatusPill>
+              </div>
+              {row.tracking ? (
+                <div className="mt-3 flex items-center gap-2 font-mono text-[13px] text-ink">
+                  <span className="break-all">{row.tracking}</span>
+                  <CopyButton value={row.tracking} />
+                  {row.trackingUrl ? (
+                    <a
+                      href={row.trackingUrl}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="inline-flex items-center gap-1 font-sans text-[13px] font-medium text-primary"
+                    >
+                      Track <ExternalLink size={12} />
+                    </a>
+                  ) : null}
+                </div>
+              ) : null}
+              <p className="mt-2 text-[13px] text-muted">
+                {row.userEmail ?? "Seissense Ops Bot"}
+                {row.trackingCompany ? ` · ${row.trackingCompany}` : ""}
+              </p>
+              {row.error ? (
+                <p className="mt-3 break-words rounded-lg bg-red-50 px-3 py-2 font-mono text-[12px] text-red-700">
+                  {row.error}
+                </p>
+              ) : null}
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className="hidden overflow-hidden rounded-card border border-line bg-white shadow-soft md:block">
         <div className="max-h-[65vh] overflow-auto">
           <table className="w-full min-w-[700px] divide-y divide-line text-[13px]">
             <thead className="sticky top-0 z-10 bg-canvas">
@@ -152,7 +201,7 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
                           {row.orderName}
                         </div>
                         {row.fulfillmentId ? (
-                          <div className="mt-0.5 font-mono text-[10.5px] text-muted">
+                          <div className="mt-0.5 font-mono text-[11px] text-muted">
                             FID {row.fulfillmentId}
                           </div>
                         ) : null}

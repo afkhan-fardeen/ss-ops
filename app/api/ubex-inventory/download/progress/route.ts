@@ -31,7 +31,7 @@ type ProgressEvent =
  */
 export async function GET(_req: NextRequest) {
   try {
-    await requireModuleAccess("ubexInventory");
+    await requireModuleAccess("stock");
   } catch (e) {
     if (e instanceof PortalAuthError) {
       return NextResponse.json({ ok: false, error: e.message }, { status: e.status });

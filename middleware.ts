@@ -14,6 +14,7 @@ const PUBLIC_PREFIXES = [
   "/api/webhooks",
   "/api/subscriptions/request",
   "/api/sync",   // cron endpoints — auth handled inside the route via CRON_SECRET
+  "/offline",    // PWA offline fallback (static, no data)
 ];
 
 /**
@@ -22,7 +23,7 @@ const PUBLIC_PREFIXES = [
  * else under /sales-report/* (settings, recipients) must stay protected, so
  * this can't be a startsWith() prefix like the list above.
  */
-const PUBLIC_EXACT_PATHS = ["/sales-report", "/api/sales-report/download"];
+const PUBLIC_EXACT_PATHS = ["/sales-report", "/api/sales-report/download", "/manifest.webmanifest", "/sw.js"];
 
 function isPublic(pathname: string) {
   if (PUBLIC_EXACT_PATHS.includes(pathname)) return true;

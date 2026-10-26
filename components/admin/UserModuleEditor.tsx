@@ -7,13 +7,9 @@ import type { ProfileRow } from "@/lib/supabase/profiles";
 const SELECTABLE_MODULES: { id: string; label: string }[] = [
   { id: "fulfillment", label: "Fulfillment" },
   { id: "awb", label: "AWB Lookup" },
-  { id: "stock", label: "Stock Balance" },
-  { id: "stockAnalysis", label: "Stock Analysis" },
-  { id: "ubexInventory", label: "Ubex Inventory" },
+  { id: "stock", label: "Stock (balance, inventory, alerts)" },
   { id: "subscriptions", label: "Subscriptions" },
-  { id: "zohoBooks", label: "Zoho Books" },
   { id: "salesReport", label: "Sales Report" },
-  { id: "stockAlerts", label: "Stock Alerts" },
 ];
 
 type SaveState = "idle" | "saving" | "saved" | "error";

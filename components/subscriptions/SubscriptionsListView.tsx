@@ -115,14 +115,14 @@ export function SubscriptionsListView({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
         {TYPE_FILTERS.map((filter) => (
           <button
             key={filter.key}
             type="button"
             onClick={() => setTypeFilter(filter.key)}
             className={[
-              "rounded-full px-3 py-1 text-[11px] font-medium transition",
+              "min-h-10 shrink-0 rounded-full px-4 text-[13px] font-medium transition md:min-h-0 md:px-3 md:py-1 md:text-[12px]",
               typeFilter === filter.key
                 ? "bg-ink text-white"
                 : "border border-line bg-white text-muted hover:text-ink",
@@ -133,7 +133,46 @@ export function SubscriptionsListView({
         ))}
       </div>
 
-      <div className="overflow-x-auto rounded-card border border-line bg-white shadow-soft">
+      <ul className="space-y-3 md:hidden">
+        {filteredRows.length === 0 ? (
+          <li className="rounded-card border border-line bg-white p-6 text-center text-[14px] text-muted shadow-soft">
+            No requests in this view.
+          </li>
+        ) : (
+          filteredRows.map((row) => (
+            <li key={row.id}>
+              <Link
+                href={`/subscriptions/${row.id}`}
+                className="block rounded-card border border-line bg-white p-4 shadow-soft active:bg-canvas"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-[15px] font-semibold text-ink">{row.subscription_name}</p>
+                    <p className="mt-0.5 truncate text-[13px] text-muted">{row.employee_name}</p>
+                  </div>
+                  <StatusBadge status={row.status} />
+                </div>
+                <div className="mt-3 flex items-end justify-between gap-3">
+                  <div>
+                    <p className="font-mono text-[16px] font-semibold tabular-nums text-ink">
+                      {formatMoney(Number(row.amount), row.currency)}
+                    </p>
+                    <p className="text-[13px] text-muted">
+                      {formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-mono text-[12px] text-primary">{row.reference_number}</p>
+                    <p className="text-[12px] text-muted">{new Date(row.submitted_at).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              </Link>
+            </li>
+          ))
+        )}
+      </ul>
+
+      <div className="hidden overflow-x-auto rounded-card border border-line bg-white shadow-soft md:block">
         <table className="w-full min-w-[820px] text-left text-[13px]">
           <thead>
             <tr className="border-b border-line bg-canvas/60 text-[11px] uppercase tracking-wider text-muted">

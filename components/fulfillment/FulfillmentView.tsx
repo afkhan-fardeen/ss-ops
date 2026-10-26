@@ -194,7 +194,7 @@ export function FulfillmentView({
       </div>
 
       {/* ── Filter tabs ─────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="Fulfillment filter">
+      <div className="no-scrollbar -mx-4 flex items-center gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0" role="tablist" aria-label="Fulfillment filter">
         {FILTER_LABELS.map((f) => {
           const active = filter === f.key;
           const count = filterCounts[f.key];
@@ -206,7 +206,7 @@ export function FulfillmentView({
               aria-selected={active}
               onClick={() => setFilter(f.key)}
               className={[
-                "focus-ring inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-[12px] font-medium transition",
+                "focus-ring inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[13px] font-medium transition md:h-8 md:px-3 md:text-[12px]",
                 active
                   ? "border-ink bg-ink text-white"
                   : "border-line bg-white text-muted hover:bg-canvas",
@@ -215,7 +215,7 @@ export function FulfillmentView({
               <span>{f.label}</span>
               <span
                 className={[
-                  "rounded-full px-1.5 py-0.5 text-[10px] font-medium tabular-nums",
+                  "rounded-full px-1.5 py-0.5 text-[11px] font-medium tabular-nums",
                   active ? "bg-white/20 text-white" : "bg-canvas text-muted",
                 ].join(" ")}
               >

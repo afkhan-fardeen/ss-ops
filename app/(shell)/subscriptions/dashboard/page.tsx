@@ -144,7 +144,7 @@ export default async function SubscriptionsDashboardPage() {
                     <td className="px-4 py-2.5 text-muted">{row.subscription_name}</td>
                     <td className="px-4 py-2.5 font-mono text-[12px] tabular-nums text-ink">
                       {formatMoney(Number(row.amount), row.currency)}
-                      <span className="ml-1 text-[10px] text-muted">
+                      <span className="ml-1 text-[11px] text-muted">
                         / {formatBillingCycle(row.billing_cycle, row.billing_cycle_other)}
                       </span>
                     </td>

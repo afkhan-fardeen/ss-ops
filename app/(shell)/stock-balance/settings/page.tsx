@@ -1,8 +1,21 @@
 import { canAccessModule } from "@/lib/auth/can-access-module";
 import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { stockBalanceMaxItems } from "@/lib/ubex/inventory";
+import { isStore2Configured } from "@/lib/store2/client";
+import { STORE_LABELS } from "@/lib/stores/labels";
+import {
+  SettingRow,
+  SettingsFootnote,
+  SettingsHeader,
+  SettingsPage,
+  SettingsSection,
+} from "@/components/settings/Settings";
 
 export const dynamic = "force-dynamic";
+
+function env(name: string): string | null {
+  return process.env[name]?.trim() || null;
+}
 
 export default async function StockBalanceSettingsPage() {
   if (!(await canAccessModule("stock"))) {
@@ -12,56 +25,29 @@ export default async function StockBalanceSettingsPage() {
   }
 
   const maxItems = stockBalanceMaxItems();
-  const locationId = process.env.SHOPIFY_LOCATION_ID?.trim() || null;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
-      <header className="rounded-card border border-line border-l-4 border-l-primary bg-white p-5 shadow-soft">
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-primary/80">
-          Stock balance
-        </p>
-        <h1 className="mt-1 text-xl font-medium text-ink">Config</h1>
-        <p className="mt-2 text-[13px] text-muted">
-          Runtime options are configured in Vercel environment variables.
-        </p>
-      </header>
+    <SettingsPage>
+      <SettingsHeader
+        module="Stock balance"
+        title="Settings"
+        description="How Ubex stock is compared with Shopify and synced. These come from environment variables and are read-only here."
+      />
 
-      <dl className="space-y-3 rounded-card border border-line bg-white p-5 text-[13px] shadow-soft">
-        <div>
-          <dt className="font-medium text-muted">Store A domain</dt>
-          <dd className="mt-0.5 font-mono text-ink">
-            {process.env.SHOPIFY_STORE_DOMAIN?.trim() || "unset"}
-          </dd>
-        </div>
-        <div>
-          <dt className="font-medium text-muted">Store B domain</dt>
-          <dd className="mt-0.5 font-mono text-ink">
-            {process.env.SHOPIFY_STORE2_DOMAIN?.trim() || "unset (Store B disabled)"}
-          </dd>
-        </div>
-        <div>
-          <dt className="font-medium text-muted">SHOPIFY_LOCATION_ID (Store A override)</dt>
-          <dd className="mt-0.5 font-mono text-ink">{locationId ?? "unset (auto-detect)"}</dd>
-        </div>
-        <div>
-          <dt className="font-medium text-muted">STOCK_BALANCE_MAX_ITEMS</dt>
-          <dd className="mt-0.5 font-mono text-ink">
-            {maxItems === null
-              ? "unset (unused for search-driven balance page)"
-              : String(maxItems)}
-          </dd>
-          <p className="mt-1 text-[12px] text-muted">
-            Balance page loads Ubex 10 items at a time (search / load more). This cap still
-            limits bulk sync size when set.
-          </p>
-        </div>
-        <div>
-          <dt className="font-medium text-muted">UBEX_INVENTORY_PAGE_DELAY_MS</dt>
-          <dd className="mt-0.5 font-mono text-ink">
-            {process.env.UBEX_INVENTORY_PAGE_DELAY_MS?.trim() || "350 (default)"}
-          </dd>
-        </div>
-      </dl>
-    </div>
+      <SettingsSection title="Stores" description="Both stores draw from the same Ubex warehouse pool.">
+        <SettingRow label={`Store A · ${STORE_LABELS[1]}`} value={env("SHOPIFY_STORE_DOMAIN") ?? "Not set"} state={env("SHOPIFY_STORE_DOMAIN") ? "ok" : "warn"} stateLabel={env("SHOPIFY_STORE_DOMAIN") ? "Connected" : "Missing"} />
+        <SettingRow label={`Store B · ${STORE_LABELS[2]}`} value={env("SHOPIFY_STORE2_DOMAIN") ?? "Not set"} state={isStore2Configured() ? "ok" : "off"} stateLabel={isStore2Configured() ? "Connected" : "Disabled"} />
+        <SettingRow label="Store A location" hint="Inventory location that gets updated." value={env("SHOPIFY_LOCATION_ID") ?? "Auto-detect"} state={env("SHOPIFY_LOCATION_ID") ? "ok" : "default"} stateLabel={env("SHOPIFY_LOCATION_ID") ? "Override" : "Default"} />
+      </SettingsSection>
+
+      <SettingsSection title="Ubex loading" description="Keeps the portal under Ubex's rate limits.">
+        <SettingRow label="Request delay" hint="Pause between Ubex inventory pages." value={`${env("UBEX_INVENTORY_PAGE_DELAY_MS") ?? "350"} ms`} state={env("UBEX_INVENTORY_PAGE_DELAY_MS") ? "ok" : "default"} stateLabel={env("UBEX_INVENTORY_PAGE_DELAY_MS") ? "Set" : "Default"} />
+        <SettingRow label="Parallel pages" hint="Keep low to avoid “Too Many Attempts”." value={env("UBEX_INVENTORY_PAGE_PARALLEL") ?? "1"} state={env("UBEX_INVENTORY_PAGE_PARALLEL") ? "ok" : "default"} stateLabel={env("UBEX_INVENTORY_PAGE_PARALLEL") ? "Set" : "Default"} />
+        <SettingRow label="Catalog cache" hint="How long a full-catalog load is reused by Alerts, Errors and Overview. Restocks clear it." value={`${env("STOCK_CATALOG_CACHE_SECONDS") ?? "90"} s`} state={env("STOCK_CATALOG_CACHE_SECONDS") ? "ok" : "default"} stateLabel={env("STOCK_CATALOG_CACHE_SECONDS") ? "Set" : "Default"} />
+        <SettingRow label="Bulk sync cap" hint="Maximum items in one bulk sync." value={maxItems === null ? "No limit" : String(maxItems)} mono={false} state={maxItems === null ? "default" : "ok"} stateLabel={maxItems === null ? "Default" : "Set"} />
+      </SettingsSection>
+
+      <SettingsFootnote>To change a value, update the environment variable in Vercel and redeploy.</SettingsFootnote>
+    </SettingsPage>
   );
 }

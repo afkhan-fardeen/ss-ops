@@ -10,7 +10,7 @@ export const maxDuration = 300;
 export async function GET() {
   let capturedBy: string | null = null;
   try {
-    const session = await requireModuleAccess("stockAlerts");
+    const session = await requireModuleAccess("stock");
     capturedBy = session.userId ?? null;
   } catch (e) {
     if (e instanceof PortalAuthError) {

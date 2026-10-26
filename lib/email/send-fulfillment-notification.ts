@@ -10,17 +10,10 @@
  *  • error_notify_emails
  */
 
-import nodemailer from "nodemailer";
+import { isEmailConfigured, sendEmail } from "@/lib/email/send-email";
 import { getSupabaseService } from "@/lib/supabase/service";
 
 // ── Shared ─────────────────────────────────────────────────────────
-
-function getTransporter() {
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
-  if (!user || !pass) return null;
-  return nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
-}
 
 async function getRecipientsForKey(key: string): Promise<string[]> {
   try {
@@ -99,8 +92,7 @@ export async function sendFulfillmentNotification(params: {
   const recipients = await getRecipientsForKey("fulfillment_notify_emails");
   if (recipients.length === 0) return;
 
-  const transporter = getTransporter();
-  if (!transporter) return;
+  if (!isEmailConfigured()) return;
 
   const { fulfilled, skipped, checked, dryRun } = params;
   const prefix = dryRun ? "[DRY RUN] " : "";
@@ -131,9 +123,8 @@ export async function sendFulfillmentNotification(params: {
     </table>`;
 
   try {
-    await transporter.sendMail({
-      from: `Seissense Ops <${process.env.GMAIL_USER}>`,
-      to: recipients.join(", "),
+    await sendEmail({
+      to: recipients,
       subject,
       html: htmlWrap(subject, content),
     });
@@ -154,8 +145,7 @@ export async function sendErrorNotification(params: {
   const recipients = await getRecipientsForKey("error_notify_emails");
   if (recipients.length === 0) return;
 
-  const transporter = getTransporter();
-  if (!transporter) return;
+  if (!isEmailConfigured()) return;
 
   const { errors, fulfilled, checked } = params;
   const subject = `⚠ ${errors.length} auto-fulfill error${errors.length !== 1 ? "s" : ""} — Seissense Ops Bot`;
@@ -186,9 +176,8 @@ export async function sendErrorNotification(params: {
     </p>`;
 
   try {
-    await transporter.sendMail({
-      from: `Seissense Ops <${process.env.GMAIL_USER}>`,
-      to: recipients.join(", "),
+    await sendEmail({
+      to: recipients,
       subject,
       html: htmlWrap(subject, content),
     });

@@ -79,8 +79,41 @@ export async function searchStockBalance(
   return buildPreviewFromUbex(ubexItems, safePage, q);
 }
 
-/** Full Ubex catalog joined to both stores — no row filter. */
-export async function loadStockBalanceCatalog(): Promise<StockBalancePreview> {
+/**
+ * Full-catalog loads are expensive (Ubex returns 10 items per request and is rate-limited), and several
+ * screens need the same data. Share one load between concurrent callers (single-flight) and reuse the
+ * result for a short TTL. Restocks invalidate it, so writes are never followed by stale reads.
+ */
+const CATALOG_TTL_MS =
+  (Number.parseInt(process.env.STOCK_CATALOG_CACHE_SECONDS ?? "90", 10) || 90) * 1000;
+let catalogCache: { at: number; value: StockBalancePreview } | null = null;
+let catalogInflight: Promise<StockBalancePreview> | null = null;
+
+export function invalidateStockCatalog(): void {
+  catalogCache = null;
+}
+
+/** Full Ubex catalog joined to both stores — no row filter. Pass `fresh: true` to bypass the cache. */
+export async function loadStockBalanceCatalog(opts?: { fresh?: boolean }): Promise<StockBalancePreview> {
+  if (!opts?.fresh && catalogCache && Date.now() - catalogCache.at < CATALOG_TTL_MS) {
+    return catalogCache.value;
+  }
+  if (catalogInflight) return catalogInflight;
+
+  const startedAt = Date.now();
+  const promise = fetchStockBalanceCatalogLive()
+    .then((value) => {
+      catalogCache = { at: startedAt, value };
+      return value;
+    })
+    .finally(() => {
+      if (catalogInflight === promise) catalogInflight = null;
+    });
+  catalogInflight = promise;
+  return promise;
+}
+
+async function fetchStockBalanceCatalogLive(): Promise<StockBalancePreview> {
   const ubexItems = await fetchUbexInventoryAll();
   const store2Configured = isStore2Configured();
   const location = await getDefaultShopifyLocation(1);
@@ -120,7 +153,7 @@ export async function loadStockBalanceCatalog(): Promise<StockBalancePreview> {
 export async function loadMismatchedStockBalance(
   capturedBy?: string | null,
 ): Promise<StockBalancePreview> {
-  const catalog = await loadStockBalanceCatalog();
+  const catalog = await loadStockBalanceCatalog({ fresh: true });
   const commitment = buildCommitmentCatalogSummary(catalog.rows);
   try {
     await recordMismatchSnapshot({

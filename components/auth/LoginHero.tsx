@@ -1,10 +1,11 @@
-"use client";
-
-import { motion } from "framer-motion";
+import { PackageCheck, Warehouse, BarChart3, type LucideIcon } from "lucide-react";
 import { LoginForm } from "@/components/auth/LoginForm";
-import { easeOut, stagger, staggerItem } from "@/lib/motion";
 
-const DOMAINS = ["Shopify", "Ubex", "Fulfillment", "Finance"];
+const HIGHLIGHTS: { icon: LucideIcon; title: string; text: string }[] = [
+  { icon: PackageCheck, title: "Orders & fulfillment", text: "Match Ubex tracking and push to Shopify in a click." },
+  { icon: Warehouse, title: "Stock in sync", text: "One warehouse pool across both stores, reviewed daily." },
+  { icon: BarChart3, title: "Reports", text: "Daily sales for both stores, emailed and downloadable." },
+];
 
 export function LoginHero({
   authMode,
@@ -16,67 +17,68 @@ export function LoginHero({
   nextPath: string;
 }) {
   return (
-    <div className="relative flex min-h-screen">
-      <aside className="relative hidden w-[42%] flex-col justify-between overflow-hidden bg-ink px-14 py-12 lg:flex">
+    <div className="flex min-h-dvh bg-canvas">
+      {/* Brand panel — desktop only */}
+      <aside className="relative hidden w-[46%] max-w-[640px] flex-col justify-between overflow-hidden bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-900 px-14 py-12 text-white lg:flex">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10 blur-3xl"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-32 -left-16 h-96 w-96 rounded-full bg-indigo-400/20 blur-3xl"
+        />
+
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo.svg"
           alt="Seissense"
-          className="relative h-8 w-auto"
-          style={{ filter: "invert(1) brightness(1.8)" }}
+          className="relative h-8 w-auto self-start"
+          style={{ filter: "brightness(0) invert(1)" }}
         />
 
-        <div className="relative max-w-sm">
-          <h2 className="text-[28px] font-semibold leading-[1.25] tracking-tight text-white">
+        <div className="relative max-w-md">
+          <h2 className="text-[32px] font-semibold leading-[1.2] tracking-tight">
             One console for every moving part of the operation.
           </h2>
-          <p className="mt-4 text-[14px] leading-relaxed text-white/60">
-            Orders, fulfillment, stock, and finance — brought into a single
-            internal system built for the way the team actually works.
-          </p>
+          <ul className="mt-9 space-y-5">
+            {HIGHLIGHTS.map(({ icon: Icon, title, text }) => (
+              <li key={title} className="flex gap-3.5">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-white/15">
+                  <Icon size={19} />
+                </span>
+                <div>
+                  <p className="text-[15px] font-medium">{title}</p>
+                  <p className="mt-0.5 text-[14px] leading-snug text-white/70">{text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="relative flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] font-semibold uppercase tracking-wide text-white/35">
-          {DOMAINS.map((d, i) => (
-            <span key={d} className="flex items-center gap-5">
-              {d}
-              {i < DOMAINS.length - 1 ? (
-                <span className="h-1 w-1 rounded-full bg-white/20" />
-              ) : null}
-            </span>
-          ))}
-        </div>
+        <p className="relative text-[13px] text-white/60">© Seissense · Internal operations</p>
       </aside>
 
-      <div className="flex flex-1 flex-col items-center justify-center bg-canvas px-6 py-16 lg:px-16">
-        <motion.div
-          variants={stagger}
-          initial="hidden"
-          animate="show"
-          className="w-full max-w-[360px]"
-        >
-          <motion.div
-            variants={staggerItem}
-            className="mb-9 flex items-center gap-3 lg:hidden"
-          >
+      {/* Form */}
+      <main
+        className="flex flex-1 flex-col items-center justify-center px-5 py-10 sm:px-8"
+        style={{ paddingTop: "max(2.5rem, env(safe-area-inset-top))", paddingBottom: "max(2.5rem, env(safe-area-inset-bottom))" }}
+      >
+        <div className="w-full max-w-[400px] animate-fade-up">
+          <div className="mb-8 flex flex-col items-start gap-6 lg:hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo.svg" alt="Seissense Ops" className="h-8 w-auto" />
-          </motion.div>
+          </div>
 
-          <motion.div variants={staggerItem}>
-            <h1 className="text-[26px] font-semibold tracking-tight text-ink">Sign in</h1>
-            <p className="mt-2 text-[14px] leading-relaxed text-muted">{description}</p>
-          </motion.div>
-
-          <motion.div variants={staggerItem} transition={easeOut}>
+          <div className="rounded-2xl border border-line bg-white p-6 shadow-pop sm:p-8">
+            <h1 className="text-[24px] font-semibold tracking-tight text-ink">Welcome back</h1>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-muted">{description}</p>
             <LoginForm nextPath={nextPath} authMode={authMode} />
-          </motion.div>
+          </div>
 
-          <motion.p variants={staggerItem} className="mt-10 text-[12px] text-muted">
-            Internal use only · Seissense Operations
-          </motion.p>
-        </motion.div>
-      </div>
+          <p className="mt-6 text-center text-[13px] text-muted">Internal use only · Seissense Operations</p>
+        </div>
+      </main>
     </div>
   );
 }

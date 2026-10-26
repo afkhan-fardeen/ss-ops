@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Lock, LogIn, Mail } from "lucide-react";
+import { AlertCircle, ArrowRight, Loader2, Lock, Mail } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -58,12 +58,12 @@ function SharedPasswordForm({ nextPath }: { nextPath: string }) {
   }
 
   return (
-    <fieldset disabled={loading} className={loading ? "pointer-events-none opacity-60" : ""}>
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+    <fieldset disabled={loading} className={loading ? "pointer-events-none opacity-70" : ""}>
+      <form onSubmit={onSubmit} className="mt-7 space-y-4">
         <Field label="Password" htmlFor="password">
           <PasswordInput
             id="password"
-            icon={<Lock size={15} />}
+            icon={<Lock size={16} />}
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -135,13 +135,17 @@ function SupabaseLoginForm({ nextPath }: { nextPath: string }) {
   }
 
   return (
-    <fieldset disabled={loading} className={loading ? "pointer-events-none opacity-60" : ""}>
-      <form onSubmit={onSubmit} className="mt-6 space-y-4">
+    <fieldset disabled={loading} className={loading ? "pointer-events-none opacity-70" : ""}>
+      <form onSubmit={onSubmit} className="mt-7 space-y-4">
         <Field label="Email" htmlFor="email">
           <Input
             id="email"
             type="email"
-            icon={<Mail size={15} />}
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            icon={<Mail size={16} />}
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -155,7 +159,7 @@ function SupabaseLoginForm({ nextPath }: { nextPath: string }) {
           <Field label="Password" htmlFor="password">
             <PasswordInput
               id="password"
-              icon={<Lock size={15} />}
+              icon={<Lock size={16} />}
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -166,23 +170,20 @@ function SupabaseLoginForm({ nextPath }: { nextPath: string }) {
           </Field>
         ) : null}
 
-        <div className="flex items-center justify-between gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setError(null);
-              setMode((m) => (m === "password" ? "magic" : "password"));
-            }}
-            className="focus-ring inline-flex items-center gap-1.5 rounded px-1 text-[12px] font-medium text-muted transition hover:text-ink hover:underline"
-          >
-            <Mail size={12} />
-            {mode === "password" ? "Use magic link instead" : "Use password instead"}
-          </button>
-        </div>
-
         {error ? <FieldError message={error} /> : null}
 
         <SubmitButton loading={loading} label={mode === "password" ? "Sign in" : "Send magic link"} />
+
+        <button
+          type="button"
+          onClick={() => {
+            setError(null);
+            setMode((m) => (m === "password" ? "magic" : "password"));
+          }}
+          className="focus-ring inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg text-[14px] font-medium text-muted transition hover:text-ink"
+        >
+          {mode === "password" ? "Email me a sign-in link instead" : "Use my password instead"}
+        </button>
       </form>
     </fieldset>
   );
@@ -193,7 +194,7 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-muted"
+        className="mb-1.5 block text-[13px] font-medium text-ink"
       >
         {label}
       </label>
@@ -204,8 +205,12 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
 
 function FieldError({ message }: { message: string }) {
   return (
-    <p className="text-[12px] font-medium text-[#DC2626]" role="alert">
-      {message}
+    <p
+      role="alert"
+      className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-[13px] text-red-700"
+    >
+      <AlertCircle size={16} className="mt-0.5 shrink-0" />
+      <span>{message}</span>
     </p>
   );
 }
@@ -215,14 +220,11 @@ function SubmitButton({ loading, label }: { loading: boolean; label: string }) {
     <button
       type="submit"
       disabled={loading}
-      className="focus-ring inline-flex h-11 w-full items-center justify-center gap-2 rounded-card bg-ink px-4 text-[13.5px] font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
+      className="focus-ring inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 text-[15px] font-medium text-white shadow-soft transition hover:bg-indigo-700 active:bg-indigo-800 disabled:opacity-70 md:h-11 md:text-[14px]"
     >
-      {loading ? (
-        <Loader2 size={15} className="animate-spin" />
-      ) : (
-        <LogIn size={15} strokeWidth={2.2} />
-      )}
-      <span>{loading ? "Signing in…" : label}</span>
+      {loading ? <Loader2 size={16} className="animate-spin" /> : null}
+      <span>{loading ? "Please wait…" : label}</span>
+      {loading ? null : <ArrowRight size={16} />}
     </button>
   );
 }

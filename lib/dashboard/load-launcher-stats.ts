@@ -5,7 +5,6 @@ export type LauncherStat = { value: string; label: string } | null;
 export type LauncherStats = {
   fulfillment: LauncherStat;
   stock: LauncherStat;
-  stockAnalysis: LauncherStat;
   subscriptions: LauncherStat;
   stockAlerts: LauncherStat;
 };
@@ -13,7 +12,6 @@ export type LauncherStats = {
 const EMPTY_STATS: LauncherStats = {
   fulfillment: null,
   stock: null,
-  stockAnalysis: null,
   subscriptions: null,
   stockAlerts: null,
 };
@@ -82,11 +80,6 @@ export async function loadLauncherStats(): Promise<LauncherStats> {
     ? { value: String(snapshot.mismatched_count), label: `mismatches · ${relativeToNow(snapshot.captured_at)}` }
     : null;
 
-  const stockAnalysis =
-    snapshot && snapshot.products_short !== null
-      ? { value: String(snapshot.products_short), label: `products short · ${relativeToNow(snapshot.captured_at)}` }
-      : null;
-
   const subscriptions =
     subsRes.status === "fulfilled" && !subsRes.value.error && subsRes.value.count !== null
       ? { value: String(subsRes.value.count), label: "pending" }
@@ -108,5 +101,5 @@ export async function loadLauncherStats(): Promise<LauncherStats> {
       }
     : null;
 
-  return { fulfillment, stock, stockAnalysis, subscriptions, stockAlerts };
+  return { fulfillment, stock, subscriptions, stockAlerts };
 }

@@ -1,17 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Home,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Settings2,
-} from "lucide-react";
+import { Home, LogOut, PanelLeftClose, PanelLeftOpen, Settings2 } from "lucide-react";
 import {
   getPortalModules,
+  groupModulesByDomain,
   HOME_ACCENT,
   HOME_HREF,
   isPathInModule,
@@ -25,7 +19,7 @@ import {
   NavCollapsibleSection,
   NavHomeLink,
 } from "@/components/portal/NavCollapsibleSection";
-import { mobileModuleActive, MobileModuleSheet, MobileSettingsSheet } from "@/components/portal/MobileModuleSheet";
+import { MobileNav } from "@/components/portal/MobileNav";
 import { readPersistedBoolean, writePersistedBoolean } from "@/lib/browser/persisted-boolean";
 
 const STORAGE_KEY = "portal.sidebar.collapsed";
@@ -70,17 +64,10 @@ export function Sidebar({
   const settingsItems = useMemo(() => getSettingsNavItems(showAdminLink), [showAdminLink]);
 
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileSheetModule, setMobileSheetModule] = useState<PortalModule | null>(null);
-  const [mobileSettingsOpen, setMobileSettingsOpen] = useState(false);
 
   useEffect(() => {
     setCollapsed(readPersistedBoolean(STORAGE_KEY, false));
   }, []);
-
-  useEffect(() => {
-    setMobileSheetModule(null);
-    setMobileSettingsOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     applySidebarWidth(collapsed);
@@ -102,7 +89,6 @@ export function Sidebar({
 
   const width = collapsed ? WIDTH_COLLAPSED : WIDTH_EXPANDED;
   const homeActive = pathname === HOME_HREF;
-  const settingsActive = isPathInSettings(pathname);
 
   const settingsNavItems = settingsItems.map((item) => ({
     label: item.label,
@@ -133,21 +119,33 @@ export function Sidebar({
             collapsed={collapsed}
           />
 
-          {modules.map((module) => (
-            <NavCollapsibleSection
-              key={module.id}
-              sectionId={module.id}
-              label={module.label}
-              icon={module.icon}
-              accent={module.accent}
-              homeHref={moduleDashboardHref(module)}
-              items={moduleToNavItems(module)}
-              collapsed={collapsed}
-              isActive={(p) => isPathInModule(p, module.id)}
-              defaultOpen={false}
-            />
+          {groupModulesByDomain(modules).map((group) => (
+            <div key={group.domain} className="space-y-1 pt-3">
+              {collapsed ? (
+                <div className="mx-3 border-t border-line" aria-hidden />
+              ) : (
+                <p className="px-3 pb-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  {group.label}
+                </p>
+              )}
+              {group.modules.map((module) => (
+                <NavCollapsibleSection
+                  key={module.id}
+                  sectionId={module.id}
+                  label={module.label}
+                  icon={module.icon}
+                  accent={module.accent}
+                  homeHref={moduleDashboardHref(module)}
+                  items={moduleToNavItems(module)}
+                  collapsed={collapsed}
+                  isActive={(p) => isPathInModule(p, module.id)}
+                  defaultOpen={false}
+                />
+              ))}
+            </div>
           ))}
 
+          <div className="pt-3">
           <NavCollapsibleSection
             sectionId="settings"
             label={showAdminLink ? "Settings" : "Account"}
@@ -157,6 +155,7 @@ export function Sidebar({
             collapsed={collapsed}
             isActive={(p) => isPathInSettings(p)}
           />
+          </div>
         </div>
 
         <div className="mt-auto space-y-1 border-t border-line pt-3">
@@ -186,74 +185,7 @@ export function Sidebar({
         </div>
       </aside>
 
-      <nav
-        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-white md:hidden"
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
-      >
-        <Link
-          href={HOME_HREF}
-          className={[
-            "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
-            homeActive ? "text-ink" : "text-muted",
-          ].join(" ")}
-        >
-          <Home size={20} strokeWidth={homeActive ? 2.2 : 1.8} />
-          <span>Home</span>
-        </Link>
-        {modules.map((module) => {
-          const Icon = module.icon;
-          const active = mobileModuleActive(pathname, module.id);
-          return (
-            <button
-              key={module.id}
-              type="button"
-              onClick={() => {
-                setMobileSettingsOpen(false);
-                setMobileSheetModule(module);
-              }}
-              className={[
-                "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
-                active ? "text-ink" : "text-muted",
-              ].join(" ")}
-            >
-              <Icon size={20} strokeWidth={active ? 2.2 : 1.8} />
-              <span>
-                {module.label === "Stock balance"
-                  ? "Stock"
-                  : module.label === "Stock analysis"
-                    ? "Analysis"
-                    : module.label}
-              </span>
-            </button>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() => {
-            setMobileSheetModule(null);
-            setMobileSettingsOpen(true);
-          }}
-          className={[
-            "flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-medium",
-            settingsActive ? "text-ink" : "text-muted",
-          ].join(" ")}
-        >
-          <Settings2 size={20} strokeWidth={settingsActive ? 2.2 : 1.8} />
-          <span>{showAdminLink ? "Settings" : "Account"}</span>
-        </button>
-      </nav>
-
-      <MobileModuleSheet
-        open={mobileSheetModule !== null}
-        module={mobileSheetModule}
-        onClose={() => setMobileSheetModule(null)}
-      />
-      <MobileSettingsSheet
-        open={mobileSettingsOpen}
-        items={settingsNavItems}
-        title={showAdminLink ? "Settings" : "Account"}
-        onClose={() => setMobileSettingsOpen(false)}
-      />
+      <MobileNav modules={modules} showAdminLink={showAdminLink} />
     </>
   );
 }

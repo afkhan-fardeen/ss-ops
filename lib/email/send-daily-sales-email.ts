@@ -1,16 +1,9 @@
-import nodemailer from "nodemailer";
+import { isEmailConfigured, sendEmail } from "@/lib/email/send-email";
 import { getSupabaseService } from "@/lib/supabase/service";
 import type { DailySalesReport } from "@/lib/sales/daily-sales-report";
 import { buildSalesReportWorkbook, salesReportFilename } from "@/lib/sales/build-sales-report-workbook";
 
 const RECIPIENTS_KEY = "sales_report_emails";
-
-function getTransporter() {
-  const user = process.env.GMAIL_USER;
-  const pass = process.env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "");
-  if (!user || !pass) return null;
-  return nodemailer.createTransport({ service: "gmail", auth: { user, pass } });
-}
 
 async function getSalesReportRecipients(): Promise<string[]> {
   try {
@@ -92,25 +85,19 @@ export async function sendDailySalesEmail(
   const recipients = await getSalesReportRecipients();
   if (recipients.length === 0) return { ok: true, sent: false, recipients: 0 };
 
-  const transporter = getTransporter();
-  if (!transporter) return { ok: false, sent: false, recipients: 0, error: "Email is not configured (GMAIL_USER / GMAIL_APP_PASSWORD)." };
+  if (!isEmailConfigured()) return { ok: false, sent: false, recipients: 0, error: "Email is not configured (RESEND_API_KEY)." };
 
   const subject = `Daily sales report — ${report.day.label}`;
   const reportUrl = `${portalBaseUrl}/sales-report?day=${report.day.dateKey}`;
   try {
     const workbook = await buildSalesReportWorkbook(report);
     const attachmentBuffer = (await workbook.xlsx.writeBuffer()) as ArrayBuffer;
-    await transporter.sendMail({
-      from: `Seissense Ops <${process.env.GMAIL_USER}>`,
-      to: recipients.join(", "),
+    await sendEmail({
+      to: recipients,
       subject,
       html: htmlWrap(subject, buildContent(report, reportUrl)),
       attachments: [
-        {
-          filename: salesReportFilename(report.day.dateKey),
-          content: Buffer.from(attachmentBuffer),
-          contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        },
+        { filename: salesReportFilename(report.day.dateKey), content: Buffer.from(attachmentBuffer) },
       ],
     });
     return { ok: true, sent: true, recipients: recipients.length };

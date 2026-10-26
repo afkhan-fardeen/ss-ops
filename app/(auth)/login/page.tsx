@@ -2,6 +2,8 @@ import { LoginHero } from "@/components/auth/LoginHero";
 import { getAuthMode } from "@/lib/auth/mode";
 import { getSafeNextPath } from "@/lib/auth/safe-next-path";
 
+export const metadata = { title: "Sign in — Seissense Ops" };
+
 export default function LoginPage({
   searchParams,
 }: {

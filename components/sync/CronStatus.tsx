@@ -139,7 +139,7 @@ export function CronStatus() {
           <RefreshCw size={16} className="text-muted" />
           <h3 className="text-[13px] font-medium text-ink">Seissense Ops Bot</h3>
           {latest?.dry_run && (
-            <span className="rounded-full bg-[rgba(217,119,6,0.15)] px-1.5 py-0.5 text-[10px] font-medium text-[#D97706]">
+            <span className="rounded-full bg-[rgba(217,119,6,0.15)] px-1.5 py-0.5 text-[11px] font-medium text-[#D97706]">
               dry-run
             </span>
           )}
@@ -240,7 +240,7 @@ export function CronStatus() {
               <div className="flex items-center gap-2">
                 <StatusBadge run={run} />
                 {run.dry_run && (
-                  <span className="text-[10px] text-primary">(dry)</span>
+                  <span className="text-[11px] text-primary">(dry)</span>
                 )}
               </div>
               <div className="flex items-center gap-3 font-mono text-muted">

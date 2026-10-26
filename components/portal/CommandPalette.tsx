@@ -179,7 +179,7 @@ export function CommandPalette({
             placeholder="Jump to a module or page…"
             className="w-full min-w-0 border-0 bg-transparent text-[14px] text-ink outline-none placeholder:text-muted"
           />
-          <kbd className="hidden shrink-0 rounded border border-line px-1.5 py-0.5 text-[10px] font-medium text-muted sm:inline-block">
+          <kbd className="hidden shrink-0 rounded border border-line px-1.5 py-0.5 text-[11px] font-medium text-muted sm:inline-block">
             Esc
           </kbd>
         </div>

@@ -6,9 +6,9 @@ import { UbexInventoryView } from "@/components/ubex-inventory/UbexInventoryView
 export const dynamic = "force-dynamic";
 
 export default async function UbexInventoryPage() {
-  if (!(await canAccessModule("ubexInventory"))) {
+  if (!(await canAccessModule("stock"))) {
     return (
-      <ModuleAccessDenied description="Ubex inventory is only available to admins or users granted the Ubex Inventory module." />
+      <ModuleAccessDenied description="Stock is only available to admins or users granted the Stock module." />
     );
   }
 

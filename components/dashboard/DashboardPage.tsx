@@ -9,11 +9,8 @@ const BORDER: Record<string, string> = {
   home: "border-l-ink",
   fulfillment: "border-l-primary",
   stock: "border-l-primary",
-  stockAnalysis: "border-l-primary",
-  ubexInventory: "border-l-primary",
   awb: "border-l-primary",
   subscriptions: "border-l-primary",
-  zohoBooks: "border-l-primary",
 };
 
 export function DashboardPage({ children, moduleId }: Props) {

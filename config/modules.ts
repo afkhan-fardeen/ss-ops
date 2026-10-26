@@ -9,7 +9,6 @@ import {
   Package,
   Receipt,
   Settings2,
-  TrendingUp,
   Truck,
   Warehouse,
 } from "lucide-react";
@@ -19,11 +18,7 @@ export type ModuleId =
   | "stock"
   | "awb"
   | "subscriptions"
-  | "stockAnalysis"
-  | "ubexInventory"
-  | "zohoBooks"
-  | "salesReport"
-  | "stockAlerts";
+  | "salesReport";
 
 export type ModuleNavItem = {
   label: string;
@@ -49,11 +44,26 @@ export type ModuleAccent = {
 
 export type NavSectionId = ModuleId | "settings" | "home";
 
+export type ModuleDomain = "orders" | "inventory" | "finance";
+
+export const DOMAIN_ORDER: ModuleDomain[] = ["orders", "inventory", "finance"];
+export const DOMAIN_LABEL: Record<ModuleDomain, string> = {
+  orders: "Orders & Delivery",
+  inventory: "Inventory",
+  finance: "Finance",
+};
+
 export type PortalModule = {
   id: ModuleId;
   label: string;
+  /** Short label for tight spaces (mobile tab bar). */
+  shortLabel?: string;
   icon: LucideIcon;
   adminOnly?: boolean;
+  /** Sidebar grouping. */
+  domain: ModuleDomain;
+  /** Where a single tap on the module should land (the page people actually use). */
+  primaryHref: string;
   accent: ModuleAccent;
   items: ModuleNavItem[];
 };
@@ -76,17 +86,16 @@ const PRIMARY_ACCENT: ModuleAccent = {
 
 export const FULFILLMENT_ACCENT: ModuleAccent = PRIMARY_ACCENT;
 export const STOCK_ACCENT: ModuleAccent = PRIMARY_ACCENT;
-export const STOCK_ANALYSIS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
 export const SUBSCRIPTIONS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
 export const HOME_ACCENT: ModuleAccent = PRIMARY_ACCENT;
 export const SETTINGS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
 const AWB_ACCENT: ModuleAccent = PRIMARY_ACCENT;
-const UBEX_INVENTORY_ACCENT: ModuleAccent = PRIMARY_ACCENT;
-const ZOHO_BOOKS_ACCENT: ModuleAccent = PRIMARY_ACCENT;
 
 function fulfillmentModule(): PortalModule {
   return {
     id: "fulfillment",
+    domain: "orders",
+    primaryHref: "/fulfillment/list",
     label: "Fulfillment",
     icon: Truck,
     accent: FULFILLMENT_ACCENT,
@@ -107,21 +116,26 @@ function fulfillmentModule(): PortalModule {
 function stockModule(): PortalModule {
   return {
     id: "stock",
-    label: "Stock balance",
+    label: "Stock",
     icon: Warehouse,
     adminOnly: true,
+    domain: "inventory",
+    primaryHref: "/stock-balance/balance",
+    shortLabel: "Stock",
     accent: STOCK_ACCENT,
     items: [
-      { label: "Dashboard", href: "/stock-balance/dashboard", icon: LayoutDashboard },
+      { label: "Overview", href: "/stock-balance/dashboard", icon: LayoutDashboard },
       {
         label: "Balance",
         href: "/stock-balance/balance",
         icon: Warehouse,
         aliases: ["/stock-balance"],
       },
+      { label: "Alerts", href: "/stock-alerts", icon: Bell },
+      { label: "Inventory", href: "/ubex-inventory", icon: Package },
       { label: "Errors", href: "/stock-balance/errors", icon: AlertTriangle },
       { label: "History", href: "/stock-balance/history", icon: History },
-      { label: "Config", href: "/stock-balance/settings", icon: Settings2 },
+      { label: "Settings", href: "/stock-balance/settings", icon: Settings2 },
     ],
   };
 }
@@ -129,6 +143,9 @@ function stockModule(): PortalModule {
 function awbModule(): PortalModule {
   return {
     id: "awb",
+    domain: "orders",
+    primaryHref: "/awb",
+    shortLabel: "AWB",
     label: "AWB Lookup",
     icon: FileSearch,
     accent: AWB_ACCENT,
@@ -136,31 +153,12 @@ function awbModule(): PortalModule {
   };
 }
 
-function ubexInventoryModule(): PortalModule {
-  return {
-    id: "ubexInventory",
-    label: "Ubex Inventory",
-    icon: Package,
-    adminOnly: true,
-    accent: UBEX_INVENTORY_ACCENT,
-    items: [{ label: "Inventory", href: "/ubex-inventory", icon: Package }],
-  };
-}
-
-function stockAnalysisModule(): PortalModule {
-  return {
-    id: "stockAnalysis",
-    label: "Stock analysis",
-    icon: TrendingUp,
-    adminOnly: true,
-    accent: STOCK_ANALYSIS_ACCENT,
-    items: [{ label: "Dashboard", href: "/stock-analysis/dashboard", icon: LayoutDashboard }],
-  };
-}
-
 function subscriptionsModule(): PortalModule {
   return {
     id: "subscriptions",
+    domain: "finance",
+    primaryHref: "/subscriptions",
+    shortLabel: "Subs",
     label: "Subscriptions",
     icon: Receipt,
     adminOnly: true,
@@ -173,20 +171,12 @@ function subscriptionsModule(): PortalModule {
   };
 }
 
-function zohoBooksModule(): PortalModule {
-  return {
-    id: "zohoBooks",
-    label: "Zoho Books",
-    icon: Receipt,
-    adminOnly: true,
-    accent: ZOHO_BOOKS_ACCENT,
-    items: [],
-  };
-}
-
 function salesReportModule(): PortalModule {
   return {
     id: "salesReport",
+    domain: "finance",
+    primaryHref: "/sales-report",
+    shortLabel: "Sales",
     label: "Sales Report",
     icon: BarChart3,
     adminOnly: true,
@@ -198,26 +188,11 @@ function salesReportModule(): PortalModule {
   };
 }
 
-function stockAlertsModule(): PortalModule {
-  return {
-    id: "stockAlerts",
-    label: "Stock Alerts",
-    icon: Bell,
-    adminOnly: true,
-    accent: STOCK_ACCENT,
-    items: [{ label: "Alerts", href: "/stock-alerts", icon: Bell }],
-  };
-}
-
 export function getPortalModules(showAdmin: boolean): PortalModule[] {
   const modules = [fulfillmentModule(), awbModule()];
   if (showAdmin) {
     modules.push(stockModule());
-    modules.push(stockAnalysisModule());
-    modules.push(ubexInventoryModule());
-    modules.push(stockAlertsModule());
     modules.push(subscriptionsModule());
-    modules.push(zohoBooksModule());
     modules.push(salesReportModule());
   }
   return modules;
@@ -229,21 +204,13 @@ function modulePathPrefixes(id: ModuleId): string[] {
     case "fulfillment":
       return ["/fulfillment", "/history"];
     case "stock":
-      return ["/stock-balance"];
-    case "stockAnalysis":
-      return ["/stock-analysis"];
-    case "ubexInventory":
-      return ["/ubex-inventory"];
+      return ["/stock-balance", "/ubex-inventory", "/stock-alerts"];
     case "awb":
       return ["/awb"];
     case "subscriptions":
       return ["/subscriptions"];
-    case "zohoBooks":
-      return ["/zoho-books"];
     case "salesReport":
       return ["/sales-report"];
-    case "stockAlerts":
-      return ["/stock-alerts"];
     default:
       return [];
   }
@@ -309,59 +276,52 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
   },
   {
     path: "/stock-balance/dashboard",
-    title: "Dashboard",
+    title: "Overview",
     moduleId: "stock",
-    moduleLabel: "Stock balance",
+    moduleLabel: "Stock",
     accent: STOCK_ACCENT,
   },
   {
     path: "/stock-balance/balance",
     title: "Balance",
     moduleId: "stock",
-    moduleLabel: "Stock balance",
+    moduleLabel: "Stock",
     accent: STOCK_ACCENT,
   },
   {
     path: "/stock-balance",
     title: "Balance",
     moduleId: "stock",
-    moduleLabel: "Stock balance",
+    moduleLabel: "Stock",
     accent: STOCK_ACCENT,
   },
   {
     path: "/stock-balance/errors",
     title: "Errors",
     moduleId: "stock",
-    moduleLabel: "Stock balance",
+    moduleLabel: "Stock",
     accent: STOCK_ACCENT,
   },
   {
     path: "/stock-balance/history",
     title: "History",
     moduleId: "stock",
-    moduleLabel: "Stock balance",
+    moduleLabel: "Stock",
     accent: STOCK_ACCENT,
   },
   {
     path: "/stock-balance/settings",
     title: "Settings",
     moduleId: "stock",
-    moduleLabel: "Stock balance",
+    moduleLabel: "Stock",
     accent: STOCK_ACCENT,
-  },
-  {
-    path: "/stock-analysis/dashboard",
-    title: "Dashboard",
-    moduleId: "stockAnalysis",
-    moduleLabel: "Stock analysis",
-    accent: STOCK_ANALYSIS_ACCENT,
   },
   {
     path: "/ubex-inventory",
     title: "Inventory",
-    moduleId: "ubexInventory",
-    moduleLabel: "Ubex Inventory",
-    accent: UBEX_INVENTORY_ACCENT,
+    moduleId: "stock",
+    moduleLabel: "Stock",
+    accent: STOCK_ACCENT,
   },
   {
     path: "/awb",
@@ -392,13 +352,6 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
     accent: SUBSCRIPTIONS_ACCENT,
   },
   {
-    path: "/zoho-books",
-    title: "Zoho Books",
-    moduleId: "zohoBooks",
-    moduleLabel: "Zoho Books",
-    accent: ZOHO_BOOKS_ACCENT,
-  },
-  {
     path: "/sales-report/settings",
     title: "Settings",
     moduleId: "salesReport",
@@ -408,8 +361,8 @@ const MODULE_ROUTE_ENTRIES: RouteEntry[] = [
   {
     path: "/stock-alerts",
     title: "Alerts",
-    moduleId: "stockAlerts",
-    moduleLabel: "Stock Alerts",
+    moduleId: "stock",
+    moduleLabel: "Stock",
     accent: STOCK_ACCENT,
   },
 ];
@@ -447,6 +400,14 @@ const OPEN_STORAGE_PREFIX = "portal.nav.open.";
 
 export function getNavOpenKey(id: NavSectionId): string {
   return `${OPEN_STORAGE_PREFIX}${id}`;
+}
+
+export function groupModulesByDomain(modules: PortalModule[]): { domain: ModuleDomain; label: string; modules: PortalModule[] }[] {
+  return DOMAIN_ORDER.map((domain) => ({
+    domain,
+    label: DOMAIN_LABEL[domain],
+    modules: modules.filter((m) => m.domain === domain),
+  })).filter((g) => g.modules.length > 0);
 }
 
 export function moduleDashboardHref(module: PortalModule): string {

@@ -104,7 +104,7 @@ function StoreDetailFull({ summary }: { summary: StoreSalesSummary }) {
         ) : (
           <div className="mt-2 max-h-[320px] overflow-y-auto">
             <table className="w-full text-left text-[12px]">
-              <thead className="sticky top-0 bg-white text-[10px] uppercase tracking-wider text-muted">
+              <thead className="sticky top-0 bg-white text-[11px] uppercase tracking-wider text-muted">
                 <tr className="border-b border-line">
                   <th className="px-4 py-2">Order</th>
                   <th className="px-4 py-2">Time</th>

@@ -32,7 +32,7 @@ export function FulfillmentFooter({
 
   return (
     <div
-      className="fixed bottom-16 right-0 z-20 border-t border-line bg-white/90 px-4 py-3 backdrop-blur md:bottom-0"
+      className="fixed right-0 z-20 border-t border-line bg-white px-4 py-3 bottom-[var(--mobile-nav-h)] md:bottom-0"
       style={{ left: "var(--sb-w, 0px)" }}
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -50,7 +50,7 @@ export function FulfillmentFooter({
           type="button"
           onClick={() => void run()}
           disabled={busy || matchedCount === 0}
-          className="focus-ring inline-flex h-9 items-center gap-1.5 rounded-card bg-ink px-4 text-[12px] font-medium text-white shadow-soft transition hover:bg-ink/90 disabled:opacity-60"
+          className="focus-ring inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-card bg-primary px-4 text-[14px] font-medium text-white shadow-soft transition hover:bg-primary/90 disabled:opacity-60 sm:h-9 sm:w-auto sm:text-[12px]"
         >
           {busy ? <Loader2 size={14} className="animate-spin-slow" /> : <Send size={14} />}
           {busy ? "Pushing…" : `Fulfil All${matchedCount > 0 ? ` (${matchedCount})` : ""}`}

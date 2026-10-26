@@ -60,7 +60,7 @@ export function ProductSearchCard() {
     let cancelled = false;
     setLoading(true);
 
-    void fetch(`/api/stock-analysis/product?search=${encodeURIComponent(debounced)}&window=${window}`)
+    void fetch(`/api/stock-balance/product?search=${encodeURIComponent(debounced)}&window=${window}`)
       .then(async (res) => res.json() as Promise<ProductResponse>)
       .then((json) => {
         if (!cancelled) setData(json);

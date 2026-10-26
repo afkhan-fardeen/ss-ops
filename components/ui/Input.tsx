@@ -16,10 +16,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   return (
     <div
       className={[
-        "group relative flex h-11 items-center rounded-card border bg-white transition",
+        "group relative flex h-12 items-center rounded-lg border bg-white transition md:h-11",
         invalid
           ? "border-[#DC2626]/50 focus-within:shadow-[0_0_0_3px_rgba(220,38,38,0.12)]"
-          : "border-line focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(217,119,6,0.18)]",
+          : "border-line focus-within:border-primary focus-within:shadow-[0_0_0_3px_rgba(79,70,229,0.15)]",
       ].join(" ")}
     >
       {icon ? (

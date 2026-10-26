@@ -3,16 +3,13 @@ import { requireSession, type PortalSession } from "./require-session";
 import { isPortalAdmin } from "./is-portal-admin";
 import { PortalAuthError } from "./require-portal-admin";
 import { getUserAllowedModules } from "@/lib/supabase/profiles";
+import { grantsStock } from "./legacy-modules";
 
 function needsExplicitGrant(moduleId: ModuleId): boolean {
   return (
     moduleId === "stock" ||
-    moduleId === "stockAnalysis" ||
-    moduleId === "ubexInventory" ||
     moduleId === "subscriptions" ||
-    moduleId === "zohoBooks" ||
-    moduleId === "salesReport" ||
-    moduleId === "stockAlerts"
+    moduleId === "salesReport"
   );
 }
 
@@ -43,7 +40,7 @@ export async function canAccessModule(moduleId: ModuleId): Promise<boolean> {
     // Unrestricted members still need an explicit grant for stock & subscriptions.
     return !needsExplicitGrant(moduleId);
   }
-  return allowed.includes(moduleId);
+  return moduleId === "stock" ? grantsStock(allowed) : allowed.includes(moduleId);
 }
 
 /** Throws PortalAuthError if the user cannot access the module. Returns session. */

@@ -11,21 +11,24 @@
     "db:verify": "tsx scripts/verify-supabase.ts",
     "db:backfill-orders": "tsx scripts/backfill-orders-cache.ts",
     "db:clear-stuck-idempotency": "tsx scripts/clear-stuck-idempotency.ts",
-    "db:purge-bad-tracking-urls": "tsx scripts/purge-bad-tracking-urls.ts"
+    "db:purge-bad-tracking-urls": "tsx scripts/purge-bad-tracking-urls.ts",
+    "db:export": "tsx scripts/db-export.ts",
+    "db:import": "tsx scripts/db-import.ts",
+    "db:bundle": "tsx scripts/db-bundle.ts",
+    "db:baseline": "tsx scripts/apply-migrations.ts --baseline"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.49.1",
-    "@types/nodemailer": "^8.0.0",
     "exceljs": "^4.4.0",
     "framer-motion": "^12.42.2",
     "lucide-react": "^1.8.0",
     "next": "^14.2.35",
-    "nodemailer": "^8.0.5",
     "pdf-lib": "^1.17.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.15.0",
+    "resend": "^6.34.1",
     "sonner": "^2.0.7"
   },
   "devDependencies": {

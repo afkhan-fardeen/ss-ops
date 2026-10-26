@@ -6,9 +6,9 @@ import { StockAlertsLoader } from "@/components/stock-alerts/StockAlertsLoader";
 export const dynamic = "force-dynamic";
 
 export default async function StockAlertsPage() {
-  if (!(await canAccessModule("stockAlerts"))) {
+  if (!(await canAccessModule("stock"))) {
     return (
-      <ModuleAccessDenied description="Stock Alerts is only available to admins or users granted the Stock Alerts module." />
+      <ModuleAccessDenied description="Stock is only available to admins or users granted the Stock module." />
     );
   }
 

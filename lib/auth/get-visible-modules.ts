@@ -1,6 +1,7 @@
 import { getPortalModules, type ModuleId, type PortalModule } from "@/config/modules";
 import type { PortalSession } from "@/lib/auth/require-session";
 import { getUserAllowedModules } from "@/lib/supabase/profiles";
+import { grantsStock } from "@/lib/auth/legacy-modules";
 
 /**
  * Modules the current user may see on the launcher and shell sidebar.
@@ -27,15 +28,11 @@ export async function getVisiblePortalModules(
     return allModules.filter(
       (m) =>
         m.id !== "stock" &&
-        m.id !== "stockAnalysis" &&
-        m.id !== "ubexInventory" &&
         m.id !== "subscriptions" &&
-        m.id !== "zohoBooks" &&
-        m.id !== "salesReport" &&
-        m.id !== "stockAlerts",
+        m.id !== "salesReport",
     );
   }
-  return allModules.filter((m) => allowed.includes(m.id));
+  return allModules.filter((m) => (m.id === "stock" ? grantsStock(allowed) : allowed.includes(m.id)));
 }
 
 /** Concrete module id list for client components (never null). */

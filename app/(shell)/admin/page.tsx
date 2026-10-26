@@ -11,6 +11,8 @@ import { DashboardHeader } from "@/components/dashboard/DashboardPage";
 import { ModuleAccessDenied } from "@/components/portal/ModuleAccessDenied";
 import { UserModuleEditor } from "@/components/admin/UserModuleEditor";
 import { CreateUserForm } from "@/components/admin/CreateUserForm";
+import { RegisterWebhooksButton } from "@/components/account/RegisterWebhooksButton";
+import { CronStatus } from "@/components/sync/CronStatus";
 
 export const dynamic = "force-dynamic";
 
@@ -56,11 +58,11 @@ export default async function AdminPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <DashboardHeader
           moduleLabel="Admin"
           title="Admin tools"
-          description="Create users, control module access, and review login activity."
+          description="Create users, control module access, manage integrations and review login activity."
         />
         <Link
           href="/admin/health"
@@ -106,8 +108,7 @@ export default async function AdminPage() {
           <h2 className="text-sm font-medium text-ink">Module access</h2>
         </div>
         <p className="text-[13px] text-muted">
-          Control which module cards each user sees on their launcher. Admins always
-          see all modules regardless of this setting.
+          Control which modules each user can open. Admins always see all modules.
         </p>
 
         {profiles.length === 0 ? (
@@ -165,6 +166,40 @@ export default async function AdminPage() {
             })}
           </div>
         )}
+      </section>
+
+      {/* Integrations */}
+      <section className="animate-fade-up space-y-3">
+        <div className="flex items-center gap-2">
+          <Activity size={16} className="text-muted" />
+          <h2 className="text-sm font-medium text-ink">Integrations</h2>
+        </div>
+
+        <div className="rounded-card border border-line bg-white p-5 shadow-soft">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div>
+              <h3 className="text-[14px] font-semibold text-ink">Shopify webhooks</h3>
+              <p className="mt-1 text-[13px] text-muted">
+                Register order and fulfillment webhooks so the portal stays live.
+              </p>
+              <p className="mt-2 font-mono text-[12px] text-muted">
+                SHOPIFY_WEBHOOK_SECRET:{" "}
+                <span className={process.env.SHOPIFY_WEBHOOK_SECRET ? "text-emerald-700" : "text-red-700"}>
+                  {process.env.SHOPIFY_WEBHOOK_SECRET ? "configured" : "missing"}
+                </span>
+              </p>
+            </div>
+            <RegisterWebhooksButton disabled={!process.env.SHOPIFY_WEBHOOK_SECRET} />
+          </div>
+        </div>
+
+        <div>
+          <h3 className="mb-1 text-[14px] font-semibold text-ink">Seissense Ops Bot</h3>
+          <p className="mb-2 text-[13px] text-muted">
+            Auto-fulfills Shopify orders from Ubex delivery status. Scheduled runs are paused — use the buttons to run it manually.
+          </p>
+          <CronStatus />
+        </div>
       </section>
 
       {/* Recent login history */}

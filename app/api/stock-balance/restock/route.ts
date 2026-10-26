@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { PortalAuthError } from "@/lib/auth/require-portal-admin";
 import { requireModuleAccess } from "@/lib/auth/can-access-module";
 import { stockBalanceMaxItems } from "@/lib/ubex/inventory";
+import { invalidateStockCatalog } from "@/lib/stock/load-stock-balance-preview";
 import {
   syncItemAcrossStores,
   syncItemsAcrossStores,
@@ -83,14 +84,24 @@ export async function POST(req: Request) {
       const err = validateItem(item);
       if (err) return NextResponse.json({ ok: false, error: err }, { status: 400 });
     }
-    const results = await syncItemsAcrossStores(body.items, createdBy);
+    let results;
+    try {
+      results = await syncItemsAcrossStores(body.items, createdBy);
+    } finally {
+      invalidateStockCatalog(); // stock changed — don't serve a pre-restock catalog
+    }
     return NextResponse.json({ ok: true, results });
   }
 
   if (isSingleBody(body)) {
     const err = validateItem(body);
     if (err) return NextResponse.json({ ok: false, error: err }, { status: 400 });
-    const result = await syncItemAcrossStores(body, createdBy);
+    let result;
+    try {
+      result = await syncItemAcrossStores(body, createdBy);
+    } finally {
+      invalidateStockCatalog();
+    }
     if (!result.ok) {
       const { ok: _ok, ...rest } = result;
       return NextResponse.json({ ok: false, ...rest }, { status: 422 });

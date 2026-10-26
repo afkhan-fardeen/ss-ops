@@ -15,7 +15,7 @@ export const maxDuration = 120;
 /** GET /api/ubex-inventory/search?q=&page= — Ubex + Shopify committed pool, grouped by name. */
 export async function GET(req: NextRequest) {
   try {
-    await requireModuleAccess("ubexInventory");
+    await requireModuleAccess("stock");
   } catch (e) {
     if (e instanceof PortalAuthError) {
       return NextResponse.json({ ok: false, error: e.message }, { status: e.status });

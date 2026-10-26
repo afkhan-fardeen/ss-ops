@@ -8,6 +8,7 @@ create table if not exists cod_settings (
 
 alter table cod_settings enable row level security;
 
+drop policy if exists "service_role_all" on cod_settings;
 create policy "service_role_all" on cod_settings
   for all to service_role using (true) with check (true);
 

@@ -3,8 +3,7 @@ import { AlertTriangle, KeyRound, Mail, Shield, ShieldCheck, User2 } from "lucid
 import { requireSession } from "@/lib/auth/require-session";
 import { getSupabaseService } from "@/lib/supabase/service";
 import { SignOutButton } from "@/components/account/SignOutButton";
-import { RegisterWebhooksButton } from "@/components/account/RegisterWebhooksButton";
-import { CronStatus } from "@/components/sync/CronStatus";
+import { InstallAppCard } from "@/components/pwa/InstallAppCard";
 
 export const dynamic = "force-dynamic";
 
@@ -56,7 +55,6 @@ export default async function AccountPage() {
   }
 
   const isAdmin = profile?.role === "admin";
-  const webhookSecretConfigured = Boolean(process.env.SHOPIFY_WEBHOOK_SECRET);
 
   return (
     <div className="mx-auto max-w-3xl space-y-5">
@@ -129,9 +127,11 @@ export default async function AccountPage() {
         </dl>
       </section>
 
+      <InstallAppCard />
+
       {/* Sign out */}
       <section className="animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
           <div>
             <h2 className="text-sm font-medium text-ink">Session</h2>
             <p className="mt-1 text-[12.5px] text-muted">
@@ -142,42 +142,6 @@ export default async function AccountPage() {
         </div>
       </section>
 
-      {/* Seissense Ops Bot — admin only */}
-      {isAdmin ? (
-        <section className="animate-fade-up">
-          <div className="mb-2">
-            <h2 className="text-sm font-medium text-ink">Seissense Ops Bot</h2>
-            <p className="mt-0.5 text-[12.5px] text-muted">
-              Monitors Ubex delivery status and auto-fulfills Shopify orders. Runs daily at 5:00 PM Bahrain time.
-            </p>
-          </div>
-          <CronStatus />
-        </section>
-      ) : null}
-
-
-      {/* Admin only: Shopify webhooks */}
-      {session.mode === "supabase" && isAdmin ? (
-        <section className="animate-fade-up rounded-card border border-line bg-white p-5 shadow-soft">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="flex items-center gap-2 text-sm font-medium text-ink">
-                <Shield size={14} className="text-ink" /> Shopify webhooks
-              </h2>
-              <p className="mt-1 text-[12.5px] text-muted">
-                Register order and fulfillment webhooks so the portal stays live.
-              </p>
-              <p className="mt-2 text-[11.5px] font-mono text-muted">
-                SHOPIFY_WEBHOOK_SECRET:{" "}
-                <span className={webhookSecretConfigured ? "text-[#16A34A]" : "text-[#DC2626]"}>
-                  {webhookSecretConfigured ? "configured" : "missing"}
-                </span>
-              </p>
-            </div>
-            <RegisterWebhooksButton disabled={!webhookSecretConfigured} />
-          </div>
-        </section>
-      ) : null}
     </div>
   );
 }

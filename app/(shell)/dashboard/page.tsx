@@ -9,6 +9,7 @@ import {
   type OverviewSection,
 } from "@/components/overview/ModuleGrid";
 import { StatCard } from "@/components/dashboard/StatCard";
+import { InstallAppCard } from "@/components/pwa/InstallAppCard";
 
 export const dynamic = "force-dynamic";
 
@@ -26,33 +27,13 @@ const MODULE_META: Record<string, { description: string; href: string; domain: D
     domain: "orders",
   },
   stock: {
-    description: "Compare Ubex inventory with Shopify and restock on hand.",
+    description: "Balance Ubex and Shopify stock, restock, browse inventory and catch low-stock alerts.",
     href: "/stock-balance/balance",
-    domain: "inventory",
-  },
-  stockAnalysis: {
-    description: "Mismatch trends, catalog composition, and sync health over time.",
-    href: "/stock-analysis/dashboard#currently-short",
-    domain: "inventory",
-  },
-  ubexInventory: {
-    description: "Browse Ubex stock by product name.",
-    href: "/ubex-inventory",
-    domain: "inventory",
-  },
-  stockAlerts: {
-    description: "Products at risk of running out, based on sales pace.",
-    href: "/stock-alerts",
     domain: "inventory",
   },
   subscriptions: {
     description: "Review employee subscription requests and track active subscriptions.",
     href: "/subscriptions?status=pending",
-    domain: "finance",
-  },
-  zohoBooks: {
-    description: "Zoho Books tools.",
-    href: "/zoho-books",
     domain: "finance",
   },
   salesReport: {
@@ -78,9 +59,7 @@ export default async function OverviewPage() {
   const statByModule: Partial<Record<string, LauncherStats[keyof LauncherStats]>> = {
     fulfillment: stats.fulfillment,
     stock: stats.stock,
-    stockAnalysis: stats.stockAnalysis,
     subscriptions: stats.subscriptions,
-    stockAlerts: stats.stockAlerts,
   };
 
   const byDomain: Record<Domain, OverviewModule[]> = { orders: [], inventory: [], finance: [] };
@@ -119,6 +98,8 @@ export default async function OverviewPage() {
           Here&apos;s what needs attention across Seissense operations.
         </p>
       </header>
+
+      <InstallAppCard dismissible />
 
       {kpis.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

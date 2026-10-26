@@ -10,7 +10,7 @@ export const maxDuration = 180;
 /** GET /api/ubex-inventory/download — full Ubex catalog and quantities as a filterable .xlsx. */
 export async function GET(_req: NextRequest) {
   try {
-    await requireModuleAccess("ubexInventory");
+    await requireModuleAccess("stock");
   } catch (e) {
     if (e instanceof PortalAuthError) {
       return NextResponse.json({ ok: false, error: e.message }, { status: e.status });
@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest) {
   }
 
   try {
-    const catalog = await loadStockBalanceCatalog();
+    const catalog = await loadStockBalanceCatalog({ fresh: true });
     const wb = await buildUbexInventoryWorkbook(catalog.rows, catalog.store2Configured);
     const buf = (await wb.xlsx.writeBuffer()) as ArrayBuffer;
 

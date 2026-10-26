@@ -45,7 +45,7 @@ function PushButton({ row, state, onPush }: { row: OrderRow; state: RowState | u
       disabled={disabled}
       title={!row.ubexId ? "No Ubex tracking id yet" : status === "error" ? state?.message : "Push fulfillment to Shopify"}
       className={[
-        "focus-ring inline-flex h-8 items-center gap-1.5 rounded-card border px-2.5 text-[12px] font-medium transition",
+        "focus-ring inline-flex h-11 items-center justify-center gap-1.5 rounded-card border px-3 text-[13px] font-medium transition md:h-8 md:px-2.5 md:text-[12px]",
         status === "error"
           ? "border-[#DC2626]/30 bg-[rgba(220,38,38,0.10)] text-[#DC2626] hover:bg-[#DC2626]/10"
           : "border-line bg-white text-ink hover:bg-canvas",
@@ -75,7 +75,9 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
   }
 
   return (
-    <div className="animate-fade-up rounded-card border border-line bg-white shadow-soft">
+    <>
+    <MobileOrderList rows={rows} stateMap={stateMap} onPush={onPush} />
+    <div className="hidden animate-fade-up rounded-card border border-line bg-white shadow-soft md:block">
       <div className="max-h-[65vh] overflow-auto">
       <table className="w-full min-w-[900px] border-collapse text-left text-[13px]">
         <thead className="sticky top-0 z-10">
@@ -158,5 +160,94 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
       </table>
       </div>
     </div>
+    </>
+  );
+}
+
+/** Phone layout: one card per order, full-width Push button at thumb height. */
+function MobileOrderList({
+  rows,
+  stateMap,
+  onPush,
+}: {
+  rows: OrderRow[];
+  stateMap: RowStateMap;
+  onPush: (row: OrderRow) => Promise<boolean>;
+}) {
+  return (
+    <ul className="space-y-3 md:hidden">
+      {rows.map((r) => {
+        const state = stateMap[r.orderName];
+        const status: RowStatus = state?.status ?? "pending";
+        return (
+          <li key={r.orderName} className="rounded-card border border-line bg-white p-4 shadow-soft">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-mono text-[15px] font-semibold text-ink">{r.orderName}</p>
+                <p className="mt-0.5 text-[13px] text-muted">{formatOrderDate(r.orderDate)}</p>
+              </div>
+              <StatusPill tone={statusTone[status]}>{statusLabel[status]}</StatusPill>
+            </div>
+
+            <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 text-[13px]">
+              <div className="col-span-2">
+                <dt className="text-muted">Customer</dt>
+                <dd className="font-medium text-ink">
+                  {r.customerName} <span className="font-mono text-muted">· {r.shippingCountry}</span>
+                </dd>
+              </div>
+              <div>
+                <dt className="text-muted">Total</dt>
+                <dd className="font-mono text-ink">{r.total}</dd>
+              </div>
+              <div>
+                <dt className="text-muted">Payment</dt>
+                <dd>
+                  <span
+                    className={[
+                      "inline-flex items-center rounded-full px-2 py-0.5 text-[12px] font-medium",
+                      r.isCod ? "bg-amber-50 text-amber-700" : "bg-canvas text-muted",
+                    ].join(" ")}
+                  >
+                    {r.isCod ? "COD" : "Paid"}
+                  </span>
+                </dd>
+              </div>
+              <div className="col-span-2">
+                <dt className="text-muted">Ubex ID</dt>
+                <dd className="flex items-center gap-2 font-mono text-ink">
+                  {r.ubexId ? (
+                    <>
+                      <span className="break-all">{r.ubexId}</span>
+                      <CopyButton value={r.ubexId} />
+                      {r.trackingUrl ? (
+                        <a
+                          href={r.trackingUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 font-sans text-[13px] font-medium text-primary"
+                        >
+                          Track <ExternalLink size={12} />
+                        </a>
+                      ) : null}
+                    </>
+                  ) : (
+                    <span className="text-muted">Not matched yet</span>
+                  )}
+                </dd>
+              </div>
+            </dl>
+
+            {status === "error" && state?.message ? (
+              <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-[13px] text-red-700">{state.message}</p>
+            ) : null}
+
+            <div className="mt-3 [&>*]:w-full">
+              <PushButton row={r} state={state} onPush={onPush} />
+            </div>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
