@@ -6,6 +6,8 @@ export type SendEmailInput = {
   to: string[];
   subject: string;
   html: string;
+  /** Plain-text alternative (better deliverability, used by clients that block HTML). */
+  text?: string;
   attachments?: EmailAttachment[];
 };
 
@@ -26,6 +28,7 @@ export async function sendEmail(input: SendEmailInput): Promise<{ id: string }> 
     to: input.to,
     subject: input.subject,
     html: input.html,
+    text: input.text,
     attachments: input.attachments,
   });
   if (error || !data) throw new Error(error?.message ?? "Resend returned no result");
