@@ -1,15 +1,14 @@
 import ExcelJS from "exceljs";
 import type { DailySalesReport, StoreSalesSummary } from "@/lib/sales/daily-sales-report";
 
-// Palette matches the portal (blue primary, teal for the GCC store).
+// One accent colour (blue); everything else is neutral.
 const BLUE = "FF2563EB";
-const TEAL = "FF0F766E";
 const INK = "FF0F172A";
 const MUTED = "FF5B6B82";
 const HEADER_BG = "FFF1F5F9";
 const ALT_ROW_BG = "FFF8FAFC";
 const BORDER = "FFE2E8F0";
-const STORE_ACCENT = [BLUE, TEAL];
+const STORE_ACCENT = [BLUE, BLUE];
 const FONT = "Calibri";
 
 function border(): Partial<ExcelJS.Borders> {
@@ -112,37 +111,9 @@ function addStoreSheet(wb: ExcelJS.Workbook, dayLabel: string, s: StoreSalesSumm
     v.border = border();
   });
 
-  // Top products
   let r = 10;
-  ws.getCell(r, 1).value = "Top products";
-  ws.getCell(r, 1).font = { bold: true, size: 12, name: FONT, color: { argb: INK } };
-  r += 1;
-  const ph = ws.getRow(r);
-  ["Product", "Units", "Sales", ""].forEach((h, i) => (ph.getCell(i + 1).value = h || undefined));
-  styleHeader(ph, accent);
-  ph.getCell(4).fill = { type: "pattern", pattern: "solid", fgColor: { argb: accent } };
-  if (s.topProducts.length === 0) {
-    r += 1;
-    ws.getCell(r, 1).value = "No sales recorded for this day.";
-    ws.getCell(r, 1).font = { italic: true, size: 10, name: FONT, color: { argb: MUTED } };
-  }
-  s.topProducts.forEach((p, i) => {
-    r += 1;
-    const row = ws.getRow(r);
-    row.getCell(1).value = p.name;
-    row.getCell(2).value = p.unitsSold;
-    row.getCell(3).value = p.salesAmount;
-    row.getCell(3).numFmt = currencyFmt(s.currency);
-    row.eachCell({ includeEmpty: false }, (cell, col) => {
-      cell.font = { name: FONT, size: 10, color: { argb: INK } };
-      cell.alignment = { vertical: "middle", horizontal: col === 1 ? "left" : "right", wrapText: col === 1 };
-      cell.border = border();
-      if (i % 2 === 1) cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: ALT_ROW_BG } };
-    });
-  });
 
   // Orders table with totals
-  r += 3;
   ws.getCell(r, 1).value = `Orders (${s.orders.length})`;
   ws.getCell(r, 1).font = { bold: true, size: 12, name: FONT, color: { argb: INK } };
   r += 1;

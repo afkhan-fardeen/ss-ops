@@ -7,7 +7,7 @@ const MUTED = "#5B6B82";
 const LINE = "#E2E8F0";
 const CANVAS = "#F1F5F9";
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
-const STORE_COLORS = ["#2563EB", "#0D9488"] as const; // International = blue, GCC = teal (matches the portal)
+const ACCENT = "#2563EB"; // single accent colour; everything else is neutral
 
 export function formatMoney(amount: number, currency: string): string {
   try {
@@ -28,35 +28,9 @@ function kpi(label: string, value: string): string {
   </td>`;
 }
 
-function productRows(s: StoreSalesSummary, color: string): string {
-  if (s.topProducts.length === 0) {
-    return `<tr><td style="padding:10px 0;font-size:13px;color:${MUTED};">No sales recorded for this day.</td></tr>`;
-  }
-  const max = Math.max(...s.topProducts.map((p) => p.unitsSold), 1);
-  return s.topProducts
-    .map((p) => {
-      const pct = Math.max(6, Math.round((p.unitsSold / max) * 100));
-      return `<tr>
-        <td style="padding:8px 0;border-top:1px solid ${LINE};">
-          <div style="font-size:13px;line-height:18px;color:${INK};font-weight:600;">${escapeHtml(p.name)}</div>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:6px;"><tr>
-            <td style="background:${LINE};border-radius:4px;height:6px;line-height:6px;font-size:0;">
-              <table role="presentation" width="${pct}%" cellpadding="0" cellspacing="0"><tr><td style="background:${color};border-radius:4px;height:6px;line-height:6px;font-size:0;">&nbsp;</td></tr></table>
-            </td>
-          </tr></table>
-        </td>
-        <td align="right" valign="top" style="padding:8px 0 8px 12px;border-top:1px solid ${LINE};white-space:nowrap;">
-          <div style="font-size:13px;line-height:18px;color:${INK};font-weight:600;">${p.unitsSold} unit${p.unitsSold === 1 ? "" : "s"}</div>
-          <div style="font-size:12px;line-height:16px;color:${MUTED};">${formatMoney(p.salesAmount, s.currency)}</div>
-        </td>
-      </tr>`;
-    })
-    .join("");
-}
-
-function storeCard(s: StoreSalesSummary, color: string): string {
+function storeCard(s: StoreSalesSummary): string {
   const avg = s.orderCount > 0 ? s.totalSales / s.orderCount : 0;
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;border:1px solid ${LINE};border-top:4px solid ${color};border-radius:12px;">
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;border:1px solid ${LINE};border-top:4px solid ${ACCENT};border-radius:12px;">
     <tr><td style="padding:0;">
       <div style="padding:16px 16px 8px 16px;">
         <div style="font-size:16px;line-height:24px;font-weight:700;color:${INK};">${escapeHtml(s.store)}</div>
@@ -66,9 +40,7 @@ function storeCard(s: StoreSalesSummary, color: string): string {
         <tr>${kpi("Total sales", formatMoney(s.totalSales, s.currency))}${kpi("Orders", String(s.orderCount))}</tr>
         <tr>${kpi("Units sold", String(s.unitsSold))}${kpi("Avg. order value", formatMoney(avg, s.currency))}</tr>
       </table>
-      <div style="padding:8px 16px 0 16px;font-size:12px;line-height:16px;font-weight:700;color:${MUTED};letter-spacing:.04em;text-transform:uppercase;">Top products</div>
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:0 16px 14px 16px;">${productRows(s, color)}</table>
-      <div style="padding:0 16px 14px 16px;font-size:12px;line-height:16px;color:${MUTED};">Discounts given: <strong style="color:${INK};">${formatMoney(s.totalDiscounts, s.currency)}</strong></div>
+      <div style="padding:4px 16px 16px 16px;font-size:12px;line-height:16px;color:${MUTED};">Discounts given: <strong style="color:${INK};">${formatMoney(s.totalDiscounts, s.currency)}</strong></div>
     </td></tr>
   </table>`;
 }
@@ -85,15 +57,15 @@ export function buildSalesReportEmail(report: DailySalesReport, reportUrl: strin
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(preheader)}</div>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:${CANVAS};"><tr><td align="center" style="padding:24px 12px;">
   <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#FFFFFF;border-radius:16px;overflow:hidden;border:1px solid ${LINE};">
-    <tr><td style="background:#1D4ED8;background-image:linear-gradient(135deg,#2563EB,#0F766E);padding:28px 28px 24px 28px;">
+    <tr><td style="background:${ACCENT};padding:28px 28px 24px 28px;">
       <div style="font-size:13px;line-height:16px;font-weight:700;letter-spacing:.08em;color:#BFDBFE;text-transform:uppercase;">Seissense Ops</div>
       <div style="margin-top:6px;font-size:24px;line-height:32px;font-weight:700;color:#FFFFFF;">Daily sales report</div>
       <div style="margin-top:2px;font-size:14px;line-height:20px;color:#DBEAFE;">${escapeHtml(report.day.label)} · ${totalOrders} order${totalOrders === 1 ? "" : "s"} across both stores</div>
     </td></tr>
     <tr><td style="padding:8px 22px 28px 22px;">
-      ${report.stores.map((s, i) => storeCard(s, STORE_COLORS[i % STORE_COLORS.length]!)).join("")}
+      ${report.stores.map((s) => storeCard(s)).join("")}
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;"><tr><td align="center">
-        <a href="${escapeHtml(reportUrl)}" style="display:inline-block;background:#2563EB;color:#FFFFFF;text-decoration:none;font-size:15px;font-weight:600;line-height:20px;padding:13px 26px;border-radius:10px;">View the full report</a>
+        <a href="${escapeHtml(reportUrl)}" style="display:inline-block;background:${ACCENT};color:#FFFFFF;text-decoration:none;font-size:15px;font-weight:600;line-height:20px;padding:13px 26px;border-radius:10px;">View the full report</a>
       </td></tr><tr><td align="center" style="padding-top:12px;font-size:12px;line-height:16px;color:${MUTED};">The Excel workbook with every order is attached.</td></tr></table>
     </td></tr>
     <tr><td style="background:${CANVAS};padding:16px 28px;font-size:12px;line-height:18px;color:${MUTED};">
@@ -111,7 +83,6 @@ export function buildSalesReportEmail(report: DailySalesReport, reportUrl: strin
       s.store,
       `  Total sales: ${formatMoney(s.totalSales, s.currency)}`,
       `  Orders: ${s.orderCount}  ·  Units: ${s.unitsSold}  ·  Discounts: ${formatMoney(s.totalDiscounts, s.currency)}`,
-      ...s.topProducts.map((p) => `  - ${p.name}: ${p.unitsSold} (${formatMoney(p.salesAmount, s.currency)})`),
       "",
     ]),
     `Full report: ${reportUrl}`,
