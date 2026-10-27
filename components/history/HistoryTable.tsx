@@ -172,10 +172,10 @@ export function HistoryTable({ rows }: { rows: HistoryRow[] }) {
         })}
       </ul>
 
-      <div className="hidden overflow-hidden rounded-card border border-line bg-white shadow-soft md:block">
-        <div className="max-h-[65vh] overflow-auto">
+      <div className="hidden overflow-hidden rounded-card border border-line bg-white shadow-soft md:block xl:overflow-clip">
+        <div className="overflow-x-auto xl:overflow-visible">
           <table className="w-full min-w-[700px] divide-y divide-line text-body">
-            <thead className="sticky top-0 z-10 bg-canvas">
+            <thead className="z-10 xl:sticky xl:top-14 bg-canvas">
               <tr className="text-left text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                 <th className="px-4 py-3">When</th>
                 <th className="px-4 py-3">Order</th>

@@ -29,7 +29,7 @@ export default async function PortalLayout({ children }: { children: React.React
 
   return (
     <StockErrorsCountProvider>
-      <div className="overflow-x-hidden">
+      <div className="overflow-x-clip">
         <script dangerouslySetInnerHTML={{ __html: BOOT_SCRIPT }} />
         <CommandPalette allowedModuleIds={allowedModuleIds} showAdminLink={showAdminLink} />
         <Sidebar
@@ -43,7 +43,7 @@ export default async function PortalLayout({ children }: { children: React.React
         >
           <Topbar />
           {/* pb-24 on mobile so content doesn't hide behind the fixed bottom tab bar */}
-          <main className="flex-1 overflow-x-hidden px-4 pb-[calc(var(--mobile-nav-h)+1.5rem)] pt-4 md:px-8 md:pb-8 md:pt-6">
+          <main className="flex-1 overflow-x-clip px-4 pb-[calc(var(--mobile-nav-h)+1.5rem)] pt-4 md:px-8 md:pb-8 md:pt-6">
             <PortalStockBalanceShell enabled={showStock}>{children}</PortalStockBalanceShell>
           </main>
         </div>

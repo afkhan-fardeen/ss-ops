@@ -79,10 +79,10 @@ export function FulfillmentTable({ rows, stateMap, onPush }: {
   return (
     <>
     <MobileOrderList rows={rows} stateMap={stateMap} onPush={onPush} />
-    <div className="hidden animate-fade-up rounded-card border border-line bg-white shadow-soft md:block">
-      <div className="max-h-[65vh] overflow-auto">
+    <div className="hidden animate-fade-up overflow-hidden rounded-card border border-line bg-white shadow-soft md:block xl:overflow-clip">
+      <div className="overflow-x-auto xl:overflow-visible">
       <table className="w-full min-w-[760px] border-collapse text-left text-body">
-        <thead className="sticky top-0 z-10">
+        <thead className="z-10 xl:sticky xl:top-14">
           <tr className="border-b border-line bg-canvas text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
             <th className="px-3 py-3">Order</th>
             <th className="px-3 py-3">Date</th>

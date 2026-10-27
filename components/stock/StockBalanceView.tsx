@@ -360,10 +360,10 @@ export function StockBalanceView({
             />
           ))}
         </ul>
-        <div className="hidden overflow-hidden rounded-card border border-line bg-white shadow-soft md:block">
-          <div className="max-h-[65vh] overflow-auto">
+        <div className="hidden overflow-hidden rounded-card border border-line bg-white shadow-soft md:block xl:overflow-clip">
+          <div className="overflow-x-auto xl:overflow-visible">
             <table className="w-full min-w-[760px] border-collapse text-left">
-              <thead className="sticky top-0 z-10 bg-canvas text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
+              <thead className="z-10 xl:sticky xl:top-14 bg-canvas text-caption font-semibold uppercase tracking-wide max-md:normal-case max-md:tracking-normal text-muted">
                 <tr className="border-b border-line">
                   <th className="w-8 px-3 py-3" />
                   <th className="px-3 py-3">Product</th>

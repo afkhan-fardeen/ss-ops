@@ -29,6 +29,12 @@
   }
 }
 
+/* Phones: stop the whole page bouncing / pull-to-refresh in the installed app. Touch devices only —
+   `overscroll-behavior: none` on the body blocks mouse-wheel scrolling on desktop browsers. */
+@media (pointer: coarse) {
+  html { overscroll-behavior-y: contain; }
+}
+
 /* Touch: every button gets at least a 44x44px hit area without changing its look or layout. */
 @media (pointer: coarse) {
   button, [role="button"], [role="tab"], summary { position: relative; }
@@ -43,6 +49,14 @@
   }
 }
 
+/* Never scroll sideways. `clip` (unlike `hidden`) doesn't create a scroll container, so position: sticky keeps working. */
+@supports (overflow: clip) {
+  html, body { overflow-x: clip; }
+}
+@supports not (overflow: clip) {
+  html, body { overflow-x: hidden; }
+}
+
 html {
   @apply bg-canvas;
   color-scheme: light;
@@ -50,15 +64,12 @@ html {
   text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
   /* Prevent any child from creating a horizontal scrollbar on mobile */
-  overflow-x: hidden;
 }
 
 body {
   @apply text-ink bg-canvas;
   text-rendering: optimizeLegibility;
   font-feature-settings: "calt", "kern";
-  overscroll-behavior-y: none;
-  overflow-x: hidden;
   max-width: 100vw;
   /* font-sans + antialiased are applied via className in RootLayout */
 }
